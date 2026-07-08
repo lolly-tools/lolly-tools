@@ -1,0 +1,305 @@
+{
+  "id": "filter-posterize",
+  "name": "Filter: Posterize Bitmap",
+  "description": "Trace any photo into flat, screenprint-style vector colour separations.",
+  "version": "1.1.0",
+  "engineVersion": "^1.0.0",
+  "status": "experimental",
+  "category": "designer",
+  "tags": ["photo", "filter", "posterize", "posterise", "vector", "trace", "screenprint", "separations", "halftone", "portrait", "headshot", "on-device"],
+  "a11yLabel": "{{steps}}-colour posterized vector of the photo",
+  "render": {
+    "width": 1080,
+    "height": 1080,
+    "formats": ["png", "svg", "pdf", "jpg", "webp", "gif", "apng", "webm", "mp4"],
+    "actions": ["copy", "download", "save"],
+    "video": { "wait": 0, "duration": 5 },
+    "convertPaths": false
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "onFrame": true,
+    "beforeExport": true
+  },
+  "inputs": [
+    {
+      "id": "photo",
+      "label": "Photo",
+      "type": "asset",
+      "assetType": "raster",
+      "allowUpload": true,
+      "help": "The image to posterize. Headshots and high-contrast photos trace best."
+    },
+    {
+      "id": "steps",
+      "label": "Colour steps",
+      "type": "number",
+      "display": "slider",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8,
+      "showIf": { "threshold": false },
+      "help": "How many tonal separations to trace. Changing this re-samples the colours from the photo."
+    },
+    {
+      "id": "threshold",
+      "label": "Threshold (1 ink)",
+      "type": "boolean",
+      "default": false,
+      "help": "Collapse the photo to a single ink over paper — one hard cut between dark and light instead of graded separations. Pair with Transparent background for ink on nothing."
+    },
+    {
+      "id": "thresholdLevel",
+      "label": "Threshold level",
+      "type": "number",
+      "display": "slider",
+      "min": 1,
+      "max": 99,
+      "step": 1,
+      "default": 50,
+      "showIf": { "threshold": true },
+      "help": "Where the cut between ink and paper falls. Higher turns more of the photo into ink; lower keeps only the deepest shadows."
+    },
+    {
+      "id": "brightness",
+      "label": "Brightness",
+      "type": "number",
+      "display": "slider",
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "help": "Lighten or darken the photo before it is separated — shifts every tone up or down, moving detail between the light and dark separations."
+    },
+    {
+      "id": "quality",
+      "label": "Quality",
+      "type": "number",
+      "display": "slider",
+      "min": 90,
+      "max": 200,
+      "step": 1,
+      "default": 95,
+      "help": "Tracing resolution — higher samples the photo at a finer grid and captures more detail. Above 100 pushes into very fine, slower traces."
+    },
+    {
+      "id": "smoothing",
+      "label": "Smoothing",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60,
+      "help": "How much the traced outlines round into curves. Low keeps edges faithful and crisp; high flows them into smooth Bézier curves."
+    },
+    {
+      "id": "invert",
+      "label": "Invert tones",
+      "type": "boolean",
+      "default": false,
+      "help": "Trace from inverted tones — the photo's bright areas become the foreground separations (a tonal negative). Useful for a light subject on a dark background."
+    },
+    {
+      "id": "colors",
+      "label": "Separation colours",
+      "type": "blocks",
+      "labelledFields": true,
+      "help": "One swatch per tone, darkest first and the lightest (paper) last. Auto-sampled from your photo — edit any swatch to recolour that separation.",
+      "fields": [
+        { "id": "color", "label": "Colour", "type": "color", "default": "#808080" }
+      ],
+      "default": []
+    },
+    {
+      "id": "resample",
+      "label": "Re-sample colours from photo",
+      "type": "boolean",
+      "default": false,
+      "help": "Discard manual edits and re-derive every separation colour from the current photo."
+    },
+    {
+      "id": "transparentBg",
+      "label": "Transparent background",
+      "type": "boolean",
+      "default": false,
+      "help": "Drop the lightest 'paper' separation so the background is transparent (PNG / SVG)."
+    },
+    { "id": "contrast", "label": "Contrast", "section": "Colour", "type": "number", "display": "slider", "min": -100, "max": 100, "step": 1, "default": 0, "help": "Push the tones apart (higher) or flatten them together (lower) before separating. More contrast gives bolder, more graphic separations." },
+    { "id": "hue", "label": "Hue", "section": "Colour", "type": "number", "display": "slider", "default": 0, "min": -180, "max": 180, "step": 1, "help": "Rotate every colour around the wheel." },
+    { "id": "saturation", "label": "Saturation", "section": "Colour", "type": "number", "display": "slider", "default": 100, "min": 0, "max": 200, "step": 1, "help": "0 = greyscale · 100 = original · 200 = vivid." },
+    { "id": "lightness", "label": "Lightness", "section": "Colour", "type": "number", "display": "slider", "default": 0, "min": -100, "max": 100, "step": 1, "help": "Lift toward white or sink toward black." },
+    { "id": "treatmentColor", "label": "Colour treatment", "section": "Colour", "type": "color", "default": "", "help": "Blend a colour over the result. Leave empty for none." },
+    { "id": "blendMode", "label": "Blend mode", "section": "Colour", "type": "select", "default": "multiply", "options": [
+      { "value": "normal", "label": "Normal" }, { "value": "multiply", "label": "Multiply" }, { "value": "screen", "label": "Screen" },
+      { "value": "overlay", "label": "Overlay" }, { "value": "darken", "label": "Darken" }, { "value": "lighten", "label": "Lighten" },
+      { "value": "color-dodge", "label": "Colour dodge" }, { "value": "color-burn", "label": "Colour burn" },
+      { "value": "hard-light", "label": "Hard light" }, { "value": "soft-light", "label": "Soft light" },
+      { "value": "difference", "label": "Difference" }, { "value": "exclusion", "label": "Exclusion" },
+      { "value": "hue", "label": "Hue" }, { "value": "saturation", "label": "Saturation" }, { "value": "color", "label": "Colour" }, { "value": "luminosity", "label": "Luminosity" }
+    ], "help": "How the treatment colour mixes with the image." },
+    { "id": "treatmentIntensity", "label": "Intensity", "section": "Colour", "type": "number", "display": "slider", "default": 20, "min": 0, "max": 100, "step": 1, "help": "Opacity of the colour overlay." },
+    { "id": "width",  "label": "Width",  "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" },
+    { "id": "height", "label": "Height", "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" },
+    {
+      "id": "noFilter",
+      "label": "No filter (show raw)",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "Show the original photo or live camera feed untouched — handy for placing just a logo / lower-third over the raw footage."
+    },
+    {
+      "id": "showLogo",
+      "label": "SUSE logo overlay",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "Overlay the SUSE logo on the result. Off by default."
+    },
+    {
+      "id": "logoPosition",
+      "label": "Logo position",
+      "section": "Overlay",
+      "type": "select",
+      "default": "top-right",
+      "showIf": { "showLogo": true },
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-right", "label": "Bottom right" },
+        { "value": "top", "label": "Top centre" },
+        { "value": "bottom", "label": "Bottom centre" },
+        { "value": "center", "label": "Centre" },
+        { "value": "full", "label": "Full (watermark)" }
+      ]
+    },
+    {
+      "id": "logoStyle",
+      "label": "Logo colour",
+      "section": "Overlay",
+      "type": "select",
+      "default": "white",
+      "showIf": { "showLogo": true },
+      "options": [
+        { "value": "white", "label": "White" },
+        { "value": "green", "label": "Green" },
+        { "value": "black", "label": "Black" }
+      ],
+      "help": "White and green read on dark or busy footage; black suits light backgrounds."
+    },
+    {
+      "id": "logoScale",
+      "label": "Logo size",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0.25,
+      "max": 3,
+      "step": 0.05,
+      "showIf": { "showLogo": true },
+      "help": "Scale the logo up or down."
+    },
+    {
+      "id": "lowerThird",
+      "label": "Lower-third name card",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "A gently-animated name card that draws in over the footage. Uses your profile name & headshot."
+    },
+    {
+      "id": "ltTheme",
+      "label": "Card style",
+      "section": "Overlay",
+      "type": "select",
+      "default": "bar",
+      "showIf": { "lowerThird": true },
+      "options": [
+        { "value": "bar", "label": "SUSE brand bar" },
+        { "value": "minimal", "label": "Minimal" },
+        { "value": "glass", "label": "Glass" }
+      ]
+    },
+    {
+      "id": "ltPosition",
+      "label": "Card position",
+      "section": "Overlay",
+      "type": "select",
+      "default": "left",
+      "showIf": { "lowerThird": true },
+      "options": [
+        { "value": "left", "label": "Bottom left" },
+        { "value": "center", "label": "Bottom centre" },
+        { "value": "right", "label": "Bottom right" }
+      ]
+    },
+    {
+      "id": "firstname",
+      "label": "First name",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "bindToProfile": "firstname",
+      "showIf": { "lowerThird": true }
+    },
+    {
+      "id": "lastname",
+      "label": "Last name",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "bindToProfile": "lastname",
+      "showIf": { "lowerThird": true }
+    },
+    {
+      "id": "title",
+      "label": "Role / subtitle",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "showIf": { "lowerThird": true },
+      "help": "Optional line below the name — e.g. a role or event."
+    },
+    {
+      "id": "nameWeight",
+      "label": "Name weight",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "showIf": { "lowerThird": true },
+      "help": "Font weight of the name line (100 Thin → 900 Black)."
+    },
+    {
+      "id": "subtitleWeight",
+      "label": "Subtitle weight",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "showIf": { "lowerThird": true },
+      "help": "Font weight of the role / subtitle line (100 Thin → 900 Black)."
+    },
+    {
+      "id": "ltHeadshot",
+      "label": "Headshot (optional)",
+      "section": "Overlay",
+      "type": "asset",
+      "assetType": "raster",
+      "allowUpload": true,
+      "showIf": { "lowerThird": true },
+      "help": "Defaults to your profile headshot. Pick or upload another to override."
+    }
+  ]
+}

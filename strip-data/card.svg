@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="620" viewBox="0 0 760 620" role="img" aria-label="Strip Hidden Data — reveal and remove metadata on device">
+  <style>
+    .ttl{font-family:'SUSE','SUSE Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;}
+    .mono{font-family:'SUSE Mono',ui-monospace,Menlo,monospace;}
+    @keyframes scan{0%{transform:translateY(0);opacity:0}12%{opacity:.42}82%{opacity:.42}100%{transform:translateY(286px);opacity:0}}
+    @keyframes ping{0%{transform:scale(1);opacity:.55}70%{transform:scale(2.4);opacity:0}100%{transform:scale(2.4);opacity:0}}
+    @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+    @keyframes wipe{0%,8%{transform:scaleX(0)}34%{transform:scaleX(1)}66%{transform:scaleX(1)}92%,100%{transform:scaleX(0)}}
+    @keyframes beat{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+    .scan{animation:scan 3.4s ease-in-out infinite}
+    .ping{transform-box:fill-box;transform-origin:center;animation:ping 2.6s ease-out infinite}
+    .shield{transform-box:fill-box;transform-origin:center;animation:bob 3.6s ease-in-out infinite}
+    .red{transform-box:fill-box;transform-origin:left center;animation:wipe 5s ease-in-out infinite}
+    .r1{animation-delay:0s}.r2{animation-delay:.35s}.r3{animation-delay:.7s}.r4{animation-delay:1.05s}
+    .beat{transform-box:fill-box;transform-origin:center;animation:beat 2.6s ease-in-out infinite}
+    @media (prefers-reduced-motion:reduce){.scan,.ping,.shield,.red,.beat{animation:none}}
+  </style>
+
+  <rect width="760" height="620" fill="#0c322c"/>
+  <circle cx="726" cy="34" r="150" fill="#90ebcd" opacity=".05"/>
+  <circle cx="40" cy="600" r="120" fill="#30ba78" opacity=".05"/>
+
+  <!-- header -->
+  <g class="shield">
+    <path d="M64 48 L86 56 V74 c0 15 -11 24 -22 30 c-11 -6 -22 -15 -22 -30 V56 Z" fill="#30ba78"/>
+    <path d="M56 71 l6 6 l12 -14" fill="none" stroke="#0c322c" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  <text x="104" y="72" class="ttl" font-size="30" font-weight="700" fill="#efefef">Strip Hidden Data</text>
+  <text x="104" y="99" class="ttl" font-size="15" fill="#90ebcd">Reveal &amp; remove hidden metadata — on your device</text>
+
+  <!-- LEFT: photo card -->
+  <rect x="64" y="150" width="290" height="330" rx="18" fill="#000000" opacity=".18"/>
+  <clipPath id="pc"><rect x="60" y="146" width="290" height="330" rx="18"/></clipPath>
+  <g clip-path="url(#pc)">
+    <rect x="60" y="146" width="290" height="330" fill="#114b41"/>
+    <circle cx="266" cy="232" r="30" fill="#fe7c3f"/>
+    <path d="M60 392 L152 282 L246 392 Z" fill="#237a63"/>
+    <path d="M176 392 L276 312 L350 392 Z" fill="#30ba78"/>
+    <rect x="60" y="388" width="290" height="88" fill="#0a2b25"/>
+    <!-- scan sweep -->
+    <rect class="scan" x="60" y="146" width="290" height="44" fill="#90ebcd"/>
+    <!-- filename bar -->
+    <rect x="60" y="440" width="290" height="36" fill="#06201c" opacity=".9"/>
+    <circle cx="80" cy="458" r="4" fill="#30ba78"/>
+    <text x="94" y="463" class="mono" font-size="14" fill="#cfeee0">IMG_0421.JPG</text>
+  </g>
+  <rect x="60.5" y="146.5" width="289" height="329" rx="17.5" fill="none" stroke="#90ebcd" stroke-opacity=".25"/>
+
+  <!-- GPS pin badge on photo -->
+  <g>
+    <circle class="ping" cx="102" cy="196" r="11" fill="#fe7c3f"/>
+    <path d="M102 178 c-9 0 -15 7 -15 15 c0 11 15 22 15 22 c0 0 15 -11 15 -22 c0 -8 -6 -15 -15 -15 Z" fill="#fe7c3f"/>
+    <circle cx="102" cy="193" r="5.5" fill="#0c322c"/>
+  </g>
+
+  <!-- RIGHT: report card -->
+  <rect x="374" y="150" width="326" height="330" rx="18" fill="#000000" opacity=".18"/>
+  <rect x="370" y="146" width="326" height="330" rx="18" fill="#0f3d34"/>
+  <rect x="370.5" y="146.5" width="325" height="329" rx="17.5" fill="none" stroke="#90ebcd" stroke-opacity=".18"/>
+
+  <text x="394" y="192" class="ttl" font-size="16" font-weight="700" fill="#efefef">Hidden data found</text>
+  <g class="beat"><circle cx="672" cy="186" r="15" fill="#fe7c3f"/></g>
+  <text x="672" y="191" class="ttl" font-size="15" font-weight="700" fill="#0c322c" text-anchor="middle">4</text>
+
+  <line x1="394" y1="214" x2="672" y2="214" stroke="#90ebcd" stroke-opacity=".1"/>
+
+  <!-- rows -->
+  <!-- row 1 -->
+  <circle cx="400" cy="244" r="5" fill="#90ebcd"/>
+  <text x="416" y="249" class="ttl" font-size="13" fill="#a9d9c9">Location · GPS</text>
+  <text x="416" y="271" class="mono" font-size="15" fill="#90ebcd">40.7128, −74.0060</text>
+  <rect class="red r1" x="416" y="258" width="152" height="19" rx="3" fill="#fe7c3f" transform="scale(0 1)"/>
+
+  <!-- row 2 -->
+  <circle cx="400" cy="304" r="5" fill="#90ebcd"/>
+  <text x="416" y="309" class="ttl" font-size="13" fill="#a9d9c9">Camera</text>
+  <text x="416" y="331" class="mono" font-size="15" fill="#90ebcd">Apple iPhone 15 Pro</text>
+  <rect class="red r2" x="416" y="318" width="178" height="19" rx="3" fill="#fe7c3f" transform="scale(0 1)"/>
+
+  <!-- row 3 -->
+  <circle cx="400" cy="364" r="5" fill="#90ebcd"/>
+  <text x="416" y="369" class="ttl" font-size="13" fill="#a9d9c9">Author</text>
+  <text x="416" y="391" class="mono" font-size="15" fill="#90ebcd">j.doe@studio.io</text>
+  <rect class="red r3" x="416" y="378" width="140" height="19" rx="3" fill="#fe7c3f" transform="scale(0 1)"/>
+
+  <!-- row 4 -->
+  <circle cx="400" cy="424" r="5" fill="#90ebcd"/>
+  <text x="416" y="429" class="ttl" font-size="13" fill="#a9d9c9">Created</text>
+  <text x="416" y="451" class="mono" font-size="15" fill="#90ebcd">2026:07:02 14:33</text>
+  <rect class="red r4" x="416" y="438" width="152" height="19" rx="3" fill="#fe7c3f" transform="scale(0 1)"/>
+
+  <!-- bottom status pill -->
+  <rect x="64" y="512" width="632" height="66" rx="16" fill="#0e3b32"/>
+  <rect x="64.5" y="512.5" width="631" height="65" rx="15.5" fill="none" stroke="#30ba78" stroke-opacity=".55"/>
+  <g class="beat"><circle cx="102" cy="545" r="18" fill="#30ba78"/></g>
+  <path d="M94 545 l6 6 l12 -13" fill="none" stroke="#0c322c" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="134" y="540" class="ttl" font-size="18" font-weight="700" fill="#efefef">Clean copy ready</text>
+  <text x="134" y="562" class="ttl" font-size="13" fill="#90ebcd">All 4 items removed — nothing leaves your device</text>
+</svg>

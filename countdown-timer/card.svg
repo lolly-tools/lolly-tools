@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080" role="img" aria-label="Countdown Timer">
+  <!--
+    Custom ANIMATED gallery card for the countdown-timer tool (replaces the old card.html —
+    prefer SVG). Pure CSS @keyframes animate in an <img>: a ring depletes green→orange from 12
+    o'clock while the readout ticks 0:05 → 0:00 in sync, then loops. Flat, ~3 KB, width/height =
+    render dims (1080²) so it never stretches, base state complete, system-font fallback.
+  -->
+  <style>
+    .ring{
+      fill:none;stroke-width:34;stroke-linecap:round;
+      stroke-dasharray:2387.6;                 /* 2·π·380 */
+      animation:cd-deplete 6s linear infinite, cd-hue 6s linear infinite;
+      transform:rotate(-90deg);transform-origin:540px 540px;   /* empty from the top */
+    }
+    @keyframes cd-deplete{from{stroke-dashoffset:0}to{stroke-dashoffset:2387.6}}
+    @keyframes cd-hue{0%,72%{stroke:#30ba78}88%,100%{stroke:#fe7c3f}}
+    .num{
+      font-family:'SUSE','SUSE Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+      font-weight:200;font-size:250px;fill:#fff;letter-spacing:-.03em;
+      font-variant-numeric:tabular-nums;
+    }
+    /* Each full readout shows for one second of the 6s loop; delays sequence 0:05→0:00. */
+    .tk{opacity:0;animation:cd-tick 6s steps(1) infinite}
+    @keyframes cd-tick{0%,16.66%{opacity:1}16.67%,100%{opacity:0}}
+    @media (prefers-reduced-motion:reduce){
+      .ring{animation:none;stroke:#30ba78;stroke-dashoffset:0}
+      .tk{animation:none}.tk--rest{opacity:1}
+    }
+  </style>
+  <rect width="1080" height="1080" fill="#0c322c"/>
+  <circle cx="540" cy="540" r="380" fill="none" stroke="#30ba78" stroke-opacity=".14" stroke-width="34"/>
+  <circle class="ring" cx="540" cy="540" r="380" stroke="#30ba78"/>
+  <g class="num" text-anchor="middle">
+    <text class="tk" x="540" y="622" style="animation-delay:0s">0:05</text>
+    <text class="tk" x="540" y="622" style="animation-delay:1s">0:04</text>
+    <text class="tk" x="540" y="622" style="animation-delay:2s">0:03</text>
+    <text class="tk" x="540" y="622" style="animation-delay:3s">0:02</text>
+    <text class="tk" x="540" y="622" style="animation-delay:4s">0:01</text>
+    <text class="tk tk--rest" x="540" y="622" style="animation-delay:5s">0:00</text>
+  </g>
+</svg>

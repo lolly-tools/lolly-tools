@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080">
+<title>Filter: Posterize Bitmap</title>
+<desc>Pop-art grid — one portrait posterized into flat SUSE-brand colour separations.</desc>
+<style>
+.fig{transform-box:fill-box;transform-origin:center;animation:breathe 5.2s ease-in-out infinite;will-change:transform}
+@keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.018)}}
+.sheen{animation:sweep 6s ease-in-out infinite}
+@keyframes sweep{0%,100%{transform:translateX(-260px)}50%{transform:translateX(260px)}}
+.cap{font-family:'SUSE Mono',ui-monospace,Menlo,monospace}
+@media (prefers-reduced-motion:reduce){.fig{animation:none}.sheen{animation:none;opacity:0}}
+</style>
+  <defs>
+    <clipPath id="clip0"><rect width="504" height="504" rx="30"/></clipPath>
+    <clipPath id="clip1"><rect width="504" height="504" rx="30"/></clipPath>
+    <clipPath id="clip2"><rect width="504" height="504" rx="30"/></clipPath>
+    <clipPath id="clip3"><rect width="504" height="504" rx="30"/></clipPath>
+  </defs>
+  <rect width="1080" height="1080" fill="#0A112B"/>
+  <g transform="translate(24 24)" clip-path="url(#clip0)">
+    <rect width="504" height="504" fill="#0A112B"/>
+    <g class="fig" style="animation-delay:0.00s">
+      <path d="M96,504 C104,432 150,398 206,388 L298,388 C354,398 400,432 408,504 Z" fill="#2453FF"/>
+      <path d="M138,246 C120,120 184,52 252,52 C320,52 384,120 366,246 C352,164 316,112 252,112 C188,112 152,164 138,246 Z" fill="#192072"/>
+      <path d="M220,336 L284,336 L288,392 L216,392 Z" fill="#2453FF"/>
+      <path d="M252,104 C316,104 348,158 348,222 C348,300 312,356 252,356 C192,356 156,300 156,222 C156,158 188,104 252,104 Z" fill="#38D5B4"/>
+      <path d="M232,118 C196,128 182,210 190,286 C200,318 214,332 224,330 C206,286 206,206 224,150 C240,126 250,120 232,118 Z" fill="#BFF1EA"/>
+      <path d="M300,150 C332,196 334,286 298,340 C322,290 322,196 300,150 Z" fill="#2453FF"/>
+      <path d="M198,338 C224,370 280,370 306,338 C280,392 224,392 198,338 Z" fill="#2453FF"/>
+      <path d="M252,238 L268,288 L240,288 Z" fill="#2453FF"/>
+      <path d="M188,196 C202,188 226,186 240,192 C226,194 206,196 190,202 Z" fill="#0A112B"/>
+      <path d="M264,192 C278,186 302,188 316,196 C314,202 294,194 278,194 Z" fill="#0A112B"/>
+      <ellipse cx="212" cy="224" rx="17" ry="9" fill="#0A112B"/>
+      <ellipse cx="292" cy="224" rx="17" ry="9" fill="#0A112B"/>
+      <path d="M214,306 C236,300 268,300 290,306 C268,326 236,326 214,306 Z" fill="#0A112B"/>
+    </g>
+  </g>
+  <g transform="translate(552 24)" clip-path="url(#clip1)">
+    <rect width="504" height="504" fill="#0C322C"/>
+    <g class="fig" style="animation-delay:0.90s">
+      <path d="M96,504 C104,432 150,398 206,388 L298,388 C354,398 400,432 408,504 Z" fill="#30BA78"/>
+      <path d="M138,246 C120,120 184,52 252,52 C320,52 384,120 366,246 C352,164 316,112 252,112 C188,112 152,164 138,246 Z" fill="#30BA78"/>
+      <path d="M220,336 L284,336 L288,392 L216,392 Z" fill="#30BA78"/>
+      <path d="M252,104 C316,104 348,158 348,222 C348,300 312,356 252,356 C192,356 156,300 156,222 C156,158 188,104 252,104 Z" fill="#BFF1EA"/>
+      <path d="M232,118 C196,128 182,210 190,286 C200,318 214,332 224,330 C206,286 206,206 224,150 C240,126 250,120 232,118 Z" fill="#EFEFEF"/>
+      <path d="M300,150 C332,196 334,286 298,340 C322,290 322,196 300,150 Z" fill="#30BA78"/>
+      <path d="M198,338 C224,370 280,370 306,338 C280,392 224,392 198,338 Z" fill="#30BA78"/>
+      <path d="M252,238 L268,288 L240,288 Z" fill="#30BA78"/>
+      <path d="M188,196 C202,188 226,186 240,192 C226,194 206,196 190,202 Z" fill="#0C322C"/>
+      <path d="M264,192 C278,186 302,188 316,196 C314,202 294,194 278,194 Z" fill="#0C322C"/>
+      <ellipse cx="212" cy="224" rx="17" ry="9" fill="#0C322C"/>
+      <ellipse cx="292" cy="224" rx="17" ry="9" fill="#0C322C"/>
+      <path d="M214,306 C236,300 268,300 290,306 C268,326 236,326 214,306 Z" fill="#0C322C"/>
+    </g>
+  </g>
+  <g transform="translate(24 552)" clip-path="url(#clip2)">
+    <rect width="504" height="504" fill="#192072"/>
+    <g class="fig" style="animation-delay:1.80s">
+      <path d="M96,504 C104,432 150,398 206,388 L298,388 C354,398 400,432 408,504 Z" fill="#FE7C3F"/>
+      <path d="M138,246 C120,120 184,52 252,52 C320,52 384,120 366,246 C352,164 316,112 252,112 C188,112 152,164 138,246 Z" fill="#0A112B"/>
+      <path d="M220,336 L284,336 L288,392 L216,392 Z" fill="#FE7C3F"/>
+      <path d="M252,104 C316,104 348,158 348,222 C348,300 312,356 252,356 C192,356 156,300 156,222 C156,158 188,104 252,104 Z" fill="#FAB088"/>
+      <path d="M232,118 C196,128 182,210 190,286 C200,318 214,332 224,330 C206,286 206,206 224,150 C240,126 250,120 232,118 Z" fill="#EFEFEF"/>
+      <path d="M300,150 C332,196 334,286 298,340 C322,290 322,196 300,150 Z" fill="#FE7C3F"/>
+      <path d="M198,338 C224,370 280,370 306,338 C280,392 224,392 198,338 Z" fill="#FE7C3F"/>
+      <path d="M252,238 L268,288 L240,288 Z" fill="#FE7C3F"/>
+      <path d="M188,196 C202,188 226,186 240,192 C226,194 206,196 190,202 Z" fill="#192072"/>
+      <path d="M264,192 C278,186 302,188 316,196 C314,202 294,194 278,194 Z" fill="#192072"/>
+      <ellipse cx="212" cy="224" rx="17" ry="9" fill="#192072"/>
+      <ellipse cx="292" cy="224" rx="17" ry="9" fill="#192072"/>
+      <path d="M214,306 C236,300 268,300 290,306 C268,326 236,326 214,306 Z" fill="#192072"/>
+    </g>
+  </g>
+  <g transform="translate(552 552)" clip-path="url(#clip3)">
+    <rect width="504" height="504" fill="#EFEFEF"/>
+    <g class="fig" style="animation-delay:2.70s">
+      <path d="M96,504 C104,432 150,398 206,388 L298,388 C354,398 400,432 408,504 Z" fill="#30BA78"/>
+      <path d="M138,246 C120,120 184,52 252,52 C320,52 384,120 366,246 C352,164 316,112 252,112 C188,112 152,164 138,246 Z" fill="#0C322C"/>
+      <path d="M220,336 L284,336 L288,392 L216,392 Z" fill="#0C322C"/>
+      <path d="M252,104 C316,104 348,158 348,222 C348,300 312,356 252,356 C192,356 156,300 156,222 C156,158 188,104 252,104 Z" fill="#FE7C3F"/>
+      <path d="M232,118 C196,128 182,210 190,286 C200,318 214,332 224,330 C206,286 206,206 224,150 C240,126 250,120 232,118 Z" fill="#FAB088"/>
+      <path d="M300,150 C332,196 334,286 298,340 C322,290 322,196 300,150 Z" fill="#0C322C"/>
+      <path d="M198,338 C224,370 280,370 306,338 C280,392 224,392 198,338 Z" fill="#0C322C"/>
+      <path d="M252,238 L268,288 L240,288 Z" fill="#0C322C"/>
+      <path d="M188,196 C202,188 226,186 240,192 C226,194 206,196 190,202 Z" fill="#0C322C"/>
+      <path d="M264,192 C278,186 302,188 316,196 C314,202 294,194 278,194 Z" fill="#0C322C"/>
+      <ellipse cx="212" cy="224" rx="17" ry="9" fill="#0C322C"/>
+      <ellipse cx="292" cy="224" rx="17" ry="9" fill="#0C322C"/>
+      <path d="M214,306 C236,300 268,300 290,306 C268,326 236,326 214,306 Z" fill="#0C322C"/>
+    </g>
+  </g>
+  <g class="sheen"><rect x="470" y="-40" width="90" height="1160" fill="#ffffff" opacity="0.05" transform="rotate(14 540 540)"/></g>
+  <g>
+    <rect x="44" y="984" width="196" height="46" rx="23" fill="#0A112B" stroke="#38D5B4" stroke-width="1.5" opacity="0.92"/>
+    <circle cx="76" cy="1007" r="8" fill="#38D5B4"/>
+    <text class="cap" x="98" y="1013" font-size="20" letter-spacing="1.5" fill="#BFF1EA">POSTERIZE</text>
+  </g>
+</svg>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1080" viewBox="0 0 1080 1080" role="img" aria-label="Colour palette picker">
+  <!--
+    Custom ANIMATED gallery card for the color-palette (colour picker) tool. Pure CSS @keyframes
+    animate in an <img>: a knob slides across a brand-spectrum bar while the hero swatch, name and
+    hex snap to each SUSE colour in sync (jungle · mint · waterhole · midnight · persimmon · pine),
+    looping every 6s. Flat, a few KB, width/height = render dims (1080²) so it never stretches, base
+    state complete, system-font fallback.
+  -->
+  <style>
+    .name{font-family:'SUSE','SUSE Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-weight:800;font-size:78px;fill:#141414}
+    .hex{font-family:'SUSE Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;font-size:46px;fill:#6b7280}
+    .swatch{animation:cp-fill 6s steps(1) infinite}
+    @keyframes cp-fill{
+      0%,15%{fill:#30ba78}16.67%,32%{fill:#90ebcd}33.33%,48%{fill:#2453ff}
+      50%,65%{fill:#192072}66.67%,82%{fill:#fe7c3f}83.33%,98%{fill:#0c322c}100%{fill:#30ba78}}
+    /* each name/hex pair shows for one 1s window, sequenced to the swatch */
+    .lbl{opacity:0;animation:cp-lbl 6s steps(1) infinite}
+    @keyframes cp-lbl{0%,16.6%{opacity:1}16.67%,100%{opacity:0}}
+    .knob{animation:cp-slide 6s steps(6,jump-none) infinite}
+    @keyframes cp-slide{from{transform:translateX(0)}to{transform:translateX(666.6px)}}
+    @media (prefers-reduced-motion:reduce){
+      .swatch{animation:none;fill:#30ba78}.knob{animation:none}
+      .lbl{animation:none}.lbl--rest{opacity:1}}
+  </style>
+  <defs>
+    <linearGradient id="cp-spec" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#30ba78"/><stop offset=".2" stop-color="#90ebcd"/>
+      <stop offset=".4" stop-color="#2453ff"/><stop offset=".6" stop-color="#192072"/>
+      <stop offset=".8" stop-color="#fe7c3f"/><stop offset="1" stop-color="#0c322c"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1080" fill="#ffffff"/>
+
+  <!-- hero swatch -->
+  <rect class="swatch" x="140" y="120" width="800" height="470" rx="40" fill="#30ba78"/>
+
+  <!-- name + hex (6 stacked pairs, phased) -->
+  <g text-anchor="start">
+    <text class="lbl" x="140" y="712" style="animation-delay:0s"><tspan class="name">jungle</tspan></text>
+    <text class="lbl" x="140" y="712" style="animation-delay:1s"><tspan class="name">mint</tspan></text>
+    <text class="lbl" x="140" y="712" style="animation-delay:2s"><tspan class="name">waterhole</tspan></text>
+    <text class="lbl" x="140" y="712" style="animation-delay:3s"><tspan class="name">midnight</tspan></text>
+    <text class="lbl" x="140" y="712" style="animation-delay:4s"><tspan class="name">persimmon</tspan></text>
+    <text class="lbl lbl--rest" x="140" y="712" style="animation-delay:5s"><tspan class="name">pine</tspan></text>
+
+    <text class="lbl" x="140" y="778" style="animation-delay:0s"><tspan class="hex">#30ba78</tspan></text>
+    <text class="lbl" x="140" y="778" style="animation-delay:1s"><tspan class="hex">#90ebcd</tspan></text>
+    <text class="lbl" x="140" y="778" style="animation-delay:2s"><tspan class="hex">#2453ff</tspan></text>
+    <text class="lbl" x="140" y="778" style="animation-delay:3s"><tspan class="hex">#192072</tspan></text>
+    <text class="lbl" x="140" y="778" style="animation-delay:4s"><tspan class="hex">#fe7c3f</tspan></text>
+    <text class="lbl lbl--rest" x="140" y="778" style="animation-delay:5s"><tspan class="hex">#0c322c</tspan></text>
+  </g>
+
+  <!-- spectrum bar + sliding knob -->
+  <rect x="140" y="852" width="800" height="60" rx="30" fill="url(#cp-spec)"/>
+  <g class="knob">
+    <circle cx="206.6" cy="882" r="46" fill="#ffffff"/>
+    <circle cx="206.6" cy="882" r="46" fill="none" stroke="#141414" stroke-opacity=".12" stroke-width="3"/>
+    <circle cx="206.6" cy="882" r="20" fill="none" stroke="#141414" stroke-opacity=".18" stroke-width="4"/>
+  </g>
+</svg>

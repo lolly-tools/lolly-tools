@@ -1,0 +1,172 @@
+{
+  "id": "street-map",
+  "name": "Street Map",
+  "description": "Clean vector street-block maps of any city. Works offline.",
+  "a11yLabel": "Street map centered on {{city}}",
+  "version": "0.4.0",
+  "engineVersion": "^1.0.0",
+  "status": "official",
+  "category": "designer",
+  "tags": ["map", "street", "city", "location", "vector", "offline", "osm"],
+  "examples": [
+    { "label": "Nuremberg · light · pine", "values": { "city": "nuremberg", "theme": "light", "roadColor": "#30ba78", "waterColor": "#0a9bd6", "background": "#ffffff" } },
+    { "label": "Paris · dark · teal", "values": { "city": "paris", "theme": "dark", "roadColor": "#2fb9a0", "waterColor": "#0a9bd6", "background": "#0c322c" } },
+    { "label": "Amsterdam · light · canals", "values": { "city": "amsterdam", "theme": "light", "roadColor": "#0c322c", "waterColor": "#0a9bd6", "waterWeight": 12, "showWater": true, "background": "#eafaf1" } },
+    { "label": "New York · dark · amber grid", "values": { "city": "newyork", "theme": "dark", "roadColor": "#fcb244", "waterColor": "#2fb9a0", "background": "#0c322c" } },
+    { "label": "Tokyo · light · cobalt", "values": { "city": "tokyo", "theme": "light", "roadColor": "#2453ff", "showWater": false, "background": "#ffffff" } },
+    { "label": "San Francisco · dark · teal", "values": { "city": "sanfrancisco", "theme": "dark", "roadColor": "#2fb9a0", "waterColor": "#0a9bd6", "majorRoadWeight": 8, "minorRoadWeight": 4, "background": "#0c322c" } }
+  ],
+  "render": {
+    "width": 900,
+    "height": 900,
+    "formats": ["svg", "emf", "dxf", "pdf", "pdf-cmyk", "png"],
+    "actions": ["copy", "download", "save"],
+    "transparentBg": false
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true
+  },
+  "inputs": [
+    {
+      "id": "city",
+      "label": "City",
+      "type": "select",
+      "default": "nuremberg",
+      "help": "Add more cities offline with scripts/build-street-clips.ts — no API at render time.",
+      "options": [
+        { "value": "amsterdam", "label": "Amsterdam" },
+        { "value": "athens", "label": "Athens" },
+        { "value": "bangkok", "label": "Bangkok" },
+        { "value": "barcelona", "label": "Barcelona" },
+        { "value": "beijing", "label": "Beijing" },
+        { "value": "berlin", "label": "Berlin" },
+        { "value": "brisbane", "label": "Brisbane" },
+        { "value": "brussels", "label": "Brussels" },
+        { "value": "budapest", "label": "Budapest" },
+        { "value": "buenosaires", "label": "Buenos Aires" },
+        { "value": "cairo", "label": "Cairo" },
+        { "value": "capetown", "label": "Cape Town" },
+        { "value": "chicago", "label": "Chicago" },
+        { "value": "copenhagen", "label": "Copenhagen" },
+        { "value": "delhi", "label": "Delhi" },
+        { "value": "dubai", "label": "Dubai" },
+        { "value": "dublin", "label": "Dublin" },
+        { "value": "edinburgh", "label": "Edinburgh" },
+        { "value": "helsinki", "label": "Helsinki" },
+        { "value": "hongkong", "label": "Hong Kong" },
+        { "value": "istanbul", "label": "Istanbul" },
+        { "value": "kualalumpur", "label": "Kuala Lumpur" },
+        { "value": "lisbon", "label": "Lisbon" },
+        { "value": "london", "label": "London" },
+        { "value": "losangeles", "label": "Los Angeles" },
+        { "value": "madrid", "label": "Madrid" },
+        { "value": "mexicocity", "label": "Mexico City" },
+        { "value": "moscow", "label": "Moscow" },
+        { "value": "mumbai", "label": "Mumbai" },
+        { "value": "munich", "label": "Munich" },
+        { "value": "newyork", "label": "New York" },
+        { "value": "noosa", "label": "Noosa" },
+        { "value": "nuremberg", "label": "Nuremberg" },
+        { "value": "oslo", "label": "Oslo" },
+        { "value": "paris", "label": "Paris" },
+        { "value": "prague", "label": "Prague" },
+        { "value": "provo", "label": "Provo" },
+        { "value": "riodejaneiro", "label": "Rio de Janeiro" },
+        { "value": "rome", "label": "Rome" },
+        { "value": "sanfrancisco", "label": "San Francisco" },
+        { "value": "saopaulo", "label": "São Paulo" },
+        { "value": "seoul", "label": "Seoul" },
+        { "value": "shanghai", "label": "Shanghai" },
+        { "value": "singapore", "label": "Singapore" },
+        { "value": "stockholm", "label": "Stockholm" },
+        { "value": "sydney", "label": "Sydney" },
+        { "value": "tokyo", "label": "Tokyo" },
+        { "value": "toronto", "label": "Toronto" },
+        { "value": "vancouver", "label": "Vancouver" },
+        { "value": "vienna", "label": "Vienna" },
+        { "value": "warsaw", "label": "Warsaw" },
+        { "value": "washington", "label": "Washington, DC" },
+        { "value": "zurich", "label": "Zurich" }
+      ]
+    },
+    {
+      "id": "theme",
+      "label": "Theme",
+      "type": "select",
+      "default": "light",
+      "options": [
+        { "value": "light", "label": "Light" },
+        { "value": "dark", "label": "Dark" }
+      ]
+    },
+    {
+      "id": "minorRoadWeight",
+      "label": "Minor road weight",
+      "type": "number",
+      "display": "slider",
+      "default": 6.02,
+      "min": 0.25,
+      "max": 24,
+      "step": 0.01,
+      "help": "Stroke thickness of minor streets (service, residential, tertiary)."
+    },
+    {
+      "id": "majorRoadWeight",
+      "label": "Major road weight",
+      "type": "number",
+      "display": "slider",
+      "default": 5.46,
+      "min": 0.25,
+      "max": 24,
+      "step": 0.01,
+      "help": "Stroke thickness of major roads (secondary, primary, motorway)."
+    },
+    {
+      "id": "showWater",
+      "label": "Show water",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "id": "waterWeight",
+      "label": "Waterway weight",
+      "type": "number",
+      "display": "slider",
+      "default": 6.72,
+      "min": 0.25,
+      "max": 30,
+      "step": 0.01,
+      "help": "Stroke thickness of rivers and streams. Crank it up to make waterways more prominent."
+    },
+    {
+      "id": "roadColor",
+      "label": "Road color",
+      "type": "color",
+      "default": "{color.ramp.pine.3}",
+      "help": "Leave empty to use the theme's default."
+    },
+    {
+      "id": "waterColor",
+      "label": "Water color",
+      "type": "color",
+      "default": "{color.ramp.pine.7}",
+      "help": "Leave empty to use the theme's default."
+    },
+    {
+      "id": "background",
+      "label": "Background",
+      "type": "color",
+      "default": "transparent",
+      "help": "Leave empty to use the theme's default."
+    },
+    {
+      "id": "view",
+      "label": "Map viewport",
+      "type": "text",
+      "default": "",
+      "placeholder": "pan & zoom to set",
+      "help": "Auto-saved when you pan or zoom. Clear to reset to the default framing."
+    }
+  ]
+}

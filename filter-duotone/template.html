@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{width}} {{height}}" width="{{width}}" height="{{height}}"
+     style="width:100%;height:auto;display:block;">
+  <defs>
+    <filter id="duo" color-interpolation-filters="sRGB">
+      <feColorMatrix type="hueRotate" values="{{hueDeg}}" result="h"/>
+      <feColorMatrix type="saturate" values="{{satFrac}}" in="h" result="s"/>
+      <feComponentTransfer in="s" result="lit">
+        <feFuncR type="linear" slope="{{liteSlope}}" intercept="{{liteIntercept}}"/>
+        <feFuncG type="linear" slope="{{liteSlope}}" intercept="{{liteIntercept}}"/>
+        <feFuncB type="linear" slope="{{liteSlope}}" intercept="{{liteIntercept}}"/>
+      </feComponentTransfer>
+      <feComponentTransfer in="lit" result="duo">
+        <feFuncR type="table" tableValues="{{tableR}}"/>
+        <feFuncG type="table" tableValues="{{tableG}}"/>
+        <feFuncB type="table" tableValues="{{tableB}}"/>
+      </feComponentTransfer>
+      <feFlood flood-color="{{treatColor}}" result="tcol"/>
+      <feBlend in="duo" in2="tcol" mode="{{treatBlend}}" result="tb"/>
+      <feComponentTransfer in="tb" result="tba"><feFuncA type="linear" slope="{{treatAmt}}"/></feComponentTransfer>
+      <feMerge><feMergeNode in="duo"/><feMergeNode in="tba"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect id="duo-bg" width="100%" height="100%" fill="{{colorBg}}"/>
+
+  <!-- Declarative default = a centred "cover" fill of the whole canvas. The script
+       below upgrades this to object-fit:cover + object-position (Zoom / Position
+       X / Position Y) once the image's natural size is known (browser only); in
+       headless renders it stays a centred cover. The user's own pick wins;
+       otherwise the shared demo image ({{defaultImageUrl}}, resolved in hooks.js)
+       fills in so the effect shows on load. -->
+  {{#if liveSrc}}
+  <!-- Live camera (engine v1.4): the frame IS the filtered image. Uses id duo-live
+       (not duo-img) so the framing <script> below skips it — no per-frame data-URL
+       probe/leak; the declarative xMidYMid slice gives a cover fit. -->
+  <image id="duo-live"
+    {{#unless noFilter}}filter="url(#duo)"{{/unless}}
+    preserveAspectRatio="xMidYMid slice"
+    href="{{liveSrc}}"
+    x="0" y="0" width="100%" height="100%"/>
+  {{else}}
+  {{#if bgImage}}
+  <image id="duo-img"
+    {{#unless noFilter}}filter="url(#duo)"{{/unless}}
+    preserveAspectRatio="xMidYMid slice"
+    href="{{asset bgImage}}"
+    x="0" y="0" width="100%" height="100%"
+    data-zoom="{{imageFraming.zoom}}" data-posx="{{imageFraming.x}}" data-posy="{{imageFraming.y}}"/>
+  {{else}}
+  {{#if defaultImageUrl}}
+  <image id="duo-img"
+    {{#unless noFilter}}filter="url(#duo)"{{/unless}}
+    preserveAspectRatio="xMidYMid slice"
+    href="{{defaultImageUrl}}"
+    x="0" y="0" width="100%" height="100%"
+    data-zoom="{{imageFraming.zoom}}" data-posx="{{imageFraming.x}}" data-posy="{{imageFraming.y}}"/>
+  {{/if}}
+  {{/if}}
+  {{/if}}
+  <!-- Brand overlay (optional SUSE logo + lower-third). Emitted AFTER the #duo-img /
+       #duo-live <image> so it sits on top and is NOT recoloured by the #duo filter,
+       and survives raster / video / vector export as real SVG children. -->
+  {{{overlaySvg}}}
+</svg>
+<script>
+(function () {
+  var img = document.getElementById('duo-img');
+  // Resolve the SVG from an element we own so we never grab an unrelated <svg>
+  // (e.g. the shell's Render-button icon) that happens to come first in the
+  // document. #duo-img only exists when a photo is set, so anchor to #duo-bg —
+  // the background rect is always rendered — as the fallback.
+  var anchor = img || document.getElementById('duo-bg');
+  var svg = anchor && anchor.ownerSVGElement;
+  if (!svg) return;
+
+  // Resolve the target canvas size from the export dimension controls so
+  // non-square exports compose correctly; fall back to the template's viewBox.
+  var vb = (svg.getAttribute('viewBox') || '0 0 1080 1080').split(/\s+/).map(Number);
+  var wEl = document.querySelector('[data-action="export-width"]');
+  var hEl = document.querySelector('[data-action="export-height"]');
+  var W = (wEl && parseFloat(wEl.value) > 0) ? parseFloat(wEl.value) : vb[2];
+  var H = (hEl && parseFloat(hEl.value) > 0) ? parseFloat(hEl.value) : vb[3];
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+
+  if (!img) return;
+
+  function num(v, d) { var n = parseFloat(v); return isFinite(n) ? n : d; }
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+  // Reproduce CSS object-fit:cover + object-position over the full canvas.
+  // SVG's preserveAspectRatio can't express an arbitrary position, so we scale +
+  // offset the <image> directly using the photo's intrinsic size.
+  function layout(iw, ih) {
+    if (!(iw > 0 && ih > 0)) return;          // headless: keep the declarative cover
+    var zoom = clamp(num(img.dataset.zoom, 100), 100, 800) / 100;
+    var px   = clamp(num(img.dataset.posx, 50), 0, 100) / 100;
+    var py   = clamp(num(img.dataset.posy, 50), 0, 100) / 100;
+    var s  = Math.max(W / iw, H / ih) * zoom; // cover scale
+    var dw = iw * s, dh = ih * s;             // displayed size (aspect preserved)
+    img.setAttribute('preserveAspectRatio', 'none');
+    img.setAttribute('width', dw);
+    img.setAttribute('height', dh);
+    img.setAttribute('x', -px * (dw - W));    // pan the horizontal overflow
+    img.setAttribute('y', -py * (dh - H));    // pan the vertical overflow
+  }
+
+  // Intrinsic size comes from an HTMLImageElement probe, not the SVG <image>:
+  // SVGImageElement.naturalWidth is unreliable across browsers (e.g. WebKit), and
+  // the canvas <image> is rebuilt on every input change. Cache the measured size
+  // per href on window so each Zoom/Position tick re-applies instantly (no race).
+  var href = img.getAttribute('href')
+    || img.getAttributeNS('http://www.w3.org/1999/xlink', 'href') || '';
+  if (!href) return;
+  var cache = (window.__duoNatural = window.__duoNatural || {});
+  var hit = cache[href];
+  if (hit) { layout(hit.w, hit.h); return; }
+
+  var probe = new Image();
+  function measured() {
+    if (!(probe.naturalWidth > 0)) return;
+    cache[href] = { w: probe.naturalWidth, h: probe.naturalHeight };
+    layout(probe.naturalWidth, probe.naturalHeight);
+  }
+  probe.onload = measured;
+  probe.src = href;
+  if (probe.complete) measured();             // already cached/decoded → apply now
+})();
+</script>

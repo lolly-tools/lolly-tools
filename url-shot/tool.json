@@ -1,0 +1,144 @@
+{
+  "id": "url-shot",
+  "name": "URL Screenshot",
+  "description": "Any web page, at any scroll-depth, with custom CSS",
+  "a11yLabel": "Screenshot of {{default url \"(no URL set)\"}}",
+  "version": "0.1.0",
+  "engineVersion": "^1.0.0",
+  "status": "experimental",
+  "category": "utility",
+  "tags": ["url", "screenshot", "capture", "web", "preview", "developer", "qa"],
+  "capabilities": ["capture"],
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "formats": ["png", "jpg", "webp", "pdf", "svg"],
+    "actions": ["download", "save"],
+    "convertPaths": false,
+    "preview": {
+      "format": "webp",
+      "auto": true
+    }
+  },
+  "inputs": [
+    {
+      "id": "url",
+      "label": "URL",
+      "type": "url",
+      "required": true,
+      "default": "https://www.suse.com",
+      "help": "The page to capture. Captured at export time in a real browser engine."
+    },
+    {
+      "id": "scrollDepth",
+      "label": "Scroll depth",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 1,
+      "step": 0.05,
+      "help": "How far down the page to scroll before capturing. 0 = top, 1 = bottom."
+    },
+    {
+      "id": "waitMs",
+      "label": "Settle delay (ms)",
+      "type": "number",
+      "default": 500,
+      "min": 0,
+      "max": 15000,
+      "step": 100,
+      "help": "Time to wait after load (and after scrolling) before the shot — lets fonts, images and animations settle."
+    },
+    {
+      "id": "css",
+      "label": "Custom CSS",
+      "type": "longtext",
+      "rows": 6,
+      "default": "",
+      "help": "CSS injected into the page before the screenshot — e.g. hide a cookie banner (.cookie-bar { display: none }) or restyle elements."
+    },
+    {
+      "id": "cropTop",
+      "label": "Crop top",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 0.9,
+      "step": 0.01,
+      "help": "Trim in from the top edge, as a 0–0.9 fraction of the height. Raster (png/jpg/svg) only."
+    },
+    {
+      "id": "cropRight",
+      "label": "Crop right",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 0.9,
+      "step": 0.01,
+      "help": "Trim in from the right edge, as a 0–0.9 fraction of the width."
+    },
+    {
+      "id": "cropBottom",
+      "label": "Crop bottom",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 0.9,
+      "step": 0.01,
+      "help": "Trim in from the bottom edge, as a 0–0.9 fraction of the height."
+    },
+    {
+      "id": "cropLeft",
+      "label": "Crop left",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 0.9,
+      "step": 0.01,
+      "help": "Trim in from the left edge, as a 0–0.9 fraction of the width."
+    },
+    {
+      "id": "recolor",
+      "label": "Recolor",
+      "type": "select",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "Original colours" },
+        { "value": "invert", "label": "Invert (keep hues)" },
+        { "value": "grayscale", "label": "Grayscale" },
+        { "value": "sepia", "label": "Sepia" },
+        { "value": "hue", "label": "Hue shift" },
+        { "value": "tint", "label": "Tint (swap to a colour)" }
+      ],
+      "help": "Recolour the whole page before capture. 'Hue shift' rotates every colour by the angle below; 'Tint' desaturates then washes it in the tint colour."
+    },
+    {
+      "id": "hue",
+      "label": "Hue angle",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 360,
+      "step": 5,
+      "help": "Degrees to rotate every colour by when Recolor is 'Hue shift'."
+    },
+    {
+      "id": "tintColor",
+      "label": "Tint colour",
+      "type": "color",
+      "default": "#0c322c",
+      "help": "The colour the page is washed in when Recolor is 'Tint'."
+    }
+  ],
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "beforeExport": true
+  }
+}

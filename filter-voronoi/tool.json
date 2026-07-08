@@ -1,0 +1,287 @@
+{
+  "id": "filter-voronoi",
+  "name": "Filter: Voronoi Cells",
+  "description": "Shatter any photo into a Voronoi cell mosaic — each cell filled with the nearest colour, as flat vector.",
+  "version": "1.0.0",
+  "engineVersion": "^1.3.0",
+  "status": "experimental",
+  "category": "designer",
+  "tags": ["photo", "filter", "voronoi", "cells", "mesh", "mosaic", "low-poly", "vector", "camera", "live", "on-device"],
+  "a11yLabel": "Voronoi cell mosaic of the photo",
+  "examples": [
+    { "label": "Fine mosaic", "values": { "cells": 1400 } },
+    { "label": "Chunky cells", "values": { "cells": 220 } },
+    { "label": "Stained glass", "values": { "cells": 600, "edgeWidth": 3, "edgeColor": "#0c322c" } },
+    { "label": "Relaxed & even", "values": { "cells": 900, "relax": 3, "jitter": 40 } },
+    { "label": "Crystalline", "values": { "cells": 500, "jitter": 100 } },
+    { "label": "Jade-tinted", "values": { "cells": 800, "saturation": 130, "treatmentColor": "#30ba78", "blendMode": "overlay", "treatmentIntensity": 35 } }
+  ],
+  "render": {
+    "width": 1080,
+    "height": 1080,
+    "formats": ["png", "svg", "pdf", "jpg", "webp", "gif", "apng", "webm", "mp4"],
+    "actions": ["copy", "download", "save"],
+    "video": { "wait": 0, "duration": 5 },
+    "convertPaths": false
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "onFrame": true,
+    "beforeExport": true
+  },
+  "inputs": [
+    {
+      "id": "image",
+      "label": "Photo",
+      "type": "asset",
+      "assetType": "image",
+      "allowUpload": true,
+      "help": "The image to break into cells. Any photo works; portraits and bold shapes read especially well."
+    },
+    {
+      "id": "cells",
+      "label": "Cells",
+      "type": "number",
+      "display": "slider",
+      "min": 10,
+      "max": 1000,
+      "step": 10,
+      "default": 60,
+      "help": "How many Voronoi cells to shatter the image into. More cells = finer, more faithful; fewer = bold, chunky facets."
+    },
+    {
+      "id": "jitter",
+      "label": "Irregularity",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 70,
+      "help": "0 = a regular grid of cells · 100 = fully scattered, organic cell shapes."
+    },
+    {
+      "id": "relax",
+      "label": "Relax (even out)",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "default": 1,
+      "help": "Lloyd relaxation — nudges cells toward equal size and rounder shapes. Higher is calmer and more uniform."
+    },
+    {
+      "id": "seed",
+      "label": "Seed (reroll)",
+      "type": "number",
+      "display": "slider",
+      "min": 1,
+      "max": 999,
+      "step": 1,
+      "default": 7,
+      "help": "Reroll the random cell layout. Same seed = same cells every time."
+    },
+    {
+      "id": "edgeWidth",
+      "label": "Edge width",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 10,
+      "step": 0.2,
+      "default": 0,
+      "help": "Mortar between cells. 0 = a seamless colour mesh; higher draws a gap in the edge colour for a stained-glass look."
+    },
+    {
+      "id": "edgeColor",
+      "label": "Edge colour",
+      "type": "color",
+      "default": "#0c322c",
+      "showIf": { "edgeWidth": true },
+      "help": "The colour of the gaps between cells (and the outer border)."
+    },
+    {
+      "id": "transparentBg",
+      "label": "Transparent background",
+      "type": "boolean",
+      "default": false,
+      "help": "Drop the background so any gaps / border are transparent (PNG / SVG)."
+    },
+    { "id": "contrast", "label": "Contrast", "section": "Colour", "type": "number", "display": "slider", "min": -100, "max": 100, "step": 1, "default": 0, "help": "Push the tones apart (higher) or flatten them together (lower) before the cells sample their colours." },
+    { "id": "hue", "label": "Hue", "section": "Colour", "type": "number", "display": "slider", "default": 0, "min": -180, "max": 180, "step": 1, "help": "Rotate every colour around the wheel." },
+    { "id": "saturation", "label": "Saturation", "section": "Colour", "type": "number", "display": "slider", "default": 100, "min": 0, "max": 200, "step": 1, "help": "0 = greyscale · 100 = original · 200 = vivid." },
+    { "id": "lightness", "label": "Lightness", "section": "Colour", "type": "number", "display": "slider", "default": 0, "min": -100, "max": 100, "step": 1, "help": "Lift toward white or sink toward black." },
+    { "id": "treatmentColor", "label": "Colour treatment", "section": "Colour", "type": "color", "default": "#30ba78", "help": "Blend a colour over the result. Leave empty for none." },
+    { "id": "blendMode", "label": "Blend mode", "section": "Colour", "type": "select", "default": "multiply", "options": [
+      { "value": "normal", "label": "Normal" }, { "value": "multiply", "label": "Multiply" }, { "value": "screen", "label": "Screen" },
+      { "value": "overlay", "label": "Overlay" }, { "value": "darken", "label": "Darken" }, { "value": "lighten", "label": "Lighten" },
+      { "value": "color-dodge", "label": "Colour dodge" }, { "value": "color-burn", "label": "Colour burn" },
+      { "value": "hard-light", "label": "Hard light" }, { "value": "soft-light", "label": "Soft light" },
+      { "value": "difference", "label": "Difference" }, { "value": "exclusion", "label": "Exclusion" },
+      { "value": "hue", "label": "Hue" }, { "value": "saturation", "label": "Saturation" }, { "value": "color", "label": "Colour" }, { "value": "luminosity", "label": "Luminosity" }
+    ], "help": "How the treatment colour mixes with the image." },
+    { "id": "treatmentIntensity", "label": "Intensity", "section": "Colour", "type": "number", "display": "slider", "default": 80, "min": 0, "max": 100, "step": 1, "help": "Opacity of the colour overlay." },
+    { "id": "width",  "label": "Width",  "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" },
+    { "id": "height", "label": "Height", "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" },
+    {
+      "id": "noFilter",
+      "label": "No filter (show raw)",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "Show the original photo or live camera feed untouched — handy for placing just a logo / lower-third over the raw footage."
+    },
+    {
+      "id": "showLogo",
+      "label": "SUSE logo overlay",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": true,
+      "help": "Overlay the SUSE logo on the result. Off by default."
+    },
+    {
+      "id": "logoPosition",
+      "label": "Logo position",
+      "section": "Overlay",
+      "type": "select",
+      "default": "top-right",
+      "showIf": { "showLogo": true },
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-right", "label": "Bottom right" },
+        { "value": "top", "label": "Top centre" },
+        { "value": "bottom", "label": "Bottom centre" },
+        { "value": "center", "label": "Centre" },
+        { "value": "full", "label": "Full (watermark)" }
+      ]
+    },
+    {
+      "id": "logoStyle",
+      "label": "Logo colour",
+      "section": "Overlay",
+      "type": "select",
+      "default": "white",
+      "showIf": { "showLogo": true },
+      "options": [
+        { "value": "white", "label": "White" },
+        { "value": "green", "label": "Green" },
+        { "value": "black", "label": "Black" }
+      ],
+      "help": "White and green read on dark or busy footage; black suits light backgrounds."
+    },
+    {
+      "id": "logoScale",
+      "label": "Logo size",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0.25,
+      "max": 3,
+      "step": 0.05,
+      "showIf": { "showLogo": true },
+      "help": "Scale the logo up or down."
+    },
+    {
+      "id": "lowerThird",
+      "label": "Lower-third name card",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "A gently-animated name card that draws in over the footage. Uses your profile name & headshot."
+    },
+    {
+      "id": "ltTheme",
+      "label": "Card style",
+      "section": "Overlay",
+      "type": "select",
+      "default": "bar",
+      "showIf": { "lowerThird": true },
+      "options": [
+        { "value": "bar", "label": "SUSE brand bar" },
+        { "value": "minimal", "label": "Minimal" },
+        { "value": "glass", "label": "Glass" }
+      ]
+    },
+    {
+      "id": "ltPosition",
+      "label": "Card position",
+      "section": "Overlay",
+      "type": "select",
+      "default": "left",
+      "showIf": { "lowerThird": true },
+      "options": [
+        { "value": "left", "label": "Bottom left" },
+        { "value": "center", "label": "Bottom centre" },
+        { "value": "right", "label": "Bottom right" }
+      ]
+    },
+    {
+      "id": "firstname",
+      "label": "First name",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "bindToProfile": "firstname",
+      "showIf": { "lowerThird": true }
+    },
+    {
+      "id": "lastname",
+      "label": "Last name",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "bindToProfile": "lastname",
+      "showIf": { "lowerThird": true }
+    },
+    {
+      "id": "title",
+      "label": "Role / subtitle",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "showIf": { "lowerThird": true },
+      "help": "Optional line below the name — e.g. a role or event."
+    },
+    {
+      "id": "nameWeight",
+      "label": "Name weight",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "showIf": { "lowerThird": true },
+      "help": "Font weight of the name line (100 Thin → 900 Black)."
+    },
+    {
+      "id": "subtitleWeight",
+      "label": "Subtitle weight",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "showIf": { "lowerThird": true },
+      "help": "Font weight of the role / subtitle line (100 Thin → 900 Black)."
+    },
+    {
+      "id": "ltHeadshot",
+      "label": "Headshot (optional)",
+      "section": "Overlay",
+      "type": "asset",
+      "assetType": "raster",
+      "allowUpload": true,
+      "showIf": { "lowerThird": true },
+      "help": "Defaults to your profile headshot. Pick or upload another to override."
+    }
+  ]
+}

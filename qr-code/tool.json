@@ -1,0 +1,86 @@
+{
+  "id": "qr-code",
+  "name": "QR Code Generator",
+  "description": "QR codes for any URL, with full color and style control.",
+  "a11yLabel": "QR code linking to {{default url \"(no URL set)\"}}",
+  "version": "2.0.0",
+  "engineVersion": "^1.0.0",
+  "status": "official",
+  "category": "everyone",
+  "tags": ["qr", "url", "link", "marketing"],
+  "featured": {
+    "order": 10,
+    "blurb": "QR codes in any brand colour"
+  },
+  "examples": [
+    { "label": "Inverted pine", "values": { "url": "https://www.suse.com/products", "color": "#ffffff", "background": "#0c322c", "join": true } },
+    { "label": "SUSE green", "values": { "url": "https://documentation.suse.com", "color": "#30ba78", "background": "#ffffff", "join": true } },
+    { "label": "Mint field", "values": { "url": "https://www.rancher.com", "color": "#0c322c", "background": "#90ebcd", "padding": 6 } },
+    { "label": "Persimmon on pine", "values": { "url": "https://events.suse.com", "color": "#fe7c3f", "background": "#0c322c", "ecl": "H" } },
+    { "label": "Ocean blue", "values": { "url": "https://www.suse.com/solutions/ai", "color": "#0a9bd6", "background": "#ffffff", "ecl": "Q", "join": true } },
+    { "label": "Amber edge", "values": { "url": "https://www.suse.com/products/edge", "color": "#fcb244", "background": "#0c322c", "padding": 8 } }
+  ],
+  "render": {
+    "width": 600,
+    "height": 600,
+    "formats": ["svg", "emf", "eps", "eps-cmyk", "dxf", "pdf", "pdf-cmyk", "cmyk-tiff", "tiff", "png", "jpeg", "webp", "avif" ],
+    "actions": ["copy", "download", "save"],
+    "transparentBg": false
+  },
+  "inputs": [
+    {
+      "id": "url",
+      "label": "URL",
+      "type": "url",
+      "required": true,
+      "default": "https://www.suse.com"
+    },
+    {
+      "id": "color",
+      "label": "Module color",
+      "type": "color",
+      "default": "#0c322c"
+    },
+    {
+      "id": "background",
+      "label": "Background",
+      "type": "color",
+      "default": "#ffffff"
+    },
+    {
+      "id": "ecl",
+      "label": "Error correction",
+      "type": "select",
+      "default": "M",
+      "options": [
+        { "value": "L", "label": "Low (7%)" },
+        { "value": "M", "label": "Medium (15%)" },
+        { "value": "Q", "label": "Quartile (25%)" },
+        { "value": "H", "label": "High (30%)" }
+      ]
+    },
+    {
+      "id": "padding",
+      "label": "Quiet zone",
+      "type": "number",
+      "display": "slider",
+      "default": 4,
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "help": "Modules of white space around the code. Minimum 4 recommended."
+    },
+    {
+      "id": "join",
+      "label": "Joined modules",
+      "type": "boolean",
+      "default": false,
+      "help": "Merge all modules into a single SVG path. Crisper at small sizes."
+    }
+  ],
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "beforeExport": true
+  }
+}

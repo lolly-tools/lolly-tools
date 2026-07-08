@@ -1,0 +1,67 @@
+<svg width="960" height="620" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 620" fill="none">
+  <!-- Committed feature image for url-shot (URL Screenshot). It's a `capture` tool, so
+       the headless preview generator can't screenshot a live page — this hand-authored
+       browser-window mock stands in. Transparent background so it "stands" on the
+       featured tile's studio floor like the other previews. -->
+  <defs>
+    <linearGradient id="us-hero" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#30ba78"/>
+      <stop offset="1" stop-color="#0c322c"/>
+    </linearGradient>
+    <clipPath id="us-win"><rect x="60" y="46" width="840" height="528" rx="22"/></clipPath>
+  </defs>
+
+  <!-- window body -->
+  <rect x="60" y="46" width="840" height="528" rx="22" fill="#ffffff"/>
+
+  <g clip-path="url(#us-win)">
+    <!-- chrome / top bar -->
+    <rect x="60" y="46" width="840" height="70" fill="#f1f5f3"/>
+    <circle cx="102" cy="81" r="9" fill="#fe7c3f"/>
+    <circle cx="134" cy="81" r="9" fill="#f0b429"/>
+    <circle cx="166" cy="81" r="9" fill="#30ba78"/>
+    <!-- address bar -->
+    <rect x="214" y="64" width="546" height="34" rx="17" fill="#ffffff" stroke="#dde6e2" stroke-width="2"/>
+    <circle cx="240" cy="81" r="7" fill="none" stroke="#8aa39a" stroke-width="2.4"/>
+    <rect x="260" y="75" width="150" height="12" rx="6" fill="#c3d2cc"/>
+
+    <!-- captured page: hero -->
+    <rect x="60" y="116" width="840" height="220" fill="url(#us-hero)"/>
+    <circle cx="792" cy="214" r="150" fill="#ffffff" opacity="0.06"/>
+    <path d="M690 250c-22-40 6-92 52-92 30 0 40 22 40 22" stroke="#ffffff" stroke-opacity="0.12" stroke-width="16" stroke-linecap="round" fill="none"/>
+    <rect x="104" y="168" width="392" height="30" rx="15" fill="#ffffff" opacity="0.95"/>
+    <rect x="104" y="214" width="286" height="18" rx="9" fill="#ffffff" opacity="0.62"/>
+    <rect x="104" y="266" width="168" height="46" rx="23" fill="#ffffff"/>
+    <rect x="130" y="284" width="92" height="10" rx="5" fill="#0c322c" opacity="0.85"/>
+
+    <!-- captured page: content cards -->
+    <g>
+      <rect x="104" y="368" width="238" height="176" rx="16" fill="#eef4f1"/>
+      <rect x="124" y="388" width="198" height="92" rx="10" fill="#30ba78" opacity="0.85"/>
+      <rect x="124" y="494" width="150" height="12" rx="6" fill="#c3d2cc"/>
+      <rect x="124" y="516" width="110" height="12" rx="6" fill="#d6e0db"/>
+    </g>
+    <g>
+      <rect x="361" y="368" width="238" height="176" rx="16" fill="#eef4f1"/>
+      <rect x="381" y="388" width="198" height="92" rx="10" fill="#90ebcd"/>
+      <rect x="381" y="494" width="150" height="12" rx="6" fill="#c3d2cc"/>
+      <rect x="381" y="516" width="110" height="12" rx="6" fill="#d6e0db"/>
+    </g>
+    <g>
+      <rect x="618" y="368" width="238" height="176" rx="16" fill="#eef4f1"/>
+      <rect x="638" y="388" width="198" height="92" rx="10" fill="#0c322c" opacity="0.8"/>
+      <rect x="638" y="494" width="150" height="12" rx="6" fill="#c3d2cc"/>
+      <rect x="638" y="516" width="110" height="12" rx="6" fill="#d6e0db"/>
+    </g>
+  </g>
+
+  <!-- window edge + a "shutter" capture badge in the corner -->
+  <rect x="60" y="46" width="840" height="528" rx="22" fill="none" stroke="#dde6e2" stroke-width="2"/>
+  <g transform="translate(846 528)">
+    <circle r="46" fill="#0c322c"/>
+    <circle r="20" fill="none" stroke="#30ba78" stroke-width="5"/>
+    <circle r="7" fill="#30ba78"/>
+    <path d="M-30-14v-10a6 6 0 0 1 6-6h6" stroke="#30ba78" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M30 14v10a6 6 0 0 1-6 6h-6" stroke="#30ba78" stroke-width="5" stroke-linecap="round" fill="none"/>
+  </g>
+</svg>

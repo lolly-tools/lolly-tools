@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="900" viewBox="0 0 900 900" role="img" aria-label="Street map preview">
+  <title>Street Map</title>
+  <style>
+    .flow{
+      stroke-dasharray:12 88;
+      animation:sm-flow 3.4s linear infinite;
+    }
+    @keyframes sm-flow{ from{stroke-dashoffset:100} to{stroke-dashoffset:0} }
+    .pulse{ transform-origin:710px 358px; animation:sm-pulse 2.8s ease-out infinite; }
+    .pulse.p2{ animation-delay:1.4s; }
+    @keyframes sm-pulse{
+      0%{ transform:scale(.35); opacity:.55 }
+      70%{ opacity:0 }
+      100%{ transform:scale(1); opacity:0 }
+    }
+    .bob{ transform-origin:710px 360px; animation:sm-bob 2.8s ease-in-out infinite; }
+    @keyframes sm-bob{ 0%,100%{transform:translateY(0)} 50%{transform:translateY(-7px)} }
+    @media (prefers-reduced-motion:reduce){
+      .flow{ display:none }
+      .pulse{ display:none }
+      .bob{ animation:none }
+    }
+  </style>
+
+  <!-- ground -->
+  <rect width="900" height="900" fill="#0c322c"/>
+
+  <!-- river corridor (darker channel + water line) -->
+  <path d="M-40,600 C160,540 320,708 500,640 C680,578 792,704 940,656"
+        fill="none" stroke="#08241f" stroke-width="70" stroke-linecap="round"/>
+  <path d="M-40,600 C160,540 320,708 500,640 C680,578 792,704 940,656"
+        fill="none" stroke="#2453ff" stroke-width="5" stroke-linecap="round" opacity="0.55"/>
+
+  <!-- minor streets -->
+  <g stroke="#90ebcd" stroke-width="3.2" stroke-linecap="round" opacity="0.38" fill="none">
+    <path d="M60,-20 L80,920"/>
+    <path d="M120,-20 L118,920"/>
+    <path d="M175,-20 L160,920"/>
+    <path d="M235,-20 L232,920"/>
+    <path d="M300,-20 L300,920"/>
+    <path d="M368,-20 L360,920"/>
+    <path d="M520,-20 L515,920"/>
+    <path d="M575,-20 L590,920"/>
+    <path d="M650,-20 L648,920"/>
+    <path d="M710,-20 L710,920"/>
+    <path d="M775,-20 L780,920"/>
+    <path d="M825,-20 L840,920"/>
+    <path d="M-20,80 L920,100"/>
+    <path d="M-20,150 L920,158"/>
+    <path d="M-20,215 L920,200"/>
+    <path d="M-20,278 L920,272"/>
+    <path d="M-20,340 L920,350"/>
+    <path d="M-20,405 L920,412"/>
+    <path d="M-20,540 L920,532"/>
+    <path d="M-20,615 L920,600"/>
+    <path d="M-20,680 L920,688"/>
+    <path d="M-20,745 L920,760"/>
+    <path d="M-20,810 L920,806"/>
+    <path d="M-20,860 L920,850"/>
+    <path d="M300,920 L760,-20"/>
+    <path d="M120,-20 L760,470"/>
+  </g>
+
+  <!-- major roads -->
+  <g stroke="#30ba78" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M450,-20 L430,920"/>
+    <path d="M-20,470 L920,470"/>
+    <path d="M-40,250 C240,330 620,410 940,660"/>
+  </g>
+
+  <!-- route -->
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M150,840 L150,610 L440,610 L440,470 L710,470 L710,352"
+          stroke="#fe7c3f" stroke-width="9"/>
+    <path d="M150,840 L150,610 L440,610 L440,470 L710,470 L710,352"
+          pathLength="100" class="flow" stroke="#ffe6d6" stroke-width="9"/>
+  </g>
+
+  <!-- origin dot -->
+  <circle cx="150" cy="840" r="12" fill="#0c322c" stroke="#fe7c3f" stroke-width="6"/>
+
+  <!-- destination pin + pulse -->
+  <circle class="pulse" cx="710" cy="358" r="30" fill="none" stroke="#90ebcd" stroke-width="4"/>
+  <circle class="pulse p2" cx="710" cy="358" r="30" fill="none" stroke="#90ebcd" stroke-width="4"/>
+  <g class="bob">
+    <path d="M710,362 C694,338 688,330 688,314 A22,22 0 1,1 732,314 C732,330 726,338 710,362 Z"
+          fill="#fe7c3f"/>
+    <circle cx="710" cy="313" r="8" fill="#0c322c"/>
+  </g>
+
+  <!-- label -->
+  <g font-family="'SUSE','SUSE Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif">
+    <rect x="48" y="792" width="266" height="60" rx="30" fill="#0c322c" opacity="0.86"/>
+    <rect x="48" y="792" width="266" height="60" rx="30" fill="none" stroke="#30ba78" stroke-width="2" opacity="0.7"/>
+    <circle cx="82" cy="822" r="7" fill="#fe7c3f"/>
+    <text x="102" y="830" font-size="26" font-weight="700" letter-spacing="1.5" fill="#efefef">NÜRNBERG</text>
+  </g>
+  <text x="820" y="76" text-anchor="middle" font-size="30" font-weight="700"
+        font-family="'SUSE','SUSE Sans',system-ui,sans-serif" fill="#90ebcd" opacity="0.85">N</text>
+  <path d="M820,44 L812,66 L820,60 L828,66 Z" fill="#fe7c3f" opacity="0.9"/>
+</svg>
