@@ -106,7 +106,7 @@
       "id": "bgColor",
       "label": "Background",
       "type": "color",
-      "default": "#ffffff",
+      "default": "{color.semantic.surface}",
       "help": "Fill behind the dots. Turn on “No BG” in the export options for a transparent background instead."
     },
     {

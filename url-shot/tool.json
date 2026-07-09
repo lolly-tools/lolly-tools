@@ -132,7 +132,7 @@
       "id": "tintColor",
       "label": "Tint colour",
       "type": "color",
-      "default": "#0c322c",
+      "default": "{color.semantic.primary}",
       "help": "The colour the page is washed in when Recolor is 'Tint'."
     }
   ],

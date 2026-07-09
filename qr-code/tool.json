@@ -45,7 +45,7 @@
       "id": "background",
       "label": "Background",
       "type": "color",
-      "default": "#ffffff"
+      "default": "{color.semantic.surface}"
     },
     {
       "id": "ecl",
