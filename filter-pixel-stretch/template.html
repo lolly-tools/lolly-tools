@@ -1,5 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" id="ps-svg"
-     viewBox="0 0 {{width}} {{height}}" width="{{width}}" height="{{height}}"
+<svg xmlns="http://www.w3.org/2000/svg" id="ps-svg" data-lolly-anno="{{logoPosition}} {{logoStyle}} {{ltTheme}} {{ltPosition}} {{asset ltHeadshot}}" viewBox="0 0 {{width}} {{height}}" width="{{width}}" height="{{height}}"
      preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block;">
   {{#if outSrc}}
   <!-- The whole composition (cover-framed photo + the pixel-stretch smear) is baked
@@ -15,8 +14,8 @@
        browser-cached → instant) as a base layer underneath while the new one decodes;
        the inline script drops it once the top image has loaded, leaving a single
        image in the settled DOM (and any export). -->
-  {{#if prevSrc}}<image href="{{prevSrc}}" data-ps-base="1" x="0" y="0" width="{{width}}" height="{{height}}" preserveAspectRatio="none"/>{{/if}}
-  <image href="{{outSrc}}" data-ps-top="1" x="0" y="0" width="{{width}}" height="{{height}}" preserveAspectRatio="none"/>
+  {{#if prevSrc}}<image data-lolly-anno="{{direction}} {{treatmentColor}} {{blendMode}}" href="{{prevSrc}}" data-ps-base="1" x="0" y="0" width="{{width}}" height="{{height}}" preserveAspectRatio="none"/>{{/if}}
+  <image data-lolly-anno="{{direction}} {{treatmentColor}} {{blendMode}}" href="{{outSrc}}" data-ps-top="1" x="0" y="0" width="{{width}}" height="{{height}}" preserveAspectRatio="none"/>
   {{else}}
   <rect width="{{width}}" height="{{height}}" fill="#0f0f12"/>
   <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
