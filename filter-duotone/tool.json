@@ -39,7 +39,7 @@
       "id": "colorFg",
       "label": "Shadow color",
       "type": "color",
-      "default": "#0c322c"
+      "default": "{color.semantic.text}"
     },
     {
       "id": "colorBg",

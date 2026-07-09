@@ -98,7 +98,7 @@
       "id": "fgColor",
       "label": "Dot colour",
       "type": "color",
-      "default": "#0c322c",
+      "default": "{color.semantic.text}",
       "showIf": { "colorSource": "solid" },
       "help": "Dot colour when Colour source is Solid."
     },

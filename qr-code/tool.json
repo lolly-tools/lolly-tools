@@ -33,13 +33,13 @@
       "label": "URL",
       "type": "url",
       "required": true,
-      "default": "https://www.suse.com"
+      "default": "https://lolly.tools"
     },
     {
       "id": "color",
       "label": "Module color",
       "type": "color",
-      "default": "#0c322c"
+      "default": "{color.semantic.text}"
     },
     {
       "id": "background",

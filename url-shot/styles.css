@@ -28,7 +28,7 @@
 /* Live-preview placeholder (capture only happens at export). */
 .url-shot .placeholder {
   text-align: center;
-  color: #30ba78;
+  color: var(--brand-primary, #30ba78);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   padding: 2rem;
 }
@@ -38,21 +38,21 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: #0c322c;
-  background: #efefef;
-  border: 1px solid #d6d6d6;
+  color: var(--brand-text, #0c322c);
+  background: var(--brand-surface, #efefef);
+  border: 1px solid var(--brand-edge, #d6d6d6);
   border-radius: 999px;
   padding: 0.25rem 0.75rem;
   margin-bottom: 1rem;
 }
 .url-shot .placeholder .hint {
   margin: 0 0 0.5rem;
-  color: #4a4a4a;
+  color: var(--brand-muted, #4a4a4a);
   font-size: 0.95rem;
 }
 .url-shot .placeholder .target {
   margin: 0 0 1.25rem;
-  color: #0c322c;
+  color: var(--brand-text, #0c322c);
   font-size: 1.1rem;
   font-weight: 600;
   word-break: break-all;
@@ -69,8 +69,8 @@
   cursor: pointer;
   font: inherit;
   font-weight: 600;
-  color: #fff;
-  background: #30ba78;
+  color: var(--brand-on-primary, #fff);
+  background: var(--brand-primary, #30ba78);
   border: none;
   border-radius: 999px;
   padding: 0.6rem 1.4rem;

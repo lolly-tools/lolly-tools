@@ -98,7 +98,7 @@
       "id": "edgeColor",
       "label": "Edge colour",
       "type": "color",
-      "default": "#0c322c",
+      "default": "{color.semantic.text}",
       "showIf": { "edgeWidth": true },
       "help": "The colour of the gaps between cells (and the outer border)."
     },
@@ -113,7 +113,7 @@
     { "id": "hue", "label": "Hue", "section": "Colour", "type": "number", "display": "slider", "default": 0, "min": -180, "max": 180, "step": 1, "help": "Rotate every colour around the wheel." },
     { "id": "saturation", "label": "Saturation", "section": "Colour", "type": "number", "display": "slider", "default": 100, "min": 0, "max": 200, "step": 1, "help": "0 = greyscale · 100 = original · 200 = vivid." },
     { "id": "lightness", "label": "Lightness", "section": "Colour", "type": "number", "display": "slider", "default": 0, "min": -100, "max": 100, "step": 1, "help": "Lift toward white or sink toward black." },
-    { "id": "treatmentColor", "label": "Colour treatment", "section": "Colour", "type": "color", "default": "#30ba78", "help": "Blend a colour over the result. Leave empty for none." },
+    { "id": "treatmentColor", "label": "Colour treatment", "section": "Colour", "type": "color", "default": "{color.semantic.primary}", "help": "Blend a colour over the result. Leave empty for none." },
     { "id": "blendMode", "label": "Blend mode", "section": "Colour", "type": "select", "default": "multiply", "options": [
       { "value": "normal", "label": "Normal" }, { "value": "multiply", "label": "Multiply" }, { "value": "screen", "label": "Screen" },
       { "value": "overlay", "label": "Overlay" }, { "value": "darken", "label": "Darken" }, { "value": "lighten", "label": "Lighten" },

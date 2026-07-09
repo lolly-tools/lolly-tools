@@ -143,14 +143,14 @@
       "id": "roadColor",
       "label": "Road color",
       "type": "color",
-      "default": "{color.ramp.pine.3}",
+      "default": "{color.semantic.primary}",
       "help": "Leave empty to use the theme's default."
     },
     {
       "id": "waterColor",
       "label": "Water color",
       "type": "color",
-      "default": "{color.ramp.pine.7}",
+      "default": "{color.semantic.secondary}",
       "help": "Leave empty to use the theme's default."
     },
     {

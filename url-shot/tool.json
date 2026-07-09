@@ -26,7 +26,7 @@
       "label": "URL",
       "type": "url",
       "required": true,
-      "default": "https://www.suse.com",
+      "default": "https://lolly.tools",
       "help": "The page to capture. Captured at export time in a real browser engine."
     },
     {
