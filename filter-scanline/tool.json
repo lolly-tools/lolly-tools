@@ -8,14 +8,6 @@
   "status": "official",
   "category": "designer",
   "tags": ["scanline", "crt", "pixel", "retro", "posterize", "halftone", "image", "filter", "effect"],
-  "examples": [
-    { "label": "Green CRT", "values": { "highlight": "#ffffff", "light": "#bff1ea", "mid": "#30ba78", "shade": "#0c322c", "shadow": "#000000", "lineSize": 32, "gapSize": 18 } },
-    { "label": "Pixel matrix", "values": { "highlight": "#ffffff", "light": "#bff1ea", "mid": "#30ba78", "shade": "#0c322c", "shadow": "#000000", "separatePixels": true, "lineSize": 28, "gapSize": 14 } },
-    { "label": "Ocean bars", "values": { "highlight": "#ffffff", "light": "#bff1ea", "mid": "#2453ff", "shade": "#192072", "shadow": "#000000", "lineSize": 36, "gapSize": 20 } },
-    { "label": "Amber terminal", "values": { "highlight": "#ffffff", "light": "#fab088", "mid": "#fe7c3f", "shade": "#0c322c", "shadow": "#000000", "lineSize": 32, "gapSize": 18 } },
-    { "label": "Solid posterise", "values": { "highlight": "#ffffff", "light": "#bff1ea", "mid": "#30ba78", "shade": "#0c322c", "shadow": "#000000", "everyLine": true, "lineSize": 24, "gapSize": 0 } },
-    { "label": "Persimmon on ink", "values": { "highlight": "#ffffff", "light": "#fe7c3f", "mid": "#2453ff", "shade": "#192072", "shadow": "#000000", "background": "#0c322c", "separatePixels": true, "lineSize": 30, "gapSize": 16 } }
-  ],
   "render": {
     "width": 1000,
     "height": 1000,

@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: SUSE, ui-sans-serif, sans-serif;
+  font-family: var(--font-brand, SUSE, ui-sans-serif, sans-serif);
 }
 
 .ct-canvas {
@@ -26,7 +26,7 @@
 
 .ct-track {
   fill: none;
-  stroke: rgba(48, 186, 120, 0.14);
+  stroke: color-mix(in srgb, var(--brand-primary, #30ba78) 14%, transparent);
   stroke-width: 10;
 }
 
@@ -80,7 +80,7 @@
 .ct-input {
   background: transparent;
   border: none;
-  border-bottom: 2px solid rgba(48, 186, 120, 0.35);
+  border-bottom: 2px solid color-mix(in srgb, var(--brand-primary, #30ba78) 35%, transparent);
   color: #fff;
   font-family: inherit;
   font-size: clamp(48px, 13vmin, 96px);
@@ -94,7 +94,7 @@
   padding-bottom: 4px;
   caret-color: var(--brand-primary, #30ba78);
 }
-.ct-input::selection { background: rgba(48, 186, 120, 0.3); }
+.ct-input::selection { background: color-mix(in srgb, var(--brand-primary, #30ba78) 30%, transparent); }
 .ct-input:focus { border-bottom-color: var(--brand-primary, #30ba78); }
 
 /* ── Buttons ──────────────────────────────────────────── */

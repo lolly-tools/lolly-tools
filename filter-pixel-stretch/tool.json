@@ -8,14 +8,6 @@
   "status": "official",
   "category": "designer",
   "tags": ["photo", "filter", "pixel", "stretch", "smear", "glitch", "distort", "effect"],
-  "examples": [
-    { "label": "Smear right", "values": { "direction": "right", "threshold": 42, "spread": 100 } },
-    { "label": "Smear left", "values": { "direction": "left", "threshold": 55, "spread": 100 } },
-    { "label": "Pull down", "values": { "direction": "down", "threshold": 40, "spread": 100 } },
-    { "label": "Jade-graded stretch", "values": { "direction": "down", "threshold": 50, "spread": 100, "saturation": 140, "treatmentColor": "#30ba78", "blendMode": "overlay", "treatmentIntensity": 30 } },
-    { "label": "Ember pull-up", "values": { "direction": "up", "threshold": 46, "spread": 100, "saturation": 120, "treatmentColor": "#fe7c3f", "blendMode": "overlay", "treatmentIntensity": 28 } },
-    { "label": "Cobalt screen smear", "values": { "direction": "right", "threshold": 60, "spread": 85, "treatmentColor": "#192072", "blendMode": "screen", "treatmentIntensity": 24 } }
-  ],
   "render": {
     "width": 1080,
     "height": 1080,

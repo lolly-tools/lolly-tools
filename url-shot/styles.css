@@ -77,13 +77,13 @@
   box-shadow: 0 1px 3px rgba(12, 50, 44, 0.25);
   transition: background 0.15s ease, transform 0.05s ease;
 }
-.url-shot .preview-btn:hover { background: #2aa76b; }
+.url-shot .preview-btn:hover { background: color-mix(in oklab, var(--brand-primary, #30ba78), black 12%); }
 .url-shot .preview-btn:active { transform: translateY(1px); }
 
 /* Busy: page is loading/settling in the capture engine. */
 .url-shot .preview-btn.is-busy {
   cursor: progress;
-  background: #6fcfa1;
+  background: color-mix(in oklab, var(--brand-primary, #30ba78), white 30%);
   padding-left: 2.4rem;
   position: relative;
 }

@@ -12,14 +12,6 @@
     "order": 10,
     "blurb": "QR codes in any brand colour"
   },
-  "examples": [
-    { "label": "Inverted pine", "values": { "url": "https://www.suse.com/products", "color": "#ffffff", "background": "#0c322c", "join": true } },
-    { "label": "SUSE green", "values": { "url": "https://documentation.suse.com", "color": "#30ba78", "background": "#ffffff", "join": true } },
-    { "label": "Mint field", "values": { "url": "https://www.rancher.com", "color": "#0c322c", "background": "#90ebcd", "padding": 6 } },
-    { "label": "Persimmon on pine", "values": { "url": "https://events.suse.com", "color": "#fe7c3f", "background": "#0c322c", "ecl": "H" } },
-    { "label": "Ocean blue", "values": { "url": "https://www.suse.com/solutions/ai", "color": "#0a9bd6", "background": "#ffffff", "ecl": "Q", "join": true } },
-    { "label": "Amber edge", "values": { "url": "https://www.suse.com/products/edge", "color": "#fcb244", "background": "#0c322c", "padding": 8 } }
-  ],
   "render": {
     "width": 600,
     "height": 600,

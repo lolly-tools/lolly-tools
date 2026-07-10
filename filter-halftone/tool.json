@@ -8,14 +8,6 @@
   "status": "official",
   "category": "designer",
   "tags": ["halftone", "dots", "photo", "filter", "effect", "newspaper", "comic", "vector", "image"],
-  "examples": [
-    { "label": "Fine green dots", "values": { "colorSource": "solid", "fgColor": "#30ba78", "bgColor": "#ffffff", "gridSize": 18, "shape": "circle" } },
-    { "label": "Bold ink squares", "values": { "colorSource": "solid", "fgColor": "#0c322c", "bgColor": "#ffffff", "gridSize": 28, "dotScale": 1.4, "shape": "square" } },
-    { "label": "Comic diamonds", "values": { "colorSource": "solid", "fgColor": "#0a9bd6", "bgColor": "#ffffff", "gridSize": 22, "shape": "diamond" } },
-    { "label": "Full-colour screen", "values": { "colorSource": "image", "colorLevels": "0", "gridSize": 20, "shape": "circle" } },
-    { "label": "Inverted mint on ink", "values": { "colorSource": "solid", "fgColor": "#2fb9a0", "bgColor": "#0c322c", "gridSize": 22, "invert": true } },
-    { "label": "Coarse amber", "values": { "colorSource": "solid", "fgColor": "#fcb244", "bgColor": "#0c322c", "gridSize": 34, "dotScale": 1.6, "shape": "circle" } }
-  ],
   "render": {
     "width": 1000,
     "height": 1000,

@@ -75,7 +75,7 @@
   width: 100%;
   min-height: 100%;
   padding: 56px clamp(16px, 4vw, 48px) 104px;
-  font-family: "SUSE", system-ui, sans-serif;
+  font-family: var(--font-brand, "SUSE", system-ui, sans-serif);
   color: hsl(var(--tt-fg));
   background: hsl(var(--tt-bg));
   display: flex;
@@ -289,7 +289,7 @@
 .tt-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: hsl(var(--tt-muted) / .85); }
 .tt-area {
   flex: 1; width: 100%; min-height: 280px; resize: none;
-  font-family: "SUSE Mono", ui-monospace, monospace; font-size: 13px; line-height: 1.55;
+  font-family: var(--font-mono, "SUSE Mono", ui-monospace, monospace); font-size: 13px; line-height: 1.55;
   padding: 14px; border: 1px solid hsl(var(--tt-bd)); border-radius: 12px; background: hsl(var(--tt-card)); color: hsl(var(--tt-fg));
   white-space: pre; overflow: auto; tab-size: 2;
 }
@@ -309,7 +309,7 @@
 .tt-copy:disabled { opacity: .4; cursor: not-allowed; box-shadow: none; }
 .tt-copy.is-done { background: hsl(var(--tt-brand) / .8); }
 
-.tt-status { font-size: 12.5px; color: hsl(var(--tt-muted)); min-height: 18px; font-family: "SUSE Mono", ui-monospace, monospace; }
+.tt-status { font-size: 12.5px; color: hsl(var(--tt-muted)); min-height: 18px; font-family: var(--font-mono, "SUSE Mono", ui-monospace, monospace); }
 .tt-status.ok { color: hsl(var(--tt-brand)); }
 .tt-status.warn { color: color-mix(in oklab, hsl(var(--tt-warn)), hsl(var(--tt-fg)) 30%); }
 .tt-status .tt-pill { display: inline-block; margin-right: 10px; }

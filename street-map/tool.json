@@ -8,14 +8,6 @@
   "status": "official",
   "category": "designer",
   "tags": ["map", "street", "city", "location", "vector", "offline", "osm"],
-  "examples": [
-    { "label": "Nuremberg · light · pine", "values": { "city": "nuremberg", "theme": "light", "roadColor": "#30ba78", "waterColor": "#0a9bd6", "background": "#ffffff" } },
-    { "label": "Paris · dark · teal", "values": { "city": "paris", "theme": "dark", "roadColor": "#2fb9a0", "waterColor": "#0a9bd6", "background": "#0c322c" } },
-    { "label": "Amsterdam · light · canals", "values": { "city": "amsterdam", "theme": "light", "roadColor": "#0c322c", "waterColor": "#0a9bd6", "waterWeight": 12, "showWater": true, "background": "#eafaf1" } },
-    { "label": "New York · dark · amber grid", "values": { "city": "newyork", "theme": "dark", "roadColor": "#fcb244", "waterColor": "#2fb9a0", "background": "#0c322c" } },
-    { "label": "Tokyo · light · cobalt", "values": { "city": "tokyo", "theme": "light", "roadColor": "#2453ff", "showWater": false, "background": "#ffffff" } },
-    { "label": "San Francisco · dark · teal", "values": { "city": "sanfrancisco", "theme": "dark", "roadColor": "#2fb9a0", "waterColor": "#0a9bd6", "majorRoadWeight": 8, "minorRoadWeight": 4, "background": "#0c322c" } }
-  ],
   "render": {
     "width": 900,
     "height": 900,

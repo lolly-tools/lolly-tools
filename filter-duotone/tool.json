@@ -7,14 +7,6 @@
   "status": "official",
   "category": "designer",
   "tags": ["photo", "filter", "duotone", "color", "effect"],
-  "examples": [
-    { "label": "Pine & peach", "values": { "colorFg": "#0c322c", "colorBg": "#fcb244" } },
-    { "label": "Jade duotone", "values": { "colorFg": "#0c322c", "colorBg": "#30ba78" } },
-    { "label": "Ocean duotone", "values": { "colorFg": "#000000", "colorBg": "#0a9bd6" } },
-    { "label": "Teal & mint", "values": { "colorFg": "#0c322c", "colorBg": "#2fb9a0" } },
-    { "label": "Electric duotone", "values": { "colorFg": "#000000", "colorBg": "#2453ff" } },
-    { "label": "Sunset duotone", "values": { "colorFg": "#0c322c", "colorBg": "#fe7c3f" } }
-  ],
   "render": {
     "width": 1080,
     "height": 1080,

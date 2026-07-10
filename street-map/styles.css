@@ -7,7 +7,7 @@
   height: 100%;
   position: relative;
   overflow: hidden;
-  font-family: SUSE, ui-sans-serif, sans-serif;
+  font-family: var(--font-brand, SUSE, ui-sans-serif, sans-serif);
   --sm-bg: #f5f2ec;
 }
 .sm-root.sm-dark  { --sm-bg: #10131a; }
