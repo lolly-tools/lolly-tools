@@ -39,22 +39,6 @@
     if (!svg || !dotsBox || dotsBox.dataset.mgWired) return;
     dotsBox.dataset.mgWired = '1';
 
-    /* Tool styles.css only reaches the canvas, so the sidebar tweaks ride in a
-       head-injected style scoped by :has(.mg-wrap) — inert on every other tool
-       (and after unmount) because the selector stops matching. Compact X/Y
-       fields, and tuck each position row up against its own colour row so the
-       pair reads as one unit. */
-    if (!document.getElementById('mg-side-style')) {
-      var st = document.createElement('style');
-      st.id = 'mg-side-style';
-      /* The extra classes + [data-vec-field] out-rank the shell's generic
-         `.input-row input:not(...)` rule (padding: 16px 14px 16px). */
-      st.textContent =
-        '.tool-layout:has(.mg-wrap) .input-row .vector-input input.vec-num[data-vec-field]{padding:2px 14px}' +
-        '.tool-layout:has(.mg-wrap) .input-row:has(.vector-input[data-input-id^="pos"]){margin-top:-8px;margin-bottom:16px}';
-      document.head.appendChild(st);
-    }
-
     var pts;
     try { pts = JSON.parse(dotsBox.getAttribute('data-dots') || '[]'); } catch (e) { pts = []; }
     if (!Array.isArray(pts)) return;
