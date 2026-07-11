@@ -17,6 +17,24 @@
   },
   "inputs": [
     {
+      "id": "blend",
+      "label": "Blend mode",
+      "type": "select",
+      "default": "hard-light",
+      "help": "How the colour points mix into each other.",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "multiply", "label": "Multiply" },
+        { "value": "screen", "label": "Screen" },
+        { "value": "overlay", "label": "Overlay" },
+        { "value": "soft-light", "label": "Soft light" },
+        { "value": "hard-light", "label": "Hard light" },
+        { "value": "lighten", "label": "Lighten" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "luminosity", "label": "Luminosity" }
+      ]
+    },
+    {
       "id": "count",
       "label": "Colour points",
       "type": "number",
@@ -126,28 +144,9 @@
       ]
     },
     {
-      "id": "blend",
-      "label": "Blend mode",
-      "section": "Texture",
-      "type": "select",
-      "default": "hard-light",
-      "help": "How the colour points mix into each other.",
-      "options": [
-        { "value": "normal", "label": "Normal" },
-        { "value": "multiply", "label": "Multiply" },
-        { "value": "screen", "label": "Screen" },
-        { "value": "overlay", "label": "Overlay" },
-        { "value": "soft-light", "label": "Soft light" },
-        { "value": "hard-light", "label": "Hard light" },
-        { "value": "lighten", "label": "Lighten" },
-        { "value": "darken", "label": "Darken" },
-        { "value": "luminosity", "label": "Luminosity" }
-      ]
-    },
-    {
       "id": "spread",
       "label": "Spread",
-      "section": "Texture",
+      "section": "Texture & Motion",
       "type": "number",
       "display": "slider",
       "default": 75,
@@ -159,7 +158,7 @@
     {
       "id": "blur",
       "label": "Extra blur",
-      "section": "Texture",
+      "section": "Texture & Motion",
       "type": "number",
       "display": "slider",
       "default": 6,
@@ -171,7 +170,7 @@
     {
       "id": "grain",
       "label": "Grain",
-      "section": "Texture",
+      "section": "Texture & Motion",
       "type": "number",
       "display": "slider",
       "default": 50,
@@ -182,7 +181,7 @@
     {
       "id": "grainBlend",
       "label": "Grain blend",
-      "section": "Texture",
+      "section": "Texture & Motion",
       "type": "select",
       "default": "soft-light",
       "options": [
@@ -194,15 +193,28 @@
     {
       "id": "animate",
       "label": "Drift",
-      "section": "Motion",
+      "section": "Texture & Motion",
       "type": "boolean",
       "default": false,
       "help": "Slow, looping drift of the colour points — export as WebM/MP4 for a live background."
     },
     {
+      "id": "distance",
+      "label": "Float distance",
+      "section": "Texture & Motion",
+      "type": "number",
+      "display": "slider",
+      "default": 100,
+      "min": 0,
+      "max": 200,
+      "step": 5,
+      "showIf": { "animate": true },
+      "help": "How far the colour points drift from their set position. 100% is the default orbit size; 0% freezes them in place."
+    },
+    {
       "id": "speed",
-      "label": "Loop length",
-      "section": "Motion",
+      "label": "Float speed",
+      "section": "Texture & Motion",
       "type": "number",
       "display": "slider",
       "default": 12,
@@ -210,7 +222,7 @@
       "max": 24,
       "step": 1,
       "showIf": { "animate": true },
-      "help": "Seconds per drift loop. Video exports capture one loop where the frame budget allows (long loops are shortened at 60 fps)."
+      "help": "Seconds per drift loop — higher is slower. Video exports capture one loop where the frame budget allows (long loops are shortened at 60 fps)."
     }
   ],
   "hooks": {

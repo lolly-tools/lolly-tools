@@ -64,15 +64,17 @@ function _filterDef(blur, grain, blend) {
   return f + '</filter>';
 }
 
-function _animCss(count, speed) {
+function _animCss(count, speed, distancePct) {
   var css = '';
   var STEPS = 8; // waypoints per orbit — smooth with linear timing
+  var distanceScale = distancePct / 100;
   for (var i = 0; i < count; i++) {
     // Orbit rotated by the golden angle so no two blobs ever drift the same
     // way; alternating spin direction; amplitude (max displacement, = the
-    // orbit diameter) spans 3–10% of the frame per blob.
+    // orbit diameter) spans 3–10% of the frame per blob at the default 100%
+    // float distance — the "distance" input scales that range up or down.
     var theta = (i * GOLDEN + 23) * Math.PI / 180;
-    var ampPct = 3 + ((i * 53) % 71) / 10;
+    var ampPct = (3 + ((i * 53) % 71) / 10) * distanceScale;
     var dir = i % 2 === 0 ? 1 : -1;
     var rx = ampPct / 200 * VBW;
     var ry = ampPct / 200 * VBH;
@@ -106,6 +108,7 @@ function _animCss(count, speed) {
 // drifts and its loop length (mirrors digi-ad's _animated/_totalDuration).
 var _animate = false;
 var _speed = 12;
+var _distance = 100;
 
 var _memoKey = null;
 var _memoResult = null;
@@ -126,8 +129,9 @@ function compute(model) {
   var blobBlend = BLOB_BLENDS.indexOf(a.blend) >= 0 ? a.blend : 'normal';
   _animate = Boolean(a.animate);
   _speed = _clamp(Math.round(_num(a.speed, 12)), 4, 24);
+  _distance = _clamp(Math.round(_num(a.distance, 100)), 0, 200);
 
-  var key = JSON.stringify([pts, spread, blur, grain, blend, blobBlend, _animate, _speed]);
+  var key = JSON.stringify([pts, spread, blur, grain, blend, blobBlend, _animate, _speed, _distance]);
   if (key === _memoKey) return _memoResult;
 
   var R = spread / 100 * VBH;
@@ -155,7 +159,7 @@ function compute(model) {
   // preserveAspectRatio="none" keeps every point visible at any export size.
   var svg = '<svg class="mg-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + VBW + ' ' + VBH + '"'
     + ' width="100%" height="100%" preserveAspectRatio="none">'
-    + (_animate ? _animCss(count, _speed) : '')
+    + (_animate ? _animCss(count, _speed, _distance) : '')
     + defs
     + '<g' + (filter ? ' filter="url(#mg-f)"' : '') + '>'
     + '<rect x="-400" y="-500" width="2400" height="1900" fill="' + pts[0].color + '"/>'
