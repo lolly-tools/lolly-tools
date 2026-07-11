@@ -1,4 +1,154 @@
 {
   "name": "Bộ Lọc: Phân Cấp Màu Bitmap",
-  "description": "Chuyển bất kỳ ảnh nào thành các lớp màu vector phẳng, kiểu tách màu in lụa."
+  "description": "Chuyển bất kỳ ảnh nào thành các lớp màu vector phẳng, kiểu tách màu in lụa.",
+  "a11yLabel": "Vector phân cấp {{steps}} màu của ảnh",
+
+  "inputs.photo.label": "Ảnh",
+  "inputs.photo.help": "Ảnh cần phân cấp màu. Ảnh chân dung và ảnh có độ tương phản cao sẽ dò nét tốt nhất.",
+
+  "inputs.steps.label": "Số cấp màu",
+  "inputs.steps.help": "Số lượng lớp tách tông màu cần dò. Thay đổi giá trị này sẽ lấy mẫu lại màu từ ảnh.",
+
+  "inputs.threshold.label": "Ngưỡng (1 màu mực)",
+  "inputs.threshold.help": "Gộp ảnh thành một màu mực duy nhất trên nền giấy — một ranh giới rõ giữa sáng và tối thay vì các lớp tách dần dần. Kết hợp với Nền trong suốt để có mực trên nền trống.",
+
+  "inputs.thresholdLevel.label": "Mức ngưỡng",
+  "inputs.thresholdLevel.help": "Vị trí ranh giới giữa mực và giấy. Giá trị cao hơn sẽ biến nhiều phần ảnh thành mực hơn; giá trị thấp hơn chỉ giữ lại các vùng bóng tối sâu nhất.",
+
+  "inputs.brightness.label": "Độ sáng",
+  "inputs.brightness.help": "Làm sáng hoặc tối ảnh trước khi tách màu — dịch chuyển mọi tông màu lên hoặc xuống, chuyển chi tiết giữa các lớp sáng và tối.",
+
+  "inputs.quality.label": "Chất lượng",
+  "inputs.quality.help": "Độ phân giải dò nét — giá trị cao hơn lấy mẫu ảnh theo lưới mịn hơn và ghi lại nhiều chi tiết hơn. Trên 100 sẽ cho kết quả dò rất mịn nhưng chậm hơn.",
+
+  "inputs.smoothing.label": "Làm mượt",
+  "inputs.smoothing.help": "Mức độ đường viền được dò bo tròn thành đường cong. Thấp giữ các cạnh sắc nét, chính xác; cao biến chúng thành các đường cong Bézier mượt mà.",
+
+  "inputs.invert.label": "Đảo tông màu",
+  "inputs.invert.help": "Dò nét từ tông màu đảo ngược — các vùng sáng của ảnh trở thành lớp tách ở tiền cảnh (âm bản tông màu). Hữu ích khi chủ thể sáng nằm trên nền tối.",
+
+  "inputs.colors.label": "Màu các lớp tách",
+  "inputs.colors.help": "Mỗi mẫu màu tương ứng một tông, tối nhất trước và sáng nhất (giấy) sau cùng. Tự động lấy mẫu từ ảnh của bạn — chỉnh sửa bất kỳ mẫu màu nào để đổi màu lớp tách đó.",
+  "inputs.colors.fields.color.label": "Màu",
+
+  "inputs.resample.label": "Lấy mẫu lại màu từ ảnh",
+  "inputs.resample.help": "Bỏ qua các chỉnh sửa thủ công và tính lại toàn bộ màu các lớp tách từ ảnh hiện tại.",
+
+  "inputs.transparentBg.label": "Nền trong suốt",
+  "inputs.transparentBg.help": "Bỏ lớp tách 'giấy' sáng nhất để nền trở nên trong suốt (PNG / SVG).",
+
+  "inputs.contrast.label": "Độ tương phản",
+  "inputs.contrast.section": "Màu sắc",
+  "inputs.contrast.help": "Đẩy các tông màu tách xa nhau (cao hơn) hoặc làm phẳng chúng lại gần nhau (thấp hơn) trước khi tách màu. Độ tương phản cao hơn cho ra các lớp tách đậm nét, mang tính đồ họa hơn.",
+
+  "inputs.hue.label": "Sắc độ",
+  "inputs.hue.section": "Màu sắc",
+  "inputs.hue.help": "Xoay mọi màu quanh vòng thuần sắc.",
+
+  "inputs.saturation.label": "Độ bão hòa",
+  "inputs.saturation.section": "Màu sắc",
+  "inputs.saturation.help": "0 = thang xám · 100 = nguyên bản · 200 = rực rỡ.",
+
+  "inputs.lightness.label": "Độ sáng tối",
+  "inputs.lightness.section": "Màu sắc",
+  "inputs.lightness.help": "Nâng về phía trắng hoặc hạ về phía đen.",
+
+  "inputs.treatmentColor.label": "Xử lý màu",
+  "inputs.treatmentColor.section": "Màu sắc",
+  "inputs.treatmentColor.help": "Pha trộn một màu lên kết quả. Để trống nếu không muốn dùng.",
+
+  "inputs.blendMode.label": "Chế độ hòa trộn",
+  "inputs.blendMode.section": "Màu sắc",
+  "inputs.blendMode.help": "Cách màu xử lý hòa trộn với ảnh.",
+  "inputs.blendMode.options.normal": "Bình thường",
+  "inputs.blendMode.options.multiply": "Nhân",
+  "inputs.blendMode.options.screen": "Màn hình",
+  "inputs.blendMode.options.overlay": "Phủ",
+  "inputs.blendMode.options.darken": "Làm tối",
+  "inputs.blendMode.options.lighten": "Làm sáng",
+  "inputs.blendMode.options.color-dodge": "Tránh màu",
+  "inputs.blendMode.options.color-burn": "Cháy màu",
+  "inputs.blendMode.options.hard-light": "Ánh sáng gắt",
+  "inputs.blendMode.options.soft-light": "Ánh sáng dịu",
+  "inputs.blendMode.options.difference": "Khác biệt",
+  "inputs.blendMode.options.exclusion": "Loại trừ",
+  "inputs.blendMode.options.hue": "Sắc độ",
+  "inputs.blendMode.options.saturation": "Độ bão hòa",
+  "inputs.blendMode.options.color": "Màu",
+  "inputs.blendMode.options.luminosity": "Độ chói",
+
+  "inputs.treatmentIntensity.label": "Cường độ",
+  "inputs.treatmentIntensity.section": "Màu sắc",
+  "inputs.treatmentIntensity.help": "Độ mờ đục của lớp phủ màu.",
+
+  "inputs.width.label": "Chiều rộng",
+  "inputs.height.label": "Chiều cao",
+
+  "inputs.noFilter.label": "Không lọc (hiện ảnh gốc)",
+  "inputs.noFilter.section": "Lớp phủ",
+  "inputs.noFilter.help": "Hiện ảnh gốc hoặc luồng camera trực tiếp không qua chỉnh sửa — tiện khi chỉ cần đặt logo / thanh tên lên cảnh quay gốc.",
+
+  "inputs.showLogo.label": "Lớp phủ logo SUSE",
+  "inputs.showLogo.section": "Lớp phủ",
+  "inputs.showLogo.help": "Phủ logo SUSE lên kết quả. Mặc định tắt.",
+
+  "inputs.logoPosition.label": "Vị trí logo",
+  "inputs.logoPosition.section": "Lớp phủ",
+  "inputs.logoPosition.options.top-left": "Trên cùng bên trái",
+  "inputs.logoPosition.options.top-right": "Trên cùng bên phải",
+  "inputs.logoPosition.options.bottom-left": "Dưới cùng bên trái",
+  "inputs.logoPosition.options.bottom-right": "Dưới cùng bên phải",
+  "inputs.logoPosition.options.top": "Giữa trên",
+  "inputs.logoPosition.options.bottom": "Giữa dưới",
+  "inputs.logoPosition.options.center": "Chính giữa",
+  "inputs.logoPosition.options.full": "Toàn màn hình (hình mờ)",
+
+  "inputs.logoStyle.label": "Màu logo",
+  "inputs.logoStyle.section": "Lớp phủ",
+  "inputs.logoStyle.help": "Trắng và xanh lá dễ nhìn trên cảnh quay tối hoặc nhiều chi tiết; đen phù hợp với nền sáng.",
+  "inputs.logoStyle.options.white": "Trắng",
+  "inputs.logoStyle.options.green": "Xanh lá",
+  "inputs.logoStyle.options.black": "Đen",
+
+  "inputs.logoScale.label": "Kích thước logo",
+  "inputs.logoScale.section": "Lớp phủ",
+  "inputs.logoScale.help": "Phóng to hoặc thu nhỏ logo.",
+
+  "inputs.lowerThird.label": "Thẻ tên thanh dưới",
+  "inputs.lowerThird.section": "Lớp phủ",
+  "inputs.lowerThird.help": "Một thẻ tên có hiệu ứng chuyển động nhẹ nhàng xuất hiện trên cảnh quay. Sử dụng tên & ảnh chân dung từ hồ sơ của bạn.",
+
+  "inputs.ltTheme.label": "Kiểu thẻ",
+  "inputs.ltTheme.section": "Lớp phủ",
+  "inputs.ltTheme.options.bar": "Thanh thương hiệu SUSE",
+  "inputs.ltTheme.options.minimal": "Tối giản",
+  "inputs.ltTheme.options.glass": "Kính mờ",
+
+  "inputs.ltPosition.label": "Vị trí thẻ",
+  "inputs.ltPosition.section": "Lớp phủ",
+  "inputs.ltPosition.options.left": "Dưới cùng bên trái",
+  "inputs.ltPosition.options.center": "Giữa dưới",
+  "inputs.ltPosition.options.right": "Dưới cùng bên phải",
+
+  "inputs.firstname.label": "Tên",
+  "inputs.firstname.section": "Lớp phủ",
+
+  "inputs.lastname.label": "Họ",
+  "inputs.lastname.section": "Lớp phủ",
+
+  "inputs.title.label": "Chức danh / phụ đề",
+  "inputs.title.section": "Lớp phủ",
+  "inputs.title.help": "Dòng tùy chọn bên dưới tên — ví dụ chức danh hoặc sự kiện.",
+
+  "inputs.nameWeight.label": "Độ đậm tên",
+  "inputs.nameWeight.section": "Lớp phủ",
+  "inputs.nameWeight.help": "Độ đậm phông chữ của dòng tên (100 Mảnh → 900 Đậm nhất).",
+
+  "inputs.subtitleWeight.label": "Độ đậm phụ đề",
+  "inputs.subtitleWeight.section": "Lớp phủ",
+  "inputs.subtitleWeight.help": "Độ đậm phông chữ của dòng chức danh / phụ đề (100 Mảnh → 900 Đậm nhất).",
+
+  "inputs.ltHeadshot.label": "Ảnh chân dung (tùy chọn)",
+  "inputs.ltHeadshot.section": "Lớp phủ",
+  "inputs.ltHeadshot.help": "Mặc định dùng ảnh chân dung từ hồ sơ của bạn. Chọn hoặc tải lên ảnh khác để thay thế."
 }

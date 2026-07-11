@@ -1,4 +1,144 @@
 {
   "name": "Penapis: Sel Voronoi",
-  "description": "Pecahkan sebarang foto menjadi mozek sel Voronoi — setiap sel diisi dengan warna terdekat, dalam bentuk vektor rata."
+  "description": "Pecahkan sebarang foto menjadi mozek sel Voronoi — setiap sel diisi dengan warna terdekat, dalam bentuk vektor rata.",
+  "a11yLabel": "Mozek sel Voronoi bagi foto",
+
+  "inputs.image.label": "Foto",
+  "inputs.image.help": "Imej yang akan dipecahkan menjadi sel. Sebarang foto boleh digunakan; potret dan bentuk berani kelihatan amat baik.",
+
+  "inputs.cells.label": "Sel",
+  "inputs.cells.help": "Berapa banyak sel Voronoi untuk memecahkan imej. Lebih banyak sel = lebih halus dan setia; lebih sedikit = facet berani dan tebal.",
+
+  "inputs.jitter.label": "Ketidakteraturan",
+  "inputs.jitter.help": "0 = grid sel yang sekata · 100 = bentuk sel organik yang bertaburan sepenuhnya.",
+
+  "inputs.relax.label": "Relaks (ratakan)",
+  "inputs.relax.help": "Relaksasi Lloyd — menolak sel ke arah saiz yang sama rata dan bentuk yang lebih bulat. Semakin tinggi, semakin tenang dan seragam.",
+
+  "inputs.seed.label": "Seed (gulung semula)",
+  "inputs.seed.help": "Gulung semula susun atur sel secara rawak. Seed yang sama = sel yang sama setiap kali.",
+
+  "inputs.edgeWidth.label": "Lebar tepi",
+  "inputs.edgeWidth.help": "Simen antara sel. 0 = jaringan warna tanpa sempadan; nilai lebih tinggi melukis jurang dalam warna tepi untuk gaya kaca patri.",
+
+  "inputs.edgeColor.label": "Warna tepi",
+  "inputs.edgeColor.help": "Warna jurang antara sel (dan sempadan luar).",
+
+  "inputs.transparentBg.label": "Latar belakang lutsinar",
+  "inputs.transparentBg.help": "Buang latar belakang supaya sebarang jurang / sempadan menjadi lutsinar (PNG / SVG).",
+
+  "inputs.contrast.label": "Kontras",
+  "inputs.contrast.section": "Warna",
+  "inputs.contrast.help": "Renggangkan ton (lebih tinggi) atau ratakannya bersama (lebih rendah) sebelum sel mengambil sampel warna masing-masing.",
+
+  "inputs.hue.label": "Rona",
+  "inputs.hue.section": "Warna",
+  "inputs.hue.help": "Putarkan setiap warna mengelilingi roda warna.",
+
+  "inputs.saturation.label": "Ketepuan",
+  "inputs.saturation.section": "Warna",
+  "inputs.saturation.help": "0 = skala kelabu · 100 = asal · 200 = terang menyala.",
+
+  "inputs.lightness.label": "Kecerahan",
+  "inputs.lightness.section": "Warna",
+  "inputs.lightness.help": "Naikkan ke arah putih atau turunkan ke arah hitam.",
+
+  "inputs.treatmentColor.label": "Rawatan warna",
+  "inputs.treatmentColor.section": "Warna",
+  "inputs.treatmentColor.help": "Campurkan satu warna ke atas hasil. Biarkan kosong jika tiada.",
+
+  "inputs.blendMode.label": "Mod campuran",
+  "inputs.blendMode.section": "Warna",
+  "inputs.blendMode.help": "Cara warna rawatan bercampur dengan imej.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Darab",
+  "inputs.blendMode.options.screen": "Skrin",
+  "inputs.blendMode.options.overlay": "Tindihan",
+  "inputs.blendMode.options.darken": "Gelapkan",
+  "inputs.blendMode.options.lighten": "Cerahkan",
+  "inputs.blendMode.options.color-dodge": "Pengelakan Warna",
+  "inputs.blendMode.options.color-burn": "Pembakaran Warna",
+  "inputs.blendMode.options.hard-light": "Cahaya Keras",
+  "inputs.blendMode.options.soft-light": "Cahaya Lembut",
+  "inputs.blendMode.options.difference": "Perbezaan",
+  "inputs.blendMode.options.exclusion": "Pengecualian",
+  "inputs.blendMode.options.hue": "Rona",
+  "inputs.blendMode.options.saturation": "Ketepuan",
+  "inputs.blendMode.options.color": "Warna",
+  "inputs.blendMode.options.luminosity": "Luminositi",
+
+  "inputs.treatmentIntensity.label": "Keamatan",
+  "inputs.treatmentIntensity.section": "Warna",
+  "inputs.treatmentIntensity.help": "Kelegapan tindihan warna.",
+
+  "inputs.width.label": "Lebar",
+  "inputs.height.label": "Tinggi",
+
+  "inputs.noFilter.label": "Tiada penapis (tunjuk mentah)",
+  "inputs.noFilter.section": "Tindihan",
+  "inputs.noFilter.help": "Tunjukkan foto asal atau suapan kamera langsung tanpa diubah — berguna untuk meletakkan logo / kad nama bahagian bawah sahaja di atas rakaman mentah.",
+
+  "inputs.showLogo.label": "Tindihan logo SUSE",
+  "inputs.showLogo.section": "Tindihan",
+  "inputs.showLogo.help": "Tindihkan logo SUSE pada hasil. Dimatikan secara lalai.",
+
+  "inputs.logoPosition.label": "Kedudukan logo",
+  "inputs.logoPosition.section": "Tindihan",
+  "inputs.logoPosition.options.top-left": "Atas kiri",
+  "inputs.logoPosition.options.top-right": "Atas kanan",
+  "inputs.logoPosition.options.bottom-left": "Bawah kiri",
+  "inputs.logoPosition.options.bottom-right": "Bawah kanan",
+  "inputs.logoPosition.options.top": "Atas tengah",
+  "inputs.logoPosition.options.bottom": "Bawah tengah",
+  "inputs.logoPosition.options.center": "Tengah",
+  "inputs.logoPosition.options.full": "Penuh (tera air)",
+
+  "inputs.logoStyle.label": "Warna logo",
+  "inputs.logoStyle.section": "Tindihan",
+  "inputs.logoStyle.help": "Putih dan hijau kelihatan jelas pada rakaman gelap atau sibuk; hitam sesuai untuk latar belakang cerah.",
+  "inputs.logoStyle.options.white": "Putih",
+  "inputs.logoStyle.options.green": "Hijau",
+  "inputs.logoStyle.options.black": "Hitam",
+
+  "inputs.logoScale.label": "Saiz logo",
+  "inputs.logoScale.section": "Tindihan",
+  "inputs.logoScale.help": "Skalakan logo lebih besar atau lebih kecil.",
+
+  "inputs.lowerThird.label": "Kad nama bahagian bawah",
+  "inputs.lowerThird.section": "Tindihan",
+  "inputs.lowerThird.help": "Kad nama beranimasi lembut yang muncul di atas rakaman. Menggunakan nama profil & gambar kepala anda.",
+
+  "inputs.ltTheme.label": "Gaya kad",
+  "inputs.ltTheme.section": "Tindihan",
+  "inputs.ltTheme.options.bar": "Bar jenama SUSE",
+  "inputs.ltTheme.options.minimal": "Minimalis",
+  "inputs.ltTheme.options.glass": "Kaca",
+
+  "inputs.ltPosition.label": "Kedudukan kad",
+  "inputs.ltPosition.section": "Tindihan",
+  "inputs.ltPosition.options.left": "Bawah kiri",
+  "inputs.ltPosition.options.center": "Bawah tengah",
+  "inputs.ltPosition.options.right": "Bawah kanan",
+
+  "inputs.firstname.label": "Nama pertama",
+  "inputs.firstname.section": "Tindihan",
+
+  "inputs.lastname.label": "Nama akhir",
+  "inputs.lastname.section": "Tindihan",
+
+  "inputs.title.label": "Peranan / tajuk kecil",
+  "inputs.title.section": "Tindihan",
+  "inputs.title.help": "Baris pilihan di bawah nama — contohnya peranan atau acara.",
+
+  "inputs.nameWeight.label": "Ketebalan nama",
+  "inputs.nameWeight.section": "Tindihan",
+  "inputs.nameWeight.help": "Ketebalan fon bagi baris nama (100 Nipis → 900 Hitam).",
+
+  "inputs.subtitleWeight.label": "Ketebalan tajuk kecil",
+  "inputs.subtitleWeight.section": "Tindihan",
+  "inputs.subtitleWeight.help": "Ketebalan fon bagi baris peranan / tajuk kecil (100 Nipis → 900 Hitam).",
+
+  "inputs.ltHeadshot.label": "Gambar kepala (pilihan)",
+  "inputs.ltHeadshot.section": "Tindihan",
+  "inputs.ltHeadshot.help": "Lalai menggunakan gambar kepala profil anda. Pilih atau muat naik yang lain untuk menggantikannya."
 }

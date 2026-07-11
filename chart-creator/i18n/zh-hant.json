@@ -1,5 +1,148 @@
 {
   "name": "圖表產生器",
   "description": "從你的資料產生符合品牌規範的圖表——長條圖、環形圖、圓餅圖或堆疊圖。",
-  "featured.blurb": "從你的資料產生符合品牌規範的圖表，任何形式都行"
+  "featured.blurb": "從你的資料產生符合品牌規範的圖表，任何形式都行",
+
+  "inputs.chartType.label": "圖表類型",
+  "inputs.chartType.options.vertical-bar": "垂直長條圖",
+  "inputs.chartType.options.horizontal-bar": "水平長條圖",
+  "inputs.chartType.options.donut": "環形圖",
+  "inputs.chartType.options.pie": "圓餅圖",
+  "inputs.chartType.options.stacked": "堆疊長條圖",
+
+  "inputs.donutRadius.label": "環形半徑",
+
+  "inputs.stackMax.label": "刻度上限",
+  "inputs.stackMax.placeholder": "0 = 自動符合總和",
+  "inputs.stackMax.help": "設為 0 時，長條會依資料總和（組合值）自動填滿。輸入一個數字則以該固定上限為刻度縮放組合值——長條只會填滿對應比例，其餘部分留白。",
+
+  "inputs.sliceGap.label": "扇區間距",
+  "inputs.sliceGap.section": "扇區",
+  "inputs.sliceGap.help": "各扇區之間的間距，以外緣的像素為單位。0 表示扇區彼此相連。",
+
+  "inputs.cornerRadius.label": "圓角半徑",
+  "inputs.cornerRadius.section": "扇區",
+  "inputs.cornerRadius.help": "讓每個扇區的邊角變圓。系統會針對過窄或過薄的扇區自動限制圓角幅度。",
+
+  "inputs.strokeWidth.label": "外框寬度",
+  "inputs.strokeWidth.section": "扇區",
+  "inputs.strokeWidth.help": "每個扇區的外框線。0 表示沒有外框。",
+
+  "inputs.strokeColor.label": "外框顏色",
+  "inputs.strokeColor.section": "扇區",
+
+  "inputs.heading.label": "標題",
+  "inputs.heading.placeholder": "圖表標題",
+
+  "inputs.subheading.label": "副標題／資料來源",
+  "inputs.subheading.placeholder": "選填的副標題或資料來源",
+
+  "inputs.color.label": "文字顏色",
+
+  "inputs.background.label": "背景",
+
+  "inputs.showLegend.label": "顯示圖例",
+  "inputs.showLegend.section": "圖例",
+
+  "inputs.legendPosition.label": "位置",
+  "inputs.legendPosition.section": "圖例",
+  "inputs.legendPosition.options.bottom": "底部",
+  "inputs.legendPosition.options.top": "頂部",
+  "inputs.legendPosition.options.left": "左側",
+  "inputs.legendPosition.options.right": "右側",
+
+  "inputs.legendDotShape.label": "圖示形狀",
+  "inputs.legendDotShape.section": "圖例",
+  "inputs.legendDotShape.options.square": "方形",
+  "inputs.legendDotShape.options.circle": "圓形",
+
+  "inputs.legendSize.label": "文字大小",
+  "inputs.legendSize.section": "圖例",
+
+  "inputs.legendFontWeight.label": "字重",
+  "inputs.legendFontWeight.section": "圖例",
+
+  "inputs.legendMaxChars.label": "標籤最大長度",
+  "inputs.legendMaxChars.section": "圖例",
+  "inputs.legendMaxChars.help": "圖例標籤在顯示「…」省略前可顯示的字數。0 表示自動。",
+
+  "inputs.legendWidth.label": "圖例寬度 %",
+  "inputs.legendWidth.section": "圖例",
+
+  "inputs.showLabels.label": "顯示標籤",
+  "inputs.showLabels.section": "標籤",
+
+  "inputs.labelSize.label": "文字大小",
+  "inputs.labelSize.section": "標籤",
+
+  "inputs.labelWeight.label": "字重",
+  "inputs.labelWeight.section": "標籤",
+
+  "inputs.labelMaxChars.label": "標籤最大長度",
+  "inputs.labelMaxChars.section": "標籤",
+  "inputs.labelMaxChars.help": "標籤在顯示「…」省略前可顯示的字數。0 表示自動。",
+
+  "inputs.labelPosition.label": "位置",
+  "inputs.labelPosition.section": "標籤",
+  "inputs.labelPosition.options.inside": "內側",
+  "inputs.labelPosition.options.outside": "外側",
+
+  "inputs.labelAlign.label": "對齊",
+  "inputs.labelAlign.section": "標籤",
+  "inputs.labelAlign.options.top": "頂部",
+  "inputs.labelAlign.options.center": "置中",
+  "inputs.labelAlign.options.bottom": "底部",
+
+  "inputs.labelOffset.label": "偏移",
+  "inputs.labelOffset.section": "標籤",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "外側間距",
+  "inputs.labelGap.section": "標籤",
+
+  "inputs.dataLabels.label": "顯示數值",
+  "inputs.dataLabels.section": "數值",
+
+  "inputs.valueSize.label": "文字大小",
+  "inputs.valueSize.section": "數值",
+
+  "inputs.valueWeight.label": "字重",
+  "inputs.valueWeight.section": "數值",
+
+  "inputs.valuePosition.label": "位置",
+  "inputs.valuePosition.section": "數值",
+  "inputs.valuePosition.options.inside": "內側",
+  "inputs.valuePosition.options.outside": "外側",
+
+  "inputs.valueAlign.label": "對齊",
+  "inputs.valueAlign.section": "數值",
+  "inputs.valueAlign.options.top": "頂部",
+  "inputs.valueAlign.options.center": "置中",
+  "inputs.valueAlign.options.bottom": "底部",
+
+  "inputs.valueOffset.label": "偏移",
+  "inputs.valueOffset.section": "數值",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "外側間距",
+  "inputs.valueGap.section": "數值",
+
+  "inputs.valueFormat.label": "數字格式",
+  "inputs.valueFormat.section": "數值",
+  "inputs.valueFormat.options.auto": "自動",
+  "inputs.valueFormat.options.value": "原始數字",
+  "inputs.valueFormat.options.percent": "百分比",
+
+  "inputs.data.label": "資料",
+  "inputs.data.fields.label.label": "標籤",
+  "inputs.data.fields.label.placeholder": "標籤",
+  "inputs.data.fields.value.label": "數值",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "顏色",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "寬度",
+  "inputs.height.label": "高度"
 }

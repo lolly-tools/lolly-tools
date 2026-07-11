@@ -1,4 +1,146 @@
 {
   "name": "Filter: Pixelsträckning",
-  "description": "Smeta ut en pixelkolumn över ett foto från en tröskellinje. Fungerar live."
+  "description": "Smeta ut en pixelkolumn över ett foto från en tröskellinje. Fungerar live.",
+  "a11yLabel": "Pixelsträckningseffekt på den valda bilden",
+
+  "inputs.image.label": "Bild",
+  "inputs.image.help": "Välj ett foto eller ladda upp ditt eget. Det bearbetas på din enhet — pixlarna lämnar aldrig webbläsaren. Eller tryck på ”Gå live” på duken för att smeta ut din kamera.",
+
+  "inputs.direction.label": "Riktning",
+  "inputs.direction.help": "Åt vilket håll den frysta pixelkolumnen smetas ut över bilden.",
+  "inputs.direction.options.right": "Sträck åt höger →",
+  "inputs.direction.options.left": "Sträck åt vänster ←",
+  "inputs.direction.options.down": "Sträck nedåt ↓",
+  "inputs.direction.options.up": "Sträck uppåt ↑",
+
+  "inputs.threshold.label": "Tröskelstart",
+  "inputs.threshold.help": "Var fotot fryses. Bortom den här linjen sträcks den frysta kolumnen ut, sedan fortsätter resten av fotot i sina naturliga proportioner, beskuret vid den bortre kanten.",
+
+  "inputs.spread.label": "Spridning",
+  "inputs.spread.help": "Hur stor del av utrymmet bortom tröskeln som den frysta kolumnen fyller. Resten av fotot glider in efter den i sina naturliga proportioner (beskuret vid kanten). 0 = orört foto, 100 = kolumnen sträcker sig ända ut till kanten.",
+
+  "inputs.feather.label": "Urfjädring",
+  "inputs.feather.help": "Mjukar upp skarven där fotot möter den frysta kolumnen. Den bortre änden, där kolumnen lämnar över till den glidande resten, är redan färgkontinuerlig, så det här påverkar mest startskarven. 0 behåller en hård kant.",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Färg",
+  "inputs.contrast.help": "Driv isär tonerna (högre) eller platta till dem (lägre).",
+
+  "inputs.hue.label": "Nyans",
+  "inputs.hue.section": "Färg",
+  "inputs.hue.help": "Rotera alla färger runt hjulet.",
+
+  "inputs.saturation.label": "Mättnad",
+  "inputs.saturation.section": "Färg",
+  "inputs.saturation.help": "0 = gråskala · 100 = original · 200 = intensiv.",
+
+  "inputs.lightness.label": "Ljushet",
+  "inputs.lightness.section": "Färg",
+  "inputs.lightness.help": "Lyft mot vitt eller sänk mot svart.",
+
+  "inputs.treatmentColor.label": "Färgbehandling",
+  "inputs.treatmentColor.section": "Färg",
+  "inputs.treatmentColor.help": "Blanda en färg över resultatet. Lämna tomt för ingen.",
+
+  "inputs.blendMode.label": "Blandningsläge",
+  "inputs.blendMode.section": "Färg",
+  "inputs.blendMode.help": "Hur behandlingsfärgen blandas med bilden.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplicera",
+  "inputs.blendMode.options.screen": "Skärm",
+  "inputs.blendMode.options.overlay": "Overlägg",
+  "inputs.blendMode.options.darken": "Mörkare",
+  "inputs.blendMode.options.lighten": "Ljusare",
+  "inputs.blendMode.options.color-dodge": "Färgbländning",
+  "inputs.blendMode.options.color-burn": "Färgbränning",
+  "inputs.blendMode.options.hard-light": "Hårt ljus",
+  "inputs.blendMode.options.soft-light": "Mjukt ljus",
+  "inputs.blendMode.options.difference": "Differens",
+  "inputs.blendMode.options.exclusion": "Uteslutning",
+  "inputs.blendMode.options.hue": "Nyans",
+  "inputs.blendMode.options.saturation": "Mättnad",
+  "inputs.blendMode.options.color": "Färg",
+  "inputs.blendMode.options.luminosity": "Luminans",
+
+  "inputs.treatmentIntensity.label": "Intensitet",
+  "inputs.treatmentIntensity.section": "Färg",
+  "inputs.treatmentIntensity.help": "Opacitet för färgöverlägget.",
+
+  "inputs.imageFraming.label": "Zoom och position",
+  "inputs.imageFraming.section": "Position",
+  "inputs.imageFraming.help": "Zoom skalar upp fotot; X/Y panorerar det inom ramen (som object-position). Dra en etikett eller skriv in ett värde.",
+  "inputs.imageFraming.fields.zoom.label": "Zoom",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "Inget filter (visa rått)",
+  "inputs.noFilter.section": "Överlägg",
+  "inputs.noFilter.help": "Visa det ursprungliga fotot eller den direktsända kameran orört — praktiskt när du bara vill placera en logotyp eller namnremsa över det obehandlade materialet.",
+
+  "inputs.showLogo.label": "SUSE-logotypöverlägg",
+  "inputs.showLogo.section": "Överlägg",
+  "inputs.showLogo.help": "Lägg SUSE-logotypen över resultatet. Avstängt som standard.",
+
+  "inputs.logoPosition.label": "Logotypens position",
+  "inputs.logoPosition.section": "Överlägg",
+  "inputs.logoPosition.options.top-left": "Uppe till vänster",
+  "inputs.logoPosition.options.top-right": "Uppe till höger",
+  "inputs.logoPosition.options.bottom-left": "Nere till vänster",
+  "inputs.logoPosition.options.bottom-right": "Nere till höger",
+  "inputs.logoPosition.options.top": "Upptill i mitten",
+  "inputs.logoPosition.options.bottom": "Nedtill i mitten",
+  "inputs.logoPosition.options.center": "Centrerad",
+  "inputs.logoPosition.options.full": "Fullskärm (vattenstämpel)",
+
+  "inputs.logoStyle.label": "Logotypfärg",
+  "inputs.logoStyle.section": "Överlägg",
+  "inputs.logoStyle.help": "Vit och grön syns tydligt mot mörkt eller stökigt material; svart passar ljusa bakgrunder.",
+  "inputs.logoStyle.options.white": "Vit",
+  "inputs.logoStyle.options.green": "Grön",
+  "inputs.logoStyle.options.black": "Svart",
+
+  "inputs.logoScale.label": "Logotypstorlek",
+  "inputs.logoScale.section": "Överlägg",
+  "inputs.logoScale.help": "Skala logotypen upp eller ner.",
+
+  "inputs.lowerThird.label": "Namnremsa",
+  "inputs.lowerThird.section": "Överlägg",
+  "inputs.lowerThird.help": "Ett mjukt animerat namnkort som tonar in över materialet. Använder namnet och profilbilden från din profil.",
+
+  "inputs.ltTheme.label": "Kortstil",
+  "inputs.ltTheme.section": "Överlägg",
+  "inputs.ltTheme.options.bar": "SUSE-varumärkesrad",
+  "inputs.ltTheme.options.minimal": "Minimalistisk",
+  "inputs.ltTheme.options.glass": "Glas",
+
+  "inputs.ltPosition.label": "Kortposition",
+  "inputs.ltPosition.section": "Överlägg",
+  "inputs.ltPosition.options.left": "Nere till vänster",
+  "inputs.ltPosition.options.center": "Nedtill i mitten",
+  "inputs.ltPosition.options.right": "Nere till höger",
+
+  "inputs.firstname.label": "Förnamn",
+  "inputs.firstname.section": "Överlägg",
+
+  "inputs.lastname.label": "Efternamn",
+  "inputs.lastname.section": "Överlägg",
+
+  "inputs.title.label": "Roll/undertext",
+  "inputs.title.section": "Överlägg",
+  "inputs.title.help": "Valfri rad under namnet — t.ex. en roll eller ett evenemang.",
+
+  "inputs.nameWeight.label": "Namnets vikt",
+  "inputs.nameWeight.section": "Överlägg",
+  "inputs.nameWeight.help": "Teckensnittsvikt för namnraden (100 Tunn → 900 Svart).",
+
+  "inputs.subtitleWeight.label": "Undertextens vikt",
+  "inputs.subtitleWeight.section": "Överlägg",
+  "inputs.subtitleWeight.help": "Teckensnittsvikt för roll-/undertextraden (100 Tunn → 900 Svart).",
+
+  "inputs.ltHeadshot.label": "Porträttbild (valfritt)",
+  "inputs.ltHeadshot.section": "Överlägg",
+  "inputs.ltHeadshot.help": "Använder som standard din profilbild. Välj eller ladda upp en annan för att ersätta den.",
+
+  "inputs.width.label": "Bredd",
+  "inputs.height.label": "Höjd"
 }

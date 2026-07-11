@@ -1,4 +1,152 @@
 {
   "name": "Filtro: Líneas de escaneo",
-  "description": "Efecto vectorial de líneas de escaneo horizontales de 'líneas infinitas' a partir de cualquier foto"
+  "description": "Efecto vectorial de líneas de escaneo horizontales de 'líneas infinitas' a partir de cualquier foto",
+  "a11yLabel": "Representación en líneas de escaneo de la imagen elegida en los tonos de marca",
+
+  "inputs.image.label": "Imagen",
+  "inputs.image.help": "Elige una foto o sube la tuya. Se procesa en tu dispositivo: los píxeles nunca salen del navegador.",
+
+  "inputs.lineSize.label": "Altura de línea",
+  "inputs.lineSize.help": "Altura de cada línea de escaneo y el tamaño de cada celda: cuanto más pequeño, más finas son las líneas y mayor el detalle.",
+
+  "inputs.gapSize.label": "Altura del hueco",
+  "inputs.gapSize.help": "Tamaño del hueco en blanco debajo de cada línea de escaneo, en relación con la línea. Más grande = líneas más finas con más espacio entre ellas; 0 crea una imagen sólida sin huecos. No cambia el detalle ni la posición de la imagen.",
+
+  "inputs.separatePixels.label": "Separar píxeles",
+  "inputs.separatePixels.help": "Añade también un hueco entre celdas, para que cada una sea un cuadrado distinto: un aspecto de matriz de LED/píxeles en lugar de barras de escaneo sólidas.",
+
+  "inputs.everyLine.label": "Rellenar todas las líneas",
+  "inputs.everyLine.help": "Dibuja todas las líneas sin huecos: lo mismo que ajustar la altura del hueco a cero. Desactivado = líneas de escaneo clásicas; activado = una imagen posterizada sólida.",
+
+  "inputs.fit.label": "Ajuste de imagen",
+  "inputs.fit.options.contain": "Contener (imagen completa)",
+  "inputs.fit.options.cover": "Cubrir (rellena, recorta bordes)",
+
+  "inputs.highlight.label": "Luz alta",
+  "inputs.highlight.help": "Tono más claro.",
+
+  "inputs.light.label": "Claro",
+
+  "inputs.mid.label": "Medio",
+
+  "inputs.shade.label": "Oscuro",
+
+  "inputs.shadow.label": "Sombra",
+  "inputs.shadow.help": "Tono más oscuro.",
+
+  "inputs.background.label": "Fondo",
+  "inputs.background.help": "Rellena las líneas y huecos en blanco. Déjalo vacío para un fondo transparente (PNG/WebP/AVIF/SVG conservan la transparencia).",
+
+  "inputs.brightness.label": "Brillo",
+
+  "inputs.contrast.label": "Contraste",
+  "inputs.contrast.section": "Color",
+
+  "inputs.hue.label": "Tono",
+  "inputs.hue.section": "Color",
+  "inputs.hue.help": "Rota todos los colores en la rueda cromática.",
+
+  "inputs.saturation.label": "Saturación",
+  "inputs.saturation.section": "Color",
+  "inputs.saturation.help": "0 = escala de grises · 100 = original · 200 = intenso.",
+
+  "inputs.lightness.label": "Luminosidad",
+  "inputs.lightness.section": "Color",
+  "inputs.lightness.help": "Aclara hacia el blanco u oscurece hacia el negro.",
+
+  "inputs.treatmentColor.label": "Tratamiento de color",
+  "inputs.treatmentColor.section": "Color",
+  "inputs.treatmentColor.help": "Mezcla un color sobre el resultado. Déjalo vacío para no aplicar ninguno.",
+
+  "inputs.blendMode.label": "Modo de fusión",
+  "inputs.blendMode.section": "Color",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplicar",
+  "inputs.blendMode.options.screen": "Trama",
+  "inputs.blendMode.options.overlay": "Superponer",
+  "inputs.blendMode.options.darken": "Oscurecer",
+  "inputs.blendMode.options.lighten": "Aclarar",
+  "inputs.blendMode.options.color-dodge": "Sobreexposición de color",
+  "inputs.blendMode.options.color-burn": "Subexposición de color",
+  "inputs.blendMode.options.hard-light": "Luz fuerte",
+  "inputs.blendMode.options.soft-light": "Luz suave",
+  "inputs.blendMode.options.difference": "Diferencia",
+  "inputs.blendMode.options.exclusion": "Exclusión",
+  "inputs.blendMode.options.hue": "Tono",
+  "inputs.blendMode.options.saturation": "Saturación",
+  "inputs.blendMode.options.color": "Color",
+  "inputs.blendMode.options.luminosity": "Luminosidad",
+  "inputs.blendMode.help": "Cómo se mezcla el color de tratamiento con la imagen.",
+
+  "inputs.treatmentIntensity.label": "Intensidad",
+  "inputs.treatmentIntensity.section": "Color",
+  "inputs.treatmentIntensity.help": "Opacidad de la superposición de color.",
+
+  "inputs.noFilter.label": "Sin filtro (mostrar en bruto)",
+  "inputs.noFilter.section": "Superposición",
+  "inputs.noFilter.help": "Muestra la foto original o la imagen en directo de la cámara sin modificar: útil para colocar solo un logo o una tarjeta inferior sobre el metraje sin procesar.",
+
+  "inputs.showLogo.label": "Superposición del logo de SUSE",
+  "inputs.showLogo.section": "Superposición",
+  "inputs.showLogo.help": "Superpone el logo de SUSE sobre el resultado. Desactivado de forma predeterminada.",
+
+  "inputs.logoPosition.label": "Posición del logo",
+  "inputs.logoPosition.section": "Superposición",
+  "inputs.logoPosition.options.top-left": "Superior izquierda",
+  "inputs.logoPosition.options.top-right": "Superior derecha",
+  "inputs.logoPosition.options.bottom-left": "Inferior izquierda",
+  "inputs.logoPosition.options.bottom-right": "Inferior derecha",
+  "inputs.logoPosition.options.top": "Superior centro",
+  "inputs.logoPosition.options.bottom": "Inferior centro",
+  "inputs.logoPosition.options.center": "Centro",
+  "inputs.logoPosition.options.full": "Completo (marca de agua)",
+
+  "inputs.logoStyle.label": "Color del logo",
+  "inputs.logoStyle.section": "Superposición",
+  "inputs.logoStyle.options.white": "Blanco",
+  "inputs.logoStyle.options.green": "Verde",
+  "inputs.logoStyle.options.black": "Negro",
+  "inputs.logoStyle.help": "El blanco y el verde se leen bien sobre metraje oscuro o con mucho detalle; el negro va mejor con fondos claros.",
+
+  "inputs.logoScale.label": "Tamaño del logo",
+  "inputs.logoScale.section": "Superposición",
+  "inputs.logoScale.help": "Escala el logo hacia arriba o hacia abajo.",
+
+  "inputs.lowerThird.label": "Tarjeta de nombre inferior",
+  "inputs.lowerThird.section": "Superposición",
+  "inputs.lowerThird.help": "Una tarjeta de nombre con una animación suave que aparece sobre el metraje. Usa el nombre y la foto de perfil de tu cuenta.",
+
+  "inputs.ltTheme.label": "Estilo de tarjeta",
+  "inputs.ltTheme.section": "Superposición",
+  "inputs.ltTheme.options.bar": "Barra de marca SUSE",
+  "inputs.ltTheme.options.minimal": "Minimalista",
+  "inputs.ltTheme.options.glass": "Cristal",
+
+  "inputs.ltPosition.label": "Posición de la tarjeta",
+  "inputs.ltPosition.section": "Superposición",
+  "inputs.ltPosition.options.left": "Inferior izquierda",
+  "inputs.ltPosition.options.center": "Inferior centro",
+  "inputs.ltPosition.options.right": "Inferior derecha",
+
+  "inputs.firstname.label": "Nombre",
+  "inputs.firstname.section": "Superposición",
+
+  "inputs.lastname.label": "Apellidos",
+  "inputs.lastname.section": "Superposición",
+
+  "inputs.title.label": "Cargo / subtítulo",
+  "inputs.title.section": "Superposición",
+  "inputs.title.help": "Línea opcional debajo del nombre; por ejemplo, un cargo o evento.",
+
+  "inputs.nameWeight.label": "Grosor del nombre",
+  "inputs.nameWeight.section": "Superposición",
+  "inputs.nameWeight.help": "Grosor de la fuente de la línea del nombre (100 Fino → 900 Negro).",
+
+  "inputs.subtitleWeight.label": "Grosor del subtítulo",
+  "inputs.subtitleWeight.section": "Superposición",
+  "inputs.subtitleWeight.help": "Grosor de la fuente de la línea de cargo o subtítulo (100 Fino → 900 Negro).",
+
+  "inputs.ltHeadshot.label": "Foto de perfil (opcional)",
+  "inputs.ltHeadshot.section": "Superposición",
+  "inputs.ltHeadshot.help": "Usa la foto de perfil de tu cuenta de forma predeterminada. Elige o sube otra para sustituirla."
 }

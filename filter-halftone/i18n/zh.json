@@ -1,4 +1,172 @@
 {
   "name": "滤镜：网点",
-  "description": "将任意照片转换为矢量网点效果——点的大小随亮度变化。"
+  "description": "将任意照片转换为矢量网点效果——点的大小随亮度变化。",
+  "a11yLabel": "所选图片的网点渲染效果，以单色圆点网格呈现",
+
+  "inputs.image.label": "图片",
+  "inputs.image.help": "选择一张照片或上传你自己的图片。处理过程在你的设备上进行——像素数据不会离开浏览器。",
+
+  "inputs.gridSize.label": "网格大小",
+  "inputs.gridSize.help": "点与点之间的间距。数值越小，细节越丰富、点数越多；数值越大，网屏越粗犷。",
+
+  "inputs.dotScale.label": "点大小",
+  "inputs.dotScale.help": "缩放每个点。小于 1 会使网屏更疏朗；大于 1 会让点变粗，使暗部更饱满。",
+
+  "inputs.shape.label": "点形状",
+  "inputs.shape.options.circle": "圆形",
+  "inputs.shape.options.square": "方形",
+  "inputs.shape.options.diamond": "菱形",
+
+  "inputs.colorSource.label": "颜色来源",
+  "inputs.colorSource.options.image": "来自图片",
+  "inputs.colorSource.options.solid": "纯色",
+  "inputs.colorSource.help": "让点的颜色取自底层照片，或使用单一颜色。",
+
+  "inputs.colorLevels.label": "颜色层级",
+  "inputs.colorLevels.options.0": "全彩",
+  "inputs.colorLevels.options.8": "8 级",
+  "inputs.colorLevels.options.6": "6 级",
+  "inputs.colorLevels.options.4": "4 级",
+  "inputs.colorLevels.options.3": "3 级",
+  "inputs.colorLevels.options.2": "2 级",
+  "inputs.colorLevels.help": "将点的颜色缩减为有限的调色板（每个通道的层级数）。全彩会保留照片原本的颜色。",
+
+  "inputs.fgColor.label": "点颜色",
+  "inputs.fgColor.help": "当颜色来源为纯色时使用的点颜色。",
+
+  "inputs.bgColor.label": "背景",
+  "inputs.bgColor.help": "点后面的填充色。如需透明背景，请在导出选项中开启“无背景”。",
+
+  "inputs.invert.label": "反转",
+  "inputs.invert.help": "让浅色区域生成较大的点，而非深色区域——适合在深色背景上使用浅色。",
+
+  "inputs.fit.label": "图片适配",
+  "inputs.fit.options.contain": "包含（完整图片）",
+  "inputs.fit.options.cover": "覆盖（填满、裁边）",
+
+  "inputs.brightness.label": "亮度",
+
+  "inputs.gamma.label": "伽马",
+  "inputs.gamma.help": "中间调权重。小于 1 会加深中间调（点更密集）；大于 1 会使其变浅。",
+
+  "inputs.smoothing.label": "平滑度",
+  "inputs.smoothing.help": "通过模糊相邻单元格来柔化点阵网格，可抑制照片噪点。",
+
+  "inputs.dither.label": "纹理",
+  "inputs.dither.options.none": "平滑（无）",
+  "inputs.dither.options.floyd": "扩散（Floyd–Steinberg）",
+  "inputs.dither.options.ordered": "图案化（有序）",
+  "inputs.dither.options.noise": "颗粒（噪点）",
+  "inputs.dither.help": "通过将单元格锁定为满点或空点，添加一种报纸风格的 1 位纹理。",
+
+  "inputs.contrast.label": "对比度",
+  "inputs.contrast.section": "颜色",
+
+  "inputs.hue.label": "色相",
+  "inputs.hue.section": "颜色",
+  "inputs.hue.help": "让所有颜色沿色轮旋转。",
+
+  "inputs.saturation.label": "饱和度",
+  "inputs.saturation.section": "颜色",
+  "inputs.saturation.help": "0 = 灰度 · 100 = 原始 · 200 = 鲜艳。",
+
+  "inputs.lightness.label": "明度",
+  "inputs.lightness.section": "颜色",
+  "inputs.lightness.help": "提亮至白或压暗至黑。",
+
+  "inputs.treatmentColor.label": "颜色处理",
+  "inputs.treatmentColor.section": "颜色",
+  "inputs.treatmentColor.help": "在结果上叠加一种颜色。留空则不使用。",
+
+  "inputs.blendMode.label": "混合模式",
+  "inputs.blendMode.section": "颜色",
+  "inputs.blendMode.options.normal": "正常",
+  "inputs.blendMode.options.multiply": "正片叠底",
+  "inputs.blendMode.options.screen": "滤色",
+  "inputs.blendMode.options.overlay": "叠加",
+  "inputs.blendMode.options.darken": "变暗",
+  "inputs.blendMode.options.lighten": "变亮",
+  "inputs.blendMode.options.color-dodge": "颜色减淡",
+  "inputs.blendMode.options.color-burn": "颜色加深",
+  "inputs.blendMode.options.hard-light": "强光",
+  "inputs.blendMode.options.soft-light": "柔光",
+  "inputs.blendMode.options.difference": "差值",
+  "inputs.blendMode.options.exclusion": "排除",
+  "inputs.blendMode.options.hue": "色相",
+  "inputs.blendMode.options.saturation": "饱和度",
+  "inputs.blendMode.options.color": "颜色",
+  "inputs.blendMode.options.luminosity": "明度",
+  "inputs.blendMode.help": "处理颜色与图片的混合方式。",
+
+  "inputs.treatmentIntensity.label": "强度",
+  "inputs.treatmentIntensity.section": "颜色",
+  "inputs.treatmentIntensity.help": "颜色叠加层的不透明度。",
+
+  "inputs.noFilter.label": "无滤镜（显示原始画面）",
+  "inputs.noFilter.section": "叠加层",
+  "inputs.noFilter.help": "原样显示原始照片或实时摄像头画面——适合只想在原始画面上添加徽标或下方字幕条的场景。",
+
+  "inputs.showLogo.label": "SUSE 徽标叠加",
+  "inputs.showLogo.section": "叠加层",
+  "inputs.showLogo.help": "在结果上叠加 SUSE 徽标。默认关闭。",
+
+  "inputs.logoPosition.label": "徽标位置",
+  "inputs.logoPosition.section": "叠加层",
+  "inputs.logoPosition.options.top-left": "左上",
+  "inputs.logoPosition.options.top-right": "右上",
+  "inputs.logoPosition.options.bottom-left": "左下",
+  "inputs.logoPosition.options.bottom-right": "右下",
+  "inputs.logoPosition.options.top": "顶部居中",
+  "inputs.logoPosition.options.bottom": "底部居中",
+  "inputs.logoPosition.options.center": "居中",
+  "inputs.logoPosition.options.full": "全屏（水印）",
+
+  "inputs.logoStyle.label": "徽标颜色",
+  "inputs.logoStyle.section": "叠加层",
+  "inputs.logoStyle.options.white": "白色",
+  "inputs.logoStyle.options.green": "绿色",
+  "inputs.logoStyle.options.black": "黑色",
+  "inputs.logoStyle.help": "白色和绿色适合深色或繁杂的画面；黑色适合浅色背景。",
+
+  "inputs.logoScale.label": "徽标大小",
+  "inputs.logoScale.section": "叠加层",
+  "inputs.logoScale.help": "放大或缩小徽标。",
+
+  "inputs.lowerThird.label": "下方姓名字幕条",
+  "inputs.lowerThird.section": "叠加层",
+  "inputs.lowerThird.help": "一张随画面缓缓浮现的姓名卡动画。使用你个人资料中的姓名和头像。",
+
+  "inputs.ltTheme.label": "卡片样式",
+  "inputs.ltTheme.section": "叠加层",
+  "inputs.ltTheme.options.bar": "SUSE 品牌条",
+  "inputs.ltTheme.options.minimal": "简约",
+  "inputs.ltTheme.options.glass": "玻璃质感",
+
+  "inputs.ltPosition.label": "卡片位置",
+  "inputs.ltPosition.section": "叠加层",
+  "inputs.ltPosition.options.left": "左下",
+  "inputs.ltPosition.options.center": "底部居中",
+  "inputs.ltPosition.options.right": "右下",
+
+  "inputs.firstname.label": "名",
+  "inputs.firstname.section": "叠加层",
+
+  "inputs.lastname.label": "姓",
+  "inputs.lastname.section": "叠加层",
+
+  "inputs.title.label": "职位/副标题",
+  "inputs.title.section": "叠加层",
+  "inputs.title.help": "姓名下方的可选文字行——例如职位或活动名称。",
+
+  "inputs.nameWeight.label": "姓名字重",
+  "inputs.nameWeight.section": "叠加层",
+  "inputs.nameWeight.help": "姓名行的字体粗细（100 细体 → 900 特黑）。",
+
+  "inputs.subtitleWeight.label": "副标题字重",
+  "inputs.subtitleWeight.section": "叠加层",
+  "inputs.subtitleWeight.help": "职位/副标题行的字体粗细（100 细体 → 900 特黑）。",
+
+  "inputs.ltHeadshot.label": "头像（可选）",
+  "inputs.ltHeadshot.section": "叠加层",
+  "inputs.ltHeadshot.help": "默认使用你个人资料中的头像。可选择或上传其他图片来替换。"
 }

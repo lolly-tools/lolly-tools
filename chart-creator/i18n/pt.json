@@ -1,5 +1,148 @@
 {
   "name": "Criador de Gráficos",
   "description": "Gráficos alinhados à marca a partir dos seus dados — barras, rosca, pizza ou empilhado.",
-  "featured.blurb": "Gráficos alinhados à marca a partir dos seus dados, em qualquer formato"
+  "featured.blurb": "Gráficos alinhados à marca a partir dos seus dados, em qualquer formato",
+
+  "inputs.chartType.label": "Tipo de gráfico",
+  "inputs.chartType.options.vertical-bar": "Barras verticais",
+  "inputs.chartType.options.horizontal-bar": "Barras horizontais",
+  "inputs.chartType.options.donut": "Rosca",
+  "inputs.chartType.options.pie": "Pizza",
+  "inputs.chartType.options.stacked": "Barra empilhada",
+
+  "inputs.donutRadius.label": "Raio da rosca",
+
+  "inputs.stackMax.label": "Máximo da escala",
+  "inputs.stackMax.help": "Deixe 0 para ajustar a barra ao total dos seus valores (um composto). Defina um número para escalar o composto em relação a um máximo fixo — a barra preenche essa parte e deixa o restante vazio.",
+  "inputs.stackMax.placeholder": "0 = ajustar ao total",
+
+  "inputs.sliceGap.label": "Espaço entre fatias",
+  "inputs.sliceGap.section": "Fatias",
+  "inputs.sliceGap.help": "Espaçamento entre as fatias, em pixels na borda externa. 0 = fatias encostadas.",
+
+  "inputs.cornerRadius.label": "Raio do canto",
+  "inputs.cornerRadius.section": "Fatias",
+  "inputs.cornerRadius.help": "Arredonda os cantos de cada fatia. Ajustado automaticamente para fatias finas ou estreitas.",
+
+  "inputs.strokeWidth.label": "Espessura do contorno",
+  "inputs.strokeWidth.section": "Fatias",
+  "inputs.strokeWidth.help": "Contorno ao redor de cada fatia. 0 = sem contorno.",
+
+  "inputs.strokeColor.label": "Cor do contorno",
+  "inputs.strokeColor.section": "Fatias",
+
+  "inputs.heading.label": "Título",
+  "inputs.heading.placeholder": "Título do gráfico",
+
+  "inputs.subheading.label": "Subtítulo / fonte",
+  "inputs.subheading.placeholder": "Subtítulo ou fonte de dados opcional",
+
+  "inputs.color.label": "Cor do texto",
+
+  "inputs.background.label": "Fundo",
+
+  "inputs.showLegend.label": "Mostrar legenda",
+  "inputs.showLegend.section": "Legenda",
+
+  "inputs.legendPosition.label": "Posição",
+  "inputs.legendPosition.section": "Legenda",
+  "inputs.legendPosition.options.bottom": "Inferior",
+  "inputs.legendPosition.options.top": "Superior",
+  "inputs.legendPosition.options.left": "Esquerda",
+  "inputs.legendPosition.options.right": "Direita",
+
+  "inputs.legendDotShape.label": "Formato do marcador",
+  "inputs.legendDotShape.section": "Legenda",
+  "inputs.legendDotShape.options.square": "Quadrado",
+  "inputs.legendDotShape.options.circle": "Círculo",
+
+  "inputs.legendSize.label": "Tamanho do texto",
+  "inputs.legendSize.section": "Legenda",
+
+  "inputs.legendFontWeight.label": "Peso da fonte",
+  "inputs.legendFontWeight.section": "Legenda",
+
+  "inputs.legendMaxChars.label": "Comprimento máximo do rótulo",
+  "inputs.legendMaxChars.section": "Legenda",
+  "inputs.legendMaxChars.help": "Caracteres exibidos antes de um rótulo da legenda ser abreviado com “…”. 0 = automático.",
+
+  "inputs.legendWidth.label": "Largura da legenda %",
+  "inputs.legendWidth.section": "Legenda",
+
+  "inputs.showLabels.label": "Mostrar rótulos",
+  "inputs.showLabels.section": "Rótulos",
+
+  "inputs.labelSize.label": "Tamanho do texto",
+  "inputs.labelSize.section": "Rótulos",
+
+  "inputs.labelWeight.label": "Peso da fonte",
+  "inputs.labelWeight.section": "Rótulos",
+
+  "inputs.labelMaxChars.label": "Comprimento máximo do rótulo",
+  "inputs.labelMaxChars.section": "Rótulos",
+  "inputs.labelMaxChars.help": "Caracteres exibidos antes de um rótulo ser abreviado com “…”. 0 = automático.",
+
+  "inputs.labelPosition.label": "Posição",
+  "inputs.labelPosition.section": "Rótulos",
+  "inputs.labelPosition.options.inside": "Dentro",
+  "inputs.labelPosition.options.outside": "Fora",
+
+  "inputs.labelAlign.label": "Alinhamento",
+  "inputs.labelAlign.section": "Rótulos",
+  "inputs.labelAlign.options.top": "Superior",
+  "inputs.labelAlign.options.center": "Centro",
+  "inputs.labelAlign.options.bottom": "Inferior",
+
+  "inputs.labelOffset.label": "Deslocamento",
+  "inputs.labelOffset.section": "Rótulos",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Espaço externo",
+  "inputs.labelGap.section": "Rótulos",
+
+  "inputs.dataLabels.label": "Mostrar valores",
+  "inputs.dataLabels.section": "Valor",
+
+  "inputs.valueSize.label": "Tamanho do texto",
+  "inputs.valueSize.section": "Valor",
+
+  "inputs.valueWeight.label": "Peso da fonte",
+  "inputs.valueWeight.section": "Valor",
+
+  "inputs.valuePosition.label": "Posição",
+  "inputs.valuePosition.section": "Valor",
+  "inputs.valuePosition.options.inside": "Dentro",
+  "inputs.valuePosition.options.outside": "Fora",
+
+  "inputs.valueAlign.label": "Alinhamento",
+  "inputs.valueAlign.section": "Valor",
+  "inputs.valueAlign.options.top": "Superior",
+  "inputs.valueAlign.options.center": "Centro",
+  "inputs.valueAlign.options.bottom": "Inferior",
+
+  "inputs.valueOffset.label": "Deslocamento",
+  "inputs.valueOffset.section": "Valor",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Espaço externo",
+  "inputs.valueGap.section": "Valor",
+
+  "inputs.valueFormat.label": "Formato do número",
+  "inputs.valueFormat.section": "Valor",
+  "inputs.valueFormat.options.auto": "Automático",
+  "inputs.valueFormat.options.value": "Número original",
+  "inputs.valueFormat.options.percent": "Porcentagem",
+
+  "inputs.data.label": "Dados",
+  "inputs.data.fields.label.label": "Rótulo",
+  "inputs.data.fields.label.placeholder": "Rótulo",
+  "inputs.data.fields.value.label": "Valor",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Cor",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Largura",
+  "inputs.height.label": "Altura"
 }

@@ -1,5 +1,148 @@
 {
   "name": "Tvorba grafů",
   "description": "Grafy podle tvé značky z tvých dat — sloupcové, donutové, koláčové nebo skládané.",
-  "featured.blurb": "Grafy podle tvé značky z tvých dat, v libovolném tvaru"
+  "featured.blurb": "Grafy podle tvé značky z tvých dat, v libovolném tvaru",
+
+  "inputs.chartType.label": "Typ grafu",
+  "inputs.chartType.options.vertical-bar": "Svislé sloupce",
+  "inputs.chartType.options.horizontal-bar": "Vodorovné sloupce",
+  "inputs.chartType.options.donut": "Donut",
+  "inputs.chartType.options.pie": "Koláč",
+  "inputs.chartType.options.stacked": "Skládaný sloupec",
+
+  "inputs.donutRadius.label": "Poloměr donutu",
+
+  "inputs.stackMax.label": "Maximum škály",
+  "inputs.stackMax.placeholder": "0 = přizpůsobit celkovému součtu",
+  "inputs.stackMax.help": "Ponech 0, pokud chceš sloupec přizpůsobit součtu tvých hodnot (kompozit). Nastavením čísla škáluješ kompozit vůči pevnému maximu — sloupec vyplní odpovídající podíl a zbytek nechá prázdný.",
+
+  "inputs.sliceGap.label": "Mezera mezi výsečemi",
+  "inputs.sliceGap.section": "Výseče",
+  "inputs.sliceGap.help": "Odstup mezi výsečemi v pixelech na vnějším okraji. 0 = výseče se dotýkají.",
+
+  "inputs.cornerRadius.label": "Zaoblení rohů",
+  "inputs.cornerRadius.section": "Výseče",
+  "inputs.cornerRadius.help": "Zaoblí rohy každé výseče. U tenkých nebo úzkých výsečí se automaticky omezuje.",
+
+  "inputs.strokeWidth.label": "Šířka obrysu",
+  "inputs.strokeWidth.section": "Výseče",
+  "inputs.strokeWidth.help": "Obrys kolem každé výseče. 0 = bez obrysu.",
+
+  "inputs.strokeColor.label": "Barva obrysu",
+  "inputs.strokeColor.section": "Výseče",
+
+  "inputs.heading.label": "Nadpis",
+  "inputs.heading.placeholder": "Název grafu",
+
+  "inputs.subheading.label": "Podnadpis / zdroj",
+  "inputs.subheading.placeholder": "Volitelný podnadpis nebo zdroj dat",
+
+  "inputs.color.label": "Barva textu",
+
+  "inputs.background.label": "Pozadí",
+
+  "inputs.showLegend.label": "Zobrazit legendu",
+  "inputs.showLegend.section": "Legenda",
+
+  "inputs.legendPosition.label": "Umístění",
+  "inputs.legendPosition.section": "Legenda",
+  "inputs.legendPosition.options.bottom": "Dole",
+  "inputs.legendPosition.options.top": "Nahoře",
+  "inputs.legendPosition.options.left": "Vlevo",
+  "inputs.legendPosition.options.right": "Vpravo",
+
+  "inputs.legendDotShape.label": "Tvar bodu",
+  "inputs.legendDotShape.section": "Legenda",
+  "inputs.legendDotShape.options.square": "Čtverec",
+  "inputs.legendDotShape.options.circle": "Kruh",
+
+  "inputs.legendSize.label": "Velikost textu",
+  "inputs.legendSize.section": "Legenda",
+
+  "inputs.legendFontWeight.label": "Řez písma",
+  "inputs.legendFontWeight.section": "Legenda",
+
+  "inputs.legendMaxChars.label": "Max. délka popisku",
+  "inputs.legendMaxChars.section": "Legenda",
+  "inputs.legendMaxChars.help": "Počet znaků zobrazených, než se popisek legendy zkrátí pomocí „…“. 0 = automaticky.",
+
+  "inputs.legendWidth.label": "Šířka legendy %",
+  "inputs.legendWidth.section": "Legenda",
+
+  "inputs.showLabels.label": "Zobrazit popisky",
+  "inputs.showLabels.section": "Popisky",
+
+  "inputs.labelSize.label": "Velikost textu",
+  "inputs.labelSize.section": "Popisky",
+
+  "inputs.labelWeight.label": "Řez písma",
+  "inputs.labelWeight.section": "Popisky",
+
+  "inputs.labelMaxChars.label": "Max. délka popisku",
+  "inputs.labelMaxChars.section": "Popisky",
+  "inputs.labelMaxChars.help": "Počet znaků zobrazených, než se popisek zkrátí pomocí „…“. 0 = automaticky.",
+
+  "inputs.labelPosition.label": "Umístění",
+  "inputs.labelPosition.section": "Popisky",
+  "inputs.labelPosition.options.inside": "Uvnitř",
+  "inputs.labelPosition.options.outside": "Vně",
+
+  "inputs.labelAlign.label": "Zarovnání",
+  "inputs.labelAlign.section": "Popisky",
+  "inputs.labelAlign.options.top": "Nahoru",
+  "inputs.labelAlign.options.center": "Na střed",
+  "inputs.labelAlign.options.bottom": "Dolů",
+
+  "inputs.labelOffset.label": "Posun",
+  "inputs.labelOffset.section": "Popisky",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Vnější mezera",
+  "inputs.labelGap.section": "Popisky",
+
+  "inputs.dataLabels.label": "Zobrazit hodnoty",
+  "inputs.dataLabels.section": "Hodnota",
+
+  "inputs.valueSize.label": "Velikost textu",
+  "inputs.valueSize.section": "Hodnota",
+
+  "inputs.valueWeight.label": "Řez písma",
+  "inputs.valueWeight.section": "Hodnota",
+
+  "inputs.valuePosition.label": "Umístění",
+  "inputs.valuePosition.section": "Hodnota",
+  "inputs.valuePosition.options.inside": "Uvnitř",
+  "inputs.valuePosition.options.outside": "Vně",
+
+  "inputs.valueAlign.label": "Zarovnání",
+  "inputs.valueAlign.section": "Hodnota",
+  "inputs.valueAlign.options.top": "Nahoru",
+  "inputs.valueAlign.options.center": "Na střed",
+  "inputs.valueAlign.options.bottom": "Dolů",
+
+  "inputs.valueOffset.label": "Posun",
+  "inputs.valueOffset.section": "Hodnota",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Vnější mezera",
+  "inputs.valueGap.section": "Hodnota",
+
+  "inputs.valueFormat.label": "Formát čísla",
+  "inputs.valueFormat.section": "Hodnota",
+  "inputs.valueFormat.options.auto": "Automaticky",
+  "inputs.valueFormat.options.value": "Původní číslo",
+  "inputs.valueFormat.options.percent": "Procenta",
+
+  "inputs.data.label": "Data",
+  "inputs.data.fields.label.label": "Popisek",
+  "inputs.data.fields.label.placeholder": "Popisek",
+  "inputs.data.fields.value.label": "Hodnota",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Barva",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Šířka",
+  "inputs.height.label": "Výška"
 }

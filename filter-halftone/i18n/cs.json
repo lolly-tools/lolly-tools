@@ -1,4 +1,172 @@
 {
   "name": "Filtr: Rastr",
-  "description": "Vektorový rastr z libovolné fotky — velikost bodů podle jasu."
+  "description": "Vektorový rastr z libovolné fotky — velikost bodů podle jasu.",
+  "a11yLabel": "Rastrové vykreslení vybraného obrázku jako mřížka jednobarevných bodů",
+
+  "inputs.image.label": "Obrázek",
+  "inputs.image.help": "Vyber fotku nebo nahraj vlastní. Zpracovává se přímo v tvém zařízení — pixely nikdy neopustí prohlížeč.",
+
+  "inputs.gridSize.label": "Velikost mřížky",
+  "inputs.gridSize.help": "Rozestup mezi body. Menší hodnota = jemnější detail a více bodů; větší hodnota = výraznější, hrubší rastr.",
+
+  "inputs.dotScale.label": "Velikost bodů",
+  "inputs.dotScale.help": "Zvětší nebo zmenší všechny body. Hodnota pod 1 rastr zjemní, nad 1 body ztloustne, takže se tmavá místa zaplní.",
+
+  "inputs.shape.label": "Tvar bodu",
+  "inputs.shape.options.circle": "Kruh",
+  "inputs.shape.options.square": "Čtverec",
+  "inputs.shape.options.diamond": "Kosočtverec",
+
+  "inputs.colorSource.label": "Zdroj barvy",
+  "inputs.colorSource.help": "Obarvi body podle fotky pod nimi, nebo použij jedinou barvu.",
+  "inputs.colorSource.options.image": "Z obrázku",
+  "inputs.colorSource.options.solid": "Jednolitá barva",
+
+  "inputs.colorLevels.label": "Úrovně barev",
+  "inputs.colorLevels.help": "Omez barvy bodů na omezenou paletu (úrovně na kanál). Plná barva zachová barvy fotky.",
+  "inputs.colorLevels.options.0": "Plná barva",
+  "inputs.colorLevels.options.8": "8 úrovní",
+  "inputs.colorLevels.options.6": "6 úrovní",
+  "inputs.colorLevels.options.4": "4 úrovně",
+  "inputs.colorLevels.options.3": "3 úrovně",
+  "inputs.colorLevels.options.2": "2 úrovně",
+
+  "inputs.fgColor.label": "Barva bodů",
+  "inputs.fgColor.help": "Barva bodů, když je zdroj barvy nastaven na Jednolitá barva.",
+
+  "inputs.bgColor.label": "Pozadí",
+  "inputs.bgColor.help": "Výplň za body. Pro průhledné pozadí zapni v možnostech exportu „Bez pozadí“.",
+
+  "inputs.invert.label": "Invertovat",
+  "inputs.invert.help": "Body porostou ve světlých místech místo tmavých — ideální pro světlou barvu na tmavém pozadí.",
+
+  "inputs.fit.label": "Přizpůsobení obrázku",
+  "inputs.fit.options.contain": "Přizpůsobit (celý obrázek)",
+  "inputs.fit.options.cover": "Vyplnit (ořez okrajů)",
+
+  "inputs.brightness.label": "Jas",
+
+  "inputs.gamma.label": "Gama",
+  "inputs.gamma.help": "Vážení středních tónů. Hodnota pod 1 střední tóny ztmaví (hustší body), nad 1 je zesvětlí.",
+
+  "inputs.smoothing.label": "Vyhlazení",
+  "inputs.smoothing.help": "Zjemní mřížku bodů rozostřením sousedních buněk. Zkrotí zrnité fotky.",
+
+  "inputs.dither.label": "Textura",
+  "inputs.dither.help": "Přidá jednobitovou texturu ve stylu novinového tisku tím, že buňky přiřadí k plným nebo prázdným bodům.",
+  "inputs.dither.options.none": "Hladká (žádná)",
+  "inputs.dither.options.floyd": "Rozptýlená (Floyd–Steinberg)",
+  "inputs.dither.options.ordered": "Vzorovaná (uspořádaná)",
+  "inputs.dither.options.noise": "Zrnitá (šum)",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Barva",
+
+  "inputs.hue.label": "Odstín",
+  "inputs.hue.section": "Barva",
+  "inputs.hue.help": "Otočí všechny barvy po barevném kole.",
+
+  "inputs.saturation.label": "Sytost",
+  "inputs.saturation.section": "Barva",
+  "inputs.saturation.help": "0 = odstíny šedi · 100 = originál · 200 = sytější.",
+
+  "inputs.lightness.label": "Světlost",
+  "inputs.lightness.section": "Barva",
+  "inputs.lightness.help": "Posune směrem k bílé, nebo k černé.",
+
+  "inputs.treatmentColor.label": "Barevná úprava",
+  "inputs.treatmentColor.section": "Barva",
+  "inputs.treatmentColor.help": "Prolne barvu přes výsledek. Nech prázdné, pokud nechceš žádnou.",
+
+  "inputs.blendMode.label": "Režim prolnutí",
+  "inputs.blendMode.section": "Barva",
+  "inputs.blendMode.help": "Jak se barva úpravy prolíná s obrázkem.",
+  "inputs.blendMode.options.normal": "Normální",
+  "inputs.blendMode.options.multiply": "Násobení",
+  "inputs.blendMode.options.screen": "Prosvětlení",
+  "inputs.blendMode.options.overlay": "Překrytí",
+  "inputs.blendMode.options.darken": "Tmavší",
+  "inputs.blendMode.options.lighten": "Světlejší",
+  "inputs.blendMode.options.color-dodge": "Zesvětlení barvy",
+  "inputs.blendMode.options.color-burn": "Ztmavení barvy",
+  "inputs.blendMode.options.hard-light": "Tvrdé světlo",
+  "inputs.blendMode.options.soft-light": "Měkké světlo",
+  "inputs.blendMode.options.difference": "Rozdíl",
+  "inputs.blendMode.options.exclusion": "Vyloučení",
+  "inputs.blendMode.options.hue": "Odstín",
+  "inputs.blendMode.options.saturation": "Sytost",
+  "inputs.blendMode.options.color": "Barva",
+  "inputs.blendMode.options.luminosity": "Světlost",
+
+  "inputs.treatmentIntensity.label": "Intenzita",
+  "inputs.treatmentIntensity.section": "Barva",
+  "inputs.treatmentIntensity.help": "Krytí barevného překryvu.",
+
+  "inputs.noFilter.label": "Bez filtru (zobrazit originál)",
+  "inputs.noFilter.section": "Překryv",
+  "inputs.noFilter.help": "Zobrazí původní fotku nebo živý obraz z kamery beze změny — hodí se, když chceš přes surový záběr umístit jen logo nebo spodní titulek.",
+
+  "inputs.showLogo.label": "Překryv loga SUSE",
+  "inputs.showLogo.section": "Překryv",
+  "inputs.showLogo.help": "Překryje výsledek logem SUSE. Ve výchozím stavu vypnuto.",
+
+  "inputs.logoPosition.label": "Pozice loga",
+  "inputs.logoPosition.section": "Překryv",
+  "inputs.logoPosition.options.top-left": "Vlevo nahoře",
+  "inputs.logoPosition.options.top-right": "Vpravo nahoře",
+  "inputs.logoPosition.options.bottom-left": "Vlevo dole",
+  "inputs.logoPosition.options.bottom-right": "Vpravo dole",
+  "inputs.logoPosition.options.top": "Nahoře uprostřed",
+  "inputs.logoPosition.options.bottom": "Dole uprostřed",
+  "inputs.logoPosition.options.center": "Uprostřed",
+  "inputs.logoPosition.options.full": "Celá plocha (vodoznak)",
+
+  "inputs.logoStyle.label": "Barva loga",
+  "inputs.logoStyle.section": "Překryv",
+  "inputs.logoStyle.help": "Bílá a zelená jsou čitelné na tmavém nebo rušném záběru; černá se hodí na světlé pozadí.",
+  "inputs.logoStyle.options.white": "Bílá",
+  "inputs.logoStyle.options.green": "Zelená",
+  "inputs.logoStyle.options.black": "Černá",
+
+  "inputs.logoScale.label": "Velikost loga",
+  "inputs.logoScale.section": "Překryv",
+  "inputs.logoScale.help": "Zvětší nebo zmenší logo.",
+
+  "inputs.lowerThird.label": "Spodní titulek se jménem",
+  "inputs.lowerThird.section": "Překryv",
+  "inputs.lowerThird.help": "Jemně animovaná titulková karta se jménem, která se vykreslí přes záběr. Použije jméno a fotku z tvého profilu.",
+
+  "inputs.ltTheme.label": "Styl karty",
+  "inputs.ltTheme.section": "Překryv",
+  "inputs.ltTheme.options.bar": "Značkový pruh SUSE",
+  "inputs.ltTheme.options.minimal": "Minimalistický",
+  "inputs.ltTheme.options.glass": "Skleněný",
+
+  "inputs.ltPosition.label": "Pozice karty",
+  "inputs.ltPosition.section": "Překryv",
+  "inputs.ltPosition.options.left": "Vlevo dole",
+  "inputs.ltPosition.options.center": "Dole uprostřed",
+  "inputs.ltPosition.options.right": "Vpravo dole",
+
+  "inputs.firstname.label": "Jméno",
+  "inputs.firstname.section": "Překryv",
+
+  "inputs.lastname.label": "Příjmení",
+  "inputs.lastname.section": "Překryv",
+
+  "inputs.title.label": "Role / podtitulek",
+  "inputs.title.section": "Překryv",
+  "inputs.title.help": "Volitelný řádek pod jménem — např. role nebo název akce.",
+
+  "inputs.nameWeight.label": "Tloušťka jména",
+  "inputs.nameWeight.section": "Překryv",
+  "inputs.nameWeight.help": "Tloušťka písma řádku se jménem (100 tenké → 900 nejtučnější).",
+
+  "inputs.subtitleWeight.label": "Tloušťka podtitulku",
+  "inputs.subtitleWeight.section": "Překryv",
+  "inputs.subtitleWeight.help": "Tloušťka písma řádku role / podtitulku (100 tenké → 900 nejtučnější).",
+
+  "inputs.ltHeadshot.label": "Fotka (volitelné)",
+  "inputs.ltHeadshot.section": "Překryv",
+  "inputs.ltHeadshot.help": "Ve výchozím stavu se použije fotka z tvého profilu. Vyber nebo nahraj jinou, pokud ji chceš nahradit."
 }

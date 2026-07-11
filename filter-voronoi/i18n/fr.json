@@ -1,4 +1,144 @@
 {
   "name": "Filtre : Cellules de Voronoï",
-  "description": "Fragmente n'importe quelle photo en mosaïque de cellules de Voronoï — chaque cellule remplie de la couleur la plus proche, en aplat vectoriel."
+  "description": "Fragmente n'importe quelle photo en mosaïque de cellules de Voronoï — chaque cellule remplie de la couleur la plus proche, en aplat vectoriel.",
+  "a11yLabel": "Mosaïque de cellules de Voronoï de la photo",
+
+  "inputs.image.label": "Photo",
+  "inputs.image.help": "L'image à fragmenter en cellules. N'importe quelle photo convient ; les portraits et les formes marquées ressortent particulièrement bien.",
+
+  "inputs.cells.label": "Cellules",
+  "inputs.cells.help": "Le nombre de cellules de Voronoï pour fragmenter l'image. Plus de cellules = plus fin et fidèle ; moins de cellules = facettes plus grosses et affirmées.",
+
+  "inputs.jitter.label": "Irrégularité",
+  "inputs.jitter.help": "0 = une grille régulière de cellules · 100 = des formes de cellules totalement dispersées et organiques.",
+
+  "inputs.relax.label": "Relaxation (uniformiser)",
+  "inputs.relax.help": "Relaxation de Lloyd — rapproche les cellules d'une taille égale et de formes plus rondes. Plus la valeur est élevée, plus le résultat est calme et uniforme.",
+
+  "inputs.seed.label": "Graine (relancer)",
+  "inputs.seed.help": "Relance la disposition aléatoire des cellules. Une même graine donne toujours les mêmes cellules.",
+
+  "inputs.edgeWidth.label": "Épaisseur des bords",
+  "inputs.edgeWidth.help": "Le joint entre les cellules. 0 = un maillage de couleurs sans interruption ; plus la valeur augmente, plus l'écart dans la couleur des bords est marqué, pour un effet vitrail.",
+
+  "inputs.edgeColor.label": "Couleur des bords",
+  "inputs.edgeColor.help": "La couleur des interstices entre les cellules (et de la bordure extérieure).",
+
+  "inputs.transparentBg.label": "Arrière-plan transparent",
+  "inputs.transparentBg.help": "Supprime l'arrière-plan pour que les interstices et la bordure soient transparents (PNG / SVG).",
+
+  "inputs.contrast.label": "Contraste",
+  "inputs.contrast.section": "Couleur",
+  "inputs.contrast.help": "Accentue l'écart entre les tons (valeur élevée) ou les aplatit (valeur basse) avant que les cellules n'échantillonnent leurs couleurs.",
+
+  "inputs.hue.label": "Teinte",
+  "inputs.hue.section": "Couleur",
+  "inputs.hue.help": "Fait tourner toutes les couleurs sur le cercle chromatique.",
+
+  "inputs.saturation.label": "Saturation",
+  "inputs.saturation.section": "Couleur",
+  "inputs.saturation.help": "0 = niveaux de gris · 100 = original · 200 = éclatant.",
+
+  "inputs.lightness.label": "Luminosité",
+  "inputs.lightness.section": "Couleur",
+  "inputs.lightness.help": "Éclaircit vers le blanc ou assombrit vers le noir.",
+
+  "inputs.treatmentColor.label": "Traitement colorimétrique",
+  "inputs.treatmentColor.section": "Couleur",
+  "inputs.treatmentColor.help": "Mélange une couleur par-dessus le résultat. Laisse vide pour n'en appliquer aucune.",
+
+  "inputs.blendMode.label": "Mode de fusion",
+  "inputs.blendMode.section": "Couleur",
+  "inputs.blendMode.help": "La façon dont la couleur de traitement se mélange à l'image.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Produit",
+  "inputs.blendMode.options.screen": "Écran",
+  "inputs.blendMode.options.overlay": "Incrustation",
+  "inputs.blendMode.options.darken": "Assombrir",
+  "inputs.blendMode.options.lighten": "Éclaircir",
+  "inputs.blendMode.options.color-dodge": "Densité couleur -",
+  "inputs.blendMode.options.color-burn": "Densité couleur +",
+  "inputs.blendMode.options.hard-light": "Lumière crue",
+  "inputs.blendMode.options.soft-light": "Lumière douce",
+  "inputs.blendMode.options.difference": "Différence",
+  "inputs.blendMode.options.exclusion": "Exclusion",
+  "inputs.blendMode.options.hue": "Teinte",
+  "inputs.blendMode.options.saturation": "Saturation",
+  "inputs.blendMode.options.color": "Couleur",
+  "inputs.blendMode.options.luminosity": "Luminosité",
+
+  "inputs.treatmentIntensity.label": "Intensité",
+  "inputs.treatmentIntensity.section": "Couleur",
+  "inputs.treatmentIntensity.help": "Opacité de la superposition colorée.",
+
+  "inputs.width.label": "Largeur",
+  "inputs.height.label": "Hauteur",
+
+  "inputs.noFilter.label": "Aucun filtre (afficher le brut)",
+  "inputs.noFilter.section": "Superposition",
+  "inputs.noFilter.help": "Affiche la photo d'origine ou le flux caméra en direct sans modification — pratique pour ne placer qu'un logo ou un bandeau sur les images brutes.",
+
+  "inputs.showLogo.label": "Superposition du logo SUSE",
+  "inputs.showLogo.section": "Superposition",
+  "inputs.showLogo.help": "Superpose le logo SUSE sur le résultat. Désactivé par défaut.",
+
+  "inputs.logoPosition.label": "Position du logo",
+  "inputs.logoPosition.section": "Superposition",
+  "inputs.logoPosition.options.top-left": "Haut gauche",
+  "inputs.logoPosition.options.top-right": "Haut droite",
+  "inputs.logoPosition.options.bottom-left": "Bas gauche",
+  "inputs.logoPosition.options.bottom-right": "Bas droite",
+  "inputs.logoPosition.options.top": "Haut centre",
+  "inputs.logoPosition.options.bottom": "Bas centre",
+  "inputs.logoPosition.options.center": "Centre",
+  "inputs.logoPosition.options.full": "Pleine page (filigrane)",
+
+  "inputs.logoStyle.label": "Couleur du logo",
+  "inputs.logoStyle.section": "Superposition",
+  "inputs.logoStyle.help": "Le blanc et le vert ressortent sur des images sombres ou chargées ; le noir convient mieux aux arrière-plans clairs.",
+  "inputs.logoStyle.options.white": "Blanc",
+  "inputs.logoStyle.options.green": "Vert",
+  "inputs.logoStyle.options.black": "Noir",
+
+  "inputs.logoScale.label": "Taille du logo",
+  "inputs.logoScale.section": "Superposition",
+  "inputs.logoScale.help": "Agrandit ou réduit le logo.",
+
+  "inputs.lowerThird.label": "Carte de nom (bandeau bas d'écran)",
+  "inputs.lowerThird.section": "Superposition",
+  "inputs.lowerThird.help": "Une carte de nom à l'animation douce qui apparaît par-dessus les images. Utilise le nom et la photo de ton profil.",
+
+  "inputs.ltTheme.label": "Style de la carte",
+  "inputs.ltTheme.section": "Superposition",
+  "inputs.ltTheme.options.bar": "Barre de marque SUSE",
+  "inputs.ltTheme.options.minimal": "Minimaliste",
+  "inputs.ltTheme.options.glass": "Verre",
+
+  "inputs.ltPosition.label": "Position de la carte",
+  "inputs.ltPosition.section": "Superposition",
+  "inputs.ltPosition.options.left": "Bas gauche",
+  "inputs.ltPosition.options.center": "Bas centre",
+  "inputs.ltPosition.options.right": "Bas droite",
+
+  "inputs.firstname.label": "Prénom",
+  "inputs.firstname.section": "Superposition",
+
+  "inputs.lastname.label": "Nom",
+  "inputs.lastname.section": "Superposition",
+
+  "inputs.title.label": "Rôle / sous-titre",
+  "inputs.title.section": "Superposition",
+  "inputs.title.help": "Ligne facultative sous le nom — par exemple un rôle ou un événement.",
+
+  "inputs.nameWeight.label": "Graisse du nom",
+  "inputs.nameWeight.section": "Superposition",
+  "inputs.nameWeight.help": "Graisse de la police pour la ligne du nom (100 Fine → 900 Noire).",
+
+  "inputs.subtitleWeight.label": "Graisse du sous-titre",
+  "inputs.subtitleWeight.section": "Superposition",
+  "inputs.subtitleWeight.help": "Graisse de la police pour la ligne de rôle / sous-titre (100 Fine → 900 Noire).",
+
+  "inputs.ltHeadshot.label": "Photo de profil (facultatif)",
+  "inputs.ltHeadshot.section": "Superposition",
+  "inputs.ltHeadshot.help": "Utilise par défaut la photo de ton profil. Choisis-en une autre ou importe-en une pour la remplacer."
 }

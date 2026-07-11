@@ -1,4 +1,146 @@
 {
   "name": "滤镜：像素拉伸",
-  "description": "从一条阈值线开始，将一列像素横向抹开到整张照片上，支持实时预览。"
+  "description": "从一条阈值线开始，将一列像素横向抹开到整张照片上，支持实时预览。",
+  "a11yLabel": "所选图片的像素拉伸涂抹效果",
+
+  "inputs.image.label": "图片",
+  "inputs.image.help": "选择一张照片，或上传你自己的图片。处理在你的设备上完成——像素数据不会离开浏览器。也可以在画布上点击“开启实时”来涂抹你的摄像头画面。",
+
+  "inputs.direction.label": "方向",
+  "inputs.direction.help": "冻结的像素列朝哪个方向抹开画面。",
+  "inputs.direction.options.right": "向右拉伸 →",
+  "inputs.direction.options.left": "向左拉伸 ←",
+  "inputs.direction.options.down": "向下拉伸 ↓",
+  "inputs.direction.options.up": "向上拉伸 ↑",
+
+  "inputs.threshold.label": "阈值起点",
+  "inputs.threshold.help": "照片从这里开始冻结。超过这条线的位置，冻结的像素列会拉伸开来，随后照片其余部分按原始比例接续显示，并在远端边缘处裁切。",
+
+  "inputs.spread.label": "扩散范围",
+  "inputs.spread.help": "冻结的像素列在阈值线之后所占的空间比例。照片其余部分会按原始比例紧随其后（在边缘处裁切）。0 = 照片保持原样；100 = 像素列一直拉伸到边缘。",
+
+  "inputs.feather.label": "羽化",
+  "inputs.feather.help": "柔化照片与冻结像素列相接处的边缘。远端（像素列过渡到滑入的其余部分处）颜色本就是连续的，所以这个参数主要影响起始边缘。0 表示保留硬边。",
+
+  "inputs.contrast.label": "对比度",
+  "inputs.contrast.section": "颜色",
+  "inputs.contrast.help": "增大可拉开明暗层次，减小则使画面变得平淡。",
+
+  "inputs.hue.label": "色相",
+  "inputs.hue.section": "颜色",
+  "inputs.hue.help": "让所有颜色沿色轮旋转。",
+
+  "inputs.saturation.label": "饱和度",
+  "inputs.saturation.section": "颜色",
+  "inputs.saturation.help": "0 = 灰度 · 100 = 原始 · 200 = 鲜艳。",
+
+  "inputs.lightness.label": "明度",
+  "inputs.lightness.section": "颜色",
+  "inputs.lightness.help": "使画面偏向白色或偏向黑色。",
+
+  "inputs.treatmentColor.label": "颜色处理",
+  "inputs.treatmentColor.section": "颜色",
+  "inputs.treatmentColor.help": "在结果上叠加一种颜色。留空表示不叠加。",
+
+  "inputs.blendMode.label": "混合模式",
+  "inputs.blendMode.section": "颜色",
+  "inputs.blendMode.help": "处理颜色与图像的混合方式。",
+  "inputs.blendMode.options.normal": "正常",
+  "inputs.blendMode.options.multiply": "正片叠底",
+  "inputs.blendMode.options.screen": "滤色",
+  "inputs.blendMode.options.overlay": "叠加",
+  "inputs.blendMode.options.darken": "变暗",
+  "inputs.blendMode.options.lighten": "变亮",
+  "inputs.blendMode.options.color-dodge": "颜色减淡",
+  "inputs.blendMode.options.color-burn": "颜色加深",
+  "inputs.blendMode.options.hard-light": "强光",
+  "inputs.blendMode.options.soft-light": "柔光",
+  "inputs.blendMode.options.difference": "差值",
+  "inputs.blendMode.options.exclusion": "排除",
+  "inputs.blendMode.options.hue": "色相",
+  "inputs.blendMode.options.saturation": "饱和度",
+  "inputs.blendMode.options.color": "颜色",
+  "inputs.blendMode.options.luminosity": "明度",
+
+  "inputs.treatmentIntensity.label": "强度",
+  "inputs.treatmentIntensity.section": "颜色",
+  "inputs.treatmentIntensity.help": "颜色叠加层的不透明度。",
+
+  "inputs.imageFraming.label": "缩放与位置",
+  "inputs.imageFraming.section": "位置",
+  "inputs.imageFraming.help": "缩放会放大照片；X / Y 用于在画面中平移照片（类似 object-position）。拖动标签或直接输入数值。",
+  "inputs.imageFraming.fields.zoom.label": "缩放",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "无滤镜（显示原始画面）",
+  "inputs.noFilter.section": "叠加层",
+  "inputs.noFilter.help": "原样显示原始照片或实时摄像头画面——适合只在原始画面上放置徽标或下方姓名条时使用。",
+
+  "inputs.showLogo.label": "SUSE 徽标叠加",
+  "inputs.showLogo.section": "叠加层",
+  "inputs.showLogo.help": "在结果上叠加 SUSE 徽标。默认关闭。",
+
+  "inputs.logoPosition.label": "徽标位置",
+  "inputs.logoPosition.section": "叠加层",
+  "inputs.logoPosition.options.top-left": "左上",
+  "inputs.logoPosition.options.top-right": "右上",
+  "inputs.logoPosition.options.bottom-left": "左下",
+  "inputs.logoPosition.options.bottom-right": "右下",
+  "inputs.logoPosition.options.top": "顶部居中",
+  "inputs.logoPosition.options.bottom": "底部居中",
+  "inputs.logoPosition.options.center": "居中",
+  "inputs.logoPosition.options.full": "全屏（水印）",
+
+  "inputs.logoStyle.label": "徽标颜色",
+  "inputs.logoStyle.section": "叠加层",
+  "inputs.logoStyle.help": "白色和绿色在深色或杂乱的画面上更清晰；黑色适合浅色背景。",
+  "inputs.logoStyle.options.white": "白色",
+  "inputs.logoStyle.options.green": "绿色",
+  "inputs.logoStyle.options.black": "黑色",
+
+  "inputs.logoScale.label": "徽标大小",
+  "inputs.logoScale.section": "叠加层",
+  "inputs.logoScale.help": "放大或缩小徽标。",
+
+  "inputs.lowerThird.label": "下方姓名条",
+  "inputs.lowerThird.section": "叠加层",
+  "inputs.lowerThird.help": "一张带有轻柔动画效果的姓名卡，会叠加显示在画面上。使用你个人资料中的姓名和头像。",
+
+  "inputs.ltTheme.label": "卡片样式",
+  "inputs.ltTheme.section": "叠加层",
+  "inputs.ltTheme.options.bar": "SUSE 品牌条",
+  "inputs.ltTheme.options.minimal": "极简",
+  "inputs.ltTheme.options.glass": "玻璃",
+
+  "inputs.ltPosition.label": "卡片位置",
+  "inputs.ltPosition.section": "叠加层",
+  "inputs.ltPosition.options.left": "左下",
+  "inputs.ltPosition.options.center": "底部居中",
+  "inputs.ltPosition.options.right": "右下",
+
+  "inputs.firstname.label": "名",
+  "inputs.firstname.section": "叠加层",
+
+  "inputs.lastname.label": "姓",
+  "inputs.lastname.section": "叠加层",
+
+  "inputs.title.label": "职位/副标题",
+  "inputs.title.section": "叠加层",
+  "inputs.title.help": "姓名下方的可选文字行——例如职位或活动名称。",
+
+  "inputs.nameWeight.label": "姓名字重",
+  "inputs.nameWeight.section": "叠加层",
+  "inputs.nameWeight.help": "姓名行的字体粗细（100 细体 → 900 特黑）。",
+
+  "inputs.subtitleWeight.label": "副标题字重",
+  "inputs.subtitleWeight.section": "叠加层",
+  "inputs.subtitleWeight.help": "职位/副标题行的字体粗细（100 细体 → 900 特黑）。",
+
+  "inputs.ltHeadshot.label": "头像（可选）",
+  "inputs.ltHeadshot.section": "叠加层",
+  "inputs.ltHeadshot.help": "默认使用你个人资料中的头像。可以选择或上传其他图片来替换。",
+
+  "inputs.width.label": "宽度",
+  "inputs.height.label": "高度"
 }

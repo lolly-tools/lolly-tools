@@ -1,4 +1,146 @@
 {
   "name": "Bộ Lọc: Kéo Giãn Pixel",
-  "description": "Kéo lem một cột pixel trên ảnh từ một đường ngưỡng. Hoạt động trực tiếp."
+  "description": "Kéo lem một cột pixel trên ảnh từ một đường ngưỡng. Hoạt động trực tiếp.",
+  "a11yLabel": "Hiệu ứng kéo lem pixel của ảnh đã chọn",
+
+  "inputs.image.label": "Ảnh",
+  "inputs.image.help": "Chọn một ảnh hoặc tải ảnh của riêng bạn lên. Ảnh được xử lý ngay trên thiết bị của bạn — các pixel không rời khỏi trình duyệt. Hoặc nhấn “Trực tiếp” trên khung vẽ để kéo lem hình ảnh từ camera của bạn.",
+
+  "inputs.direction.label": "Hướng",
+  "inputs.direction.help": "Cột pixel bị đóng băng sẽ lem theo hướng nào trên khung hình.",
+  "inputs.direction.options.right": "Kéo giãn sang phải →",
+  "inputs.direction.options.left": "Kéo giãn sang trái ←",
+  "inputs.direction.options.down": "Kéo giãn xuống ↓",
+  "inputs.direction.options.up": "Kéo giãn lên ↑",
+
+  "inputs.threshold.label": "Điểm bắt đầu ngưỡng",
+  "inputs.threshold.help": "Vị trí ảnh bị đóng băng. Qua khỏi đường này, cột pixel đóng băng sẽ kéo giãn ra, sau đó phần còn lại của ảnh tiếp tục theo tỷ lệ tự nhiên, bị cắt ở cạnh xa.",
+
+  "inputs.spread.label": "Độ lan",
+  "inputs.spread.help": "Cột pixel đóng băng lấp đầy bao nhiêu phần không gian sau ngưỡng. Phần còn lại của ảnh trượt vào sau đó theo tỷ lệ tự nhiên (bị cắt ở cạnh). 0 = ảnh giữ nguyên; 100 = cột kéo giãn hết tới cạnh.",
+
+  "inputs.feather.label": "Làm mờ mép",
+  "inputs.feather.help": "Làm mềm đường nối nơi ảnh gặp cột pixel đóng băng. Đầu xa, nơi cột bàn giao cho phần trượt còn lại, vốn đã liền màu, nên tuỳ chọn này chủ yếu ảnh hưởng tới đường nối ở điểm bắt đầu. 0 giữ mép cứng.",
+
+  "inputs.contrast.label": "Độ tương phản",
+  "inputs.contrast.section": "Màu sắc",
+  "inputs.contrast.help": "Đẩy các tông màu tách xa nhau (giá trị cao) hoặc làm phẳng chúng (giá trị thấp).",
+
+  "inputs.hue.label": "Sắc độ",
+  "inputs.hue.section": "Màu sắc",
+  "inputs.hue.help": "Xoay tất cả các màu quanh vòng tròn màu.",
+
+  "inputs.saturation.label": "Độ bão hòa",
+  "inputs.saturation.section": "Màu sắc",
+  "inputs.saturation.help": "0 = thang xám · 100 = nguyên bản · 200 = rực rỡ.",
+
+  "inputs.lightness.label": "Độ sáng",
+  "inputs.lightness.section": "Màu sắc",
+  "inputs.lightness.help": "Nâng về phía trắng hoặc chìm về phía đen.",
+
+  "inputs.treatmentColor.label": "Xử lý màu",
+  "inputs.treatmentColor.section": "Màu sắc",
+  "inputs.treatmentColor.help": "Trộn một màu lên kết quả. Để trống nếu không muốn dùng.",
+
+  "inputs.blendMode.label": "Chế độ hòa trộn",
+  "inputs.blendMode.section": "Màu sắc",
+  "inputs.blendMode.help": "Cách màu xử lý hòa trộn với ảnh.",
+  "inputs.blendMode.options.normal": "Bình thường",
+  "inputs.blendMode.options.multiply": "Nhân",
+  "inputs.blendMode.options.screen": "Màn hình",
+  "inputs.blendMode.options.overlay": "Phủ",
+  "inputs.blendMode.options.darken": "Tối hơn",
+  "inputs.blendMode.options.lighten": "Sáng hơn",
+  "inputs.blendMode.options.color-dodge": "Tránh màu",
+  "inputs.blendMode.options.color-burn": "Cháy màu",
+  "inputs.blendMode.options.hard-light": "Sáng gắt",
+  "inputs.blendMode.options.soft-light": "Sáng dịu",
+  "inputs.blendMode.options.difference": "Khác biệt",
+  "inputs.blendMode.options.exclusion": "Loại trừ",
+  "inputs.blendMode.options.hue": "Sắc độ",
+  "inputs.blendMode.options.saturation": "Độ bão hòa",
+  "inputs.blendMode.options.color": "Màu sắc",
+  "inputs.blendMode.options.luminosity": "Độ chói",
+
+  "inputs.treatmentIntensity.label": "Cường độ",
+  "inputs.treatmentIntensity.section": "Màu sắc",
+  "inputs.treatmentIntensity.help": "Độ mờ đục của lớp phủ màu.",
+
+  "inputs.imageFraming.label": "Thu phóng & Vị trí",
+  "inputs.imageFraming.section": "Vị trí",
+  "inputs.imageFraming.help": "Thu phóng phóng to ảnh; X / Y di chuyển ảnh trong khung (giống object-position). Kéo nhãn hoặc nhập giá trị.",
+  "inputs.imageFraming.fields.zoom.label": "Thu phóng",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "Không lọc (hiện ảnh gốc)",
+  "inputs.noFilter.section": "Lớp phủ",
+  "inputs.noFilter.help": "Hiển thị ảnh gốc hoặc luồng camera trực tiếp không qua xử lý — tiện để chỉ đặt logo / thanh tên phía dưới lên trên cảnh quay gốc.",
+
+  "inputs.showLogo.label": "Lớp phủ logo SUSE",
+  "inputs.showLogo.section": "Lớp phủ",
+  "inputs.showLogo.help": "Phủ logo SUSE lên kết quả. Mặc định tắt.",
+
+  "inputs.logoPosition.label": "Vị trí logo",
+  "inputs.logoPosition.section": "Lớp phủ",
+  "inputs.logoPosition.options.top-left": "Trên trái",
+  "inputs.logoPosition.options.top-right": "Trên phải",
+  "inputs.logoPosition.options.bottom-left": "Dưới trái",
+  "inputs.logoPosition.options.bottom-right": "Dưới phải",
+  "inputs.logoPosition.options.top": "Trên giữa",
+  "inputs.logoPosition.options.bottom": "Dưới giữa",
+  "inputs.logoPosition.options.center": "Giữa",
+  "inputs.logoPosition.options.full": "Toàn khung (hình mờ)",
+
+  "inputs.logoStyle.label": "Màu logo",
+  "inputs.logoStyle.section": "Lớp phủ",
+  "inputs.logoStyle.help": "Trắng và xanh lá dễ nhìn trên cảnh quay tối hoặc nhiều chi tiết; đen phù hợp với nền sáng.",
+  "inputs.logoStyle.options.white": "Trắng",
+  "inputs.logoStyle.options.green": "Xanh lá",
+  "inputs.logoStyle.options.black": "Đen",
+
+  "inputs.logoScale.label": "Kích thước logo",
+  "inputs.logoScale.section": "Lớp phủ",
+  "inputs.logoScale.help": "Phóng to hoặc thu nhỏ logo.",
+
+  "inputs.lowerThird.label": "Thẻ tên thanh dưới",
+  "inputs.lowerThird.section": "Lớp phủ",
+  "inputs.lowerThird.help": "Một thẻ tên chuyển động nhẹ nhàng xuất hiện trên cảnh quay. Sử dụng tên & ảnh đại diện từ hồ sơ của bạn.",
+
+  "inputs.ltTheme.label": "Kiểu thẻ",
+  "inputs.ltTheme.section": "Lớp phủ",
+  "inputs.ltTheme.options.bar": "Thanh thương hiệu SUSE",
+  "inputs.ltTheme.options.minimal": "Tối giản",
+  "inputs.ltTheme.options.glass": "Kính mờ",
+
+  "inputs.ltPosition.label": "Vị trí thẻ",
+  "inputs.ltPosition.section": "Lớp phủ",
+  "inputs.ltPosition.options.left": "Dưới trái",
+  "inputs.ltPosition.options.center": "Dưới giữa",
+  "inputs.ltPosition.options.right": "Dưới phải",
+
+  "inputs.firstname.label": "Tên",
+  "inputs.firstname.section": "Lớp phủ",
+
+  "inputs.lastname.label": "Họ",
+  "inputs.lastname.section": "Lớp phủ",
+
+  "inputs.title.label": "Vai trò / phụ đề",
+  "inputs.title.section": "Lớp phủ",
+  "inputs.title.help": "Dòng tùy chọn bên dưới tên — ví dụ: vai trò hoặc sự kiện.",
+
+  "inputs.nameWeight.label": "Độ đậm tên",
+  "inputs.nameWeight.section": "Lớp phủ",
+  "inputs.nameWeight.help": "Độ đậm phông chữ của dòng tên (100 Mảnh → 900 Đậm nhất).",
+
+  "inputs.subtitleWeight.label": "Độ đậm phụ đề",
+  "inputs.subtitleWeight.section": "Lớp phủ",
+  "inputs.subtitleWeight.help": "Độ đậm phông chữ của dòng vai trò / phụ đề (100 Mảnh → 900 Đậm nhất).",
+
+  "inputs.ltHeadshot.label": "Ảnh đại diện (tùy chọn)",
+  "inputs.ltHeadshot.section": "Lớp phủ",
+  "inputs.ltHeadshot.help": "Mặc định dùng ảnh đại diện hồ sơ của bạn. Chọn hoặc tải lên ảnh khác để thay thế.",
+
+  "inputs.width.label": "Chiều rộng",
+  "inputs.height.label": "Chiều cao"
 }

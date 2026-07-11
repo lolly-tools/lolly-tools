@@ -1,4 +1,172 @@
 {
   "name": "Penapis: Halftone",
-  "description": "Halftone vektor daripada sebarang foto — saiz bintik mengikut kecerahan."
+  "description": "Halftone vektor daripada sebarang foto — saiz bintik mengikut kecerahan.",
+  "a11yLabel": "Paparan halftone imej yang dipilih sebagai grid bintik satu warna",
+
+  "inputs.image.label": "Imej",
+  "inputs.image.help": "Pilih foto atau muat naik foto anda sendiri. Ia diproses pada peranti anda — piksel tidak sesekali meninggalkan pelayar.",
+
+  "inputs.gridSize.label": "Saiz grid",
+  "inputs.gridSize.help": "Jarak antara bintik. Lebih kecil = perincian lebih halus dan lebih banyak bintik; lebih besar = skrin lebih tebal dan kasar.",
+
+  "inputs.dotScale.label": "Saiz bintik",
+  "inputs.dotScale.help": "Menskalakan setiap bintik. Bawah 1 membuka skrin; atas 1 menebalkan bintik supaya kawasan gelap dipenuhi.",
+
+  "inputs.shape.label": "Bentuk bintik",
+  "inputs.shape.options.circle": "Bulatan",
+  "inputs.shape.options.square": "Segi empat sama",
+  "inputs.shape.options.diamond": "Rombus",
+
+  "inputs.colorSource.label": "Sumber warna",
+  "inputs.colorSource.help": "Warnakan bintik berdasarkan foto di bawah, atau gunakan satu warna dakwat sahaja.",
+  "inputs.colorSource.options.image": "Daripada imej",
+  "inputs.colorSource.options.solid": "Warna pejal",
+
+  "inputs.colorLevels.label": "Tahap warna",
+  "inputs.colorLevels.help": "Kurangkan warna bintik kepada palet terhad (tahap bagi setiap saluran). Warna penuh mengekalkan warna asal foto.",
+  "inputs.colorLevels.options.0": "Warna penuh",
+  "inputs.colorLevels.options.8": "8 tahap",
+  "inputs.colorLevels.options.6": "6 tahap",
+  "inputs.colorLevels.options.4": "4 tahap",
+  "inputs.colorLevels.options.3": "3 tahap",
+  "inputs.colorLevels.options.2": "2 tahap",
+
+  "inputs.fgColor.label": "Warna bintik",
+  "inputs.fgColor.help": "Warna bintik apabila Sumber warna ditetapkan kepada Pejal.",
+
+  "inputs.bgColor.label": "Latar belakang",
+  "inputs.bgColor.help": "Isian di belakang bintik. Hidupkan “Tiada Latar” dalam pilihan eksport untuk latar belakang lutsinar sebaliknya.",
+
+  "inputs.invert.label": "Songsang",
+  "inputs.invert.help": "Besarkan bintik pada kawasan cerah dan bukannya gelap — sesuai untuk warna cerah pada latar belakang gelap.",
+
+  "inputs.fit.label": "Muatan imej",
+  "inputs.fit.options.contain": "Muat (keseluruhan imej)",
+  "inputs.fit.options.cover": "Lindungi (penuh, pangkas tepi)",
+
+  "inputs.brightness.label": "Kecerahan",
+
+  "inputs.gamma.label": "Gamma",
+  "inputs.gamma.help": "Pemberatan nada pertengahan. Bawah 1 menggelapkan nada pertengahan (bintik lebih padat); atas 1 mencerahkannya.",
+
+  "inputs.smoothing.label": "Pelicinan",
+  "inputs.smoothing.help": "Melembutkan grid bintik dengan mengaburkan sel bersebelahan. Menjinakkan foto yang bising (noisy).",
+
+  "inputs.dither.label": "Tekstur",
+  "inputs.dither.help": "Menambah tekstur gaya akhbar 1-bit dengan menetapkan sel kepada bintik penuh atau kosong.",
+  "inputs.dither.options.none": "Licin (tiada)",
+  "inputs.dither.options.floyd": "Tersebar (Floyd–Steinberg)",
+  "inputs.dither.options.ordered": "Berpola (tersusun)",
+  "inputs.dither.options.noise": "Berbutir (hingar)",
+
+  "inputs.contrast.label": "Kontras",
+  "inputs.contrast.section": "Warna",
+
+  "inputs.hue.label": "Rona",
+  "inputs.hue.section": "Warna",
+  "inputs.hue.help": "Putarkan setiap warna mengelilingi roda warna.",
+
+  "inputs.saturation.label": "Ketepuan",
+  "inputs.saturation.section": "Warna",
+  "inputs.saturation.help": "0 = skala kelabu · 100 = asal · 200 = terang.",
+
+  "inputs.lightness.label": "Kecerahan",
+  "inputs.lightness.section": "Warna",
+  "inputs.lightness.help": "Naikkan ke arah putih atau turunkan ke arah hitam.",
+
+  "inputs.treatmentColor.label": "Rawatan warna",
+  "inputs.treatmentColor.section": "Warna",
+  "inputs.treatmentColor.help": "Campurkan satu warna ke atas hasil akhir. Biarkan kosong jika tiada.",
+
+  "inputs.blendMode.label": "Mod campuran",
+  "inputs.blendMode.section": "Warna",
+  "inputs.blendMode.help": "Cara warna rawatan bercampur dengan imej.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Darab",
+  "inputs.blendMode.options.screen": "Skrin",
+  "inputs.blendMode.options.overlay": "Pertindihan",
+  "inputs.blendMode.options.darken": "Gelapkan",
+  "inputs.blendMode.options.lighten": "Cerahkan",
+  "inputs.blendMode.options.color-dodge": "Elak Warna",
+  "inputs.blendMode.options.color-burn": "Bakar Warna",
+  "inputs.blendMode.options.hard-light": "Cahaya Keras",
+  "inputs.blendMode.options.soft-light": "Cahaya Lembut",
+  "inputs.blendMode.options.difference": "Perbezaan",
+  "inputs.blendMode.options.exclusion": "Pengecualian",
+  "inputs.blendMode.options.hue": "Rona",
+  "inputs.blendMode.options.saturation": "Ketepuan",
+  "inputs.blendMode.options.color": "Warna",
+  "inputs.blendMode.options.luminosity": "Luminositi",
+
+  "inputs.treatmentIntensity.label": "Keamatan",
+  "inputs.treatmentIntensity.section": "Warna",
+  "inputs.treatmentIntensity.help": "Kelegapan lapisan warna.",
+
+  "inputs.noFilter.label": "Tiada penapis (papar mentah)",
+  "inputs.noFilter.section": "Lapisan",
+  "inputs.noFilter.help": "Papar foto asal atau suapan kamera langsung tanpa sebarang perubahan — berguna untuk meletakkan logo / kad nama bawah sahaja di atas rakaman mentah.",
+
+  "inputs.showLogo.label": "Lapisan logo SUSE",
+  "inputs.showLogo.section": "Lapisan",
+  "inputs.showLogo.help": "Letakkan logo SUSE di atas hasil akhir. Dimatikan secara lalai.",
+
+  "inputs.logoPosition.label": "Kedudukan logo",
+  "inputs.logoPosition.section": "Lapisan",
+  "inputs.logoPosition.options.top-left": "Atas kiri",
+  "inputs.logoPosition.options.top-right": "Atas kanan",
+  "inputs.logoPosition.options.bottom-left": "Bawah kiri",
+  "inputs.logoPosition.options.bottom-right": "Bawah kanan",
+  "inputs.logoPosition.options.top": "Atas tengah",
+  "inputs.logoPosition.options.bottom": "Bawah tengah",
+  "inputs.logoPosition.options.center": "Tengah",
+  "inputs.logoPosition.options.full": "Penuh (tera air)",
+
+  "inputs.logoStyle.label": "Warna logo",
+  "inputs.logoStyle.section": "Lapisan",
+  "inputs.logoStyle.help": "Putih dan hijau kelihatan jelas pada rakaman gelap atau sibuk; hitam sesuai untuk latar belakang cerah.",
+  "inputs.logoStyle.options.white": "Putih",
+  "inputs.logoStyle.options.green": "Hijau",
+  "inputs.logoStyle.options.black": "Hitam",
+
+  "inputs.logoScale.label": "Saiz logo",
+  "inputs.logoScale.section": "Lapisan",
+  "inputs.logoScale.help": "Skalakan logo lebih besar atau lebih kecil.",
+
+  "inputs.lowerThird.label": "Kad nama bawah",
+  "inputs.lowerThird.section": "Lapisan",
+  "inputs.lowerThird.help": "Kad nama beranimasi lembut yang muncul di atas rakaman. Menggunakan nama profil & gambar wajah anda.",
+
+  "inputs.ltTheme.label": "Gaya kad",
+  "inputs.ltTheme.section": "Lapisan",
+  "inputs.ltTheme.options.bar": "Bar jenama SUSE",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Kaca",
+
+  "inputs.ltPosition.label": "Kedudukan kad",
+  "inputs.ltPosition.section": "Lapisan",
+  "inputs.ltPosition.options.left": "Bawah kiri",
+  "inputs.ltPosition.options.center": "Bawah tengah",
+  "inputs.ltPosition.options.right": "Bawah kanan",
+
+  "inputs.firstname.label": "Nama pertama",
+  "inputs.firstname.section": "Lapisan",
+
+  "inputs.lastname.label": "Nama akhir",
+  "inputs.lastname.section": "Lapisan",
+
+  "inputs.title.label": "Peranan / tajuk kecil",
+  "inputs.title.section": "Lapisan",
+  "inputs.title.help": "Baris pilihan di bawah nama — contohnya peranan atau acara.",
+
+  "inputs.nameWeight.label": "Ketebalan fon nama",
+  "inputs.nameWeight.section": "Lapisan",
+  "inputs.nameWeight.help": "Ketebalan fon bagi baris nama (100 Nipis → 900 Hitam).",
+
+  "inputs.subtitleWeight.label": "Ketebalan fon tajuk kecil",
+  "inputs.subtitleWeight.section": "Lapisan",
+  "inputs.subtitleWeight.help": "Ketebalan fon bagi baris peranan / tajuk kecil (100 Nipis → 900 Hitam).",
+
+  "inputs.ltHeadshot.label": "Gambar wajah (pilihan)",
+  "inputs.ltHeadshot.section": "Lapisan",
+  "inputs.ltHeadshot.help": "Lalai menggunakan gambar wajah profil anda. Pilih atau muat naik gambar lain untuk menggantikannya."
 }

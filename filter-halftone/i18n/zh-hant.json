@@ -1,4 +1,172 @@
 {
   "name": "濾鏡：網點",
-  "description": "將任何相片轉換成向量網點圖——網點大小依亮度決定。"
+  "description": "將任何相片轉換成向量網點圖——網點大小依亮度決定。",
+  "a11yLabel": "以單色網點網格呈現所選圖片的網點效果",
+
+  "inputs.image.label": "圖片",
+  "inputs.image.help": "選擇一張相片，或上傳你自己的圖片。處理過程在你的裝置上進行——像素資料不會離開瀏覽器。",
+
+  "inputs.gridSize.label": "網格大小",
+  "inputs.gridSize.help": "網點之間的間距。數值越小，細節越精細、網點越多；數值越大，網屏越粗獷、越明顯。",
+
+  "inputs.dotScale.label": "網點尺寸",
+  "inputs.dotScale.help": "縮放每個網點。小於 1 會使網屏變疏；大於 1 會使網點變粗，讓暗部更飽滿。",
+
+  "inputs.shape.label": "網點形狀",
+  "inputs.shape.options.circle": "圓形",
+  "inputs.shape.options.square": "方形",
+  "inputs.shape.options.diamond": "菱形",
+
+  "inputs.colorSource.label": "色彩來源",
+  "inputs.colorSource.help": "網點顏色可取自底下的相片，或使用單一顏色。",
+  "inputs.colorSource.options.image": "取自圖片",
+  "inputs.colorSource.options.solid": "單一顏色",
+
+  "inputs.colorLevels.label": "色彩層級",
+  "inputs.colorLevels.help": "將網點顏色簡化為有限的色盤（每個色版的層級數）。「全彩」會保留相片原本的色彩。",
+  "inputs.colorLevels.options.0": "全彩",
+  "inputs.colorLevels.options.8": "8 層",
+  "inputs.colorLevels.options.6": "6 層",
+  "inputs.colorLevels.options.4": "4 層",
+  "inputs.colorLevels.options.3": "3 層",
+  "inputs.colorLevels.options.2": "2 層",
+
+  "inputs.fgColor.label": "網點顏色",
+  "inputs.fgColor.help": "當「色彩來源」設為「單一顏色」時的網點顏色。",
+
+  "inputs.bgColor.label": "背景",
+  "inputs.bgColor.help": "網點背後的填色。若要改用透明背景，請在匯出選項中開啟「無背景」。",
+
+  "inputs.invert.label": "反轉",
+  "inputs.invert.help": "讓亮部區域長出網點，而非暗部——適合在深色背景上使用淺色的情況。",
+
+  "inputs.fit.label": "圖片適應方式",
+  "inputs.fit.options.contain": "包含（完整圖片）",
+  "inputs.fit.options.cover": "填滿（裁切邊緣）",
+
+  "inputs.brightness.label": "亮度",
+
+  "inputs.gamma.label": "Gamma 值",
+  "inputs.gamma.help": "中間調的權重。小於 1 會加深中間調（網點更密集）；大於 1 則會使其變亮。",
+
+  "inputs.smoothing.label": "平滑",
+  "inputs.smoothing.help": "透過模糊鄰近網格來柔化網點網格，可抑制雜訊較多的相片。",
+
+  "inputs.dither.label": "紋理",
+  "inputs.dither.help": "將網格對齊為全滿或全空的網點，加入報紙風格的 1 位元紋理。",
+  "inputs.dither.options.none": "平滑（無）",
+  "inputs.dither.options.floyd": "擴散（Floyd–Steinberg）",
+  "inputs.dither.options.ordered": "圖樣（有序）",
+  "inputs.dither.options.noise": "顆粒（雜訊）",
+
+  "inputs.contrast.label": "對比度",
+  "inputs.contrast.section": "色彩",
+
+  "inputs.hue.label": "色相",
+  "inputs.hue.section": "色彩",
+  "inputs.hue.help": "在色輪上旋轉所有顏色。",
+
+  "inputs.saturation.label": "飽和度",
+  "inputs.saturation.section": "色彩",
+  "inputs.saturation.help": "0 = 灰階 · 100 = 原始 · 200 = 鮮豔。",
+
+  "inputs.lightness.label": "明度",
+  "inputs.lightness.section": "色彩",
+  "inputs.lightness.help": "朝白色提亮或朝黑色下沉。",
+
+  "inputs.treatmentColor.label": "色彩處理",
+  "inputs.treatmentColor.section": "色彩",
+  "inputs.treatmentColor.help": "在結果上疊加一種顏色。留空則不套用。",
+
+  "inputs.blendMode.label": "混合模式",
+  "inputs.blendMode.section": "色彩",
+  "inputs.blendMode.help": "處理顏色與圖片的混合方式。",
+  "inputs.blendMode.options.normal": "正常",
+  "inputs.blendMode.options.multiply": "色彩增值",
+  "inputs.blendMode.options.screen": "濾色",
+  "inputs.blendMode.options.overlay": "覆蓋",
+  "inputs.blendMode.options.darken": "變暗",
+  "inputs.blendMode.options.lighten": "變亮",
+  "inputs.blendMode.options.color-dodge": "顏色加亮",
+  "inputs.blendMode.options.color-burn": "顏色加深",
+  "inputs.blendMode.options.hard-light": "實光",
+  "inputs.blendMode.options.soft-light": "柔光",
+  "inputs.blendMode.options.difference": "差異化",
+  "inputs.blendMode.options.exclusion": "排除",
+  "inputs.blendMode.options.hue": "色相",
+  "inputs.blendMode.options.saturation": "飽和度",
+  "inputs.blendMode.options.color": "顏色",
+  "inputs.blendMode.options.luminosity": "明度",
+
+  "inputs.treatmentIntensity.label": "強度",
+  "inputs.treatmentIntensity.section": "色彩",
+  "inputs.treatmentIntensity.help": "顏色疊加的不透明度。",
+
+  "inputs.noFilter.label": "不套用濾鏡（顯示原始畫面）",
+  "inputs.noFilter.section": "疊加",
+  "inputs.noFilter.help": "顯示未經處理的原始相片或即時攝影機畫面——適合只想在原始畫面上放置標誌或下方字幕卡時使用。",
+
+  "inputs.showLogo.label": "SUSE 標誌疊加",
+  "inputs.showLogo.section": "疊加",
+  "inputs.showLogo.help": "在結果上疊加 SUSE 標誌。預設為關閉。",
+
+  "inputs.logoPosition.label": "標誌位置",
+  "inputs.logoPosition.section": "疊加",
+  "inputs.logoPosition.options.top-left": "左上",
+  "inputs.logoPosition.options.top-right": "右上",
+  "inputs.logoPosition.options.bottom-left": "左下",
+  "inputs.logoPosition.options.bottom-right": "右下",
+  "inputs.logoPosition.options.top": "上方置中",
+  "inputs.logoPosition.options.bottom": "下方置中",
+  "inputs.logoPosition.options.center": "置中",
+  "inputs.logoPosition.options.full": "全滿（浮水印）",
+
+  "inputs.logoStyle.label": "標誌顏色",
+  "inputs.logoStyle.section": "疊加",
+  "inputs.logoStyle.help": "白色與綠色適合深色或雜亂的畫面；黑色適合淺色背景。",
+  "inputs.logoStyle.options.white": "白色",
+  "inputs.logoStyle.options.green": "綠色",
+  "inputs.logoStyle.options.black": "黑色",
+
+  "inputs.logoScale.label": "標誌大小",
+  "inputs.logoScale.section": "疊加",
+  "inputs.logoScale.help": "放大或縮小標誌。",
+
+  "inputs.lowerThird.label": "下方姓名字卡",
+  "inputs.lowerThird.section": "疊加",
+  "inputs.lowerThird.help": "在畫面上以輕柔動畫顯示的姓名字卡，使用你個人資料中的姓名與大頭照。",
+
+  "inputs.ltTheme.label": "卡片樣式",
+  "inputs.ltTheme.section": "疊加",
+  "inputs.ltTheme.options.bar": "SUSE 品牌長條",
+  "inputs.ltTheme.options.minimal": "簡約",
+  "inputs.ltTheme.options.glass": "玻璃感",
+
+  "inputs.ltPosition.label": "卡片位置",
+  "inputs.ltPosition.section": "疊加",
+  "inputs.ltPosition.options.left": "左下",
+  "inputs.ltPosition.options.center": "下方置中",
+  "inputs.ltPosition.options.right": "右下",
+
+  "inputs.firstname.label": "名字",
+  "inputs.firstname.section": "疊加",
+
+  "inputs.lastname.label": "姓氏",
+  "inputs.lastname.section": "疊加",
+
+  "inputs.title.label": "職稱／副標題",
+  "inputs.title.section": "疊加",
+  "inputs.title.help": "姓名下方的選填文字——例如職稱或活動名稱。",
+
+  "inputs.nameWeight.label": "姓名字重",
+  "inputs.nameWeight.section": "疊加",
+  "inputs.nameWeight.help": "姓名列的字體粗細（100 極細 → 900 特黑）。",
+
+  "inputs.subtitleWeight.label": "副標字重",
+  "inputs.subtitleWeight.section": "疊加",
+  "inputs.subtitleWeight.help": "職稱／副標題列的字體粗細（100 極細 → 900 特黑）。",
+
+  "inputs.ltHeadshot.label": "大頭照（選填）",
+  "inputs.ltHeadshot.section": "疊加",
+  "inputs.ltHeadshot.help": "預設使用你個人資料中的大頭照，可選擇或上傳其他照片來覆蓋。"
 }

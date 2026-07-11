@@ -1,4 +1,146 @@
 {
   "name": "Filter: Pag-stretch ng Pixel",
-  "description": "Ikalat ang isang column ng pixels sa buong larawan mula sa threshold line. Gumagana ito nang live."
+  "description": "Ikalat ang isang column ng pixels sa buong larawan mula sa threshold line. Gumagana ito nang live.",
+  "a11yLabel": "Guhit na pixel-stretch mula sa napiling larawan",
+
+  "inputs.image.label": "Larawan",
+  "inputs.image.help": "Pumili ng larawan o mag-upload ng sarili mo. Pino-proseso ito sa device mo — hindi umaalis ang mga pixel sa browser. O pindutin ang \"Go live\" sa canvas para i-smear ang camera mo.",
+
+  "inputs.direction.label": "Direksyon",
+  "inputs.direction.help": "Saang direksyon kumakalat ang nakapirming column ng pixels sa buong frame.",
+  "inputs.direction.options.right": "Mag-stretch pakanan →",
+  "inputs.direction.options.left": "Mag-stretch pakaliwa ←",
+  "inputs.direction.options.down": "Mag-stretch pababa ↓",
+  "inputs.direction.options.up": "Mag-stretch pataas ↑",
+
+  "inputs.threshold.label": "Simula ng Threshold",
+  "inputs.threshold.help": "Kung saan nagfi-freeze ang larawan. Lampas sa linyang ito, nag-i-stretch ang nakapirming column, at magpapatuloy ang natitirang bahagi ng larawan sa natural na proportion nito, na naka-clip sa pinakadulong gilid.",
+
+  "inputs.spread.label": "Pagkalat",
+  "inputs.spread.help": "Gaano karaming espasyo lampas sa threshold ang pupunuin ng nakapirming column. Ang natitirang bahagi ng larawan ay dadausdos papasok sa likod nito sa natural na proportion nito (naka-clip sa gilid). 0 = orihinal na larawan; 100 = aabot ang column hanggang sa dulo.",
+
+  "inputs.feather.label": "Feather",
+  "inputs.feather.help": "Pinapalambot ang tagpuan kung saan nagsasalubong ang larawan at ang nakapirming column. Sa malayong dulo, kung saan ipinapasa ng column ang kontrol sa dumadausdos na natitira, tuloy-tuloy na ang kulay, kaya mas apektado ang unang tagpuan. 0 ang nagpapanatili ng matigas na gilid.",
+
+  "inputs.contrast.label": "Contrast",
+  "inputs.contrast.section": "Kulay",
+  "inputs.contrast.help": "Palayuin ang mga tono (mas mataas) o patagin ang mga ito (mas mababa).",
+
+  "inputs.hue.label": "Hue",
+  "inputs.hue.section": "Kulay",
+  "inputs.hue.help": "Iikot ang bawat kulay sa paligid ng gulong ng kulay.",
+
+  "inputs.saturation.label": "Saturation",
+  "inputs.saturation.section": "Kulay",
+  "inputs.saturation.help": "0 = greyscale · 100 = orihinal · 200 = matingkad.",
+
+  "inputs.lightness.label": "Lightness",
+  "inputs.lightness.section": "Kulay",
+  "inputs.lightness.help": "Itaas patungong puti o ibaba patungong itim.",
+
+  "inputs.treatmentColor.label": "Overlay na Kulay",
+  "inputs.treatmentColor.section": "Kulay",
+  "inputs.treatmentColor.help": "Maghalo ng kulay sa ibabaw ng resulta. Iwanang blangko kung wala.",
+
+  "inputs.blendMode.label": "Blend Mode",
+  "inputs.blendMode.section": "Kulay",
+  "inputs.blendMode.help": "Paano naghahalo ang overlay na kulay sa larawan.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiply",
+  "inputs.blendMode.options.screen": "Screen",
+  "inputs.blendMode.options.overlay": "Overlay",
+  "inputs.blendMode.options.darken": "Darken",
+  "inputs.blendMode.options.lighten": "Lighten",
+  "inputs.blendMode.options.color-dodge": "Color Dodge",
+  "inputs.blendMode.options.color-burn": "Color Burn",
+  "inputs.blendMode.options.hard-light": "Hard Light",
+  "inputs.blendMode.options.soft-light": "Soft Light",
+  "inputs.blendMode.options.difference": "Difference",
+  "inputs.blendMode.options.exclusion": "Exclusion",
+  "inputs.blendMode.options.hue": "Hue",
+  "inputs.blendMode.options.saturation": "Saturation",
+  "inputs.blendMode.options.color": "Color",
+  "inputs.blendMode.options.luminosity": "Luminosity",
+
+  "inputs.treatmentIntensity.label": "Lakas",
+  "inputs.treatmentIntensity.section": "Kulay",
+  "inputs.treatmentIntensity.help": "Opacity ng overlay na kulay.",
+
+  "inputs.imageFraming.label": "Zoom at Posisyon",
+  "inputs.imageFraming.section": "Posisyon",
+  "inputs.imageFraming.help": "Pinapalaki ng Zoom ang larawan; ang X / Y ay nagpapagalaw dito sa loob ng frame (tulad ng object-position). I-drag ang isang label o mag-type ng value.",
+  "inputs.imageFraming.fields.zoom.label": "Zoom",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "Walang filter (ipakita ang raw)",
+  "inputs.noFilter.section": "Overlay",
+  "inputs.noFilter.help": "Ipakita ang orihinal na larawan o live camera feed nang walang pagbabago — magamit kung gusto mo lang maglagay ng logo / lower-third sa ibabaw ng raw footage.",
+
+  "inputs.showLogo.label": "SUSE logo overlay",
+  "inputs.showLogo.section": "Overlay",
+  "inputs.showLogo.help": "I-overlay ang SUSE logo sa resulta. Naka-off bilang default.",
+
+  "inputs.logoPosition.label": "Posisyon ng Logo",
+  "inputs.logoPosition.section": "Overlay",
+  "inputs.logoPosition.options.top-left": "Kaliwang itaas",
+  "inputs.logoPosition.options.top-right": "Kanang itaas",
+  "inputs.logoPosition.options.bottom-left": "Kaliwang ibaba",
+  "inputs.logoPosition.options.bottom-right": "Kanang ibaba",
+  "inputs.logoPosition.options.top": "Gitnang itaas",
+  "inputs.logoPosition.options.bottom": "Gitnang ibaba",
+  "inputs.logoPosition.options.center": "Gitna",
+  "inputs.logoPosition.options.full": "Buo (watermark)",
+
+  "inputs.logoStyle.label": "Kulay ng Logo",
+  "inputs.logoStyle.section": "Overlay",
+  "inputs.logoStyle.help": "Mas madaling makita ang puti at berde sa madilim o busy na footage; mas bagay ang itim sa maliliwanag na background.",
+  "inputs.logoStyle.options.white": "Puti",
+  "inputs.logoStyle.options.green": "Berde",
+  "inputs.logoStyle.options.black": "Itim",
+
+  "inputs.logoScale.label": "Sukat ng Logo",
+  "inputs.logoScale.section": "Overlay",
+  "inputs.logoScale.help": "Palakihin o paliitin ang logo.",
+
+  "inputs.lowerThird.label": "Lower-third na Name Card",
+  "inputs.lowerThird.section": "Overlay",
+  "inputs.lowerThird.help": "Isang name card na may magandang animation na lalabas sa ibabaw ng footage. Gumagamit ng pangalan at headshot mula sa profile mo.",
+
+  "inputs.ltTheme.label": "Estilo ng Card",
+  "inputs.ltTheme.section": "Overlay",
+  "inputs.ltTheme.options.bar": "SUSE brand bar",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glass",
+
+  "inputs.ltPosition.label": "Posisyon ng Card",
+  "inputs.ltPosition.section": "Overlay",
+  "inputs.ltPosition.options.left": "Kaliwang ibaba",
+  "inputs.ltPosition.options.center": "Gitnang ibaba",
+  "inputs.ltPosition.options.right": "Kanang ibaba",
+
+  "inputs.firstname.label": "Unang Pangalan",
+  "inputs.firstname.section": "Overlay",
+
+  "inputs.lastname.label": "Apelyido",
+  "inputs.lastname.section": "Overlay",
+
+  "inputs.title.label": "Role / Subtitle",
+  "inputs.title.section": "Overlay",
+  "inputs.title.help": "Opsyonal na linya sa ibaba ng pangalan — hal. isang role o event.",
+
+  "inputs.nameWeight.label": "Bigat ng Pangalan",
+  "inputs.nameWeight.section": "Overlay",
+  "inputs.nameWeight.help": "Font weight ng linya ng pangalan (100 Thin → 900 Black).",
+
+  "inputs.subtitleWeight.label": "Bigat ng Subtitle",
+  "inputs.subtitleWeight.section": "Overlay",
+  "inputs.subtitleWeight.help": "Font weight ng role / subtitle line (100 Thin → 900 Black).",
+
+  "inputs.ltHeadshot.label": "Headshot (opsyonal)",
+  "inputs.ltHeadshot.section": "Overlay",
+  "inputs.ltHeadshot.help": "Default sa headshot ng profile mo. Pumili o mag-upload ng iba para i-override ito.",
+
+  "inputs.width.label": "Lapad",
+  "inputs.height.label": "Taas"
 }

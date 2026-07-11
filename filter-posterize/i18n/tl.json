@@ -1,4 +1,154 @@
 {
   "name": "Filter: I-posterize ang Bitmap",
-  "description": "I-trace ang kahit anong larawan patungo sa flat, screenprint-style na vector color separations."
+  "description": "I-trace ang kahit anong larawan patungo sa flat, screenprint-style na vector color separations.",
+  "a11yLabel": "{{steps}}-kulay na naka-posterize na vector ng larawan",
+
+  "inputs.photo.label": "Larawan",
+  "inputs.photo.help": "Ang larawan na i-posterize. Pinakamainam ang mga headshot at high-contrast na larawan kapag tina-trace.",
+
+  "inputs.steps.label": "Antas ng Kulay",
+  "inputs.steps.help": "Ilang tonal separation ang ita-trace. Kapag binago ito, muling magsa-sample ng mga kulay mula sa larawan.",
+
+  "inputs.threshold.label": "Threshold (1 tinta)",
+  "inputs.threshold.help": "Gawing iisang tinta lang sa ibabaw ng papel ang larawan — isang matigas na hiwa sa pagitan ng madilim at maliwanag sa halip na graded na mga separation. Gamitin kasabay ng Transparent background para sa tinta na walang background.",
+
+  "inputs.thresholdLevel.label": "Antas ng Threshold",
+  "inputs.thresholdLevel.help": "Kung saan babagsak ang hiwa sa pagitan ng tinta at papel. Mas mataas, mas maraming bahagi ng larawan ang magiging tinta; mas mababa, mananatili lang ang pinakamadidilim na anino.",
+
+  "inputs.brightness.label": "Brightness",
+  "inputs.brightness.help": "Paliwanagin o padilimin ang larawan bago ito paghiwalayin — inililipat nito ang bawat tono pataas o pababa, na naglilipat ng detalye sa pagitan ng maliwanag at madilim na separation.",
+
+  "inputs.quality.label": "Kalidad",
+  "inputs.quality.help": "Resolution ng pag-trace — mas mataas na value ay nagsa-sample ng larawan sa mas pinong grid at nakakakuha ng mas maraming detalye. Ang lagpas sa 100 ay pumapasok sa napakapino ngunit mas mabagal na pag-trace.",
+
+  "inputs.smoothing.label": "Pagpapakinis",
+  "inputs.smoothing.help": "Kung gaano karaming pag-ikot ang gagawin ng mga na-trace na outline patungo sa mga curve. Mababang value ay pinapanatiling tapat at malinaw ang mga gilid; mataas na value ay pinapadaloy ang mga ito sa makikinis na Bézier curve.",
+
+  "inputs.invert.label": "I-invert ang mga Tono",
+  "inputs.invert.help": "Mag-trace gamit ang mga na-invert na tono — ang mga maliwanag na bahagi ng larawan ang magiging foreground separations (isang tonal negative). Kapaki-pakinabang para sa maliwanag na subject sa madilim na background.",
+
+  "inputs.colors.label": "Mga Kulay ng Separation",
+  "inputs.colors.help": "Isang swatch bawat tono, ang pinakamadilim muna at ang pinakamaliwanag (papel) huli. Awtomatikong sinampol mula sa iyong larawan — i-edit ang alinmang swatch para baguhin ang kulay ng separation na iyon.",
+  "inputs.colors.fields.color.label": "Kulay",
+
+  "inputs.resample.label": "Muling I-sample ang mga Kulay mula sa Larawan",
+  "inputs.resample.help": "Itapon ang mga manual na pagbabago at muling kunin ang bawat kulay ng separation mula sa kasalukuyang larawan.",
+
+  "inputs.transparentBg.label": "Transparent na Background",
+  "inputs.transparentBg.help": "Alisin ang pinakamaliwanag na 'papel' na separation para maging transparent ang background (PNG / SVG).",
+
+  "inputs.contrast.label": "Contrast",
+  "inputs.contrast.section": "Kulay",
+  "inputs.contrast.help": "Paghiwalayin pa ang mga tono (mas mataas) o patagin sila (mas mababa) bago paghiwalayin. Mas maraming Contrast ay nagbibigay ng mas bold at mas graphic na mga separation.",
+
+  "inputs.hue.label": "Hue",
+  "inputs.hue.section": "Kulay",
+  "inputs.hue.help": "Paikutin ang bawat kulay sa paligid ng gulong ng kulay.",
+
+  "inputs.saturation.label": "Saturation",
+  "inputs.saturation.section": "Kulay",
+  "inputs.saturation.help": "0 = greyscale · 100 = orihinal · 200 = matingkad.",
+
+  "inputs.lightness.label": "Lightness",
+  "inputs.lightness.section": "Kulay",
+  "inputs.lightness.help": "Itaas patungong puti o ibaba patungong itim.",
+
+  "inputs.treatmentColor.label": "Color Treatment",
+  "inputs.treatmentColor.section": "Kulay",
+  "inputs.treatmentColor.help": "Ihalo ang isang kulay sa resulta. Iwanang blangko kung wala.",
+
+  "inputs.blendMode.label": "Blend Mode",
+  "inputs.blendMode.section": "Kulay",
+  "inputs.blendMode.help": "Kung paano maghahalo ang kulay ng treatment sa larawan.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiply",
+  "inputs.blendMode.options.screen": "Screen",
+  "inputs.blendMode.options.overlay": "Overlay",
+  "inputs.blendMode.options.darken": "Darken",
+  "inputs.blendMode.options.lighten": "Lighten",
+  "inputs.blendMode.options.color-dodge": "Color Dodge",
+  "inputs.blendMode.options.color-burn": "Color Burn",
+  "inputs.blendMode.options.hard-light": "Hard Light",
+  "inputs.blendMode.options.soft-light": "Soft Light",
+  "inputs.blendMode.options.difference": "Difference",
+  "inputs.blendMode.options.exclusion": "Exclusion",
+  "inputs.blendMode.options.hue": "Hue",
+  "inputs.blendMode.options.saturation": "Saturation",
+  "inputs.blendMode.options.color": "Kulay",
+  "inputs.blendMode.options.luminosity": "Luminosity",
+
+  "inputs.treatmentIntensity.label": "Lakas",
+  "inputs.treatmentIntensity.section": "Kulay",
+  "inputs.treatmentIntensity.help": "Ang opacity ng overlay na kulay.",
+
+  "inputs.width.label": "Lapad",
+  "inputs.height.label": "Taas",
+
+  "inputs.noFilter.label": "Walang Filter (Ipakita ang Raw)",
+  "inputs.noFilter.section": "Overlay",
+  "inputs.noFilter.help": "Ipakita ang orihinal na larawan o live camera feed nang hindi ginagalaw — magagamit ito para maglagay lang ng logo / lower-third sa ibabaw ng raw footage.",
+
+  "inputs.showLogo.label": "SUSE Logo Overlay",
+  "inputs.showLogo.section": "Overlay",
+  "inputs.showLogo.help": "I-overlay ang SUSE logo sa resulta. Naka-off ito bilang default.",
+
+  "inputs.logoPosition.label": "Posisyon ng Logo",
+  "inputs.logoPosition.section": "Overlay",
+  "inputs.logoPosition.options.top-left": "Kaliwang Itaas",
+  "inputs.logoPosition.options.top-right": "Kanang Itaas",
+  "inputs.logoPosition.options.bottom-left": "Kaliwang Ibaba",
+  "inputs.logoPosition.options.bottom-right": "Kanang Ibaba",
+  "inputs.logoPosition.options.top": "Gitnang Itaas",
+  "inputs.logoPosition.options.bottom": "Gitnang Ibaba",
+  "inputs.logoPosition.options.center": "Gitna",
+  "inputs.logoPosition.options.full": "Buo (Watermark)",
+
+  "inputs.logoStyle.label": "Kulay ng Logo",
+  "inputs.logoStyle.section": "Overlay",
+  "inputs.logoStyle.options.white": "Puti",
+  "inputs.logoStyle.options.green": "Berde",
+  "inputs.logoStyle.options.black": "Itim",
+  "inputs.logoStyle.help": "Ang puti at berde ay malinaw makita sa madilim o busy na footage; ang itim ay bagay sa maliliwanag na background.",
+
+  "inputs.logoScale.label": "Sukat ng Logo",
+  "inputs.logoScale.section": "Overlay",
+  "inputs.logoScale.help": "I-scale pataas o pababa ang logo.",
+
+  "inputs.lowerThird.label": "Lower-Third na Name Card",
+  "inputs.lowerThird.section": "Overlay",
+  "inputs.lowerThird.help": "Isang name card na animated na dahan-dahang lalabas sa ibabaw ng footage. Gumagamit ng pangalan at headshot mula sa iyong profile.",
+
+  "inputs.ltTheme.label": "Estilo ng Card",
+  "inputs.ltTheme.section": "Overlay",
+  "inputs.ltTheme.options.bar": "SUSE Brand Bar",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glass",
+
+  "inputs.ltPosition.label": "Posisyon ng Card",
+  "inputs.ltPosition.section": "Overlay",
+  "inputs.ltPosition.options.left": "Kaliwang Ibaba",
+  "inputs.ltPosition.options.center": "Gitnang Ibaba",
+  "inputs.ltPosition.options.right": "Kanang Ibaba",
+
+  "inputs.firstname.label": "Unang Pangalan",
+  "inputs.firstname.section": "Overlay",
+
+  "inputs.lastname.label": "Apelyido",
+  "inputs.lastname.section": "Overlay",
+
+  "inputs.title.label": "Posisyon / Subtitle",
+  "inputs.title.section": "Overlay",
+  "inputs.title.help": "Opsyonal na linya sa ibaba ng pangalan — hal., isang posisyon o event.",
+
+  "inputs.nameWeight.label": "Bigat ng Pangalan",
+  "inputs.nameWeight.section": "Overlay",
+  "inputs.nameWeight.help": "Font weight ng linya ng pangalan (100 Thin → 900 Black).",
+
+  "inputs.subtitleWeight.label": "Bigat ng Subtitle",
+  "inputs.subtitleWeight.section": "Overlay",
+  "inputs.subtitleWeight.help": "Font weight ng linya ng posisyon / subtitle (100 Thin → 900 Black).",
+
+  "inputs.ltHeadshot.label": "Headshot (Opsyonal)",
+  "inputs.ltHeadshot.section": "Overlay",
+  "inputs.ltHeadshot.help": "Default na gagamitin ang headshot mula sa iyong profile. Pumili o mag-upload ng iba para i-override ito."
 }

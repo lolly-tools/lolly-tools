@@ -1,4 +1,155 @@
 {
   "name": "Penapis: Poster Bitmap",
-  "description": "Jejak sebarang foto menjadi pemisahan warna vektor rata bergaya cetakan skrin."
+  "description": "Jejak sebarang foto menjadi pemisahan warna vektor rata bergaya cetakan skrin.",
+  "a11yLabel": "Vektor berposter {{steps}} warna bagi foto",
+
+  "inputs.photo.label": "Foto",
+  "inputs.photo.help": "Imej yang akan diposterkan. Gambar potret dan foto berkontras tinggi paling sesuai untuk dijejaki.",
+
+  "inputs.steps.label": "Tahap warna",
+  "inputs.steps.help": "Berapa banyak pemisahan tona untuk dijejaki. Menukar nilai ini akan mengambil semula sampel warna daripada foto.",
+
+  "inputs.threshold.label": "Ambang (1 dakwat)",
+  "inputs.threshold.help": "Kurangkan foto kepada satu dakwat sahaja di atas kertas — satu potongan tegas antara gelap dan cerah dan bukannya pemisahan berperingkat. Gabungkan dengan Latar belakang lutsinar untuk dakwat di atas kekosongan.",
+
+  "inputs.thresholdLevel.label": "Tahap ambang",
+  "inputs.thresholdLevel.help": "Di mana potongan antara dakwat dan kertas berlaku. Lebih tinggi menukar lebih banyak bahagian foto kepada dakwat; lebih rendah hanya mengekalkan bayang paling gelap.",
+
+  "inputs.brightness.label": "Kecerahan",
+  "inputs.brightness.help": "Cerahkan atau gelapkan foto sebelum ia dipisahkan — mengalihkan setiap tona ke atas atau ke bawah, memindahkan perincian antara pemisahan cerah dan gelap.",
+
+  "inputs.quality.label": "Kualiti",
+  "inputs.quality.help": "Resolusi penjejakan — lebih tinggi mengambil sampel foto pada grid yang lebih halus dan menangkap lebih banyak perincian. Melebihi 100 menghasilkan penjejakan yang sangat halus tetapi lebih perlahan.",
+
+  "inputs.smoothing.label": "Pelicinan",
+  "inputs.smoothing.help": "Sejauh mana garis luar yang dijejaki dibundarkan menjadi lengkung. Rendah mengekalkan tepi yang tegas dan setia; tinggi menjadikannya lengkung Bézier yang licin.",
+
+  "inputs.invert.label": "Songsangkan tona",
+  "inputs.invert.help": "Jejaki daripada tona yang disongsangkan — kawasan cerah pada foto menjadi pemisahan latar depan (negatif tona). Berguna untuk subjek cerah pada latar belakang gelap.",
+
+  "inputs.colors.label": "Warna pemisahan",
+  "inputs.colors.help": "Satu contoh warna bagi setiap tona, bermula dengan paling gelap dan berakhir dengan paling cerah (kertas). Diambil sampel secara automatik daripada foto anda — sunting mana-mana contoh warna untuk menukar warna pemisahan tersebut.",
+  "inputs.colors.fields.color.label": "Warna",
+
+  "inputs.resample.label": "Ambil semula sampel warna daripada foto",
+  "inputs.resample.help": "Buang suntingan manual dan hasilkan semula setiap warna pemisahan daripada foto semasa.",
+
+  "inputs.transparentBg.label": "Latar belakang lutsinar",
+  "inputs.transparentBg.help": "Buang pemisahan 'kertas' yang paling cerah supaya latar belakang menjadi lutsinar (PNG / SVG).",
+
+  "inputs.contrast.label": "Kontras",
+  "inputs.contrast.section": "Warna",
+  "inputs.contrast.help": "Renggangkan tona (lebih tinggi) atau ratakannya bersama (lebih rendah) sebelum pemisahan. Kontras yang lebih tinggi menghasilkan pemisahan yang lebih berani dan bergaya grafik.",
+
+  "inputs.hue.label": "Rona",
+  "inputs.hue.section": "Warna",
+  "inputs.hue.help": "Putarkan setiap warna mengelilingi roda warna.",
+
+  "inputs.saturation.label": "Ketepuan",
+  "inputs.saturation.section": "Warna",
+  "inputs.saturation.help": "0 = kelabu · 100 = asal · 200 = terang.",
+
+  "inputs.lightness.label": "Kecerahan",
+  "inputs.lightness.section": "Warna",
+  "inputs.lightness.help": "Naikkan ke arah putih atau turunkan ke arah hitam.",
+
+  "inputs.treatmentColor.label": "Rawatan warna",
+  "inputs.treatmentColor.section": "Warna",
+  "inputs.treatmentColor.help": "Campurkan satu warna ke atas hasil. Biarkan kosong untuk tiada.",
+
+  "inputs.blendMode.label": "Mod adunan",
+  "inputs.blendMode.section": "Warna",
+  "inputs.blendMode.help": "Cara warna rawatan bercampur dengan imej.",
+  "inputs.blendMode.options.normal": "Biasa",
+  "inputs.blendMode.options.multiply": "Darab",
+  "inputs.blendMode.options.screen": "Skrin",
+  "inputs.blendMode.options.overlay": "Bertindih",
+  "inputs.blendMode.options.darken": "Gelapkan",
+  "inputs.blendMode.options.lighten": "Cerahkan",
+  "inputs.blendMode.options.color-dodge": "Dodge Warna",
+  "inputs.blendMode.options.color-burn": "Burn Warna",
+  "inputs.blendMode.options.hard-light": "Cahaya Keras",
+  "inputs.blendMode.options.soft-light": "Cahaya Lembut",
+  "inputs.blendMode.options.difference": "Perbezaan",
+  "inputs.blendMode.options.exclusion": "Pengecualian",
+  "inputs.blendMode.options.hue": "Rona",
+  "inputs.blendMode.options.saturation": "Ketepuan",
+  "inputs.blendMode.options.color": "Warna",
+  "inputs.blendMode.options.luminosity": "Keluminan",
+
+  "inputs.treatmentIntensity.label": "Keamatan",
+  "inputs.treatmentIntensity.section": "Warna",
+  "inputs.treatmentIntensity.help": "Kelegapan lapisan warna.",
+
+  "inputs.width.label": "Lebar",
+
+  "inputs.height.label": "Tinggi",
+
+  "inputs.noFilter.label": "Tiada penapis (tunjuk mentah)",
+  "inputs.noFilter.section": "Tindanan",
+  "inputs.noFilter.help": "Tunjukkan foto asal atau suapan kamera langsung tanpa diubah — sesuai untuk meletakkan logo / kad nama bawah sahaja di atas rakaman mentah.",
+
+  "inputs.showLogo.label": "Tindanan logo SUSE",
+  "inputs.showLogo.section": "Tindanan",
+  "inputs.showLogo.help": "Paparkan logo SUSE sebagai tindanan pada hasil. Dimatikan secara lalai.",
+
+  "inputs.logoPosition.label": "Kedudukan logo",
+  "inputs.logoPosition.section": "Tindanan",
+  "inputs.logoPosition.options.top-left": "Kiri atas",
+  "inputs.logoPosition.options.top-right": "Kanan atas",
+  "inputs.logoPosition.options.bottom-left": "Kiri bawah",
+  "inputs.logoPosition.options.bottom-right": "Kanan bawah",
+  "inputs.logoPosition.options.top": "Tengah atas",
+  "inputs.logoPosition.options.bottom": "Tengah bawah",
+  "inputs.logoPosition.options.center": "Tengah",
+  "inputs.logoPosition.options.full": "Penuh (tera air)",
+
+  "inputs.logoStyle.label": "Warna logo",
+  "inputs.logoStyle.section": "Tindanan",
+  "inputs.logoStyle.help": "Putih dan hijau sesuai untuk rakaman gelap atau sibuk; hitam sesuai untuk latar belakang cerah.",
+  "inputs.logoStyle.options.white": "Putih",
+  "inputs.logoStyle.options.green": "Hijau",
+  "inputs.logoStyle.options.black": "Hitam",
+
+  "inputs.logoScale.label": "Saiz logo",
+  "inputs.logoScale.section": "Tindanan",
+  "inputs.logoScale.help": "Besarkan atau kecilkan logo.",
+
+  "inputs.lowerThird.label": "Kad nama bawah skrin",
+  "inputs.lowerThird.section": "Tindanan",
+  "inputs.lowerThird.help": "Kad nama beranimasi lembut yang muncul di atas rakaman. Menggunakan nama & gambar profil anda.",
+
+  "inputs.ltTheme.label": "Gaya kad",
+  "inputs.ltTheme.section": "Tindanan",
+  "inputs.ltTheme.options.bar": "Bar jenama SUSE",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Kaca",
+
+  "inputs.ltPosition.label": "Kedudukan kad",
+  "inputs.ltPosition.section": "Tindanan",
+  "inputs.ltPosition.options.left": "Kiri bawah",
+  "inputs.ltPosition.options.center": "Tengah bawah",
+  "inputs.ltPosition.options.right": "Kanan bawah",
+
+  "inputs.firstname.label": "Nama pertama",
+  "inputs.firstname.section": "Tindanan",
+
+  "inputs.lastname.label": "Nama akhir",
+  "inputs.lastname.section": "Tindanan",
+
+  "inputs.title.label": "Peranan / subtajuk",
+  "inputs.title.section": "Tindanan",
+  "inputs.title.help": "Baris pilihan di bawah nama — contohnya peranan atau acara.",
+
+  "inputs.nameWeight.label": "Ketebalan nama",
+  "inputs.nameWeight.section": "Tindanan",
+  "inputs.nameWeight.help": "Ketebalan fon baris nama (100 Nipis → 900 Hitam).",
+
+  "inputs.subtitleWeight.label": "Ketebalan subtajuk",
+  "inputs.subtitleWeight.section": "Tindanan",
+  "inputs.subtitleWeight.help": "Ketebalan fon baris peranan / subtajuk (100 Nipis → 900 Hitam).",
+
+  "inputs.ltHeadshot.label": "Gambar potret (pilihan)",
+  "inputs.ltHeadshot.section": "Tindanan",
+  "inputs.ltHeadshot.help": "Lalai menggunakan gambar profil anda. Pilih atau muat naik gambar lain untuk menggantikannya."
 }

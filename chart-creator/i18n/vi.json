@@ -1,5 +1,148 @@
 {
   "name": "Trình Tạo Biểu Đồ",
   "description": "Biểu đồ đúng chuẩn thương hiệu từ dữ liệu của bạn — cột, donut, tròn hoặc xếp chồng.",
-  "featured.blurb": "Biểu đồ đúng chuẩn thương hiệu từ dữ liệu của bạn, mọi kiểu dáng"
+  "featured.blurb": "Biểu đồ đúng chuẩn thương hiệu từ dữ liệu của bạn, mọi kiểu dáng",
+
+  "inputs.chartType.label": "Loại biểu đồ",
+  "inputs.chartType.options.vertical-bar": "Cột dọc",
+  "inputs.chartType.options.horizontal-bar": "Cột ngang",
+  "inputs.chartType.options.donut": "Donut",
+  "inputs.chartType.options.pie": "Hình tròn",
+  "inputs.chartType.options.stacked": "Cột xếp chồng",
+
+  "inputs.donutRadius.label": "Bán kính donut",
+
+  "inputs.stackMax.label": "Giá trị tối đa",
+  "inputs.stackMax.placeholder": "0 = vừa khít tổng",
+  "inputs.stackMax.help": "Để 0 để thanh vừa khít với tổng các giá trị của bạn (dạng tổng hợp). Đặt một số để tỷ lệ tổng hợp theo mức tối đa cố định — thanh sẽ lấp đầy phần tương ứng và để trống phần còn lại.",
+
+  "inputs.sliceGap.label": "Khoảng cách giữa các lát",
+  "inputs.sliceGap.section": "Lát cắt",
+  "inputs.sliceGap.help": "Khoảng cách giữa các lát, tính bằng pixel ở mép ngoài. 0 = các lát chạm nhau.",
+
+  "inputs.cornerRadius.label": "Bán kính góc",
+  "inputs.cornerRadius.section": "Lát cắt",
+  "inputs.cornerRadius.help": "Bo tròn các góc của mỗi lát. Tự động giới hạn với các lát mỏng hoặc hẹp.",
+
+  "inputs.strokeWidth.label": "Độ rộng viền",
+  "inputs.strokeWidth.section": "Lát cắt",
+  "inputs.strokeWidth.help": "Đường viền quanh mỗi lát. 0 = không có viền.",
+
+  "inputs.strokeColor.label": "Màu viền",
+  "inputs.strokeColor.section": "Lát cắt",
+
+  "inputs.heading.label": "Tiêu đề",
+  "inputs.heading.placeholder": "Tiêu đề biểu đồ",
+
+  "inputs.subheading.label": "Phụ đề / nguồn",
+  "inputs.subheading.placeholder": "Phụ đề hoặc nguồn dữ liệu (không bắt buộc)",
+
+  "inputs.color.label": "Màu chữ",
+
+  "inputs.background.label": "Nền",
+
+  "inputs.showLegend.label": "Hiện chú giải",
+  "inputs.showLegend.section": "Chú giải",
+
+  "inputs.legendPosition.label": "Vị trí",
+  "inputs.legendPosition.section": "Chú giải",
+  "inputs.legendPosition.options.bottom": "Dưới",
+  "inputs.legendPosition.options.top": "Trên",
+  "inputs.legendPosition.options.left": "Trái",
+  "inputs.legendPosition.options.right": "Phải",
+
+  "inputs.legendDotShape.label": "Hình chấm",
+  "inputs.legendDotShape.section": "Chú giải",
+  "inputs.legendDotShape.options.square": "Vuông",
+  "inputs.legendDotShape.options.circle": "Tròn",
+
+  "inputs.legendSize.label": "Cỡ chữ",
+  "inputs.legendSize.section": "Chú giải",
+
+  "inputs.legendFontWeight.label": "Độ đậm chữ",
+  "inputs.legendFontWeight.section": "Chú giải",
+
+  "inputs.legendMaxChars.label": "Độ dài nhãn tối đa",
+  "inputs.legendMaxChars.section": "Chú giải",
+  "inputs.legendMaxChars.help": "Số ký tự hiển thị trước khi nhãn chú giải bị rút gọn bằng “…”. 0 = tự động.",
+
+  "inputs.legendWidth.label": "Độ rộng chú giải %",
+  "inputs.legendWidth.section": "Chú giải",
+
+  "inputs.showLabels.label": "Hiện nhãn",
+  "inputs.showLabels.section": "Nhãn",
+
+  "inputs.labelSize.label": "Cỡ chữ",
+  "inputs.labelSize.section": "Nhãn",
+
+  "inputs.labelWeight.label": "Độ đậm chữ",
+  "inputs.labelWeight.section": "Nhãn",
+
+  "inputs.labelMaxChars.label": "Độ dài nhãn tối đa",
+  "inputs.labelMaxChars.section": "Nhãn",
+  "inputs.labelMaxChars.help": "Số ký tự hiển thị trước khi nhãn bị rút gọn bằng “…”. 0 = tự động.",
+
+  "inputs.labelPosition.label": "Vị trí",
+  "inputs.labelPosition.section": "Nhãn",
+  "inputs.labelPosition.options.inside": "Bên trong",
+  "inputs.labelPosition.options.outside": "Bên ngoài",
+
+  "inputs.labelAlign.label": "Căn chỉnh",
+  "inputs.labelAlign.section": "Nhãn",
+  "inputs.labelAlign.options.top": "Trên",
+  "inputs.labelAlign.options.center": "Giữa",
+  "inputs.labelAlign.options.bottom": "Dưới",
+
+  "inputs.labelOffset.label": "Độ lệch",
+  "inputs.labelOffset.section": "Nhãn",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Khoảng cách bên ngoài",
+  "inputs.labelGap.section": "Nhãn",
+
+  "inputs.dataLabels.label": "Hiện giá trị",
+  "inputs.dataLabels.section": "Giá trị",
+
+  "inputs.valueSize.label": "Cỡ chữ",
+  "inputs.valueSize.section": "Giá trị",
+
+  "inputs.valueWeight.label": "Độ đậm chữ",
+  "inputs.valueWeight.section": "Giá trị",
+
+  "inputs.valuePosition.label": "Vị trí",
+  "inputs.valuePosition.section": "Giá trị",
+  "inputs.valuePosition.options.inside": "Bên trong",
+  "inputs.valuePosition.options.outside": "Bên ngoài",
+
+  "inputs.valueAlign.label": "Căn chỉnh",
+  "inputs.valueAlign.section": "Giá trị",
+  "inputs.valueAlign.options.top": "Trên",
+  "inputs.valueAlign.options.center": "Giữa",
+  "inputs.valueAlign.options.bottom": "Dưới",
+
+  "inputs.valueOffset.label": "Độ lệch",
+  "inputs.valueOffset.section": "Giá trị",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Khoảng cách bên ngoài",
+  "inputs.valueGap.section": "Giá trị",
+
+  "inputs.valueFormat.label": "Định dạng số",
+  "inputs.valueFormat.section": "Giá trị",
+  "inputs.valueFormat.options.auto": "Tự động",
+  "inputs.valueFormat.options.value": "Số gốc",
+  "inputs.valueFormat.options.percent": "Phần trăm",
+
+  "inputs.data.label": "Dữ liệu",
+  "inputs.data.fields.label.label": "Nhãn",
+  "inputs.data.fields.label.placeholder": "Nhãn",
+  "inputs.data.fields.value.label": "Giá trị",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Màu",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Chiều rộng",
+  "inputs.height.label": "Chiều cao"
 }

@@ -1,5 +1,148 @@
 {
   "name": "Pencipta Carta",
   "description": "Carta berjenama daripada data anda — bar, donat, pai atau bertindan.",
-  "featured.blurb": "Carta berjenama daripada data anda, sebarang bentuk"
+  "featured.blurb": "Carta berjenama daripada data anda, sebarang bentuk",
+
+  "inputs.chartType.label": "Jenis carta",
+  "inputs.chartType.options.vertical-bar": "Bar menegak",
+  "inputs.chartType.options.horizontal-bar": "Bar mendatar",
+  "inputs.chartType.options.donut": "Donat",
+  "inputs.chartType.options.pie": "Pai",
+  "inputs.chartType.options.stacked": "Bar bertindan",
+
+  "inputs.donutRadius.label": "Jejari donat",
+
+  "inputs.stackMax.label": "Skala maksimum",
+  "inputs.stackMax.placeholder": "0 = muat pada jumlah",
+  "inputs.stackMax.help": "Biarkan 0 untuk memuatkan bar pada jumlah keseluruhan nilai anda (komposit). Tetapkan nombor untuk mengskalakan komposit terhadap maksimum tetap — bar akan mengisi bahagian tersebut dan meninggalkan baki kosong.",
+
+  "inputs.sliceGap.label": "Jarak antara hirisan",
+  "inputs.sliceGap.section": "Hirisan",
+  "inputs.sliceGap.help": "Jarak antara hirisan, dalam piksel pada tepi luar. 0 = hirisan bersentuhan.",
+
+  "inputs.cornerRadius.label": "Jejari sudut",
+  "inputs.cornerRadius.section": "Hirisan",
+  "inputs.cornerRadius.help": "Membundarkan sudut setiap hirisan. Dikekang secara automatik untuk hirisan yang nipis atau sempit.",
+
+  "inputs.strokeWidth.label": "Lebar garis luar",
+  "inputs.strokeWidth.section": "Hirisan",
+  "inputs.strokeWidth.help": "Garis luar di sekeliling setiap hirisan. 0 = tiada garis luar.",
+
+  "inputs.strokeColor.label": "Warna garis luar",
+  "inputs.strokeColor.section": "Hirisan",
+
+  "inputs.heading.label": "Tajuk",
+  "inputs.heading.placeholder": "Tajuk carta",
+
+  "inputs.subheading.label": "Subtajuk / sumber",
+  "inputs.subheading.placeholder": "Subtajuk atau sumber data (pilihan)",
+
+  "inputs.color.label": "Warna teks",
+
+  "inputs.background.label": "Latar belakang",
+
+  "inputs.showLegend.label": "Tunjukkan legenda",
+  "inputs.showLegend.section": "Legenda",
+
+  "inputs.legendPosition.label": "Kedudukan",
+  "inputs.legendPosition.section": "Legenda",
+  "inputs.legendPosition.options.bottom": "Bawah",
+  "inputs.legendPosition.options.top": "Atas",
+  "inputs.legendPosition.options.left": "Kiri",
+  "inputs.legendPosition.options.right": "Kanan",
+
+  "inputs.legendDotShape.label": "Bentuk titik",
+  "inputs.legendDotShape.section": "Legenda",
+  "inputs.legendDotShape.options.square": "Segi empat",
+  "inputs.legendDotShape.options.circle": "Bulat",
+
+  "inputs.legendSize.label": "Saiz teks",
+  "inputs.legendSize.section": "Legenda",
+
+  "inputs.legendFontWeight.label": "Berat fon",
+  "inputs.legendFontWeight.section": "Legenda",
+
+  "inputs.legendMaxChars.label": "Panjang label maksimum",
+  "inputs.legendMaxChars.section": "Legenda",
+  "inputs.legendMaxChars.help": "Bilangan aksara dipaparkan sebelum label legenda dipendekkan dengan “…”. 0 = automatik.",
+
+  "inputs.legendWidth.label": "Lebar legenda %",
+  "inputs.legendWidth.section": "Legenda",
+
+  "inputs.showLabels.label": "Tunjukkan label",
+  "inputs.showLabels.section": "Label",
+
+  "inputs.labelSize.label": "Saiz teks",
+  "inputs.labelSize.section": "Label",
+
+  "inputs.labelWeight.label": "Berat fon",
+  "inputs.labelWeight.section": "Label",
+
+  "inputs.labelMaxChars.label": "Panjang label maksimum",
+  "inputs.labelMaxChars.section": "Label",
+  "inputs.labelMaxChars.help": "Bilangan aksara dipaparkan sebelum label dipendekkan dengan “…”. 0 = automatik.",
+
+  "inputs.labelPosition.label": "Kedudukan",
+  "inputs.labelPosition.section": "Label",
+  "inputs.labelPosition.options.inside": "Dalam",
+  "inputs.labelPosition.options.outside": "Luar",
+
+  "inputs.labelAlign.label": "Jajaran",
+  "inputs.labelAlign.section": "Label",
+  "inputs.labelAlign.options.top": "Atas",
+  "inputs.labelAlign.options.center": "Tengah",
+  "inputs.labelAlign.options.bottom": "Bawah",
+
+  "inputs.labelOffset.label": "Ofset",
+  "inputs.labelOffset.section": "Label",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Jarak luar",
+  "inputs.labelGap.section": "Label",
+
+  "inputs.dataLabels.label": "Tunjukkan nilai",
+  "inputs.dataLabels.section": "Nilai",
+
+  "inputs.valueSize.label": "Saiz teks",
+  "inputs.valueSize.section": "Nilai",
+
+  "inputs.valueWeight.label": "Berat fon",
+  "inputs.valueWeight.section": "Nilai",
+
+  "inputs.valuePosition.label": "Kedudukan",
+  "inputs.valuePosition.section": "Nilai",
+  "inputs.valuePosition.options.inside": "Dalam",
+  "inputs.valuePosition.options.outside": "Luar",
+
+  "inputs.valueAlign.label": "Jajaran",
+  "inputs.valueAlign.section": "Nilai",
+  "inputs.valueAlign.options.top": "Atas",
+  "inputs.valueAlign.options.center": "Tengah",
+  "inputs.valueAlign.options.bottom": "Bawah",
+
+  "inputs.valueOffset.label": "Ofset",
+  "inputs.valueOffset.section": "Nilai",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Jarak luar",
+  "inputs.valueGap.section": "Nilai",
+
+  "inputs.valueFormat.label": "Format nombor",
+  "inputs.valueFormat.section": "Nilai",
+  "inputs.valueFormat.options.auto": "Automatik",
+  "inputs.valueFormat.options.value": "Nombor asal",
+  "inputs.valueFormat.options.percent": "Peratusan",
+
+  "inputs.data.label": "Data",
+  "inputs.data.fields.label.label": "Label",
+  "inputs.data.fields.label.placeholder": "Label",
+  "inputs.data.fields.value.label": "Nilai",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Warna",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Lebar",
+  "inputs.height.label": "Tinggi"
 }

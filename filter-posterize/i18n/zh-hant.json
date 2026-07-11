@@ -1,4 +1,154 @@
 {
   "name": "濾鏡：色階分離",
-  "description": "將任何相片描繪成扁平、絹印風格的向量色彩分版。"
+  "description": "將任何相片描繪成扁平、絹印風格的向量色彩分版。",
+  "a11yLabel": "相片的 {{steps}} 色色階分離向量圖",
+
+  "inputs.photo.label": "相片",
+  "inputs.photo.help": "要進行色階分離的相片。大頭照與高對比度相片的描繪效果最佳。",
+
+  "inputs.steps.label": "色彩層數",
+  "inputs.steps.help": "要描繪的色調分版數量。變更此設定會重新從相片取樣顏色。",
+
+  "inputs.threshold.label": "閾值（單色油墨）",
+  "inputs.threshold.help": "將相片簡化為紙上單一油墨——在明暗之間做出一刀切的區分，而非漸層式分版。搭配「透明背景」可讓油墨疊在無背景上。",
+
+  "inputs.thresholdLevel.label": "閾值等級",
+  "inputs.thresholdLevel.help": "決定油墨與紙張之間的分界點。數值越高，相片中越多區域會變成油墨；數值越低，則只保留最深的陰影部分。",
+
+  "inputs.brightness.label": "亮度",
+  "inputs.brightness.help": "在分版之前調亮或調暗相片——讓所有色調整體上移或下移，使細節在明暗分版之間轉移。",
+
+  "inputs.quality.label": "品質",
+  "inputs.quality.help": "描繪解析度——數值越高，取樣網格越細緻、擷取的細節越多。超過 100 會進入非常精細但速度較慢的描繪。",
+
+  "inputs.smoothing.label": "平滑",
+  "inputs.smoothing.help": "描繪輪廓轉為曲線的程度。數值低可保持邊緣精確銳利；數值高則會將其轉為流暢的貝茲曲線。",
+
+  "inputs.invert.label": "反轉色調",
+  "inputs.invert.help": "以反轉後的色調進行描繪——相片的明亮區域會變成前景分版（色調負片）。適合深色背景上的淺色主體。",
+
+  "inputs.colors.label": "分版顏色",
+  "inputs.colors.help": "每個色調一個色塊，最深色排在最前、最淺色（紙張）排在最後。系統會自動從你的相片取樣——編輯任一色塊即可重新設定該分版的顏色。",
+  "inputs.colors.fields.color.label": "顏色",
+
+  "inputs.resample.label": "從相片重新取樣顏色",
+  "inputs.resample.help": "捨棄手動編輯，並根據目前的相片重新推算每個分版的顏色。",
+
+  "inputs.transparentBg.label": "透明背景",
+  "inputs.transparentBg.help": "移除最淺的「紙張」分版，讓背景變成透明（PNG／SVG）。",
+
+  "inputs.contrast.label": "對比度",
+  "inputs.contrast.section": "色彩",
+  "inputs.contrast.help": "在分版之前將色調拉開（數值高）或壓縮在一起（數值低）。對比度越高，分版效果越大膽、越具圖像感。",
+
+  "inputs.hue.label": "色相",
+  "inputs.hue.section": "色彩",
+  "inputs.hue.help": "在色輪上旋轉所有顏色。",
+
+  "inputs.saturation.label": "飽和度",
+  "inputs.saturation.section": "色彩",
+  "inputs.saturation.help": "0 = 灰階 · 100 = 原始 · 200 = 鮮豔。",
+
+  "inputs.lightness.label": "明度",
+  "inputs.lightness.section": "色彩",
+  "inputs.lightness.help": "朝白色提亮或朝黑色下沉。",
+
+  "inputs.treatmentColor.label": "色彩處理",
+  "inputs.treatmentColor.section": "色彩",
+  "inputs.treatmentColor.help": "在結果上疊加一種顏色。留空則不套用。",
+
+  "inputs.blendMode.label": "混合模式",
+  "inputs.blendMode.section": "色彩",
+  "inputs.blendMode.help": "處理顏色與圖片的混合方式。",
+  "inputs.blendMode.options.normal": "正常",
+  "inputs.blendMode.options.multiply": "色彩增值",
+  "inputs.blendMode.options.screen": "濾色",
+  "inputs.blendMode.options.overlay": "覆蓋",
+  "inputs.blendMode.options.darken": "變暗",
+  "inputs.blendMode.options.lighten": "變亮",
+  "inputs.blendMode.options.color-dodge": "顏色加亮",
+  "inputs.blendMode.options.color-burn": "顏色加深",
+  "inputs.blendMode.options.hard-light": "實光",
+  "inputs.blendMode.options.soft-light": "柔光",
+  "inputs.blendMode.options.difference": "差異化",
+  "inputs.blendMode.options.exclusion": "排除",
+  "inputs.blendMode.options.hue": "色相",
+  "inputs.blendMode.options.saturation": "飽和度",
+  "inputs.blendMode.options.color": "顏色",
+  "inputs.blendMode.options.luminosity": "明度",
+
+  "inputs.treatmentIntensity.label": "強度",
+  "inputs.treatmentIntensity.section": "色彩",
+  "inputs.treatmentIntensity.help": "顏色疊加的不透明度。",
+
+  "inputs.width.label": "寬度",
+  "inputs.height.label": "高度",
+
+  "inputs.noFilter.label": "不套用濾鏡（顯示原始畫面）",
+  "inputs.noFilter.section": "疊加",
+  "inputs.noFilter.help": "顯示未經處理的原始相片或即時攝影機畫面——適合只想在原始畫面上放置標誌或下方字幕卡時使用。",
+
+  "inputs.showLogo.label": "SUSE 標誌疊加",
+  "inputs.showLogo.section": "疊加",
+  "inputs.showLogo.help": "在結果上疊加 SUSE 標誌。預設為關閉。",
+
+  "inputs.logoPosition.label": "標誌位置",
+  "inputs.logoPosition.section": "疊加",
+  "inputs.logoPosition.options.top-left": "左上",
+  "inputs.logoPosition.options.top-right": "右上",
+  "inputs.logoPosition.options.bottom-left": "左下",
+  "inputs.logoPosition.options.bottom-right": "右下",
+  "inputs.logoPosition.options.top": "上方置中",
+  "inputs.logoPosition.options.bottom": "下方置中",
+  "inputs.logoPosition.options.center": "置中",
+  "inputs.logoPosition.options.full": "全滿（浮水印）",
+
+  "inputs.logoStyle.label": "標誌顏色",
+  "inputs.logoStyle.section": "疊加",
+  "inputs.logoStyle.help": "白色與綠色適合深色或雜亂的畫面；黑色適合淺色背景。",
+  "inputs.logoStyle.options.white": "白色",
+  "inputs.logoStyle.options.green": "綠色",
+  "inputs.logoStyle.options.black": "黑色",
+
+  "inputs.logoScale.label": "標誌大小",
+  "inputs.logoScale.section": "疊加",
+  "inputs.logoScale.help": "放大或縮小標誌。",
+
+  "inputs.lowerThird.label": "下方姓名字卡",
+  "inputs.lowerThird.section": "疊加",
+  "inputs.lowerThird.help": "在畫面上以輕柔動畫顯示的姓名字卡，使用你個人資料中的姓名與大頭照。",
+
+  "inputs.ltTheme.label": "卡片樣式",
+  "inputs.ltTheme.section": "疊加",
+  "inputs.ltTheme.options.bar": "SUSE 品牌長條",
+  "inputs.ltTheme.options.minimal": "簡約",
+  "inputs.ltTheme.options.glass": "玻璃感",
+
+  "inputs.ltPosition.label": "卡片位置",
+  "inputs.ltPosition.section": "疊加",
+  "inputs.ltPosition.options.left": "左下",
+  "inputs.ltPosition.options.center": "下方置中",
+  "inputs.ltPosition.options.right": "右下",
+
+  "inputs.firstname.label": "名字",
+  "inputs.firstname.section": "疊加",
+
+  "inputs.lastname.label": "姓氏",
+  "inputs.lastname.section": "疊加",
+
+  "inputs.title.label": "職稱／副標題",
+  "inputs.title.section": "疊加",
+  "inputs.title.help": "姓名下方的選填文字——例如職稱或活動名稱。",
+
+  "inputs.nameWeight.label": "姓名字重",
+  "inputs.nameWeight.section": "疊加",
+  "inputs.nameWeight.help": "姓名列的字體粗細（100 極細 → 900 特黑）。",
+
+  "inputs.subtitleWeight.label": "副標字重",
+  "inputs.subtitleWeight.section": "疊加",
+  "inputs.subtitleWeight.help": "職稱／副標題列的字體粗細（100 極細 → 900 特黑）。",
+
+  "inputs.ltHeadshot.label": "大頭照（選填）",
+  "inputs.ltHeadshot.section": "疊加",
+  "inputs.ltHeadshot.help": "預設使用你個人資料中的大頭照，可選擇或上傳其他照片來覆蓋。"
 }

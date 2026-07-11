@@ -1,4 +1,145 @@
 {
   "name": "Filter: Voronoi-cellen",
-  "description": "Versplinter elke foto tot een Voronoi-celmozaïek — elke cel gevuld met de dichtstbijzijnde kleur, als platte vector."
+  "description": "Versplinter elke foto tot een Voronoi-celmozaïek — elke cel gevuld met de dichtstbijzijnde kleur, als platte vector.",
+  "a11yLabel": "Voronoi-celmozaïek van de foto",
+
+  "inputs.image.label": "Foto",
+  "inputs.image.help": "De afbeelding die in cellen wordt verdeeld. Elke foto werkt, maar portretten en stoere vormen komen extra goed tot hun recht.",
+
+  "inputs.cells.label": "Cellen",
+  "inputs.cells.help": "In hoeveel Voronoi-cellen de afbeelding wordt versplinterd. Meer cellen = fijner en getrouwer; minder cellen = grove, stoere facetten.",
+
+  "inputs.jitter.label": "Onregelmatigheid",
+  "inputs.jitter.help": "0 = een regelmatig rooster van cellen · 100 = volledig verspreide, organische celvormen.",
+
+  "inputs.relax.label": "Ontspan (egaliseren)",
+  "inputs.relax.help": "Lloyd-relaxatie — duwt cellen richting gelijke grootte en rondere vormen. Hoger is rustiger en uniformer.",
+
+  "inputs.seed.label": "Seed (herschudden)",
+  "inputs.seed.help": "Herschudt de willekeurige celindeling. Dezelfde seed = elke keer dezelfde cellen.",
+
+  "inputs.edgeWidth.label": "Randbreedte",
+  "inputs.edgeWidth.help": "Voeg tussen de cellen. 0 = een naadloos kleurenmozaïek; hoger tekent een opening in de randkleur voor een glas-in-loodeffect.",
+
+  "inputs.edgeColor.label": "Randkleur",
+  "inputs.edgeColor.help": "De kleur van de openingen tussen de cellen (en de buitenrand).",
+
+  "inputs.transparentBg.label": "Transparante achtergrond",
+  "inputs.transparentBg.help": "Laat de achtergrond weg zodat openingen/rand transparant zijn (PNG/SVG).",
+
+  "inputs.contrast.label": "Contrast",
+  "inputs.contrast.section": "Kleur",
+  "inputs.contrast.help": "Duwt de tonen uiteen (hoger) of drukt ze samen (lager) voordat de cellen hun kleuren bemonsteren.",
+
+  "inputs.hue.label": "Tint",
+  "inputs.hue.section": "Kleur",
+  "inputs.hue.help": "Draait elke kleur rond het kleurenwiel.",
+
+  "inputs.saturation.label": "Verzadiging",
+  "inputs.saturation.section": "Kleur",
+  "inputs.saturation.help": "0 = grijstinten · 100 = origineel · 200 = levendig.",
+
+  "inputs.lightness.label": "Lichtheid",
+  "inputs.lightness.section": "Kleur",
+  "inputs.lightness.help": "Maakt lichter richting wit of donkerder richting zwart.",
+
+  "inputs.treatmentColor.label": "Kleurbehandeling",
+  "inputs.treatmentColor.section": "Kleur",
+  "inputs.treatmentColor.help": "Mengt een kleur over het resultaat. Laat leeg voor geen.",
+
+  "inputs.blendMode.label": "Overvloeimodus",
+  "inputs.blendMode.section": "Kleur",
+  "inputs.blendMode.help": "Hoe de behandelingskleur mengt met de afbeelding.",
+  "inputs.blendMode.options.normal": "Normaal",
+  "inputs.blendMode.options.multiply": "Vermenigvuldigen",
+  "inputs.blendMode.options.screen": "Zeef",
+  "inputs.blendMode.options.overlay": "Bedekken",
+  "inputs.blendMode.options.darken": "Donkerder",
+  "inputs.blendMode.options.lighten": "Lichter",
+  "inputs.blendMode.options.color-dodge": "Kleur tegenhouden",
+  "inputs.blendMode.options.color-burn": "Kleur nabranden",
+  "inputs.blendMode.options.hard-light": "Fel licht",
+  "inputs.blendMode.options.soft-light": "Zacht licht",
+  "inputs.blendMode.options.difference": "Verschil",
+  "inputs.blendMode.options.exclusion": "Uitsluiting",
+  "inputs.blendMode.options.hue": "Tint",
+  "inputs.blendMode.options.saturation": "Verzadiging",
+  "inputs.blendMode.options.color": "Kleur",
+  "inputs.blendMode.options.luminosity": "Helderheid",
+
+  "inputs.treatmentIntensity.label": "Intensiteit",
+  "inputs.treatmentIntensity.section": "Kleur",
+  "inputs.treatmentIntensity.help": "Dekking van de kleuroverlay.",
+
+  "inputs.width.label": "Breedte",
+
+  "inputs.height.label": "Hoogte",
+
+  "inputs.noFilter.label": "Geen filter (toon origineel)",
+  "inputs.noFilter.section": "Overlay",
+  "inputs.noFilter.help": "Toont de originele foto of live camerabeelden onbewerkt — handig als je alleen een logo of lower-third over de ruwe beelden wilt plaatsen.",
+
+  "inputs.showLogo.label": "SUSE-logo-overlay",
+  "inputs.showLogo.section": "Overlay",
+  "inputs.showLogo.help": "Plaatst het SUSE-logo over het resultaat. Standaard uit.",
+
+  "inputs.logoPosition.label": "Logopositie",
+  "inputs.logoPosition.section": "Overlay",
+  "inputs.logoPosition.options.top-left": "Linksboven",
+  "inputs.logoPosition.options.top-right": "Rechtsboven",
+  "inputs.logoPosition.options.bottom-left": "Linksonder",
+  "inputs.logoPosition.options.bottom-right": "Rechtsonder",
+  "inputs.logoPosition.options.top": "Boven midden",
+  "inputs.logoPosition.options.bottom": "Onder midden",
+  "inputs.logoPosition.options.center": "Midden",
+  "inputs.logoPosition.options.full": "Volledig (watermerk)",
+
+  "inputs.logoStyle.label": "Logokleur",
+  "inputs.logoStyle.section": "Overlay",
+  "inputs.logoStyle.help": "Wit en groen zijn goed leesbaar op donkere of drukke beelden; zwart past bij lichte achtergronden.",
+  "inputs.logoStyle.options.white": "Wit",
+  "inputs.logoStyle.options.green": "Groen",
+  "inputs.logoStyle.options.black": "Zwart",
+
+  "inputs.logoScale.label": "Logogrootte",
+  "inputs.logoScale.section": "Overlay",
+  "inputs.logoScale.help": "Maakt het logo groter of kleiner.",
+
+  "inputs.lowerThird.label": "Naamkaart (lower-third)",
+  "inputs.lowerThird.section": "Overlay",
+  "inputs.lowerThird.help": "Een zachtjes geanimeerde naamkaart die over de beelden verschijnt. Gebruikt je profielnaam en profielfoto.",
+
+  "inputs.ltTheme.label": "Kaartstijl",
+  "inputs.ltTheme.section": "Overlay",
+  "inputs.ltTheme.options.bar": "SUSE-merkbalk",
+  "inputs.ltTheme.options.minimal": "Minimaal",
+  "inputs.ltTheme.options.glass": "Glas",
+
+  "inputs.ltPosition.label": "Kaartpositie",
+  "inputs.ltPosition.section": "Overlay",
+  "inputs.ltPosition.options.left": "Linksonder",
+  "inputs.ltPosition.options.center": "Onder midden",
+  "inputs.ltPosition.options.right": "Rechtsonder",
+
+  "inputs.firstname.label": "Voornaam",
+  "inputs.firstname.section": "Overlay",
+
+  "inputs.lastname.label": "Achternaam",
+  "inputs.lastname.section": "Overlay",
+
+  "inputs.title.label": "Functie / ondertitel",
+  "inputs.title.section": "Overlay",
+  "inputs.title.help": "Optionele regel onder de naam — bijvoorbeeld een functie of evenement.",
+
+  "inputs.nameWeight.label": "Gewicht naam",
+  "inputs.nameWeight.section": "Overlay",
+  "inputs.nameWeight.help": "Lettergewicht van de naamregel (100 Dun → 900 Zwaar).",
+
+  "inputs.subtitleWeight.label": "Gewicht ondertitel",
+  "inputs.subtitleWeight.section": "Overlay",
+  "inputs.subtitleWeight.help": "Lettergewicht van de functie-/ondertitelregel (100 Dun → 900 Zwaar).",
+
+  "inputs.ltHeadshot.label": "Profielfoto (optioneel)",
+  "inputs.ltHeadshot.section": "Overlay",
+  "inputs.ltHeadshot.help": "Gebruikt standaard je profielfoto. Kies of upload een andere om deze te overschrijven."
 }

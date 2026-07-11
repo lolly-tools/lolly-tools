@@ -1,5 +1,147 @@
 {
   "name": "图表创建器",
   "description": "根据你的数据生成符合品牌规范的图表——柱状图、环形图、饼图或堆叠图。",
-  "featured.blurb": "根据你的数据生成符合品牌规范的图表，形式任选"
+  "featured.blurb": "根据你的数据生成符合品牌规范的图表，形式任选",
+
+  "inputs.chartType.label": "图表类型",
+  "inputs.chartType.options.vertical-bar": "垂直柱状图",
+  "inputs.chartType.options.horizontal-bar": "水平柱状图",
+  "inputs.chartType.options.donut": "环形图",
+  "inputs.chartType.options.pie": "饼图",
+  "inputs.chartType.options.stacked": "堆叠柱状图",
+
+  "inputs.donutRadius.label": "环形半径",
+
+  "inputs.stackMax.label": "刻度上限",
+  "inputs.stackMax.placeholder": "0 = 自动适配总和",
+  "inputs.stackMax.help": "保留 0 会让柱形按数据总和（组合值）自适应铺满。设置一个数字则以该固定上限来缩放组合值——柱形只填充相应占比，其余留空。",
+
+  "inputs.sliceGap.label": "扇区间距",
+  "inputs.sliceGap.section": "扇区",
+  "inputs.sliceGap.help": "扇区之间的间隔，以外缘处的像素为单位。0 = 扇区相接。",
+
+  "inputs.cornerRadius.label": "圆角半径",
+  "inputs.cornerRadius.section": "扇区",
+  "inputs.cornerRadius.help": "为每个扇区的边角添加圆角。对于过细或过窄的扇区会自动限制幅度。",
+
+  "inputs.strokeWidth.label": "描边宽度",
+  "inputs.strokeWidth.section": "扇区",
+  "inputs.strokeWidth.help": "每个扇区的描边轮廓。0 = 无描边。",
+
+  "inputs.strokeColor.label": "描边颜色",
+  "inputs.strokeColor.section": "扇区",
+
+  "inputs.heading.label": "标题",
+  "inputs.heading.placeholder": "图表标题",
+
+  "inputs.subheading.label": "副标题／来源",
+  "inputs.subheading.placeholder": "可选的副标题或数据来源",
+
+  "inputs.color.label": "文字颜色",
+
+  "inputs.background.label": "背景",
+
+  "inputs.showLegend.label": "显示图例",
+  "inputs.showLegend.section": "图例",
+
+  "inputs.legendPosition.label": "位置",
+  "inputs.legendPosition.section": "图例",
+  "inputs.legendPosition.options.bottom": "底部",
+  "inputs.legendPosition.options.top": "顶部",
+  "inputs.legendPosition.options.left": "左侧",
+  "inputs.legendPosition.options.right": "右侧",
+
+  "inputs.legendDotShape.label": "圆点形状",
+  "inputs.legendDotShape.section": "图例",
+  "inputs.legendDotShape.options.square": "方形",
+  "inputs.legendDotShape.options.circle": "圆形",
+
+  "inputs.legendSize.label": "文字大小",
+  "inputs.legendSize.section": "图例",
+
+  "inputs.legendFontWeight.label": "字重",
+  "inputs.legendFontWeight.section": "图例",
+
+  "inputs.legendMaxChars.label": "标签最大长度",
+  "inputs.legendMaxChars.section": "图例",
+  "inputs.legendMaxChars.help": "图例标签被“…”截断前显示的字符数。0 = 自动。",
+
+  "inputs.legendWidth.label": "图例宽度 %",
+  "inputs.legendWidth.section": "图例",
+
+  "inputs.showLabels.label": "显示标签",
+  "inputs.showLabels.section": "标签",
+
+  "inputs.labelSize.label": "文字大小",
+  "inputs.labelSize.section": "标签",
+
+  "inputs.labelWeight.label": "字重",
+  "inputs.labelWeight.section": "标签",
+
+  "inputs.labelMaxChars.label": "标签最大长度",
+  "inputs.labelMaxChars.section": "标签",
+  "inputs.labelMaxChars.help": "标签被“…”截断前显示的字符数。0 = 自动。",
+
+  "inputs.labelPosition.label": "位置",
+  "inputs.labelPosition.section": "标签",
+  "inputs.labelPosition.options.inside": "内部",
+  "inputs.labelPosition.options.outside": "外部",
+
+  "inputs.labelAlign.label": "对齐",
+  "inputs.labelAlign.section": "标签",
+  "inputs.labelAlign.options.top": "顶部",
+  "inputs.labelAlign.options.center": "居中",
+  "inputs.labelAlign.options.bottom": "底部",
+
+  "inputs.labelOffset.label": "偏移",
+  "inputs.labelOffset.section": "标签",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "外部间距",
+  "inputs.labelGap.section": "标签",
+
+  "inputs.dataLabels.label": "显示数值",
+  "inputs.dataLabels.section": "数值",
+
+  "inputs.valueSize.label": "文字大小",
+  "inputs.valueSize.section": "数值",
+
+  "inputs.valueWeight.label": "字重",
+  "inputs.valueWeight.section": "数值",
+
+  "inputs.valuePosition.label": "位置",
+  "inputs.valuePosition.section": "数值",
+  "inputs.valuePosition.options.inside": "内部",
+  "inputs.valuePosition.options.outside": "外部",
+
+  "inputs.valueAlign.label": "对齐",
+  "inputs.valueAlign.section": "数值",
+  "inputs.valueAlign.options.top": "顶部",
+  "inputs.valueAlign.options.center": "居中",
+  "inputs.valueAlign.options.bottom": "底部",
+
+  "inputs.valueOffset.label": "偏移",
+  "inputs.valueOffset.section": "数值",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "外部间距",
+  "inputs.valueGap.section": "数值",
+
+  "inputs.valueFormat.label": "数字格式",
+  "inputs.valueFormat.section": "数值",
+  "inputs.valueFormat.options.auto": "自动",
+  "inputs.valueFormat.options.value": "原始数值",
+  "inputs.valueFormat.options.percent": "百分比",
+
+  "inputs.data.label": "数据",
+  "inputs.data.fields.label.label": "标签",
+  "inputs.data.fields.label.placeholder": "标签",
+  "inputs.data.fields.value.label": "数值",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "颜色",
+
+  "inputs.width.label": "宽度",
+  "inputs.height.label": "高度"
 }

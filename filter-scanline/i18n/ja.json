@@ -1,4 +1,152 @@
 {
   "name": "フィルター: スキャンライン",
-  "description": "写真に水平の「インフィニティライン」スキャンラインエフェクトを適用するベクター効果です。"
+  "description": "写真に水平の「インフィニティライン」スキャンラインエフェクトを適用するベクター効果です。",
+  "a11yLabel": "選択した画像をブランドトーンでスキャンライン表示したもの",
+
+  "inputs.image.label": "画像",
+  "inputs.image.help": "写真を選択するか、ご自身の画像をアップロードしてください。処理はすべてお使いの端末上で行われ、画像データがブラウザの外に送信されることはありません。",
+
+  "inputs.lineSize.label": "ラインの高さ",
+  "inputs.lineSize.help": "各スキャンラインの高さ(セルのサイズ)です。数値を小さくするほど線が細くなり、より精細な表現になります。",
+
+  "inputs.gapSize.label": "隙間の高さ",
+  "inputs.gapSize.help": "各スキャンラインの下にできる空白の隙間のサイズを、ラインに対する比率で指定します。数値が大きいほど線が細くなり、線同士の間隔が広がります。0にすると隙間のない画像になります。画像自体の精細さや位置は変わりません。",
+
+  "inputs.separatePixels.label": "ピクセルを分離",
+  "inputs.separatePixels.help": "セルの間にも隙間を追加し、それぞれを独立した正方形として表示します。単色のスキャンラインバーではなく、LED/ピクセルマトリックス風の見た目になります。",
+
+  "inputs.everyLine.label": "すべてのラインを塗りつぶす",
+  "inputs.everyLine.help": "隙間を作らずにすべてのラインを描画します。隙間の高さを0に設定した場合と同じ効果です。オフの場合はクラシックなスキャンライン、オンの場合はポスタリゼーションされた単色に近い画像になります。",
+
+  "inputs.fit.label": "画像のフィット",
+  "inputs.fit.options.contain": "コンテイン(画像全体を表示)",
+  "inputs.fit.options.cover": "カバー(余白なく埋めて端をトリミング)",
+
+  "inputs.highlight.label": "ハイライト",
+  "inputs.highlight.help": "最も明るいトーンです。",
+
+  "inputs.light.label": "ライト",
+
+  "inputs.mid.label": "ミッド",
+
+  "inputs.shade.label": "シェード",
+
+  "inputs.shadow.label": "シャドウ",
+  "inputs.shadow.help": "最も暗いトーンです。",
+
+  "inputs.background.label": "背景",
+  "inputs.background.help": "空白のラインと隙間を塗りつぶします。空欄のままにすると背景は透明になります(PNG/WebP/AVIF/SVGでは透明部分がそのまま保持されます)。",
+
+  "inputs.brightness.label": "明るさ",
+
+  "inputs.contrast.label": "コントラスト",
+  "inputs.contrast.section": "カラー",
+
+  "inputs.hue.label": "色相",
+  "inputs.hue.section": "カラー",
+  "inputs.hue.help": "すべての色をカラーホイール上で回転させます。",
+
+  "inputs.saturation.label": "彩度",
+  "inputs.saturation.section": "カラー",
+  "inputs.saturation.help": "0 = グレースケール · 100 = 元の色 · 200 = 鮮やかな色。",
+
+  "inputs.lightness.label": "明度",
+  "inputs.lightness.section": "カラー",
+  "inputs.lightness.help": "白に近づけるか、黒に近づけるかを調整します。",
+
+  "inputs.treatmentColor.label": "カラートリートメント",
+  "inputs.treatmentColor.section": "カラー",
+  "inputs.treatmentColor.help": "結果に色を重ねてブレンドします。空欄のままにすると何も適用されません。",
+
+  "inputs.blendMode.label": "ブレンドモード",
+  "inputs.blendMode.section": "カラー",
+  "inputs.blendMode.help": "トリートメントカラーが画像とどのように混ざり合うかを指定します。",
+  "inputs.blendMode.options.normal": "ノーマル",
+  "inputs.blendMode.options.multiply": "乗算",
+  "inputs.blendMode.options.screen": "スクリーン",
+  "inputs.blendMode.options.overlay": "オーバーレイ",
+  "inputs.blendMode.options.darken": "暗くする",
+  "inputs.blendMode.options.lighten": "明るくする",
+  "inputs.blendMode.options.color-dodge": "覆い焼きカラー",
+  "inputs.blendMode.options.color-burn": "焼き込みカラー",
+  "inputs.blendMode.options.hard-light": "ハードライト",
+  "inputs.blendMode.options.soft-light": "ソフトライト",
+  "inputs.blendMode.options.difference": "差の絶対値",
+  "inputs.blendMode.options.exclusion": "除外",
+  "inputs.blendMode.options.hue": "色相",
+  "inputs.blendMode.options.saturation": "彩度",
+  "inputs.blendMode.options.color": "カラー",
+  "inputs.blendMode.options.luminosity": "輝度",
+
+  "inputs.treatmentIntensity.label": "強度",
+  "inputs.treatmentIntensity.section": "カラー",
+  "inputs.treatmentIntensity.help": "カラーオーバーレイの不透明度です。",
+
+  "inputs.noFilter.label": "フィルターなし(元の映像を表示)",
+  "inputs.noFilter.section": "オーバーレイ",
+  "inputs.noFilter.help": "元の写真またはライブカメラ映像をそのまま表示します。ロゴやロワーサードだけを未加工の映像に重ねたい場合に便利です。",
+
+  "inputs.showLogo.label": "SUSE ロゴオーバーレイ",
+  "inputs.showLogo.section": "オーバーレイ",
+  "inputs.showLogo.help": "結果にSUSEロゴを重ねて表示します。デフォルトではオフです。",
+
+  "inputs.logoPosition.label": "ロゴの位置",
+  "inputs.logoPosition.section": "オーバーレイ",
+  "inputs.logoPosition.options.top-left": "左上",
+  "inputs.logoPosition.options.top-right": "右上",
+  "inputs.logoPosition.options.bottom-left": "左下",
+  "inputs.logoPosition.options.bottom-right": "右下",
+  "inputs.logoPosition.options.top": "上中央",
+  "inputs.logoPosition.options.bottom": "下中央",
+  "inputs.logoPosition.options.center": "中央",
+  "inputs.logoPosition.options.full": "全面(透かし)",
+
+  "inputs.logoStyle.label": "ロゴの色",
+  "inputs.logoStyle.section": "オーバーレイ",
+  "inputs.logoStyle.options.white": "白",
+  "inputs.logoStyle.options.green": "緑",
+  "inputs.logoStyle.options.black": "黒",
+  "inputs.logoStyle.help": "白と緑は暗い映像や情報量の多い映像に映え、黒は明るい背景に適しています。",
+
+  "inputs.logoScale.label": "ロゴのサイズ",
+  "inputs.logoScale.section": "オーバーレイ",
+  "inputs.logoScale.help": "ロゴの大きさを拡大・縮小します。",
+
+  "inputs.lowerThird.label": "ロワーサードのネームカード",
+  "inputs.lowerThird.section": "オーバーレイ",
+  "inputs.lowerThird.help": "映像の上にゆっくりとアニメーションしながら現れるネームカードです。プロフィールの名前とヘッドショットを使用します。",
+
+  "inputs.ltTheme.label": "カードスタイル",
+  "inputs.ltTheme.section": "オーバーレイ",
+  "inputs.ltTheme.options.bar": "SUSE ブランドバー",
+  "inputs.ltTheme.options.minimal": "ミニマル",
+  "inputs.ltTheme.options.glass": "グラス",
+
+  "inputs.ltPosition.label": "カードの位置",
+  "inputs.ltPosition.section": "オーバーレイ",
+  "inputs.ltPosition.options.left": "左下",
+  "inputs.ltPosition.options.center": "下中央",
+  "inputs.ltPosition.options.right": "右下",
+
+  "inputs.firstname.label": "名",
+  "inputs.firstname.section": "オーバーレイ",
+
+  "inputs.lastname.label": "姓",
+  "inputs.lastname.section": "オーバーレイ",
+
+  "inputs.title.label": "役職 / サブタイトル",
+  "inputs.title.section": "オーバーレイ",
+  "inputs.title.help": "名前の下に表示する任意の行です(役職やイベント名など)。",
+
+  "inputs.nameWeight.label": "名前の太さ",
+  "inputs.nameWeight.section": "オーバーレイ",
+  "inputs.nameWeight.help": "名前の行のフォントウェイトです(100 Thin → 900 Black)。",
+
+  "inputs.subtitleWeight.label": "サブタイトルの太さ",
+  "inputs.subtitleWeight.section": "オーバーレイ",
+  "inputs.subtitleWeight.help": "役職 / サブタイトル行のフォントウェイトです(100 Thin → 900 Black)。",
+
+  "inputs.ltHeadshot.label": "ヘッドショット(任意)",
+  "inputs.ltHeadshot.section": "オーバーレイ",
+  "inputs.ltHeadshot.help": "デフォルトではプロフィールのヘッドショットが使用されます。別の画像を選択またはアップロードして上書きできます。"
 }

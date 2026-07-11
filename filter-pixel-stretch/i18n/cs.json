@@ -1,4 +1,146 @@
 {
   "name": "Filtr: Roztažení pixelů",
-  "description": "Rozmaže sloupec pixelů napříč fotkou od prahové linie. Funguje živě."
+  "description": "Rozmaže sloupec pixelů napříč fotkou od prahové linie. Funguje živě.",
+  "a11yLabel": "Rozmazání vybraného obrázku roztažením pixelů",
+
+  "inputs.image.label": "Obrázek",
+  "inputs.image.help": "Vyber fotku, nebo nahraj vlastní. Zpracovává se přímo v zařízení — pixely nikdy neopustí prohlížeč. Nebo klikni na „Spustit naživo“ na plátně a rozmaž obraz z kamery.",
+
+  "inputs.direction.label": "Směr",
+  "inputs.direction.help": "Kterým směrem se zmrzlý sloupec pixelů rozmazává přes snímek.",
+  "inputs.direction.options.right": "Roztáhnout doprava →",
+  "inputs.direction.options.left": "Roztáhnout doleva ←",
+  "inputs.direction.options.down": "Roztáhnout dolů ↓",
+  "inputs.direction.options.up": "Roztáhnout nahoru ↑",
+
+  "inputs.threshold.label": "Počátek prahu",
+  "inputs.threshold.help": "Místo, kde se fotka zastaví. Za touto linií se zmrzlý sloupec roztahuje a zbytek fotky pak pokračuje v přirozených proporcích, oříznutý na vzdáleném okraji.",
+
+  "inputs.spread.label": "Rozprostření",
+  "inputs.spread.help": "Kolik prostoru za prahem zmrzlý sloupec vyplní. Zbytek fotky pak najede za něj v přirozených proporcích (oříznutý na okraji). 0 = nedotčená fotka; 100 = sloupec se roztáhne až k okraji.",
+
+  "inputs.feather.label": "Prolnutí",
+  "inputs.feather.help": "Změkčí spoj v místě, kde se fotka setkává se zmrzlým sloupcem. Vzdálený konec, kde sloupec předává štafetu zbytku fotky, je už barevně plynulý, takže tohle ovlivňuje hlavně počáteční spoj. 0 ponechá ostrou hranu.",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Barva",
+  "inputs.contrast.help": "Roztáhne tóny od sebe (vyšší hodnota), nebo je zploští (nižší hodnota).",
+
+  "inputs.hue.label": "Odstín",
+  "inputs.hue.section": "Barva",
+  "inputs.hue.help": "Otočí všechny barvy po barevném kole.",
+
+  "inputs.saturation.label": "Sytost",
+  "inputs.saturation.section": "Barva",
+  "inputs.saturation.help": "0 = stupně šedi · 100 = originál · 200 = syté.",
+
+  "inputs.lightness.label": "Světlost",
+  "inputs.lightness.section": "Barva",
+  "inputs.lightness.help": "Zesvětlí směrem k bílé, nebo ztmaví směrem k černé.",
+
+  "inputs.treatmentColor.label": "Barevná úprava",
+  "inputs.treatmentColor.section": "Barva",
+  "inputs.treatmentColor.help": "Prolne přes výsledek zvolenou barvu. Ponech prázdné, pokud žádnou nechceš.",
+
+  "inputs.blendMode.label": "Režim prolnutí",
+  "inputs.blendMode.section": "Barva",
+  "inputs.blendMode.help": "Jak se barva úpravy mísí s obrázkem.",
+  "inputs.blendMode.options.normal": "Normální",
+  "inputs.blendMode.options.multiply": "Násobení",
+  "inputs.blendMode.options.screen": "Obrazovka",
+  "inputs.blendMode.options.overlay": "Překrytí",
+  "inputs.blendMode.options.darken": "Ztmavit",
+  "inputs.blendMode.options.lighten": "Zesvětlit",
+  "inputs.blendMode.options.color-dodge": "Zesvětlení barvy",
+  "inputs.blendMode.options.color-burn": "Vypálení barvy",
+  "inputs.blendMode.options.hard-light": "Tvrdé světlo",
+  "inputs.blendMode.options.soft-light": "Měkké světlo",
+  "inputs.blendMode.options.difference": "Rozdíl",
+  "inputs.blendMode.options.exclusion": "Vyloučení",
+  "inputs.blendMode.options.hue": "Odstín",
+  "inputs.blendMode.options.saturation": "Sytost",
+  "inputs.blendMode.options.color": "Barva",
+  "inputs.blendMode.options.luminosity": "Světlost",
+
+  "inputs.treatmentIntensity.label": "Intenzita",
+  "inputs.treatmentIntensity.section": "Barva",
+  "inputs.treatmentIntensity.help": "Krytí barevného překryvu.",
+
+  "inputs.imageFraming.label": "Přiblížení a pozice",
+  "inputs.imageFraming.section": "Pozice",
+  "inputs.imageFraming.help": "Přiblížení zvětšuje fotku; X/Y ji posouvají v rámci snímku (podobně jako object-position). Přetáhni popisek nebo zadej hodnotu.",
+  "inputs.imageFraming.fields.zoom.label": "Přiblížení",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "Bez filtru (zobrazit originál)",
+  "inputs.noFilter.section": "Překryv",
+  "inputs.noFilter.help": "Zobrazí původní fotku nebo živý obraz z kamery beze změny — hodí se, když chceš přes nezpracovaný záběr umístit jen logo nebo jmenovku.",
+
+  "inputs.showLogo.label": "Překryv loga SUSE",
+  "inputs.showLogo.section": "Překryv",
+  "inputs.showLogo.help": "Přidá přes výsledek logo SUSE. Ve výchozím stavu vypnuto.",
+
+  "inputs.logoPosition.label": "Pozice loga",
+  "inputs.logoPosition.section": "Překryv",
+  "inputs.logoPosition.options.top-left": "Vlevo nahoře",
+  "inputs.logoPosition.options.top-right": "Vpravo nahoře",
+  "inputs.logoPosition.options.bottom-left": "Vlevo dole",
+  "inputs.logoPosition.options.bottom-right": "Vpravo dole",
+  "inputs.logoPosition.options.top": "Nahoře uprostřed",
+  "inputs.logoPosition.options.bottom": "Dole uprostřed",
+  "inputs.logoPosition.options.center": "Uprostřed",
+  "inputs.logoPosition.options.full": "Celé (vodoznak)",
+
+  "inputs.logoStyle.label": "Barva loga",
+  "inputs.logoStyle.section": "Překryv",
+  "inputs.logoStyle.help": "Bílá a zelená jsou čitelné na tmavém nebo rušném záběru; černá se hodí na světlé pozadí.",
+  "inputs.logoStyle.options.white": "Bílá",
+  "inputs.logoStyle.options.green": "Zelená",
+  "inputs.logoStyle.options.black": "Černá",
+
+  "inputs.logoScale.label": "Velikost loga",
+  "inputs.logoScale.section": "Překryv",
+  "inputs.logoScale.help": "Zvětší nebo zmenší logo.",
+
+  "inputs.lowerThird.label": "Jmenovka (dolní třetina)",
+  "inputs.lowerThird.section": "Překryv",
+  "inputs.lowerThird.help": "Jemně animovaná jmenovka, která se objeví přes záběr. Používá jméno a portrét z tvého profilu.",
+
+  "inputs.ltTheme.label": "Styl karty",
+  "inputs.ltTheme.section": "Překryv",
+  "inputs.ltTheme.options.bar": "Značkový pruh SUSE",
+  "inputs.ltTheme.options.minimal": "Minimalistický",
+  "inputs.ltTheme.options.glass": "Sklo",
+
+  "inputs.ltPosition.label": "Pozice karty",
+  "inputs.ltPosition.section": "Překryv",
+  "inputs.ltPosition.options.left": "Vlevo dole",
+  "inputs.ltPosition.options.center": "Uprostřed dole",
+  "inputs.ltPosition.options.right": "Vpravo dole",
+
+  "inputs.firstname.label": "Jméno",
+  "inputs.firstname.section": "Překryv",
+
+  "inputs.lastname.label": "Příjmení",
+  "inputs.lastname.section": "Překryv",
+
+  "inputs.title.label": "Role / podtitulek",
+  "inputs.title.section": "Překryv",
+  "inputs.title.help": "Volitelný řádek pod jménem — např. role nebo název akce.",
+
+  "inputs.nameWeight.label": "Tloušťka písma jména",
+  "inputs.nameWeight.section": "Překryv",
+  "inputs.nameWeight.help": "Tloušťka písma řádku se jménem (100 Tenké → 900 Černé).",
+
+  "inputs.subtitleWeight.label": "Tloušťka písma podtitulku",
+  "inputs.subtitleWeight.section": "Překryv",
+  "inputs.subtitleWeight.help": "Tloušťka písma řádku s rolí/podtitulkem (100 Tenké → 900 Černé).",
+
+  "inputs.ltHeadshot.label": "Portrét (volitelné)",
+  "inputs.ltHeadshot.section": "Překryv",
+  "inputs.ltHeadshot.help": "Ve výchozím stavu se použije portrét z tvého profilu. Vyber nebo nahraj jiný, pokud ho chceš nahradit.",
+
+  "inputs.width.label": "Šířka",
+  "inputs.height.label": "Výška"
 }

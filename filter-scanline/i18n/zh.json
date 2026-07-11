@@ -1,4 +1,152 @@
 {
   "name": "滤镜：扫描线",
-  "description": "将任意照片转换为水平“无穷线”扫描线矢量效果"
+  "description": "将任意照片转换为水平“无穷线”扫描线矢量效果",
+  "a11yLabel": "以品牌色调呈现所选图像的扫描线效果",
+
+  "inputs.image.label": "图片",
+  "inputs.image.help": "选择一张照片,或上传你自己的。处理过程在你的设备上进行——像素数据不会离开浏览器。",
+
+  "inputs.lineSize.label": "线条高度",
+  "inputs.lineSize.help": "每条扫描线的高度,也是每个像素格的大小;数值越小,线条越细,细节越丰富。",
+
+  "inputs.gapSize.label": "间隙高度",
+  "inputs.gapSize.help": "每条扫描线下方空白间隙的大小,相对于线条本身而言。数值越大,线条越细、间距越宽;设为 0 则没有间隙,呈现实心图像。不会改变图像的细节或位置。",
+
+  "inputs.separatePixels.label": "分离像素",
+  "inputs.separatePixels.help": "在像素格之间也加入间隙,使每一格成为独立的方块——呈现 LED/点阵屏效果,而非实心的扫描线条。",
+
+  "inputs.everyLine.label": "填满每一行",
+  "inputs.everyLine.help": "绘制每一行且不留间隙——效果等同于将间隙高度设为零。关闭 = 经典扫描线;开启 = 实心的色调分离图像。",
+
+  "inputs.fit.label": "图片适配方式",
+  "inputs.fit.options.contain": "包含(完整图像)",
+  "inputs.fit.options.cover": "覆盖(填满,裁剪边缘)",
+
+  "inputs.highlight.label": "高光",
+  "inputs.highlight.help": "最亮的色调。",
+
+  "inputs.light.label": "亮部",
+
+  "inputs.mid.label": "中间调",
+
+  "inputs.shade.label": "暗部",
+
+  "inputs.shadow.label": "阴影",
+  "inputs.shadow.help": "最暗的色调。",
+
+  "inputs.background.label": "背景",
+  "inputs.background.help": "填充空白线条和间隙。留空则背景透明(PNG/WebP/AVIF/SVG 会保留透明度)。",
+
+  "inputs.brightness.label": "亮度",
+
+  "inputs.contrast.label": "对比度",
+  "inputs.contrast.section": "色彩",
+
+  "inputs.hue.label": "色相",
+  "inputs.hue.section": "色彩",
+  "inputs.hue.help": "让所有颜色围绕色轮旋转。",
+
+  "inputs.saturation.label": "饱和度",
+  "inputs.saturation.section": "色彩",
+  "inputs.saturation.help": "0 = 灰度 · 100 = 原始 · 200 = 鲜艳。",
+
+  "inputs.lightness.label": "明度",
+  "inputs.lightness.section": "色彩",
+  "inputs.lightness.help": "向白色提亮或向黑色压暗。",
+
+  "inputs.treatmentColor.label": "色彩处理",
+  "inputs.treatmentColor.section": "色彩",
+  "inputs.treatmentColor.help": "在结果上叠加一种颜色。留空则不叠加。",
+
+  "inputs.blendMode.label": "混合模式",
+  "inputs.blendMode.section": "色彩",
+  "inputs.blendMode.help": "处理颜色与图像的混合方式。",
+  "inputs.blendMode.options.normal": "正常",
+  "inputs.blendMode.options.multiply": "正片叠底",
+  "inputs.blendMode.options.screen": "滤色",
+  "inputs.blendMode.options.overlay": "叠加",
+  "inputs.blendMode.options.darken": "变暗",
+  "inputs.blendMode.options.lighten": "变亮",
+  "inputs.blendMode.options.color-dodge": "颜色减淡",
+  "inputs.blendMode.options.color-burn": "颜色加深",
+  "inputs.blendMode.options.hard-light": "强光",
+  "inputs.blendMode.options.soft-light": "柔光",
+  "inputs.blendMode.options.difference": "差值",
+  "inputs.blendMode.options.exclusion": "排除",
+  "inputs.blendMode.options.hue": "色相",
+  "inputs.blendMode.options.saturation": "饱和度",
+  "inputs.blendMode.options.color": "颜色",
+  "inputs.blendMode.options.luminosity": "明度",
+
+  "inputs.treatmentIntensity.label": "强度",
+  "inputs.treatmentIntensity.section": "色彩",
+  "inputs.treatmentIntensity.help": "颜色叠加的不透明度。",
+
+  "inputs.noFilter.label": "不加滤镜(显示原始画面)",
+  "inputs.noFilter.section": "叠加",
+  "inputs.noFilter.help": "显示未经处理的原始照片或实时摄像头画面——适合只在原始画面上放置徽标或下三分之一字幕条。",
+
+  "inputs.showLogo.label": "SUSE 徽标叠加",
+  "inputs.showLogo.section": "叠加",
+  "inputs.showLogo.help": "在结果上叠加 SUSE 徽标。默认关闭。",
+
+  "inputs.logoPosition.label": "徽标位置",
+  "inputs.logoPosition.section": "叠加",
+  "inputs.logoPosition.options.top-left": "左上",
+  "inputs.logoPosition.options.top-right": "右上",
+  "inputs.logoPosition.options.bottom-left": "左下",
+  "inputs.logoPosition.options.bottom-right": "右下",
+  "inputs.logoPosition.options.top": "顶部居中",
+  "inputs.logoPosition.options.bottom": "底部居中",
+  "inputs.logoPosition.options.center": "居中",
+  "inputs.logoPosition.options.full": "全屏(水印)",
+
+  "inputs.logoStyle.label": "徽标颜色",
+  "inputs.logoStyle.section": "叠加",
+  "inputs.logoStyle.help": "白色和绿色适合深色或杂乱的画面;黑色适合浅色背景。",
+  "inputs.logoStyle.options.white": "白色",
+  "inputs.logoStyle.options.green": "绿色",
+  "inputs.logoStyle.options.black": "黑色",
+
+  "inputs.logoScale.label": "徽标大小",
+  "inputs.logoScale.section": "叠加",
+  "inputs.logoScale.help": "放大或缩小徽标。",
+
+  "inputs.lowerThird.label": "下三分之一姓名条",
+  "inputs.lowerThird.section": "叠加",
+  "inputs.lowerThird.help": "一张带轻柔动画效果的姓名卡,会绘制在画面上方。使用你个人资料中的姓名和头像。",
+
+  "inputs.ltTheme.label": "卡片样式",
+  "inputs.ltTheme.section": "叠加",
+  "inputs.ltTheme.options.bar": "SUSE 品牌条",
+  "inputs.ltTheme.options.minimal": "极简",
+  "inputs.ltTheme.options.glass": "玻璃质感",
+
+  "inputs.ltPosition.label": "卡片位置",
+  "inputs.ltPosition.section": "叠加",
+  "inputs.ltPosition.options.left": "左下",
+  "inputs.ltPosition.options.center": "底部居中",
+  "inputs.ltPosition.options.right": "右下",
+
+  "inputs.firstname.label": "名字",
+  "inputs.firstname.section": "叠加",
+
+  "inputs.lastname.label": "姓氏",
+  "inputs.lastname.section": "叠加",
+
+  "inputs.title.label": "职位 / 副标题",
+  "inputs.title.section": "叠加",
+  "inputs.title.help": "姓名下方的可选行——例如职位或活动名称。",
+
+  "inputs.nameWeight.label": "姓名字重",
+  "inputs.nameWeight.section": "叠加",
+  "inputs.nameWeight.help": "姓名行的字体粗细(100 极细 → 900 特黑)。",
+
+  "inputs.subtitleWeight.label": "副标题字重",
+  "inputs.subtitleWeight.section": "叠加",
+  "inputs.subtitleWeight.help": "职位 / 副标题行的字体粗细(100 极细 → 900 特黑)。",
+
+  "inputs.ltHeadshot.label": "头像(可选)",
+  "inputs.ltHeadshot.section": "叠加",
+  "inputs.ltHeadshot.help": "默认使用你个人资料中的头像。可选择或上传其他图片来覆盖。"
 }

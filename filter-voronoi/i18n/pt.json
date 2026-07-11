@@ -1,4 +1,144 @@
 {
   "name": "Filtro: Células de Voronoi",
-  "description": "Fragmente qualquer foto em um mosaico de células de Voronoi — cada célula preenchida com a cor mais próxima, em vetor plano."
+  "description": "Fragmente qualquer foto em um mosaico de células de Voronoi — cada célula preenchida com a cor mais próxima, em vetor plano.",
+  "a11yLabel": "Mosaico de células de Voronoi da foto",
+
+  "inputs.image.label": "Foto",
+  "inputs.image.help": "A imagem a ser dividida em células. Qualquer foto funciona; retratos e formas marcantes funcionam especialmente bem.",
+
+  "inputs.cells.label": "Células",
+  "inputs.cells.help": "Quantas células de Voronoi para fragmentar a imagem. Mais células = mais fiel e detalhado; menos células = facetas mais grossas e marcantes.",
+
+  "inputs.jitter.label": "Irregularidade",
+  "inputs.jitter.help": "0 = uma grade regular de células · 100 = formas de células totalmente dispersas e orgânicas.",
+
+  "inputs.relax.label": "Relaxamento (equilibrar)",
+  "inputs.relax.help": "Relaxamento de Lloyd — aproxima as células de um tamanho igual e formas mais arredondadas. Quanto maior, mais calmo e uniforme.",
+
+  "inputs.seed.label": "Semente (sortear de novo)",
+  "inputs.seed.help": "Sorteia novamente a disposição aleatória das células. A mesma semente = sempre as mesmas células.",
+
+  "inputs.edgeWidth.label": "Largura da borda",
+  "inputs.edgeWidth.help": "A argamassa entre as células. 0 = uma malha de cores contínua; valores mais altos desenham um espaço na cor da borda, para um efeito de vitral.",
+
+  "inputs.edgeColor.label": "Cor da borda",
+  "inputs.edgeColor.help": "A cor dos espaços entre as células (e da borda externa).",
+
+  "inputs.transparentBg.label": "Fundo transparente",
+  "inputs.transparentBg.help": "Remove o fundo para que os espaços/borda fiquem transparentes (PNG/SVG).",
+
+  "inputs.contrast.label": "Contraste",
+  "inputs.contrast.section": "Cor",
+  "inputs.contrast.help": "Afasta os tons entre si (valores mais altos) ou os aproxima (valores mais baixos) antes de as células amostrarem suas cores.",
+
+  "inputs.hue.label": "Matiz",
+  "inputs.hue.section": "Cor",
+  "inputs.hue.help": "Gira todas as cores ao redor do círculo cromático.",
+
+  "inputs.saturation.label": "Saturação",
+  "inputs.saturation.section": "Cor",
+  "inputs.saturation.help": "0 = escala de cinza · 100 = original · 200 = vívido.",
+
+  "inputs.lightness.label": "Luminosidade",
+  "inputs.lightness.section": "Cor",
+  "inputs.lightness.help": "Clareia em direção ao branco ou escurece em direção ao preto.",
+
+  "inputs.treatmentColor.label": "Tratamento de cor",
+  "inputs.treatmentColor.section": "Cor",
+  "inputs.treatmentColor.help": "Mistura uma cor sobre o resultado. Deixe em branco para não aplicar nenhuma.",
+
+  "inputs.blendMode.label": "Modo de mesclagem",
+  "inputs.blendMode.section": "Cor",
+  "inputs.blendMode.help": "Como a cor de tratamento se mistura com a imagem.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplicar",
+  "inputs.blendMode.options.screen": "Tela",
+  "inputs.blendMode.options.overlay": "Sobrepor",
+  "inputs.blendMode.options.darken": "Escurecer",
+  "inputs.blendMode.options.lighten": "Clarear",
+  "inputs.blendMode.options.color-dodge": "Clarear cor",
+  "inputs.blendMode.options.color-burn": "Escurecer cor",
+  "inputs.blendMode.options.hard-light": "Luz forte",
+  "inputs.blendMode.options.soft-light": "Luz suave",
+  "inputs.blendMode.options.difference": "Diferença",
+  "inputs.blendMode.options.exclusion": "Exclusão",
+  "inputs.blendMode.options.hue": "Matiz",
+  "inputs.blendMode.options.saturation": "Saturação",
+  "inputs.blendMode.options.color": "Cor",
+  "inputs.blendMode.options.luminosity": "Luminosidade",
+
+  "inputs.treatmentIntensity.label": "Intensidade",
+  "inputs.treatmentIntensity.section": "Cor",
+  "inputs.treatmentIntensity.help": "Opacidade da sobreposição de cor.",
+
+  "inputs.width.label": "Largura",
+  "inputs.height.label": "Altura",
+
+  "inputs.noFilter.label": "Sem filtro (mostrar original)",
+  "inputs.noFilter.section": "Sobreposição",
+  "inputs.noFilter.help": "Mostra a foto original ou a transmissão da câmera ao vivo sem alterações — útil para colocar apenas um logotipo/legenda inferior sobre a imagem bruta.",
+
+  "inputs.showLogo.label": "Sobreposição do logotipo SUSE",
+  "inputs.showLogo.section": "Sobreposição",
+  "inputs.showLogo.help": "Sobrepõe o logotipo SUSE ao resultado. Desativado por padrão.",
+
+  "inputs.logoPosition.label": "Posição do logotipo",
+  "inputs.logoPosition.section": "Sobreposição",
+  "inputs.logoPosition.options.top-left": "Superior esquerda",
+  "inputs.logoPosition.options.top-right": "Superior direita",
+  "inputs.logoPosition.options.bottom-left": "Inferior esquerda",
+  "inputs.logoPosition.options.bottom-right": "Inferior direita",
+  "inputs.logoPosition.options.top": "Superior centro",
+  "inputs.logoPosition.options.bottom": "Inferior centro",
+  "inputs.logoPosition.options.center": "Centro",
+  "inputs.logoPosition.options.full": "Completo (marca d'água)",
+
+  "inputs.logoStyle.label": "Cor do logotipo",
+  "inputs.logoStyle.section": "Sobreposição",
+  "inputs.logoStyle.help": "Branco e verde se destacam em imagens escuras ou com muitos elementos; preto combina com fundos claros.",
+  "inputs.logoStyle.options.white": "Branco",
+  "inputs.logoStyle.options.green": "Verde",
+  "inputs.logoStyle.options.black": "Preto",
+
+  "inputs.logoScale.label": "Tamanho do logotipo",
+  "inputs.logoScale.section": "Sobreposição",
+  "inputs.logoScale.help": "Aumenta ou diminui o tamanho do logotipo.",
+
+  "inputs.lowerThird.label": "Cartão de nome (legenda inferior)",
+  "inputs.lowerThird.section": "Sobreposição",
+  "inputs.lowerThird.help": "Um cartão de nome com uma animação suave que aparece sobre a imagem. Usa o nome e a foto do seu perfil.",
+
+  "inputs.ltTheme.label": "Estilo do cartão",
+  "inputs.ltTheme.section": "Sobreposição",
+  "inputs.ltTheme.options.bar": "Barra de marca SUSE",
+  "inputs.ltTheme.options.minimal": "Minimalista",
+  "inputs.ltTheme.options.glass": "Vidro",
+
+  "inputs.ltPosition.label": "Posição do cartão",
+  "inputs.ltPosition.section": "Sobreposição",
+  "inputs.ltPosition.options.left": "Inferior esquerda",
+  "inputs.ltPosition.options.center": "Inferior centro",
+  "inputs.ltPosition.options.right": "Inferior direita",
+
+  "inputs.firstname.label": "Nome",
+  "inputs.firstname.section": "Sobreposição",
+
+  "inputs.lastname.label": "Sobrenome",
+  "inputs.lastname.section": "Sobreposição",
+
+  "inputs.title.label": "Cargo/subtítulo",
+  "inputs.title.section": "Sobreposição",
+  "inputs.title.help": "Linha opcional abaixo do nome — por exemplo, um cargo ou evento.",
+
+  "inputs.nameWeight.label": "Peso da fonte do nome",
+  "inputs.nameWeight.section": "Sobreposição",
+  "inputs.nameWeight.help": "Peso da fonte da linha do nome (100 Fina → 900 Preta).",
+
+  "inputs.subtitleWeight.label": "Peso da fonte do subtítulo",
+  "inputs.subtitleWeight.section": "Sobreposição",
+  "inputs.subtitleWeight.help": "Peso da fonte da linha de cargo/subtítulo (100 Fina → 900 Preta).",
+
+  "inputs.ltHeadshot.label": "Foto de perfil (opcional)",
+  "inputs.ltHeadshot.section": "Sobreposição",
+  "inputs.ltHeadshot.help": "Por padrão, usa a foto do seu perfil. Escolha ou envie outra para substituir."
 }

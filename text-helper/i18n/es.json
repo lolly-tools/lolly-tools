@@ -1,4 +1,5 @@
 {
   "name": "Ayudante de texto",
-  "description": "Da formato, decodifica, aplica hash y anonimiza texto: JSON, JWT y más."
+  "description": "Da formato, decodifica, aplica hash y anonimiza texto: JSON, JWT y más.",
+  "a11yLabel": "Ayudante de texto — panel de JSON / YAML / Helm / JWT / Base64 / hash / anonimización en el dispositivo"
 }

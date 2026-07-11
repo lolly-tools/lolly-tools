@@ -1,4 +1,144 @@
 {
   "name": "Filter: Voronoi Cells",
-  "description": "Pira-pirasuhin ang kahit anong larawan patungo sa isang Voronoi cell mosaic — bawat cell ay puno ng pinakamalapit na kulay, bilang flat vector."
+  "description": "Pira-pirasuhin ang kahit anong larawan patungo sa isang Voronoi cell mosaic — bawat cell ay puno ng pinakamalapit na kulay, bilang flat vector.",
+  "a11yLabel": "Voronoi cell mosaic ng larawan",
+
+  "inputs.image.label": "Larawan",
+  "inputs.image.help": "Ang larawang gagawing cells. Gumagana ang kahit anong larawan; lalong maganda ang mga portrait at matapang na hugis.",
+
+  "inputs.cells.label": "Mga Cell",
+  "inputs.cells.help": "Ilang Voronoi cell ang gustong ipagpira-piraso sa larawan. Mas maraming cell = mas pino at tapat sa larawan; mas kaunti = matapang at malalaking facet.",
+
+  "inputs.jitter.label": "Iregularidad",
+  "inputs.jitter.help": "0 = regular na grid ng mga cell · 100 = ganap na nakakalat, organic na hugis ng cell.",
+
+  "inputs.relax.label": "Relax (pantayin)",
+  "inputs.relax.help": "Lloyd relaxation — itinutulak ang mga cell papunta sa magkaparehong laki at mas bilog na hugis. Mas mataas, mas kalmado at mas pare-pareho.",
+
+  "inputs.seed.label": "Seed (i-reroll)",
+  "inputs.seed.help": "I-reroll ang random na layout ng cell. Parehong seed = parehong cells sa bawat pagkakataon.",
+
+  "inputs.edgeWidth.label": "Lapad ng gilid",
+  "inputs.edgeWidth.help": "Mortar sa pagitan ng mga cell. 0 = tuluy-tuloy na color mesh na walang puwang; mas mataas ay gumuguhit ng puwang sa kulay ng gilid para sa stained-glass na tingin.",
+
+  "inputs.edgeColor.label": "Kulay ng gilid",
+  "inputs.edgeColor.help": "Ang kulay ng mga puwang sa pagitan ng cells (at ng panlabas na border).",
+
+  "inputs.transparentBg.label": "Transparent na background",
+  "inputs.transparentBg.help": "Alisin ang background para transparent ang anumang puwang / border (PNG / SVG).",
+
+  "inputs.contrast.label": "Contrast",
+  "inputs.contrast.section": "Kulay",
+  "inputs.contrast.help": "Paghiwalayin ang mga tono (mas mataas) o patagin ang mga ito (mas mababa) bago kumuha ng kulay ang mga cell.",
+
+  "inputs.hue.label": "Hue",
+  "inputs.hue.section": "Kulay",
+  "inputs.hue.help": "I-ikot ang bawat kulay sa paligid ng gulong ng kulay.",
+
+  "inputs.saturation.label": "Saturation",
+  "inputs.saturation.section": "Kulay",
+  "inputs.saturation.help": "0 = greyscale · 100 = orihinal · 200 = matingkad.",
+
+  "inputs.lightness.label": "Liwanag",
+  "inputs.lightness.section": "Kulay",
+  "inputs.lightness.help": "Itaas patungong puti o ibaba patungong itim.",
+
+  "inputs.treatmentColor.label": "Color treatment",
+  "inputs.treatmentColor.section": "Kulay",
+  "inputs.treatmentColor.help": "Maghalo ng kulay sa resulta. Iwanang blangko kung wala.",
+
+  "inputs.blendMode.label": "Blend mode",
+  "inputs.blendMode.section": "Kulay",
+  "inputs.blendMode.help": "Paano naghahalo ang kulay ng treatment sa larawan.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiply",
+  "inputs.blendMode.options.screen": "Screen",
+  "inputs.blendMode.options.overlay": "Overlay",
+  "inputs.blendMode.options.darken": "Darken",
+  "inputs.blendMode.options.lighten": "Lighten",
+  "inputs.blendMode.options.color-dodge": "Color dodge",
+  "inputs.blendMode.options.color-burn": "Color burn",
+  "inputs.blendMode.options.hard-light": "Hard light",
+  "inputs.blendMode.options.soft-light": "Soft light",
+  "inputs.blendMode.options.difference": "Difference",
+  "inputs.blendMode.options.exclusion": "Exclusion",
+  "inputs.blendMode.options.hue": "Hue",
+  "inputs.blendMode.options.saturation": "Saturation",
+  "inputs.blendMode.options.color": "Kulay",
+  "inputs.blendMode.options.luminosity": "Luminosity",
+
+  "inputs.treatmentIntensity.label": "Intensity",
+  "inputs.treatmentIntensity.section": "Kulay",
+  "inputs.treatmentIntensity.help": "Opacity ng overlay ng kulay.",
+
+  "inputs.width.label": "Lapad",
+  "inputs.height.label": "Taas",
+
+  "inputs.noFilter.label": "Walang filter (ipakita ang raw)",
+  "inputs.noFilter.section": "Overlay",
+  "inputs.noFilter.help": "Ipakita ang orihinal na larawan o live camera feed nang hindi ginagalaw — magamit kapag maglalagay lang ng logo / lower-third sa ibabaw ng raw footage.",
+
+  "inputs.showLogo.label": "Overlay ng SUSE logo",
+  "inputs.showLogo.section": "Overlay",
+  "inputs.showLogo.help": "I-overlay ang SUSE logo sa resulta. Naka-off bilang default.",
+
+  "inputs.logoPosition.label": "Posisyon ng logo",
+  "inputs.logoPosition.section": "Overlay",
+  "inputs.logoPosition.options.top-left": "Kaliwang itaas",
+  "inputs.logoPosition.options.top-right": "Kanang itaas",
+  "inputs.logoPosition.options.bottom-left": "Kaliwang ibaba",
+  "inputs.logoPosition.options.bottom-right": "Kanang ibaba",
+  "inputs.logoPosition.options.top": "Gitnang itaas",
+  "inputs.logoPosition.options.bottom": "Gitnang ibaba",
+  "inputs.logoPosition.options.center": "Gitna",
+  "inputs.logoPosition.options.full": "Buo (watermark)",
+
+  "inputs.logoStyle.label": "Kulay ng logo",
+  "inputs.logoStyle.section": "Overlay",
+  "inputs.logoStyle.help": "Mas kitang-kita ang puti at berde sa madilim o abalang footage; mas bagay ang itim sa maliwanag na background.",
+  "inputs.logoStyle.options.white": "Puti",
+  "inputs.logoStyle.options.green": "Berde",
+  "inputs.logoStyle.options.black": "Itim",
+
+  "inputs.logoScale.label": "Laki ng logo",
+  "inputs.logoScale.section": "Overlay",
+  "inputs.logoScale.help": "I-scale ang logo pataas o pababa.",
+
+  "inputs.lowerThird.label": "Lower-third na name card",
+  "inputs.lowerThird.section": "Overlay",
+  "inputs.lowerThird.help": "Isang mahinahong animated na name card na lumalabas sa ibabaw ng footage. Ginagamit ang pangalan at headshot ng iyong profile.",
+
+  "inputs.ltTheme.label": "Estilo ng card",
+  "inputs.ltTheme.section": "Overlay",
+  "inputs.ltTheme.options.bar": "SUSE brand bar",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glass",
+
+  "inputs.ltPosition.label": "Posisyon ng card",
+  "inputs.ltPosition.section": "Overlay",
+  "inputs.ltPosition.options.left": "Kaliwang ibaba",
+  "inputs.ltPosition.options.center": "Gitnang ibaba",
+  "inputs.ltPosition.options.right": "Kanang ibaba",
+
+  "inputs.firstname.label": "Unang pangalan",
+  "inputs.firstname.section": "Overlay",
+
+  "inputs.lastname.label": "Apelyido",
+  "inputs.lastname.section": "Overlay",
+
+  "inputs.title.label": "Tungkulin / subtitle",
+  "inputs.title.section": "Overlay",
+  "inputs.title.help": "Opsyonal na linya sa ibaba ng pangalan — hal. tungkulin o event.",
+
+  "inputs.nameWeight.label": "Weight ng pangalan",
+  "inputs.nameWeight.section": "Overlay",
+  "inputs.nameWeight.help": "Font weight ng linya ng pangalan (100 Thin → 900 Black).",
+
+  "inputs.subtitleWeight.label": "Weight ng subtitle",
+  "inputs.subtitleWeight.section": "Overlay",
+  "inputs.subtitleWeight.help": "Font weight ng linya ng tungkulin / subtitle (100 Thin → 900 Black).",
+
+  "inputs.ltHeadshot.label": "Headshot (opsyonal)",
+  "inputs.ltHeadshot.section": "Overlay",
+  "inputs.ltHeadshot.help": "Default ay ang headshot ng iyong profile. Pumili o mag-upload ng iba para i-override."
 }

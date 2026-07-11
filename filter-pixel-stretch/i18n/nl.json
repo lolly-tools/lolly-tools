@@ -1,4 +1,146 @@
 {
   "name": "Filter: Pixels uitrekken",
-  "description": "Smeer een kolom pixels uit over een foto vanaf een drempellijn. Werkt live."
+  "description": "Smeer een kolom pixels uit over een foto vanaf een drempellijn. Werkt live.",
+  "a11yLabel": "Pixelstretch-uitsmering van de gekozen afbeelding",
+
+  "inputs.image.label": "Afbeelding",
+  "inputs.image.help": "Kies een foto of upload je eigen afbeelding. Deze wordt op je eigen apparaat verwerkt — de pixels verlaten de browser nooit. Of klik op “Ga live” op het canvas om je camerabeeld uit te smeren.",
+
+  "inputs.direction.label": "Richting",
+  "inputs.direction.help": "In welke richting de bevroren kolom pixels over het beeld uitsmeert.",
+  "inputs.direction.options.right": "Uitrekken naar rechts →",
+  "inputs.direction.options.left": "Uitrekken naar links ←",
+  "inputs.direction.options.down": "Uitrekken naar beneden ↓",
+  "inputs.direction.options.up": "Uitrekken naar boven ↑",
+
+  "inputs.threshold.label": "Startdrempel",
+  "inputs.threshold.help": "Waar de foto bevriest. Voorbij deze lijn wordt de bevroren kolom uitgerekt, waarna de rest van de foto in haar natuurlijke verhoudingen doorloopt, afgesneden aan de verre rand.",
+
+  "inputs.spread.label": "Spreiding",
+  "inputs.spread.help": "Hoeveel van de ruimte voorbij de drempel de bevroren kolom vult. De rest van de foto schuift daarna in haar natuurlijke verhoudingen mee (afgesneden aan de rand). 0 = ongewijzigde foto; 100 = de kolom rekt helemaal door tot de rand.",
+
+  "inputs.feather.label": "Verzachting",
+  "inputs.feather.help": "Verzacht de naad waar de foto de bevroren kolom raakt. Het verre uiteinde, waar de kolom overgaat in de meeschuivende rest, is al kleurcontinu, dus dit beïnvloedt vooral de startnaad. Bij 0 blijft de rand hard.",
+
+  "inputs.contrast.label": "Contrast",
+  "inputs.contrast.section": "Kleur",
+  "inputs.contrast.help": "Duw de tonen uit elkaar (hoger) of vlak ze af (lager).",
+
+  "inputs.hue.label": "Tint",
+  "inputs.hue.section": "Kleur",
+  "inputs.hue.help": "Draai alle kleuren rond het kleurenwiel.",
+
+  "inputs.saturation.label": "Verzadiging",
+  "inputs.saturation.section": "Kleur",
+  "inputs.saturation.help": "0 = grijstinten · 100 = origineel · 200 = levendig.",
+
+  "inputs.lightness.label": "Helderheid",
+  "inputs.lightness.section": "Kleur",
+  "inputs.lightness.help": "Licht op richting wit of verdonker richting zwart.",
+
+  "inputs.treatmentColor.label": "Kleurbehandeling",
+  "inputs.treatmentColor.section": "Kleur",
+  "inputs.treatmentColor.help": "Meng een kleur over het resultaat. Laat leeg voor geen effect.",
+
+  "inputs.blendMode.label": "Mengmodus",
+  "inputs.blendMode.section": "Kleur",
+  "inputs.blendMode.help": "Hoe de behandelingskleur mengt met de afbeelding.",
+  "inputs.blendMode.options.normal": "Normaal",
+  "inputs.blendMode.options.multiply": "Vermenigvuldigen",
+  "inputs.blendMode.options.screen": "Zeef",
+  "inputs.blendMode.options.overlay": "Bedekken",
+  "inputs.blendMode.options.darken": "Verdonkeren",
+  "inputs.blendMode.options.lighten": "Lichter maken",
+  "inputs.blendMode.options.color-dodge": "Kleur tegenhouden",
+  "inputs.blendMode.options.color-burn": "Kleur doordrukken",
+  "inputs.blendMode.options.hard-light": "Fel licht",
+  "inputs.blendMode.options.soft-light": "Zacht licht",
+  "inputs.blendMode.options.difference": "Verschil",
+  "inputs.blendMode.options.exclusion": "Uitsluiting",
+  "inputs.blendMode.options.hue": "Tint",
+  "inputs.blendMode.options.saturation": "Verzadiging",
+  "inputs.blendMode.options.color": "Kleur",
+  "inputs.blendMode.options.luminosity": "Luminantie",
+
+  "inputs.treatmentIntensity.label": "Intensiteit",
+  "inputs.treatmentIntensity.section": "Kleur",
+  "inputs.treatmentIntensity.help": "Dekking van de kleuroverlay.",
+
+  "inputs.imageFraming.label": "Zoom & positie",
+  "inputs.imageFraming.section": "Positie",
+  "inputs.imageFraming.help": "Zoom vergroot de foto; X/Y verschuiven de positie binnen het kader (zoals object-position). Sleep een label of voer een waarde in.",
+  "inputs.imageFraming.fields.zoom.label": "Zoom",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "Geen filter (toon origineel)",
+  "inputs.noFilter.section": "Overlay",
+  "inputs.noFilter.help": "Toon de originele foto of het live camerabeeld onbewerkt — handig om alleen een logo / lower-third over de ruwe beelden te plaatsen.",
+
+  "inputs.showLogo.label": "SUSE-logo-overlay",
+  "inputs.showLogo.section": "Overlay",
+  "inputs.showLogo.help": "Toon het SUSE-logo over het resultaat. Standaard uitgeschakeld.",
+
+  "inputs.logoPosition.label": "Logopositie",
+  "inputs.logoPosition.section": "Overlay",
+  "inputs.logoPosition.options.top-left": "Linksboven",
+  "inputs.logoPosition.options.top-right": "Rechtsboven",
+  "inputs.logoPosition.options.bottom-left": "Linksonder",
+  "inputs.logoPosition.options.bottom-right": "Rechtsonder",
+  "inputs.logoPosition.options.top": "Boven, gecentreerd",
+  "inputs.logoPosition.options.bottom": "Onder, gecentreerd",
+  "inputs.logoPosition.options.center": "Gecentreerd",
+  "inputs.logoPosition.options.full": "Volledig (watermerk)",
+
+  "inputs.logoStyle.label": "Logokleur",
+  "inputs.logoStyle.section": "Overlay",
+  "inputs.logoStyle.help": "Wit en groen zijn goed leesbaar op donkere of drukke beelden; zwart past bij lichte achtergronden.",
+  "inputs.logoStyle.options.white": "Wit",
+  "inputs.logoStyle.options.green": "Groen",
+  "inputs.logoStyle.options.black": "Zwart",
+
+  "inputs.logoScale.label": "Logogrootte",
+  "inputs.logoScale.section": "Overlay",
+  "inputs.logoScale.help": "Vergroot of verklein het logo.",
+
+  "inputs.lowerThird.label": "Lower-third naamkaart",
+  "inputs.lowerThird.section": "Overlay",
+  "inputs.lowerThird.help": "Een zachtjes geanimeerde naamkaart die over de beelden inschuift. Gebruikt je profielnaam & profielfoto.",
+
+  "inputs.ltTheme.label": "Kaartstijl",
+  "inputs.ltTheme.section": "Overlay",
+  "inputs.ltTheme.options.bar": "SUSE-merkbalk",
+  "inputs.ltTheme.options.minimal": "Minimaal",
+  "inputs.ltTheme.options.glass": "Glas",
+
+  "inputs.ltPosition.label": "Kaartpositie",
+  "inputs.ltPosition.section": "Overlay",
+  "inputs.ltPosition.options.left": "Linksonder",
+  "inputs.ltPosition.options.center": "Onder, gecentreerd",
+  "inputs.ltPosition.options.right": "Rechtsonder",
+
+  "inputs.firstname.label": "Voornaam",
+  "inputs.firstname.section": "Overlay",
+
+  "inputs.lastname.label": "Achternaam",
+  "inputs.lastname.section": "Overlay",
+
+  "inputs.title.label": "Functie / ondertitel",
+  "inputs.title.section": "Overlay",
+  "inputs.title.help": "Optionele regel onder de naam — bijvoorbeeld een functie of evenement.",
+
+  "inputs.nameWeight.label": "Naamgewicht",
+  "inputs.nameWeight.section": "Overlay",
+  "inputs.nameWeight.help": "Lettergewicht van de naamregel (100 Thin → 900 Black).",
+
+  "inputs.subtitleWeight.label": "Ondertitelgewicht",
+  "inputs.subtitleWeight.section": "Overlay",
+  "inputs.subtitleWeight.help": "Lettergewicht van de functie-/ondertitelregel (100 Thin → 900 Black).",
+
+  "inputs.ltHeadshot.label": "Profielfoto (optioneel)",
+  "inputs.ltHeadshot.section": "Overlay",
+  "inputs.ltHeadshot.help": "Standaard je profielfoto. Kies of upload een andere om te overschrijven.",
+
+  "inputs.width.label": "Breedte",
+  "inputs.height.label": "Hoogte"
 }

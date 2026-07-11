@@ -1,7 +1,9 @@
 {
   "name": "Generador de códigos QR",
   "description": "Códigos QR para cualquier URL, con control total de color y estilo.",
+  "a11yLabel": "Código QR que enlaza con {{default url \"(sin URL configurada)\"}}",
   "featured.blurb": "Códigos QR en cualquier color de marca",
+  "inputs.url.label": "URL",
   "inputs.color.label": "Color de los módulos",
   "inputs.background.label": "Fondo",
   "inputs.ecl.label": "Corrección de errores",

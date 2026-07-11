@@ -1,5 +1,148 @@
 {
   "name": "Créateur de graphiques",
   "description": "Des graphiques à l'image de ta marque à partir de tes données — barres, anneau, camembert ou empilé.",
-  "featured.blurb": "Des graphiques à l'image de ta marque, dans toutes les formes"
+  "featured.blurb": "Des graphiques à l'image de ta marque, dans toutes les formes",
+
+  "inputs.chartType.label": "Type de graphique",
+  "inputs.chartType.options.vertical-bar": "Barres verticales",
+  "inputs.chartType.options.horizontal-bar": "Barres horizontales",
+  "inputs.chartType.options.donut": "Anneau",
+  "inputs.chartType.options.pie": "Camembert",
+  "inputs.chartType.options.stacked": "Barre empilée",
+
+  "inputs.donutRadius.label": "Rayon de l'anneau",
+
+  "inputs.stackMax.label": "Échelle max",
+  "inputs.stackMax.placeholder": "0 = ajusté au total",
+  "inputs.stackMax.help": "Laisse 0 pour ajuster la barre au total de tes valeurs (un composite). Définis un nombre pour mettre à l'échelle le composite par rapport à un maximum fixe — la barre remplit cette part et laisse le reste vide.",
+
+  "inputs.sliceGap.label": "Espace entre les parts",
+  "inputs.sliceGap.section": "Parts",
+  "inputs.sliceGap.help": "Espacement entre les parts, en pixels au bord extérieur. 0 = les parts se touchent.",
+
+  "inputs.cornerRadius.label": "Rayon des coins",
+  "inputs.cornerRadius.section": "Parts",
+  "inputs.cornerRadius.help": "Arrondit les coins de chaque part. Automatiquement limité pour les parts fines ou étroites.",
+
+  "inputs.strokeWidth.label": "Épaisseur du contour",
+  "inputs.strokeWidth.section": "Parts",
+  "inputs.strokeWidth.help": "Contour autour de chaque part. 0 = pas de contour.",
+
+  "inputs.strokeColor.label": "Couleur du contour",
+  "inputs.strokeColor.section": "Parts",
+
+  "inputs.heading.label": "Titre",
+  "inputs.heading.placeholder": "Titre du graphique",
+
+  "inputs.subheading.label": "Sous-titre / source",
+  "inputs.subheading.placeholder": "Sous-titre ou source des données (facultatif)",
+
+  "inputs.color.label": "Couleur du texte",
+
+  "inputs.background.label": "Arrière-plan",
+
+  "inputs.showLegend.label": "Afficher la légende",
+  "inputs.showLegend.section": "Légende",
+
+  "inputs.legendPosition.label": "Position",
+  "inputs.legendPosition.section": "Légende",
+  "inputs.legendPosition.options.bottom": "Bas",
+  "inputs.legendPosition.options.top": "Haut",
+  "inputs.legendPosition.options.left": "Gauche",
+  "inputs.legendPosition.options.right": "Droite",
+
+  "inputs.legendDotShape.label": "Forme du repère",
+  "inputs.legendDotShape.section": "Légende",
+  "inputs.legendDotShape.options.square": "Carré",
+  "inputs.legendDotShape.options.circle": "Cercle",
+
+  "inputs.legendSize.label": "Taille du texte",
+  "inputs.legendSize.section": "Légende",
+
+  "inputs.legendFontWeight.label": "Graisse de la police",
+  "inputs.legendFontWeight.section": "Légende",
+
+  "inputs.legendMaxChars.label": "Longueur max du libellé",
+  "inputs.legendMaxChars.section": "Légende",
+  "inputs.legendMaxChars.help": "Nombre de caractères affichés avant qu'un libellé de légende soit raccourci avec « … ». 0 = automatique.",
+
+  "inputs.legendWidth.label": "Largeur de la légende %",
+  "inputs.legendWidth.section": "Légende",
+
+  "inputs.showLabels.label": "Afficher les libellés",
+  "inputs.showLabels.section": "Libellés",
+
+  "inputs.labelSize.label": "Taille du texte",
+  "inputs.labelSize.section": "Libellés",
+
+  "inputs.labelWeight.label": "Graisse de la police",
+  "inputs.labelWeight.section": "Libellés",
+
+  "inputs.labelMaxChars.label": "Longueur max du libellé",
+  "inputs.labelMaxChars.section": "Libellés",
+  "inputs.labelMaxChars.help": "Nombre de caractères affichés avant qu'un libellé soit raccourci avec « … ». 0 = automatique.",
+
+  "inputs.labelPosition.label": "Position",
+  "inputs.labelPosition.section": "Libellés",
+  "inputs.labelPosition.options.inside": "Intérieur",
+  "inputs.labelPosition.options.outside": "Extérieur",
+
+  "inputs.labelAlign.label": "Alignement",
+  "inputs.labelAlign.section": "Libellés",
+  "inputs.labelAlign.options.top": "Haut",
+  "inputs.labelAlign.options.center": "Centre",
+  "inputs.labelAlign.options.bottom": "Bas",
+
+  "inputs.labelOffset.label": "Décalage",
+  "inputs.labelOffset.section": "Libellés",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Espace extérieur",
+  "inputs.labelGap.section": "Libellés",
+
+  "inputs.dataLabels.label": "Afficher les valeurs",
+  "inputs.dataLabels.section": "Valeur",
+
+  "inputs.valueSize.label": "Taille du texte",
+  "inputs.valueSize.section": "Valeur",
+
+  "inputs.valueWeight.label": "Graisse de la police",
+  "inputs.valueWeight.section": "Valeur",
+
+  "inputs.valuePosition.label": "Position",
+  "inputs.valuePosition.section": "Valeur",
+  "inputs.valuePosition.options.inside": "Intérieur",
+  "inputs.valuePosition.options.outside": "Extérieur",
+
+  "inputs.valueAlign.label": "Alignement",
+  "inputs.valueAlign.section": "Valeur",
+  "inputs.valueAlign.options.top": "Haut",
+  "inputs.valueAlign.options.center": "Centre",
+  "inputs.valueAlign.options.bottom": "Bas",
+
+  "inputs.valueOffset.label": "Décalage",
+  "inputs.valueOffset.section": "Valeur",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Espace extérieur",
+  "inputs.valueGap.section": "Valeur",
+
+  "inputs.valueFormat.label": "Format des nombres",
+  "inputs.valueFormat.section": "Valeur",
+  "inputs.valueFormat.options.auto": "Auto",
+  "inputs.valueFormat.options.value": "Nombre d'origine",
+  "inputs.valueFormat.options.percent": "Pourcentage",
+
+  "inputs.data.label": "Données",
+  "inputs.data.fields.label.label": "Libellé",
+  "inputs.data.fields.label.placeholder": "Libellé",
+  "inputs.data.fields.value.label": "Valeur",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Couleur",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Largeur",
+  "inputs.height.label": "Hauteur"
 }

@@ -1,4 +1,129 @@
 {
   "name": "Filter: Duoton",
-  "description": "Ein zweifarbiger Duoton-Effekt für jedes Foto — Schatten in einer Farbe, Lichter in einer anderen."
+  "description": "Ein zweifarbiger Duoton-Effekt für jedes Foto — Schatten in einer Farbe, Lichter in einer anderen.",
+
+  "inputs.bgImage.label": "Hintergrundbild",
+
+  "inputs.colorFg.label": "Schattenfarbe",
+
+  "inputs.colorBg.label": "Lichterfarbe",
+
+  "inputs.imageFraming.label": "Zoom & Position",
+  "inputs.imageFraming.section": "Position",
+  "inputs.imageFraming.help": "Der Zoom vergrößert das Foto; X/Y verschieben es innerhalb des Rahmens (wie object-position). Ziehen Sie an einer Beschriftung oder geben Sie einen Wert ein.",
+  "inputs.imageFraming.fields.zoom.label": "Zoom",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.hue.label": "Farbton",
+  "inputs.hue.section": "Farbe",
+  "inputs.hue.help": "Dreht alle Farben auf dem Farbkreis.",
+
+  "inputs.saturation.label": "Sättigung",
+  "inputs.saturation.section": "Farbe",
+  "inputs.saturation.help": "0 = Graustufen · 100 = Original · 200 = kräftig.",
+
+  "inputs.lightness.label": "Helligkeit",
+  "inputs.lightness.section": "Farbe",
+  "inputs.lightness.help": "Hellt in Richtung Weiß auf oder verdunkelt in Richtung Schwarz.",
+
+  "inputs.treatmentColor.label": "Farbbehandlung",
+  "inputs.treatmentColor.section": "Farbe",
+  "inputs.treatmentColor.help": "Legt eine Farbe über das Ergebnis. Für keine Behandlung leer lassen.",
+
+  "inputs.blendMode.label": "Mischmodus",
+  "inputs.blendMode.section": "Farbe",
+  "inputs.blendMode.help": "Wie sich die Behandlungsfarbe mit dem Bild vermischt.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplizieren",
+  "inputs.blendMode.options.screen": "Negativ multiplizieren",
+  "inputs.blendMode.options.overlay": "Ineinanderkopieren",
+  "inputs.blendMode.options.darken": "Abdunkeln",
+  "inputs.blendMode.options.lighten": "Aufhellen",
+  "inputs.blendMode.options.color-dodge": "Farbig abwedeln",
+  "inputs.blendMode.options.color-burn": "Farbig nachbelichten",
+  "inputs.blendMode.options.hard-light": "Hartes Licht",
+  "inputs.blendMode.options.soft-light": "Weiches Licht",
+  "inputs.blendMode.options.difference": "Differenz",
+  "inputs.blendMode.options.exclusion": "Ausschluss",
+  "inputs.blendMode.options.hue": "Farbton",
+  "inputs.blendMode.options.saturation": "Sättigung",
+  "inputs.blendMode.options.color": "Farbe",
+  "inputs.blendMode.options.luminosity": "Luminanz",
+
+  "inputs.treatmentIntensity.label": "Intensität",
+  "inputs.treatmentIntensity.section": "Farbe",
+  "inputs.treatmentIntensity.help": "Deckkraft der Farbüberlagerung.",
+
+  "inputs.width.label": "Breite",
+
+  "inputs.height.label": "Höhe",
+
+  "inputs.noFilter.label": "Kein Filter (Original anzeigen)",
+  "inputs.noFilter.section": "Überlagerung",
+  "inputs.noFilter.help": "Zeigt das Originalfoto oder den Live-Kamera-Feed unverändert an — praktisch, um nur ein Logo bzw. eine Namenseinblendung über das unbearbeitete Filmmaterial zu legen.",
+
+  "inputs.showLogo.label": "SUSE-Logo-Überlagerung",
+  "inputs.showLogo.section": "Überlagerung",
+  "inputs.showLogo.help": "Legt das SUSE-Logo über das Ergebnis. Standardmäßig deaktiviert.",
+
+  "inputs.logoPosition.label": "Logoposition",
+  "inputs.logoPosition.section": "Überlagerung",
+  "inputs.logoPosition.options.top-left": "Oben links",
+  "inputs.logoPosition.options.top-right": "Oben rechts",
+  "inputs.logoPosition.options.bottom-left": "Unten links",
+  "inputs.logoPosition.options.bottom-right": "Unten rechts",
+  "inputs.logoPosition.options.top": "Oben mittig",
+  "inputs.logoPosition.options.bottom": "Unten mittig",
+  "inputs.logoPosition.options.center": "Mittig",
+  "inputs.logoPosition.options.full": "Vollflächig (Wasserzeichen)",
+
+  "inputs.logoStyle.label": "Logofarbe",
+  "inputs.logoStyle.section": "Überlagerung",
+  "inputs.logoStyle.options.white": "Weiß",
+  "inputs.logoStyle.options.green": "Grün",
+  "inputs.logoStyle.options.black": "Schwarz",
+  "inputs.logoStyle.help": "Weiß und Grün sind auf dunklem oder unruhigem Bildmaterial gut lesbar; Schwarz eignet sich für helle Hintergründe.",
+
+  "inputs.logoScale.label": "Logogröße",
+  "inputs.logoScale.section": "Überlagerung",
+  "inputs.logoScale.help": "Skaliert das Logo größer oder kleiner.",
+
+  "inputs.lowerThird.label": "Namenseinblendung",
+  "inputs.lowerThird.section": "Überlagerung",
+  "inputs.lowerThird.help": "Eine sanft animierte Namenskarte, die über das Filmmaterial eingeblendet wird. Verwendet Ihren Profilnamen und Ihr Profilfoto.",
+
+  "inputs.ltTheme.label": "Kartenstil",
+  "inputs.ltTheme.section": "Überlagerung",
+  "inputs.ltTheme.options.bar": "SUSE-Markenbalken",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glas",
+
+  "inputs.ltPosition.label": "Kartenposition",
+  "inputs.ltPosition.section": "Überlagerung",
+  "inputs.ltPosition.options.left": "Unten links",
+  "inputs.ltPosition.options.center": "Unten mittig",
+  "inputs.ltPosition.options.right": "Unten rechts",
+
+  "inputs.firstname.label": "Vorname",
+  "inputs.firstname.section": "Überlagerung",
+
+  "inputs.lastname.label": "Nachname",
+  "inputs.lastname.section": "Überlagerung",
+
+  "inputs.title.label": "Rolle / Untertitel",
+  "inputs.title.section": "Überlagerung",
+  "inputs.title.help": "Optionale Zeile unter dem Namen — z. B. eine Rolle oder eine Veranstaltung.",
+
+  "inputs.nameWeight.label": "Schriftstärke des Namens",
+  "inputs.nameWeight.section": "Überlagerung",
+  "inputs.nameWeight.help": "Schriftstärke der Namenszeile (100 Dünn → 900 Fett).",
+
+  "inputs.subtitleWeight.label": "Schriftstärke des Untertitels",
+  "inputs.subtitleWeight.section": "Überlagerung",
+  "inputs.subtitleWeight.help": "Schriftstärke der Rollen-/Untertitelzeile (100 Dünn → 900 Fett).",
+
+  "inputs.ltHeadshot.label": "Profilfoto (optional)",
+  "inputs.ltHeadshot.section": "Überlagerung",
+  "inputs.ltHeadshot.help": "Verwendet standardmäßig Ihr Profilfoto. Wählen Sie ein anderes aus oder laden Sie eines hoch, um es zu überschreiben."
 }

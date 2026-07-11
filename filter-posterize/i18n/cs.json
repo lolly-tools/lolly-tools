@@ -1,4 +1,154 @@
 {
   "name": "Filtr: Posterizace bitmapy",
-  "description": "Převede libovolnou fotku na ploché vektorové barevné výtažky ve stylu sítotisku."
+  "description": "Převede libovolnou fotku na ploché vektorové barevné výtažky ve stylu sítotisku.",
+  "a11yLabel": "Posterizovaný vektor fotky s {{steps}} barvami",
+
+  "inputs.photo.label": "Fotka",
+  "inputs.photo.help": "Obrázek, který se má posterizovat. Nejlépe se vektorizují portréty a kontrastní fotky.",
+
+  "inputs.steps.label": "Barevné kroky",
+  "inputs.steps.help": "Kolik tónových výtažků se má vytvořit. Změna této hodnoty znovu vzorkuje barvy z fotky.",
+
+  "inputs.threshold.label": "Práh (jedna barva)",
+  "inputs.threshold.help": "Převede fotku na jedinou barvu na papíře — jeden ostrý řez mezi tmavými a světlými tóny místo odstupňovaných výtažků. Zkombinuj s možností Průhledné pozadí pro barvu bez podkladu.",
+
+  "inputs.thresholdLevel.label": "Úroveň prahu",
+  "inputs.thresholdLevel.help": "Kde probíhá řez mezi barvou a papírem. Vyšší hodnota promění více fotky v barvu, nižší ponechá jen nejhlubší stíny.",
+
+  "inputs.brightness.label": "Jas",
+  "inputs.brightness.help": "Zesvětlí nebo ztmaví fotku před rozdělením na výtažky — posune všechny tóny nahoru nebo dolů a přesune detaily mezi světlými a tmavými výtažky.",
+
+  "inputs.quality.label": "Kvalita",
+  "inputs.quality.help": "Rozlišení vektorizace — vyšší hodnota vzorkuje fotku v jemnější mřížce a zachytí více detailů. Nad 100 se posouváš k velmi jemným, pomalejším vektorizacím.",
+
+  "inputs.smoothing.label": "Vyhlazení",
+  "inputs.smoothing.help": "Jak moc se vektorizované obrysy zaoblují do křivek. Nízká hodnota zachová hrany věrné a ostré, vysoká je převede do hladkých Bézierových křivek.",
+
+  "inputs.invert.label": "Invertovat tóny",
+  "inputs.invert.help": "Vektorizuje z invertovaných tónů — světlé oblasti fotky se stanou popředím výtažků (tónový negativ). Užitečné pro světlý objekt na tmavém pozadí.",
+
+  "inputs.colors.label": "Barvy výtažků",
+  "inputs.colors.help": "Jeden odstín na tón, od nejtmavšího po nejsvětlejší (papír) jako poslední. Automaticky vzorkováno z tvé fotky — úpravou libovolného odstínu přebarvíš daný výtažek.",
+  "inputs.colors.fields.color.label": "Barva",
+
+  "inputs.resample.label": "Znovu vzorkovat barvy z fotky",
+  "inputs.resample.help": "Zahodí ruční úpravy a znovu odvodí všechny barvy výtažků z aktuální fotky.",
+
+  "inputs.transparentBg.label": "Průhledné pozadí",
+  "inputs.transparentBg.help": "Vynechá nejsvětlejší výtažek „papír“, takže pozadí bude průhledné (PNG / SVG).",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Barva",
+  "inputs.contrast.help": "Před rozdělením na výtažky oddálí tóny od sebe (vyšší hodnota) nebo je stlačí k sobě (nižší hodnota). Vyšší kontrast dává výraznější, grafičtější výtažky.",
+
+  "inputs.hue.label": "Odstín",
+  "inputs.hue.section": "Barva",
+  "inputs.hue.help": "Otočí všechny barvy po barevném kruhu.",
+
+  "inputs.saturation.label": "Sytost",
+  "inputs.saturation.section": "Barva",
+  "inputs.saturation.help": "0 = odstíny šedi · 100 = originál · 200 = sytá.",
+
+  "inputs.lightness.label": "Světlost",
+  "inputs.lightness.section": "Barva",
+  "inputs.lightness.help": "Posune směrem k bílé nebo k černé.",
+
+  "inputs.treatmentColor.label": "Barevná úprava",
+  "inputs.treatmentColor.section": "Barva",
+  "inputs.treatmentColor.help": "Prolne barvu přes výsledek. Ponech prázdné, pokud nechceš žádnou.",
+
+  "inputs.blendMode.label": "Režim prolnutí",
+  "inputs.blendMode.section": "Barva",
+  "inputs.blendMode.help": "Jak se barva úpravy mísí s obrázkem.",
+  "inputs.blendMode.options.normal": "Normální",
+  "inputs.blendMode.options.multiply": "Násobení",
+  "inputs.blendMode.options.screen": "Zesvětlení",
+  "inputs.blendMode.options.overlay": "Překrýt",
+  "inputs.blendMode.options.darken": "Ztmavit",
+  "inputs.blendMode.options.lighten": "Zesvětlit",
+  "inputs.blendMode.options.color-dodge": "Zjasnit barvu",
+  "inputs.blendMode.options.color-burn": "Vypálit barvu",
+  "inputs.blendMode.options.hard-light": "Tvrdé světlo",
+  "inputs.blendMode.options.soft-light": "Měkké světlo",
+  "inputs.blendMode.options.difference": "Rozdíl",
+  "inputs.blendMode.options.exclusion": "Vyloučení",
+  "inputs.blendMode.options.hue": "Odstín",
+  "inputs.blendMode.options.saturation": "Sytost",
+  "inputs.blendMode.options.color": "Barva",
+  "inputs.blendMode.options.luminosity": "Světlost",
+
+  "inputs.treatmentIntensity.label": "Intenzita",
+  "inputs.treatmentIntensity.section": "Barva",
+  "inputs.treatmentIntensity.help": "Krytí barevného překrytí.",
+
+  "inputs.width.label": "Šířka",
+  "inputs.height.label": "Výška",
+
+  "inputs.noFilter.label": "Bez filtru (zobrazit originál)",
+  "inputs.noFilter.section": "Překryv",
+  "inputs.noFilter.help": "Zobrazí původní fotku nebo živý obraz z kamery beze změny — hodí se, když chceš přes surový záběr umístit jen logo nebo spodní třetinu.",
+
+  "inputs.showLogo.label": "Překryv loga SUSE",
+  "inputs.showLogo.section": "Překryv",
+  "inputs.showLogo.help": "Přidá přes výsledek logo SUSE. Ve výchozím stavu vypnuto.",
+
+  "inputs.logoPosition.label": "Umístění loga",
+  "inputs.logoPosition.section": "Překryv",
+  "inputs.logoPosition.options.top-left": "Vlevo nahoře",
+  "inputs.logoPosition.options.top-right": "Vpravo nahoře",
+  "inputs.logoPosition.options.bottom-left": "Vlevo dole",
+  "inputs.logoPosition.options.bottom-right": "Vpravo dole",
+  "inputs.logoPosition.options.top": "Nahoře uprostřed",
+  "inputs.logoPosition.options.bottom": "Dole uprostřed",
+  "inputs.logoPosition.options.center": "Uprostřed",
+  "inputs.logoPosition.options.full": "Celé (vodoznak)",
+
+  "inputs.logoStyle.label": "Barva loga",
+  "inputs.logoStyle.section": "Překryv",
+  "inputs.logoStyle.help": "Bílá a zelená jsou čitelné na tmavém nebo rušném záběru, černá se hodí na světlá pozadí.",
+  "inputs.logoStyle.options.white": "Bílá",
+  "inputs.logoStyle.options.green": "Zelená",
+  "inputs.logoStyle.options.black": "Černá",
+
+  "inputs.logoScale.label": "Velikost loga",
+  "inputs.logoScale.section": "Překryv",
+  "inputs.logoScale.help": "Zvětší nebo zmenší logo.",
+
+  "inputs.lowerThird.label": "Jmenovka ve spodní třetině",
+  "inputs.lowerThird.section": "Překryv",
+  "inputs.lowerThird.help": "Jemně animovaná jmenovka, která se vykreslí přes záběr. Používá jméno a portrét z tvého profilu.",
+
+  "inputs.ltTheme.label": "Styl karty",
+  "inputs.ltTheme.section": "Překryv",
+  "inputs.ltTheme.options.bar": "Značkový pruh SUSE",
+  "inputs.ltTheme.options.minimal": "Minimalistický",
+  "inputs.ltTheme.options.glass": "Sklo",
+
+  "inputs.ltPosition.label": "Umístění karty",
+  "inputs.ltPosition.section": "Překryv",
+  "inputs.ltPosition.options.left": "Vlevo dole",
+  "inputs.ltPosition.options.center": "Dole uprostřed",
+  "inputs.ltPosition.options.right": "Vpravo dole",
+
+  "inputs.firstname.label": "Jméno",
+  "inputs.firstname.section": "Překryv",
+
+  "inputs.lastname.label": "Příjmení",
+  "inputs.lastname.section": "Překryv",
+
+  "inputs.title.label": "Role / podtitulek",
+  "inputs.title.section": "Překryv",
+  "inputs.title.help": "Volitelný řádek pod jménem — např. role nebo událost.",
+
+  "inputs.nameWeight.label": "Řez písma – jméno",
+  "inputs.nameWeight.section": "Překryv",
+  "inputs.nameWeight.help": "Řez písma řádku se jménem (100 Tenké → 900 Černé).",
+
+  "inputs.subtitleWeight.label": "Řez písma – podtitulek",
+  "inputs.subtitleWeight.section": "Překryv",
+  "inputs.subtitleWeight.help": "Řez písma řádku s rolí / podtitulkem (100 Tenké → 900 Černé).",
+
+  "inputs.ltHeadshot.label": "Portrét (volitelné)",
+  "inputs.ltHeadshot.section": "Překryv",
+  "inputs.ltHeadshot.help": "Ve výchozím stavu použije portrét z tvého profilu. Vyber nebo nahraj jiný, pokud ho chceš nahradit."
 }

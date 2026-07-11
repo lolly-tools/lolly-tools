@@ -1,4 +1,172 @@
 {
   "name": "Filter: Raster",
-  "description": "Vektor-Rasterung aus jedem Foto — Punktgröße je nach Helligkeit."
+  "description": "Vektor-Rasterung aus jedem Foto — Punktgröße je nach Helligkeit.",
+  "a11yLabel": "Raster-Wiedergabe des gewählten Bildes als Gitter einfarbiger Punkte",
+
+  "inputs.image.label": "Bild",
+  "inputs.image.help": "Wählen Sie ein Foto aus oder laden Sie ein eigenes hoch. Es wird auf Ihrem Gerät verarbeitet – die Pixel verlassen niemals den Browser.",
+
+  "inputs.gridSize.label": "Rastergröße",
+  "inputs.gridSize.help": "Abstand zwischen den Punkten. Kleiner = feinere Details und mehr Punkte; größer = ein kräftigerer, gröberer Raster.",
+
+  "inputs.dotScale.label": "Punktgröße",
+  "inputs.dotScale.help": "Skaliert jeden Punkt. Werte unter 1 öffnen den Raster; Werte über 1 verdicken die Punkte, sodass dunkle Bereiche zulaufen.",
+
+  "inputs.shape.label": "Punktform",
+  "inputs.shape.options.circle": "Kreis",
+  "inputs.shape.options.square": "Quadrat",
+  "inputs.shape.options.diamond": "Raute",
+
+  "inputs.colorSource.label": "Farbquelle",
+  "inputs.colorSource.help": "Färben Sie die Punkte anhand des darunterliegenden Fotos oder mit einer einzigen Farbe ein.",
+  "inputs.colorSource.options.image": "Aus dem Bild",
+  "inputs.colorSource.options.solid": "Einfarbig",
+
+  "inputs.colorLevels.label": "Farbstufen",
+  "inputs.colorLevels.help": "Reduziert die Punktfarben auf eine begrenzte Palette (Stufen pro Kanal). „Vollfarbe“ behält die Farben des Fotos bei.",
+  "inputs.colorLevels.options.0": "Vollfarbe",
+  "inputs.colorLevels.options.8": "8 Stufen",
+  "inputs.colorLevels.options.6": "6 Stufen",
+  "inputs.colorLevels.options.4": "4 Stufen",
+  "inputs.colorLevels.options.3": "3 Stufen",
+  "inputs.colorLevels.options.2": "2 Stufen",
+
+  "inputs.fgColor.label": "Punktfarbe",
+  "inputs.fgColor.help": "Punktfarbe, wenn die Farbquelle auf „Einfarbig“ steht.",
+
+  "inputs.bgColor.label": "Hintergrund",
+  "inputs.bgColor.help": "Füllung hinter den Punkten. Aktivieren Sie „Kein Hintergrund“ in den Exportoptionen für einen transparenten Hintergrund.",
+
+  "inputs.invert.label": "Invertieren",
+  "inputs.invert.help": "Lässt die Punkte in hellen statt dunklen Bereichen wachsen — ideal für eine helle Farbe auf dunklem Hintergrund.",
+
+  "inputs.fit.label": "Bildanpassung",
+  "inputs.fit.options.contain": "Einpassen (ganzes Bild)",
+  "inputs.fit.options.cover": "Füllen (Ränder werden beschnitten)",
+
+  "inputs.brightness.label": "Helligkeit",
+
+  "inputs.gamma.label": "Gamma",
+  "inputs.gamma.help": "Gewichtung der Mitteltöne. Werte unter 1 dunkeln die Mitteltöne ab (dichtere Punkte); Werte über 1 hellen sie auf.",
+
+  "inputs.smoothing.label": "Glättung",
+  "inputs.smoothing.help": "Weicht das Punktraster auf, indem benachbarte Zellen verschmolzen werden. Zähmt verrauschte Fotos.",
+
+  "inputs.dither.label": "Textur",
+  "inputs.dither.help": "Fügt eine Textur im Zeitungsdruck-Stil (1-Bit) hinzu, indem Zellen auf volle oder leere Punkte gesetzt werden.",
+  "inputs.dither.options.none": "Glatt (keine)",
+  "inputs.dither.options.floyd": "Diffus (Floyd–Steinberg)",
+  "inputs.dither.options.ordered": "Gemustert (geordnet)",
+  "inputs.dither.options.noise": "Körnig (Rauschen)",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Farbe",
+
+  "inputs.hue.label": "Farbton",
+  "inputs.hue.section": "Farbe",
+  "inputs.hue.help": "Dreht jede Farbe entlang des Farbkreises.",
+
+  "inputs.saturation.label": "Sättigung",
+  "inputs.saturation.section": "Farbe",
+  "inputs.saturation.help": "0 = Graustufen · 100 = Original · 200 = kräftig.",
+
+  "inputs.lightness.label": "Helligkeit",
+  "inputs.lightness.section": "Farbe",
+  "inputs.lightness.help": "Hebt Richtung Weiß an oder senkt Richtung Schwarz ab.",
+
+  "inputs.treatmentColor.label": "Farbbehandlung",
+  "inputs.treatmentColor.section": "Farbe",
+  "inputs.treatmentColor.help": "Legt eine Farbe über das Ergebnis. Leer lassen für keine.",
+
+  "inputs.blendMode.label": "Mischmodus",
+  "inputs.blendMode.section": "Farbe",
+  "inputs.blendMode.help": "Wie sich die Behandlungsfarbe mit dem Bild vermischt.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplizieren",
+  "inputs.blendMode.options.screen": "Negativ multiplizieren",
+  "inputs.blendMode.options.overlay": "Ineinanderkopieren",
+  "inputs.blendMode.options.darken": "Abdunkeln",
+  "inputs.blendMode.options.lighten": "Aufhellen",
+  "inputs.blendMode.options.color-dodge": "Farbig abwedeln",
+  "inputs.blendMode.options.color-burn": "Farbig nachbelichten",
+  "inputs.blendMode.options.hard-light": "Hartes Licht",
+  "inputs.blendMode.options.soft-light": "Weiches Licht",
+  "inputs.blendMode.options.difference": "Differenz",
+  "inputs.blendMode.options.exclusion": "Ausschluss",
+  "inputs.blendMode.options.hue": "Farbton",
+  "inputs.blendMode.options.saturation": "Sättigung",
+  "inputs.blendMode.options.color": "Farbe",
+  "inputs.blendMode.options.luminosity": "Luminanz",
+
+  "inputs.treatmentIntensity.label": "Intensität",
+  "inputs.treatmentIntensity.section": "Farbe",
+  "inputs.treatmentIntensity.help": "Deckkraft der Farbüberlagerung.",
+
+  "inputs.noFilter.label": "Kein Filter (Original anzeigen)",
+  "inputs.noFilter.section": "Überlagerung",
+  "inputs.noFilter.help": "Zeigt das Originalfoto oder den Live-Kamerastream unverändert an — praktisch, um nur ein Logo bzw. eine Bauchbinde über das Rohmaterial zu legen.",
+
+  "inputs.showLogo.label": "SUSE-Logo-Überlagerung",
+  "inputs.showLogo.section": "Überlagerung",
+  "inputs.showLogo.help": "Legt das SUSE-Logo über das Ergebnis. Standardmäßig deaktiviert.",
+
+  "inputs.logoPosition.label": "Logoposition",
+  "inputs.logoPosition.section": "Überlagerung",
+  "inputs.logoPosition.options.top-left": "Oben links",
+  "inputs.logoPosition.options.top-right": "Oben rechts",
+  "inputs.logoPosition.options.bottom-left": "Unten links",
+  "inputs.logoPosition.options.bottom-right": "Unten rechts",
+  "inputs.logoPosition.options.top": "Oben mittig",
+  "inputs.logoPosition.options.bottom": "Unten mittig",
+  "inputs.logoPosition.options.center": "Mittig",
+  "inputs.logoPosition.options.full": "Vollflächig (Wasserzeichen)",
+
+  "inputs.logoStyle.label": "Logofarbe",
+  "inputs.logoStyle.section": "Überlagerung",
+  "inputs.logoStyle.help": "Weiß und Grün wirken gut auf dunklem oder unruhigem Bildmaterial; Schwarz eignet sich für helle Hintergründe.",
+  "inputs.logoStyle.options.white": "Weiß",
+  "inputs.logoStyle.options.green": "Grün",
+  "inputs.logoStyle.options.black": "Schwarz",
+
+  "inputs.logoScale.label": "Logogröße",
+  "inputs.logoScale.section": "Überlagerung",
+  "inputs.logoScale.help": "Skaliert das Logo größer oder kleiner.",
+
+  "inputs.lowerThird.label": "Bauchbinde mit Namen",
+  "inputs.lowerThird.section": "Überlagerung",
+  "inputs.lowerThird.help": "Eine sanft animierte Namenskarte, die über das Bildmaterial eingeblendet wird. Verwendet Ihren Profilnamen und Ihr Profilfoto.",
+
+  "inputs.ltTheme.label": "Kartenstil",
+  "inputs.ltTheme.section": "Überlagerung",
+  "inputs.ltTheme.options.bar": "SUSE-Markenleiste",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glas",
+
+  "inputs.ltPosition.label": "Kartenposition",
+  "inputs.ltPosition.section": "Überlagerung",
+  "inputs.ltPosition.options.left": "Unten links",
+  "inputs.ltPosition.options.center": "Unten mittig",
+  "inputs.ltPosition.options.right": "Unten rechts",
+
+  "inputs.firstname.label": "Vorname",
+  "inputs.firstname.section": "Überlagerung",
+
+  "inputs.lastname.label": "Nachname",
+  "inputs.lastname.section": "Überlagerung",
+
+  "inputs.title.label": "Rolle/Untertitel",
+  "inputs.title.section": "Überlagerung",
+  "inputs.title.help": "Optionale Zeile unter dem Namen — z. B. eine Rolle oder Veranstaltung.",
+
+  "inputs.nameWeight.label": "Schriftgewicht des Namens",
+  "inputs.nameWeight.section": "Überlagerung",
+  "inputs.nameWeight.help": "Schriftgewicht der Namenszeile (100 Dünn → 900 Extrafett).",
+
+  "inputs.subtitleWeight.label": "Schriftgewicht des Untertitels",
+  "inputs.subtitleWeight.section": "Überlagerung",
+  "inputs.subtitleWeight.help": "Schriftgewicht der Rollen-/Untertitelzeile (100 Dünn → 900 Extrafett).",
+
+  "inputs.ltHeadshot.label": "Profilfoto (optional)",
+  "inputs.ltHeadshot.section": "Überlagerung",
+  "inputs.ltHeadshot.help": "Verwendet standardmäßig Ihr Profilfoto. Wählen Sie ein anderes aus oder laden Sie eines hoch, um es zu überschreiben."
 }

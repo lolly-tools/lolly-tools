@@ -1,5 +1,148 @@
 {
   "name": "Diagramskapare",
   "description": "Varumärkesanpassade diagram från din data – stapel, ring, cirkel eller staplat.",
-  "featured.blurb": "Varumärkesanpassade diagram från din data, i valfri form"
+  "featured.blurb": "Varumärkesanpassade diagram från din data, i valfri form",
+
+  "inputs.chartType.label": "Diagramtyp",
+  "inputs.chartType.options.vertical-bar": "Lodräta staplar",
+  "inputs.chartType.options.horizontal-bar": "Vågräta staplar",
+  "inputs.chartType.options.donut": "Ring",
+  "inputs.chartType.options.pie": "Cirkel",
+  "inputs.chartType.options.stacked": "Staplad stapel",
+
+  "inputs.donutRadius.label": "Ringradie",
+
+  "inputs.stackMax.label": "Skalans maxvärde",
+  "inputs.stackMax.placeholder": "0 = anpassa efter totalsumman",
+  "inputs.stackMax.help": "Lämna som 0 för att anpassa stapeln efter totalsumman av dina värden (en sammansatt stapel). Ange ett tal för att skala den sammansatta stapeln mot ett fast maxvärde – stapeln fyller sin andel och lämnar resten tom.",
+
+  "inputs.sliceGap.label": "Mellanrum mellan segment",
+  "inputs.sliceGap.section": "Segment",
+  "inputs.sliceGap.help": "Avstånd mellan segment, i pixlar vid ytterkanten. 0 = segmenten ligger an mot varandra.",
+
+  "inputs.cornerRadius.label": "Hörnradie",
+  "inputs.cornerRadius.section": "Segment",
+  "inputs.cornerRadius.help": "Rundar hörnen på varje segment. Begränsas automatiskt för tunna eller smala segment.",
+
+  "inputs.strokeWidth.label": "Konturbredd",
+  "inputs.strokeWidth.section": "Segment",
+  "inputs.strokeWidth.help": "Kontur runt varje segment. 0 = ingen kontur.",
+
+  "inputs.strokeColor.label": "Konturfärg",
+  "inputs.strokeColor.section": "Segment",
+
+  "inputs.heading.label": "Rubrik",
+  "inputs.heading.placeholder": "Diagramrubrik",
+
+  "inputs.subheading.label": "Underrubrik / källa",
+  "inputs.subheading.placeholder": "Valfri underrubrik eller datakälla",
+
+  "inputs.color.label": "Textfärg",
+
+  "inputs.background.label": "Bakgrund",
+
+  "inputs.showLegend.label": "Visa förklaring",
+  "inputs.showLegend.section": "Förklaring",
+
+  "inputs.legendPosition.label": "Position",
+  "inputs.legendPosition.section": "Förklaring",
+  "inputs.legendPosition.options.bottom": "Nederst",
+  "inputs.legendPosition.options.top": "Överst",
+  "inputs.legendPosition.options.left": "Vänster",
+  "inputs.legendPosition.options.right": "Höger",
+
+  "inputs.legendDotShape.label": "Punktform",
+  "inputs.legendDotShape.section": "Förklaring",
+  "inputs.legendDotShape.options.square": "Kvadrat",
+  "inputs.legendDotShape.options.circle": "Cirkel",
+
+  "inputs.legendSize.label": "Textstorlek",
+  "inputs.legendSize.section": "Förklaring",
+
+  "inputs.legendFontWeight.label": "Typsnittsvikt",
+  "inputs.legendFontWeight.section": "Förklaring",
+
+  "inputs.legendMaxChars.label": "Max etikettlängd",
+  "inputs.legendMaxChars.section": "Förklaring",
+  "inputs.legendMaxChars.help": "Antal tecken som visas innan en etikett i förklaringen förkortas med \"…\". 0 = automatiskt.",
+
+  "inputs.legendWidth.label": "Förklaringens bredd %",
+  "inputs.legendWidth.section": "Förklaring",
+
+  "inputs.showLabels.label": "Visa etiketter",
+  "inputs.showLabels.section": "Etiketter",
+
+  "inputs.labelSize.label": "Textstorlek",
+  "inputs.labelSize.section": "Etiketter",
+
+  "inputs.labelWeight.label": "Typsnittsvikt",
+  "inputs.labelWeight.section": "Etiketter",
+
+  "inputs.labelMaxChars.label": "Max etikettlängd",
+  "inputs.labelMaxChars.section": "Etiketter",
+  "inputs.labelMaxChars.help": "Antal tecken som visas innan en etikett förkortas med \"…\". 0 = automatiskt.",
+
+  "inputs.labelPosition.label": "Position",
+  "inputs.labelPosition.section": "Etiketter",
+  "inputs.labelPosition.options.inside": "Inuti",
+  "inputs.labelPosition.options.outside": "Utanför",
+
+  "inputs.labelAlign.label": "Justering",
+  "inputs.labelAlign.section": "Etiketter",
+  "inputs.labelAlign.options.top": "Överst",
+  "inputs.labelAlign.options.center": "Centrerad",
+  "inputs.labelAlign.options.bottom": "Nederst",
+
+  "inputs.labelOffset.label": "Förskjutning",
+  "inputs.labelOffset.section": "Etiketter",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Yttre mellanrum",
+  "inputs.labelGap.section": "Etiketter",
+
+  "inputs.dataLabels.label": "Visa värden",
+  "inputs.dataLabels.section": "Värde",
+
+  "inputs.valueSize.label": "Textstorlek",
+  "inputs.valueSize.section": "Värde",
+
+  "inputs.valueWeight.label": "Typsnittsvikt",
+  "inputs.valueWeight.section": "Värde",
+
+  "inputs.valuePosition.label": "Position",
+  "inputs.valuePosition.section": "Värde",
+  "inputs.valuePosition.options.inside": "Inuti",
+  "inputs.valuePosition.options.outside": "Utanför",
+
+  "inputs.valueAlign.label": "Justering",
+  "inputs.valueAlign.section": "Värde",
+  "inputs.valueAlign.options.top": "Överst",
+  "inputs.valueAlign.options.center": "Centrerad",
+  "inputs.valueAlign.options.bottom": "Nederst",
+
+  "inputs.valueOffset.label": "Förskjutning",
+  "inputs.valueOffset.section": "Värde",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Yttre mellanrum",
+  "inputs.valueGap.section": "Värde",
+
+  "inputs.valueFormat.label": "Talformat",
+  "inputs.valueFormat.section": "Värde",
+  "inputs.valueFormat.options.auto": "Auto",
+  "inputs.valueFormat.options.value": "Ursprungligt tal",
+  "inputs.valueFormat.options.percent": "Procent",
+
+  "inputs.data.label": "Data",
+  "inputs.data.fields.label.label": "Etikett",
+  "inputs.data.fields.label.placeholder": "Etikett",
+  "inputs.data.fields.value.label": "Värde",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Färg",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Bredd",
+  "inputs.height.label": "Höjd"
 }

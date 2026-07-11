@@ -1,5 +1,148 @@
 {
   "name": "Diagramm-Ersteller",
   "description": "Markenkonforme Diagramme aus Ihren Daten — Balken, Donut, Kreis oder gestapelt.",
-  "featured.blurb": "Markenkonforme Diagramme aus Ihren Daten, in jeder Form"
+  "featured.blurb": "Markenkonforme Diagramme aus Ihren Daten, in jeder Form",
+
+  "inputs.chartType.label": "Diagrammtyp",
+  "inputs.chartType.options.vertical-bar": "Vertikale Balken",
+  "inputs.chartType.options.horizontal-bar": "Horizontale Balken",
+  "inputs.chartType.options.donut": "Donut",
+  "inputs.chartType.options.pie": "Kreis",
+  "inputs.chartType.options.stacked": "Gestapelte Balken",
+
+  "inputs.donutRadius.label": "Donut-Radius",
+
+  "inputs.stackMax.label": "Skalenmaximum",
+  "inputs.stackMax.placeholder": "0 = an Gesamtsumme anpassen",
+  "inputs.stackMax.help": "Lassen Sie den Wert bei 0, damit sich der Balken an die Gesamtsumme Ihrer Werte anpasst (eine Komposition). Legen Sie eine Zahl fest, um die Komposition auf ein festes Maximum zu skalieren — der Balken füllt diesen Anteil und lässt den Rest leer.",
+
+  "inputs.sliceGap.label": "Abstand zwischen Segmenten",
+  "inputs.sliceGap.section": "Segmente",
+  "inputs.sliceGap.help": "Abstand zwischen den Segmenten in Pixel am äußeren Rand. 0 = Segmente berühren sich.",
+
+  "inputs.cornerRadius.label": "Eckenradius",
+  "inputs.cornerRadius.section": "Segmente",
+  "inputs.cornerRadius.help": "Rundet die Ecken jedes Segments ab. Wird bei dünnen oder schmalen Segmenten automatisch begrenzt.",
+
+  "inputs.strokeWidth.label": "Konturbreite",
+  "inputs.strokeWidth.section": "Segmente",
+  "inputs.strokeWidth.help": "Kontur um jedes Segment. 0 = keine Kontur.",
+
+  "inputs.strokeColor.label": "Konturfarbe",
+  "inputs.strokeColor.section": "Segmente",
+
+  "inputs.heading.label": "Titel",
+  "inputs.heading.placeholder": "Diagrammtitel",
+
+  "inputs.subheading.label": "Untertitel / Quelle",
+  "inputs.subheading.placeholder": "Optionaler Untertitel oder Datenquelle",
+
+  "inputs.color.label": "Textfarbe",
+
+  "inputs.background.label": "Hintergrund",
+
+  "inputs.showLegend.label": "Legende anzeigen",
+  "inputs.showLegend.section": "Legende",
+
+  "inputs.legendPosition.label": "Position",
+  "inputs.legendPosition.section": "Legende",
+  "inputs.legendPosition.options.bottom": "Unten",
+  "inputs.legendPosition.options.top": "Oben",
+  "inputs.legendPosition.options.left": "Links",
+  "inputs.legendPosition.options.right": "Rechts",
+
+  "inputs.legendDotShape.label": "Punktform",
+  "inputs.legendDotShape.section": "Legende",
+  "inputs.legendDotShape.options.square": "Quadrat",
+  "inputs.legendDotShape.options.circle": "Kreis",
+
+  "inputs.legendSize.label": "Textgröße",
+  "inputs.legendSize.section": "Legende",
+
+  "inputs.legendFontWeight.label": "Schriftstärke",
+  "inputs.legendFontWeight.section": "Legende",
+
+  "inputs.legendMaxChars.label": "Maximale Beschriftungslänge",
+  "inputs.legendMaxChars.section": "Legende",
+  "inputs.legendMaxChars.help": "Anzahl der Zeichen, die angezeigt werden, bevor ein Legendenlabel mit „…“ gekürzt wird. 0 = automatisch.",
+
+  "inputs.legendWidth.label": "Legendenbreite %",
+  "inputs.legendWidth.section": "Legende",
+
+  "inputs.showLabels.label": "Beschriftungen anzeigen",
+  "inputs.showLabels.section": "Beschriftungen",
+
+  "inputs.labelSize.label": "Textgröße",
+  "inputs.labelSize.section": "Beschriftungen",
+
+  "inputs.labelWeight.label": "Schriftstärke",
+  "inputs.labelWeight.section": "Beschriftungen",
+
+  "inputs.labelMaxChars.label": "Maximale Beschriftungslänge",
+  "inputs.labelMaxChars.section": "Beschriftungen",
+  "inputs.labelMaxChars.help": "Anzahl der Zeichen, die angezeigt werden, bevor eine Beschriftung mit „…“ gekürzt wird. 0 = automatisch.",
+
+  "inputs.labelPosition.label": "Position",
+  "inputs.labelPosition.section": "Beschriftungen",
+  "inputs.labelPosition.options.inside": "Innen",
+  "inputs.labelPosition.options.outside": "Außen",
+
+  "inputs.labelAlign.label": "Ausrichtung",
+  "inputs.labelAlign.section": "Beschriftungen",
+  "inputs.labelAlign.options.top": "Oben",
+  "inputs.labelAlign.options.center": "Mitte",
+  "inputs.labelAlign.options.bottom": "Unten",
+
+  "inputs.labelOffset.label": "Versatz",
+  "inputs.labelOffset.section": "Beschriftungen",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Außenabstand",
+  "inputs.labelGap.section": "Beschriftungen",
+
+  "inputs.dataLabels.label": "Werte anzeigen",
+  "inputs.dataLabels.section": "Wert",
+
+  "inputs.valueSize.label": "Textgröße",
+  "inputs.valueSize.section": "Wert",
+
+  "inputs.valueWeight.label": "Schriftstärke",
+  "inputs.valueWeight.section": "Wert",
+
+  "inputs.valuePosition.label": "Position",
+  "inputs.valuePosition.section": "Wert",
+  "inputs.valuePosition.options.inside": "Innen",
+  "inputs.valuePosition.options.outside": "Außen",
+
+  "inputs.valueAlign.label": "Ausrichtung",
+  "inputs.valueAlign.section": "Wert",
+  "inputs.valueAlign.options.top": "Oben",
+  "inputs.valueAlign.options.center": "Mitte",
+  "inputs.valueAlign.options.bottom": "Unten",
+
+  "inputs.valueOffset.label": "Versatz",
+  "inputs.valueOffset.section": "Wert",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Außenabstand",
+  "inputs.valueGap.section": "Wert",
+
+  "inputs.valueFormat.label": "Zahlenformat",
+  "inputs.valueFormat.section": "Wert",
+  "inputs.valueFormat.options.auto": "Automatisch",
+  "inputs.valueFormat.options.value": "Ursprüngliche Zahl",
+  "inputs.valueFormat.options.percent": "Prozentsatz",
+
+  "inputs.data.label": "Daten",
+  "inputs.data.fields.label.label": "Bezeichnung",
+  "inputs.data.fields.label.placeholder": "Bezeichnung",
+  "inputs.data.fields.value.label": "Wert",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Farbe",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Breite",
+  "inputs.height.label": "Höhe"
 }

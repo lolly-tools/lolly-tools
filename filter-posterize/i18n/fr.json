@@ -1,4 +1,154 @@
 {
   "name": "Filtre : Postérisation bitmap",
-  "description": "Transforme n'importe quelle photo en aplats vectoriels façon sérigraphie, séparés par couleur."
+  "description": "Transforme n'importe quelle photo en aplats vectoriels façon sérigraphie, séparés par couleur.",
+  "a11yLabel": "Vectorisation postérisée à {{steps}} couleurs de la photo",
+
+  "inputs.photo.label": "Photo",
+  "inputs.photo.help": "L'image à postériser. Les portraits et les photos à fort contraste se vectorisent le mieux.",
+
+  "inputs.steps.label": "Paliers de couleur",
+  "inputs.steps.help": "Le nombre de séparations tonales à tracer. Modifier ce réglage rééchantillonne les couleurs à partir de la photo.",
+
+  "inputs.threshold.label": "Seuil (1 encre)",
+  "inputs.threshold.help": "Réduit la photo à une seule encre sur papier — une coupure nette entre l'ombre et la lumière plutôt que des séparations dégradées. Combine avec Arrière-plan transparent pour de l'encre sur rien.",
+
+  "inputs.thresholdLevel.label": "Niveau de seuil",
+  "inputs.thresholdLevel.help": "L'endroit où se situe la coupure entre l'encre et le papier. Plus la valeur est élevée, plus la photo se transforme en encre ; plus elle est basse, seules les ombres les plus profondes sont conservées.",
+
+  "inputs.brightness.label": "Luminosité",
+  "inputs.brightness.help": "Éclaircit ou assombrit la photo avant sa séparation — décale chaque ton vers le haut ou le bas, déplaçant le détail entre les séparations claires et sombres.",
+
+  "inputs.quality.label": "Qualité",
+  "inputs.quality.help": "Résolution de vectorisation — une valeur plus élevée échantillonne la photo sur une grille plus fine et capture davantage de détails. Au-delà de 100, la vectorisation devient très fine et plus lente.",
+
+  "inputs.smoothing.label": "Lissage",
+  "inputs.smoothing.help": "À quel point les contours tracés s'arrondissent en courbes. Une valeur basse conserve des bords fidèles et nets ; une valeur haute les transforme en courbes de Bézier fluides.",
+
+  "inputs.invert.label": "Inverser les tons",
+  "inputs.invert.help": "Vectorise à partir des tons inversés — les zones claires de la photo deviennent les séparations de premier plan (un négatif tonal). Utile pour un sujet clair sur fond sombre.",
+
+  "inputs.colors.label": "Couleurs de séparation",
+  "inputs.colors.help": "Un échantillon par ton, du plus foncé au plus clair (le papier) en dernier. Échantillonnées automatiquement à partir de ta photo — modifie un échantillon pour recolorer cette séparation.",
+  "inputs.colors.fields.color.label": "Couleur",
+
+  "inputs.resample.label": "Rééchantillonner les couleurs depuis la photo",
+  "inputs.resample.help": "Annule les modifications manuelles et recalcule chaque couleur de séparation à partir de la photo actuelle.",
+
+  "inputs.transparentBg.label": "Arrière-plan transparent",
+  "inputs.transparentBg.help": "Supprime la séparation « papier » la plus claire pour rendre l'arrière-plan transparent (PNG / SVG).",
+
+  "inputs.contrast.label": "Contraste",
+  "inputs.contrast.section": "Couleur",
+  "inputs.contrast.help": "Écarte les tons (valeur haute) ou les rapproche (valeur basse) avant la séparation. Plus de contraste donne des séparations plus franches et plus graphiques.",
+
+  "inputs.hue.label": "Teinte",
+  "inputs.hue.section": "Couleur",
+  "inputs.hue.help": "Fait tourner chaque couleur sur la roue chromatique.",
+
+  "inputs.saturation.label": "Saturation",
+  "inputs.saturation.section": "Couleur",
+  "inputs.saturation.help": "0 = niveaux de gris · 100 = original · 200 = vif.",
+
+  "inputs.lightness.label": "Clarté",
+  "inputs.lightness.section": "Couleur",
+  "inputs.lightness.help": "Éclaircit vers le blanc ou assombrit vers le noir.",
+
+  "inputs.treatmentColor.label": "Traitement colorimétrique",
+  "inputs.treatmentColor.section": "Couleur",
+  "inputs.treatmentColor.help": "Mélange une couleur par-dessus le résultat. Laisse vide pour aucune.",
+
+  "inputs.blendMode.label": "Mode de fusion",
+  "inputs.blendMode.section": "Couleur",
+  "inputs.blendMode.help": "Comment la couleur de traitement se mélange à l'image.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Produit",
+  "inputs.blendMode.options.screen": "Filtre",
+  "inputs.blendMode.options.overlay": "Incrustation",
+  "inputs.blendMode.options.darken": "Obscurcir",
+  "inputs.blendMode.options.lighten": "Éclaircir",
+  "inputs.blendMode.options.color-dodge": "Densité couleur -",
+  "inputs.blendMode.options.color-burn": "Densité couleur +",
+  "inputs.blendMode.options.hard-light": "Lumière crue",
+  "inputs.blendMode.options.soft-light": "Lumière tamisée",
+  "inputs.blendMode.options.difference": "Différence",
+  "inputs.blendMode.options.exclusion": "Exclusion",
+  "inputs.blendMode.options.hue": "Teinte",
+  "inputs.blendMode.options.saturation": "Saturation",
+  "inputs.blendMode.options.color": "Couleur",
+  "inputs.blendMode.options.luminosity": "Luminosité",
+
+  "inputs.treatmentIntensity.label": "Intensité",
+  "inputs.treatmentIntensity.section": "Couleur",
+  "inputs.treatmentIntensity.help": "Opacité de la superposition de couleur.",
+
+  "inputs.width.label": "Largeur",
+  "inputs.height.label": "Hauteur",
+
+  "inputs.noFilter.label": "Aucun filtre (afficher le brut)",
+  "inputs.noFilter.section": "Superposition",
+  "inputs.noFilter.help": "Affiche la photo originale ou le flux caméra en direct sans modification — pratique pour placer uniquement un logo ou un bandeau sur les images brutes.",
+
+  "inputs.showLogo.label": "Superposition du logo SUSE",
+  "inputs.showLogo.section": "Superposition",
+  "inputs.showLogo.help": "Superpose le logo SUSE au résultat. Désactivé par défaut.",
+
+  "inputs.logoPosition.label": "Position du logo",
+  "inputs.logoPosition.section": "Superposition",
+  "inputs.logoPosition.options.top-left": "Haut gauche",
+  "inputs.logoPosition.options.top-right": "Haut droite",
+  "inputs.logoPosition.options.bottom-left": "Bas gauche",
+  "inputs.logoPosition.options.bottom-right": "Bas droite",
+  "inputs.logoPosition.options.top": "Haut centre",
+  "inputs.logoPosition.options.bottom": "Bas centre",
+  "inputs.logoPosition.options.center": "Centre",
+  "inputs.logoPosition.options.full": "Plein (filigrane)",
+
+  "inputs.logoStyle.label": "Couleur du logo",
+  "inputs.logoStyle.section": "Superposition",
+  "inputs.logoStyle.help": "Le blanc et le vert ressortent sur des images sombres ou chargées ; le noir convient aux arrière-plans clairs.",
+  "inputs.logoStyle.options.white": "Blanc",
+  "inputs.logoStyle.options.green": "Vert",
+  "inputs.logoStyle.options.black": "Noir",
+
+  "inputs.logoScale.label": "Taille du logo",
+  "inputs.logoScale.section": "Superposition",
+  "inputs.logoScale.help": "Agrandit ou réduit le logo.",
+
+  "inputs.lowerThird.label": "Bandeau nominatif",
+  "inputs.lowerThird.section": "Superposition",
+  "inputs.lowerThird.help": "Un bandeau nominatif à l'animation douce qui se dessine par-dessus les images. Utilise le nom et la photo de ton profil.",
+
+  "inputs.ltTheme.label": "Style du bandeau",
+  "inputs.ltTheme.section": "Superposition",
+  "inputs.ltTheme.options.bar": "Barre de marque SUSE",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Verre",
+
+  "inputs.ltPosition.label": "Position du bandeau",
+  "inputs.ltPosition.section": "Superposition",
+  "inputs.ltPosition.options.left": "Bas gauche",
+  "inputs.ltPosition.options.center": "Bas centre",
+  "inputs.ltPosition.options.right": "Bas droite",
+
+  "inputs.firstname.label": "Prénom",
+  "inputs.firstname.section": "Superposition",
+
+  "inputs.lastname.label": "Nom",
+  "inputs.lastname.section": "Superposition",
+
+  "inputs.title.label": "Rôle / sous-titre",
+  "inputs.title.section": "Superposition",
+  "inputs.title.help": "Ligne facultative sous le nom — par exemple un rôle ou un événement.",
+
+  "inputs.nameWeight.label": "Graisse du nom",
+  "inputs.nameWeight.section": "Superposition",
+  "inputs.nameWeight.help": "Graisse de la police de la ligne du nom (100 Fin → 900 Noir).",
+
+  "inputs.subtitleWeight.label": "Graisse du sous-titre",
+  "inputs.subtitleWeight.section": "Superposition",
+  "inputs.subtitleWeight.help": "Graisse de la police de la ligne du rôle / sous-titre (100 Fin → 900 Noir).",
+
+  "inputs.ltHeadshot.label": "Photo de profil (facultatif)",
+  "inputs.ltHeadshot.section": "Superposition",
+  "inputs.ltHeadshot.help": "Utilise par défaut la photo de ton profil. Choisis-en une autre ou importe-la pour la remplacer."
 }

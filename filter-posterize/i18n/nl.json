@@ -1,4 +1,154 @@
 {
   "name": "Filter: Posterize-bitmap",
-  "description": "Zet elke foto om in platte vector-kleurscheidingen in zeefdrukstijl."
+  "description": "Zet elke foto om in platte vector-kleurscheidingen in zeefdrukstijl.",
+  "a11yLabel": "{{steps}}-kleurige geposteriseerde vector van de foto",
+
+  "inputs.photo.label": "Foto",
+  "inputs.photo.help": "De afbeelding die je wilt posteriseren. Portretfoto's en foto's met veel contrast worden het best nagetekend.",
+
+  "inputs.steps.label": "Kleurstappen",
+  "inputs.steps.help": "Hoeveel toonwaardescheidingen er worden nagetekend. Als je dit wijzigt, worden de kleuren opnieuw uit de foto bemonsterd.",
+
+  "inputs.threshold.label": "Drempel (1 kleur)",
+  "inputs.threshold.help": "Herleidt de foto tot één kleur op papier — een harde overgang tussen donker en licht in plaats van gelaagde scheidingen. Combineer met Transparante achtergrond voor kleur op niets.",
+
+  "inputs.thresholdLevel.label": "Drempelniveau",
+  "inputs.thresholdLevel.help": "Waar de overgang tussen kleur en papier ligt. Hoger zet meer van de foto om in kleur; lager behoudt alleen de diepste schaduwen.",
+
+  "inputs.brightness.label": "Helderheid",
+  "inputs.brightness.help": "Maakt de foto lichter of donkerder voordat deze wordt gescheiden — verschuift elke toonwaarde omhoog of omlaag, waardoor details tussen de lichte en donkere scheidingen verschuiven.",
+
+  "inputs.quality.label": "Kwaliteit",
+  "inputs.quality.help": "Resolutie van het natekenen — hoger bemonstert de foto met een fijner raster en legt meer details vast. Boven de 100 levert zeer fijne, tragere tekeningen op.",
+
+  "inputs.smoothing.label": "Afvlakking",
+  "inputs.smoothing.help": "Hoeveel de nagetekende contouren afronden tot curves. Laag houdt randen getrouw en scherp; hoog laat ze overvloeien in vloeiende Bézier-curves.",
+
+  "inputs.invert.label": "Toonwaarden omkeren",
+  "inputs.invert.help": "Tekent op basis van omgekeerde toonwaarden — de lichte delen van de foto worden de voorgrondscheidingen (een tonaal negatief). Handig voor een licht onderwerp op een donkere achtergrond.",
+
+  "inputs.colors.label": "Scheidingskleuren",
+  "inputs.colors.help": "Eén kleurstaal per toonwaarde, van donkerste tot lichtste (papier) laatst. Automatisch bemonsterd uit je foto — bewerk een kleurstaal om die scheiding een andere kleur te geven.",
+  "inputs.colors.fields.color.label": "Kleur",
+
+  "inputs.resample.label": "Kleuren opnieuw bemonsteren uit foto",
+  "inputs.resample.help": "Verwijdert handmatige aanpassingen en leidt elke scheidingskleur opnieuw af uit de huidige foto.",
+
+  "inputs.transparentBg.label": "Transparante achtergrond",
+  "inputs.transparentBg.help": "Laat de lichtste 'papier'-scheiding weg zodat de achtergrond transparant is (PNG / SVG).",
+
+  "inputs.contrast.label": "Contrast",
+  "inputs.contrast.section": "Kleur",
+  "inputs.contrast.help": "Duwt de toonwaarden uit elkaar (hoger) of drukt ze samen (lager) voordat de scheiding plaatsvindt. Meer contrast geeft krachtigere, grafischere scheidingen.",
+
+  "inputs.hue.label": "Tint",
+  "inputs.hue.section": "Kleur",
+  "inputs.hue.help": "Draait elke kleur rond het kleurenwiel.",
+
+  "inputs.saturation.label": "Verzadiging",
+  "inputs.saturation.section": "Kleur",
+  "inputs.saturation.help": "0 = grijstinten · 100 = origineel · 200 = levendig.",
+
+  "inputs.lightness.label": "Lichtheid",
+  "inputs.lightness.section": "Kleur",
+  "inputs.lightness.help": "Til op naar wit of zak weg naar zwart.",
+
+  "inputs.treatmentColor.label": "Kleurbehandeling",
+  "inputs.treatmentColor.section": "Kleur",
+  "inputs.treatmentColor.help": "Meng een kleur over het resultaat. Laat leeg voor geen.",
+
+  "inputs.blendMode.label": "Overvloeimodus",
+  "inputs.blendMode.section": "Kleur",
+  "inputs.blendMode.help": "Hoe de behandelingskleur zich mengt met de afbeelding.",
+  "inputs.blendMode.options.normal": "Normaal",
+  "inputs.blendMode.options.multiply": "Vermenigvuldigen",
+  "inputs.blendMode.options.screen": "Zeef",
+  "inputs.blendMode.options.overlay": "Bedekken",
+  "inputs.blendMode.options.darken": "Donkerder",
+  "inputs.blendMode.options.lighten": "Lichter",
+  "inputs.blendMode.options.color-dodge": "Kleur tegenhouden",
+  "inputs.blendMode.options.color-burn": "Kleur doordrukken",
+  "inputs.blendMode.options.hard-light": "Fel licht",
+  "inputs.blendMode.options.soft-light": "Zacht licht",
+  "inputs.blendMode.options.difference": "Verschil",
+  "inputs.blendMode.options.exclusion": "Uitsluiting",
+  "inputs.blendMode.options.hue": "Tint",
+  "inputs.blendMode.options.saturation": "Verzadiging",
+  "inputs.blendMode.options.color": "Kleur",
+  "inputs.blendMode.options.luminosity": "Luminantie",
+
+  "inputs.treatmentIntensity.label": "Intensiteit",
+  "inputs.treatmentIntensity.section": "Kleur",
+  "inputs.treatmentIntensity.help": "Dekking van de kleuroverlay.",
+
+  "inputs.width.label": "Breedte",
+  "inputs.height.label": "Hoogte",
+
+  "inputs.noFilter.label": "Geen filter (toon ruw)",
+  "inputs.noFilter.section": "Overlay",
+  "inputs.noFilter.help": "Toont de originele foto of live camerabeelden onbewerkt — handig om alleen een logo of een lower third over de ruwe beelden te plaatsen.",
+
+  "inputs.showLogo.label": "SUSE-logo-overlay",
+  "inputs.showLogo.section": "Overlay",
+  "inputs.showLogo.help": "Plaatst het SUSE-logo over het resultaat. Standaard uitgeschakeld.",
+
+  "inputs.logoPosition.label": "Logopositie",
+  "inputs.logoPosition.section": "Overlay",
+  "inputs.logoPosition.options.top-left": "Linksboven",
+  "inputs.logoPosition.options.top-right": "Rechtsboven",
+  "inputs.logoPosition.options.bottom-left": "Linksonder",
+  "inputs.logoPosition.options.bottom-right": "Rechtsonder",
+  "inputs.logoPosition.options.top": "Boven midden",
+  "inputs.logoPosition.options.bottom": "Onder midden",
+  "inputs.logoPosition.options.center": "Midden",
+  "inputs.logoPosition.options.full": "Volledig (watermerk)",
+
+  "inputs.logoStyle.label": "Logokleur",
+  "inputs.logoStyle.section": "Overlay",
+  "inputs.logoStyle.options.white": "Wit",
+  "inputs.logoStyle.options.green": "Groen",
+  "inputs.logoStyle.options.black": "Zwart",
+  "inputs.logoStyle.help": "Wit en groen zijn goed leesbaar op donker of druk beeldmateriaal; zwart past bij lichte achtergronden.",
+
+  "inputs.logoScale.label": "Logogrootte",
+  "inputs.logoScale.section": "Overlay",
+  "inputs.logoScale.help": "Vergroot of verkleint het logo.",
+
+  "inputs.lowerThird.label": "Lower-third naamkaart",
+  "inputs.lowerThird.section": "Overlay",
+  "inputs.lowerThird.help": "Een zachtjes geanimeerde naamkaart die over de beelden wordt ingetekend. Gebruikt de naam en profielfoto uit je profiel.",
+
+  "inputs.ltTheme.label": "Kaartstijl",
+  "inputs.ltTheme.section": "Overlay",
+  "inputs.ltTheme.options.bar": "SUSE-merkbalk",
+  "inputs.ltTheme.options.minimal": "Minimaal",
+  "inputs.ltTheme.options.glass": "Glas",
+
+  "inputs.ltPosition.label": "Kaartpositie",
+  "inputs.ltPosition.section": "Overlay",
+  "inputs.ltPosition.options.left": "Linksonder",
+  "inputs.ltPosition.options.center": "Onder midden",
+  "inputs.ltPosition.options.right": "Rechtsonder",
+
+  "inputs.firstname.label": "Voornaam",
+  "inputs.firstname.section": "Overlay",
+
+  "inputs.lastname.label": "Achternaam",
+  "inputs.lastname.section": "Overlay",
+
+  "inputs.title.label": "Functie/ondertitel",
+  "inputs.title.section": "Overlay",
+  "inputs.title.help": "Optionele regel onder de naam — bijvoorbeeld een functie of evenement.",
+
+  "inputs.nameWeight.label": "Lettergewicht (naam)",
+  "inputs.nameWeight.section": "Overlay",
+  "inputs.nameWeight.help": "Lettergewicht van de naamregel (100 Dun → 900 Zwart).",
+
+  "inputs.subtitleWeight.label": "Lettergewicht (ondertitel)",
+  "inputs.subtitleWeight.section": "Overlay",
+  "inputs.subtitleWeight.help": "Lettergewicht van de functie-/ondertitelregel (100 Dun → 900 Zwart).",
+
+  "inputs.ltHeadshot.label": "Profielfoto (optioneel)",
+  "inputs.ltHeadshot.section": "Overlay",
+  "inputs.ltHeadshot.help": "Gebruikt standaard de profielfoto uit je profiel. Kies of upload een andere om deze te overschrijven."
 }

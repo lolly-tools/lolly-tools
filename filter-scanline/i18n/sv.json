@@ -1,4 +1,152 @@
 {
   "name": "Filter: Skanlinjer",
-  "description": "Horisontell vektoreffekt med “oändlighetslinjer” i skanlinjestil, från valfritt foto"
+  "description": "Horisontell vektoreffekt med “oändlighetslinjer” i skanlinjestil, från valfritt foto",
+  "a11yLabel": "Skanlinjeåtergivning av den valda bilden i varumärkestoner",
+
+  "inputs.image.label": "Bild",
+  "inputs.image.help": "Välj ett foto eller ladda upp ditt eget. Det bearbetas på din enhet — pixlarna lämnar aldrig webbläsaren.",
+
+  "inputs.lineSize.label": "Linjehöjd",
+  "inputs.lineSize.help": "Höjden på varje skanlinje och storleken på varje cell, så mindre värde ger tunnare linjer och finare detaljer.",
+
+  "inputs.gapSize.label": "Mellanrumshöjd",
+  "inputs.gapSize.help": "Storleken på det tomma mellanrummet under varje skanlinje, i förhållande till linjen. Större värde = tunnare linjer med mer utrymme mellan dem; 0 ger en solid bild utan mellanrum. Ändrar inte bildens detaljer eller position.",
+
+  "inputs.separatePixels.label": "Separata pixlar",
+  "inputs.separatePixels.help": "Lägg även till ett mellanrum mellan cellerna, så att var och en blir en tydlig kvadrat — ett LED/pixelmatris-utseende istället för solida skanlinjebalkar.",
+
+  "inputs.everyLine.label": "Fyll varje linje",
+  "inputs.everyLine.help": "Rita varje linje utan mellanrum — samma som att sätta mellanrumshöjden till noll. Av = klassiska skanlinjer; på = en solid posteriserad bild.",
+
+  "inputs.fit.label": "Bildanpassning",
+  "inputs.fit.options.contain": "Anpassa (hela bilden)",
+  "inputs.fit.options.cover": "Fyll (beskär kanterna)",
+
+  "inputs.highlight.label": "Högdager",
+  "inputs.highlight.help": "Ljusaste ton.",
+
+  "inputs.light.label": "Ljus",
+
+  "inputs.mid.label": "Mellanton",
+
+  "inputs.shade.label": "Halvskugga",
+
+  "inputs.shadow.label": "Skugga",
+  "inputs.shadow.help": "Mörkaste ton.",
+
+  "inputs.background.label": "Bakgrund",
+  "inputs.background.help": "Fyller de tomma linjerna och mellanrummen. Lämna tomt för en transparent bakgrund (PNG/WebP/AVIF/SVG behåller transparensen).",
+
+  "inputs.brightness.label": "Ljusstyrka",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Färg",
+
+  "inputs.hue.label": "Nyans",
+  "inputs.hue.section": "Färg",
+  "inputs.hue.help": "Rotera alla färger runt hjulet.",
+
+  "inputs.saturation.label": "Mättnad",
+  "inputs.saturation.section": "Färg",
+  "inputs.saturation.help": "0 = gråskala · 100 = original · 200 = intensiv.",
+
+  "inputs.lightness.label": "Ljushet",
+  "inputs.lightness.section": "Färg",
+  "inputs.lightness.help": "Lyft mot vitt eller sänk mot svart.",
+
+  "inputs.treatmentColor.label": "Färgbehandling",
+  "inputs.treatmentColor.section": "Färg",
+  "inputs.treatmentColor.help": "Blanda en färg över resultatet. Lämna tomt för ingen.",
+
+  "inputs.blendMode.label": "Blandningsläge",
+  "inputs.blendMode.section": "Färg",
+  "inputs.blendMode.help": "Hur behandlingsfärgen blandas med bilden.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplicera",
+  "inputs.blendMode.options.screen": "Skärm",
+  "inputs.blendMode.options.overlay": "Övertoning",
+  "inputs.blendMode.options.darken": "Mörkare",
+  "inputs.blendMode.options.lighten": "Ljusare",
+  "inputs.blendMode.options.color-dodge": "Färgtoning ljusare",
+  "inputs.blendMode.options.color-burn": "Färgtoning mörkare",
+  "inputs.blendMode.options.hard-light": "Hårt ljus",
+  "inputs.blendMode.options.soft-light": "Mjukt ljus",
+  "inputs.blendMode.options.difference": "Differens",
+  "inputs.blendMode.options.exclusion": "Uteslutning",
+  "inputs.blendMode.options.hue": "Nyans",
+  "inputs.blendMode.options.saturation": "Mättnad",
+  "inputs.blendMode.options.color": "Färg",
+  "inputs.blendMode.options.luminosity": "Luminans",
+
+  "inputs.treatmentIntensity.label": "Intensitet",
+  "inputs.treatmentIntensity.section": "Färg",
+  "inputs.treatmentIntensity.help": "Opacitet för färgöverlagringen.",
+
+  "inputs.noFilter.label": "Inget filter (visa obehandlat)",
+  "inputs.noFilter.section": "Överlägg",
+  "inputs.noFilter.help": "Visa originalfotot eller den direktsända kamerabilden obehandlad — praktiskt när du bara vill lägga en logotyp eller namnskylt över det obehandlade materialet.",
+
+  "inputs.showLogo.label": "SUSE-logotyp som överlägg",
+  "inputs.showLogo.section": "Överlägg",
+  "inputs.showLogo.help": "Lägg SUSE-logotypen som ett överlägg på resultatet. Avstängt som standard.",
+
+  "inputs.logoPosition.label": "Logotypens position",
+  "inputs.logoPosition.section": "Överlägg",
+  "inputs.logoPosition.options.top-left": "Uppe till vänster",
+  "inputs.logoPosition.options.top-right": "Uppe till höger",
+  "inputs.logoPosition.options.bottom-left": "Nere till vänster",
+  "inputs.logoPosition.options.bottom-right": "Nere till höger",
+  "inputs.logoPosition.options.top": "Överkant, centrerad",
+  "inputs.logoPosition.options.bottom": "Nederkant, centrerad",
+  "inputs.logoPosition.options.center": "Centrerad",
+  "inputs.logoPosition.options.full": "Full (vattenstämpel)",
+
+  "inputs.logoStyle.label": "Logotypfärg",
+  "inputs.logoStyle.section": "Överlägg",
+  "inputs.logoStyle.help": "Vit och grön syns tydligt mot mörkt eller stökigt material; svart passar ljusa bakgrunder.",
+  "inputs.logoStyle.options.white": "Vit",
+  "inputs.logoStyle.options.green": "Grön",
+  "inputs.logoStyle.options.black": "Svart",
+
+  "inputs.logoScale.label": "Logotypstorlek",
+  "inputs.logoScale.section": "Överlägg",
+  "inputs.logoScale.help": "Skala logotypen större eller mindre.",
+
+  "inputs.lowerThird.label": "Namnskylt (lower third)",
+  "inputs.lowerThird.section": "Överlägg",
+  "inputs.lowerThird.help": "En mjukt animerad namnskylt som tonas in över materialet. Använder namnet och profilbilden från din profil.",
+
+  "inputs.ltTheme.label": "Kortstil",
+  "inputs.ltTheme.section": "Överlägg",
+  "inputs.ltTheme.options.bar": "SUSE-varumärkesbalk",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glas",
+
+  "inputs.ltPosition.label": "Kortposition",
+  "inputs.ltPosition.section": "Överlägg",
+  "inputs.ltPosition.options.left": "Nere till vänster",
+  "inputs.ltPosition.options.center": "Nederkant, centrerad",
+  "inputs.ltPosition.options.right": "Nere till höger",
+
+  "inputs.firstname.label": "Förnamn",
+  "inputs.firstname.section": "Överlägg",
+
+  "inputs.lastname.label": "Efternamn",
+  "inputs.lastname.section": "Överlägg",
+
+  "inputs.title.label": "Roll / undertitel",
+  "inputs.title.section": "Överlägg",
+  "inputs.title.help": "Valfri rad under namnet — t.ex. en roll eller ett evenemang.",
+
+  "inputs.nameWeight.label": "Namnets vikt",
+  "inputs.nameWeight.section": "Överlägg",
+  "inputs.nameWeight.help": "Typsnittsvikt för namnraden (100 Tunn → 900 Svart).",
+
+  "inputs.subtitleWeight.label": "Undertitelns vikt",
+  "inputs.subtitleWeight.section": "Överlägg",
+  "inputs.subtitleWeight.help": "Typsnittsvikt för roll-/undertitelraden (100 Tunn → 900 Svart).",
+
+  "inputs.ltHeadshot.label": "Profilbild (valfritt)",
+  "inputs.ltHeadshot.section": "Överlägg",
+  "inputs.ltHeadshot.help": "Använder din profilbild som standard. Välj eller ladda upp en annan för att åsidosätta den."
 }

@@ -1,4 +1,172 @@
 {
   "name": "Filtre : Demi-teinte",
-  "description": "Une trame de demi-teinte vectorielle à partir de n'importe quelle photo — des points dont la taille varie selon la luminosité."
+  "description": "Une trame de demi-teinte vectorielle à partir de n'importe quelle photo — des points dont la taille varie selon la luminosité.",
+  "a11yLabel": "Rendu demi-teinte de l'image choisie sous forme de grille de points monochromes",
+
+  "inputs.image.label": "Image",
+  "inputs.image.help": "Choisis une photo ou importe la tienne. Elle est traitée sur ton appareil — les pixels ne quittent jamais le navigateur.",
+
+  "inputs.gridSize.label": "Taille de la grille",
+  "inputs.gridSize.help": "Espacement entre les points. Plus petit = plus de détails et plus de points ; plus grand = une trame plus grossière et plus marquée.",
+
+  "inputs.dotScale.label": "Taille des points",
+  "inputs.dotScale.help": "Redimensionne tous les points. En dessous de 1, la trame s'ouvre ; au-dessus de 1, les points s'épaississent et les zones sombres se remplissent.",
+
+  "inputs.shape.label": "Forme des points",
+  "inputs.shape.options.circle": "Cercle",
+  "inputs.shape.options.square": "Carré",
+  "inputs.shape.options.diamond": "Losange",
+
+  "inputs.colorSource.label": "Source de couleur",
+  "inputs.colorSource.help": "Colore les points d'après la photo en dessous, ou avec une seule teinte.",
+  "inputs.colorSource.options.image": "Depuis l'image",
+  "inputs.colorSource.options.solid": "Couleur unie",
+
+  "inputs.colorLevels.label": "Niveaux de couleur",
+  "inputs.colorLevels.help": "Réduit les couleurs des points à une palette limitée (niveaux par canal). « Complète » conserve les couleurs de la photo.",
+  "inputs.colorLevels.options.0": "Couleur complète",
+  "inputs.colorLevels.options.8": "8 niveaux",
+  "inputs.colorLevels.options.6": "6 niveaux",
+  "inputs.colorLevels.options.4": "4 niveaux",
+  "inputs.colorLevels.options.3": "3 niveaux",
+  "inputs.colorLevels.options.2": "2 niveaux",
+
+  "inputs.fgColor.label": "Couleur des points",
+  "inputs.fgColor.help": "Couleur des points quand la source de couleur est « Couleur unie ».",
+
+  "inputs.bgColor.label": "Fond",
+  "inputs.bgColor.help": "Remplissage derrière les points. Active « Pas de fond » dans les options d'export pour un fond transparent à la place.",
+
+  "inputs.invert.label": "Inverser",
+  "inputs.invert.help": "Agrandit les points pour les zones claires plutôt que sombres — idéal pour une couleur claire sur fond sombre.",
+
+  "inputs.fit.label": "Ajustement de l'image",
+  "inputs.fit.options.contain": "Contenir (image entière)",
+  "inputs.fit.options.cover": "Couvrir (remplir, rogner les bords)",
+
+  "inputs.brightness.label": "Luminosité",
+
+  "inputs.gamma.label": "Gamma",
+  "inputs.gamma.help": "Pondération des tons moyens. En dessous de 1, les tons moyens s'assombrissent (points plus denses) ; au-dessus de 1, ils s'éclaircissent.",
+
+  "inputs.smoothing.label": "Lissage",
+  "inputs.smoothing.help": "Adoucit la grille de points en floutant les cellules voisines. Calme les photos bruitées.",
+
+  "inputs.dither.label": "Texture",
+  "inputs.dither.help": "Ajoute une texture 1 bit façon journal en forçant les cellules à des points pleins ou vides.",
+  "inputs.dither.options.none": "Lisse (aucune)",
+  "inputs.dither.options.floyd": "Diffusée (Floyd–Steinberg)",
+  "inputs.dither.options.ordered": "Motif (ordonnée)",
+  "inputs.dither.options.noise": "Granuleuse (bruit)",
+
+  "inputs.contrast.label": "Contraste",
+  "inputs.contrast.section": "Couleur",
+
+  "inputs.hue.label": "Teinte",
+  "inputs.hue.section": "Couleur",
+  "inputs.hue.help": "Fait tourner chaque couleur sur le cercle chromatique.",
+
+  "inputs.saturation.label": "Saturation",
+  "inputs.saturation.section": "Couleur",
+  "inputs.saturation.help": "0 = niveaux de gris · 100 = original · 200 = éclatant.",
+
+  "inputs.lightness.label": "Clarté",
+  "inputs.lightness.section": "Couleur",
+  "inputs.lightness.help": "Éclaircit vers le blanc ou assombrit vers le noir.",
+
+  "inputs.treatmentColor.label": "Traitement colorimétrique",
+  "inputs.treatmentColor.section": "Couleur",
+  "inputs.treatmentColor.help": "Superpose une couleur au résultat. Laisse vide pour aucune.",
+
+  "inputs.blendMode.label": "Mode de fusion",
+  "inputs.blendMode.section": "Couleur",
+  "inputs.blendMode.help": "Comment la couleur de traitement se mélange à l'image.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Produit",
+  "inputs.blendMode.options.screen": "Écran",
+  "inputs.blendMode.options.overlay": "Incrustation",
+  "inputs.blendMode.options.darken": "Obscurcir",
+  "inputs.blendMode.options.lighten": "Éclaircir",
+  "inputs.blendMode.options.color-dodge": "Densité couleur -",
+  "inputs.blendMode.options.color-burn": "Densité couleur +",
+  "inputs.blendMode.options.hard-light": "Lumière crue",
+  "inputs.blendMode.options.soft-light": "Lumière tamisée",
+  "inputs.blendMode.options.difference": "Différence",
+  "inputs.blendMode.options.exclusion": "Exclusion",
+  "inputs.blendMode.options.hue": "Teinte",
+  "inputs.blendMode.options.saturation": "Saturation",
+  "inputs.blendMode.options.color": "Couleur",
+  "inputs.blendMode.options.luminosity": "Luminosité",
+
+  "inputs.treatmentIntensity.label": "Intensité",
+  "inputs.treatmentIntensity.section": "Couleur",
+  "inputs.treatmentIntensity.help": "Opacité de la superposition de couleur.",
+
+  "inputs.noFilter.label": "Sans filtre (afficher le brut)",
+  "inputs.noFilter.section": "Incrustation",
+  "inputs.noFilter.help": "Affiche la photo d'origine ou le flux caméra en direct sans retouche — pratique pour placer juste un logo ou un bandeau sur l'image brute.",
+
+  "inputs.showLogo.label": "Incrustation du logo SUSE",
+  "inputs.showLogo.section": "Incrustation",
+  "inputs.showLogo.help": "Incruste le logo SUSE sur le résultat. Désactivé par défaut.",
+
+  "inputs.logoPosition.label": "Position du logo",
+  "inputs.logoPosition.section": "Incrustation",
+  "inputs.logoPosition.options.top-left": "En haut à gauche",
+  "inputs.logoPosition.options.top-right": "En haut à droite",
+  "inputs.logoPosition.options.bottom-left": "En bas à gauche",
+  "inputs.logoPosition.options.bottom-right": "En bas à droite",
+  "inputs.logoPosition.options.top": "En haut au centre",
+  "inputs.logoPosition.options.bottom": "En bas au centre",
+  "inputs.logoPosition.options.center": "Centre",
+  "inputs.logoPosition.options.full": "Plein cadre (filigrane)",
+
+  "inputs.logoStyle.label": "Couleur du logo",
+  "inputs.logoStyle.section": "Incrustation",
+  "inputs.logoStyle.help": "Le blanc et le vert ressortent sur des images sombres ou chargées ; le noir convient aux fonds clairs.",
+  "inputs.logoStyle.options.white": "Blanc",
+  "inputs.logoStyle.options.green": "Vert",
+  "inputs.logoStyle.options.black": "Noir",
+
+  "inputs.logoScale.label": "Taille du logo",
+  "inputs.logoScale.section": "Incrustation",
+  "inputs.logoScale.help": "Agrandit ou réduit le logo.",
+
+  "inputs.lowerThird.label": "Bandeau de nom en bas d'écran",
+  "inputs.lowerThird.section": "Incrustation",
+  "inputs.lowerThird.help": "Un bandeau de nom à l'animation douce qui s'affiche par-dessus l'image. Utilise le nom et la photo de ton profil.",
+
+  "inputs.ltTheme.label": "Style du bandeau",
+  "inputs.ltTheme.section": "Incrustation",
+  "inputs.ltTheme.options.bar": "Barre de marque SUSE",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Verre",
+
+  "inputs.ltPosition.label": "Position du bandeau",
+  "inputs.ltPosition.section": "Incrustation",
+  "inputs.ltPosition.options.left": "En bas à gauche",
+  "inputs.ltPosition.options.center": "En bas au centre",
+  "inputs.ltPosition.options.right": "En bas à droite",
+
+  "inputs.firstname.label": "Prénom",
+  "inputs.firstname.section": "Incrustation",
+
+  "inputs.lastname.label": "Nom",
+  "inputs.lastname.section": "Incrustation",
+
+  "inputs.title.label": "Fonction / sous-titre",
+  "inputs.title.section": "Incrustation",
+  "inputs.title.help": "Ligne facultative sous le nom — par exemple une fonction ou un événement.",
+
+  "inputs.nameWeight.label": "Graisse du nom",
+  "inputs.nameWeight.section": "Incrustation",
+  "inputs.nameWeight.help": "Graisse de la police pour la ligne du nom (100 Fine → 900 Noire).",
+
+  "inputs.subtitleWeight.label": "Graisse du sous-titre",
+  "inputs.subtitleWeight.section": "Incrustation",
+  "inputs.subtitleWeight.help": "Graisse de la police pour la ligne de fonction / sous-titre (100 Fine → 900 Noire).",
+
+  "inputs.ltHeadshot.label": "Photo de profil (facultatif)",
+  "inputs.ltHeadshot.section": "Incrustation",
+  "inputs.ltHeadshot.help": "Utilise par défaut la photo de ton profil. Choisis-en une autre ou importe-la pour la remplacer."
 }

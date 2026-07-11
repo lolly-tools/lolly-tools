@@ -1,4 +1,155 @@
 {
   "name": "Filter: Posterisering av bitmap",
-  "description": "Konvertera valfritt foto till platta vektorbaserade färgseparationer i screentryck-stil."
+  "description": "Konvertera valfritt foto till platta vektorbaserade färgseparationer i screentryck-stil.",
+
+  "a11yLabel": "{{steps}}-färgad posteriserad vektor av fotot",
+
+  "inputs.photo.label": "Foto",
+  "inputs.photo.help": "Bilden som ska posteriseras. Porträttbilder och foton med hög kontrast spåras bäst.",
+
+  "inputs.steps.label": "Färgsteg",
+  "inputs.steps.help": "Hur många tonseparationer som ska spåras. Att ändra detta samplar om färgerna från fotot.",
+
+  "inputs.threshold.label": "Tröskel (1 färg)",
+  "inputs.threshold.help": "Reducera fotot till en enda färg mot papper — en skarp gräns mellan mörkt och ljust istället för graderade separationer. Kombinera med Transparent bakgrund för färg på ingenting.",
+
+  "inputs.thresholdLevel.label": "Tröskelnivå",
+  "inputs.thresholdLevel.help": "Var gränsen mellan färg och papper hamnar. Högre värde gör mer av fotot till färg; lägre behåller bara de djupaste skuggorna.",
+
+  "inputs.brightness.label": "Ljusstyrka",
+  "inputs.brightness.help": "Gör fotot ljusare eller mörkare innan det separeras — flyttar varje ton upp eller ner och förskjuter detaljer mellan de ljusa och mörka separationerna.",
+
+  "inputs.quality.label": "Kvalitet",
+  "inputs.quality.help": "Spårningsupplösning — högre värde samplar fotot i ett finare rutnät och fångar mer detalj. Över 100 går mot mycket fin, långsammare spårning.",
+
+  "inputs.smoothing.label": "Utjämning",
+  "inputs.smoothing.help": "Hur mycket de spårade konturerna avrundas till kurvor. Lågt värde behåller kanterna trogna och skarpa; högt värde låter dem flyta ut i mjuka Bézier-kurvor.",
+
+  "inputs.invert.label": "Invertera toner",
+  "inputs.invert.help": "Spåra från inverterade toner — fotots ljusa partier blir förgrundsseparationerna (ett tonalt negativ). Användbart för ett ljust motiv mot en mörk bakgrund.",
+
+  "inputs.colors.label": "Separationsfärger",
+  "inputs.colors.help": "Ett färgprov per ton, mörkast först och ljusast (papper) sist. Automatiskt samplat från ditt foto — redigera valfritt färgprov för att byta färg på den separationen.",
+  "inputs.colors.fields.color.label": "Färg",
+
+  "inputs.resample.label": "Sampla om färger från foto",
+  "inputs.resample.help": "Kassera manuella ändringar och härled om varje separationsfärg från det aktuella fotot.",
+
+  "inputs.transparentBg.label": "Transparent bakgrund",
+  "inputs.transparentBg.help": "Ta bort den ljusaste \"pappers\"-separationen så att bakgrunden blir transparent (PNG/SVG).",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Färg",
+  "inputs.contrast.help": "Driv isär tonerna (högre) eller platta till dem (lägre) innan separering. Mer kontrast ger djärvare, mer grafiska separationer.",
+
+  "inputs.hue.label": "Nyans",
+  "inputs.hue.section": "Färg",
+  "inputs.hue.help": "Rotera varje färg runt hjulet.",
+
+  "inputs.saturation.label": "Mättnad",
+  "inputs.saturation.section": "Färg",
+  "inputs.saturation.help": "0 = gråskala · 100 = original · 200 = levande.",
+
+  "inputs.lightness.label": "Ljushet",
+  "inputs.lightness.section": "Färg",
+  "inputs.lightness.help": "Lyft mot vitt eller sjunk mot svart.",
+
+  "inputs.treatmentColor.label": "Färgbehandling",
+  "inputs.treatmentColor.section": "Färg",
+  "inputs.treatmentColor.help": "Blanda en färg över resultatet. Lämna tomt för ingen.",
+
+  "inputs.blendMode.label": "Blandningsläge",
+  "inputs.blendMode.section": "Färg",
+  "inputs.blendMode.help": "Hur behandlingsfärgen blandas med bilden.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplicera",
+  "inputs.blendMode.options.screen": "Skärm",
+  "inputs.blendMode.options.overlay": "Överlagring",
+  "inputs.blendMode.options.darken": "Mörkare",
+  "inputs.blendMode.options.lighten": "Ljusare",
+  "inputs.blendMode.options.color-dodge": "Färgavskärmning",
+  "inputs.blendMode.options.color-burn": "Färgbränning",
+  "inputs.blendMode.options.hard-light": "Hårt ljus",
+  "inputs.blendMode.options.soft-light": "Mjukt ljus",
+  "inputs.blendMode.options.difference": "Skillnad",
+  "inputs.blendMode.options.exclusion": "Uteslutning",
+  "inputs.blendMode.options.hue": "Nyans",
+  "inputs.blendMode.options.saturation": "Mättnad",
+  "inputs.blendMode.options.color": "Färg",
+  "inputs.blendMode.options.luminosity": "Luminans",
+
+  "inputs.treatmentIntensity.label": "Intensitet",
+  "inputs.treatmentIntensity.section": "Färg",
+  "inputs.treatmentIntensity.help": "Opacitet för färgöverlägget.",
+
+  "inputs.width.label": "Bredd",
+  "inputs.height.label": "Höjd",
+
+  "inputs.noFilter.label": "Inget filter (visa obehandlad)",
+  "inputs.noFilter.section": "Överlägg",
+  "inputs.noFilter.help": "Visa originalfotot eller livekameraflödet obehandlat — praktiskt för att bara placera en logotyp/namnskylt över det obehandlade materialet.",
+
+  "inputs.showLogo.label": "SUSE-logotyp som överlägg",
+  "inputs.showLogo.section": "Överlägg",
+  "inputs.showLogo.help": "Lägg SUSE-logotypen som ett överlägg på resultatet. Avstängt som standard.",
+
+  "inputs.logoPosition.label": "Logotypens position",
+  "inputs.logoPosition.section": "Överlägg",
+  "inputs.logoPosition.options.top-left": "Uppe till vänster",
+  "inputs.logoPosition.options.top-right": "Uppe till höger",
+  "inputs.logoPosition.options.bottom-left": "Nere till vänster",
+  "inputs.logoPosition.options.bottom-right": "Nere till höger",
+  "inputs.logoPosition.options.top": "Överst mitten",
+  "inputs.logoPosition.options.bottom": "Nederst mitten",
+  "inputs.logoPosition.options.center": "Centrerad",
+  "inputs.logoPosition.options.full": "Full (vattenstämpel)",
+
+  "inputs.logoStyle.label": "Logotypfärg",
+  "inputs.logoStyle.section": "Överlägg",
+  "inputs.logoStyle.help": "Vit och grön syns tydligt mot mörkt eller stökigt material; svart passar ljusa bakgrunder.",
+  "inputs.logoStyle.options.white": "Vit",
+  "inputs.logoStyle.options.green": "Grön",
+  "inputs.logoStyle.options.black": "Svart",
+
+  "inputs.logoScale.label": "Logotypstorlek",
+  "inputs.logoScale.section": "Överlägg",
+  "inputs.logoScale.help": "Skala logotypen större eller mindre.",
+
+  "inputs.lowerThird.label": "Namnskylt (lower third)",
+  "inputs.lowerThird.section": "Överlägg",
+  "inputs.lowerThird.help": "Ett mjukt animerat namnkort som tonas in över materialet. Använder namnet och profilbilden från din profil.",
+
+  "inputs.ltTheme.label": "Kortstil",
+  "inputs.ltTheme.section": "Överlägg",
+  "inputs.ltTheme.options.bar": "SUSE-varumärkesrand",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glas",
+
+  "inputs.ltPosition.label": "Kortets position",
+  "inputs.ltPosition.section": "Överlägg",
+  "inputs.ltPosition.options.left": "Nere till vänster",
+  "inputs.ltPosition.options.center": "Nederst mitten",
+  "inputs.ltPosition.options.right": "Nere till höger",
+
+  "inputs.firstname.label": "Förnamn",
+  "inputs.firstname.section": "Överlägg",
+
+  "inputs.lastname.label": "Efternamn",
+  "inputs.lastname.section": "Överlägg",
+
+  "inputs.title.label": "Roll/undertext",
+  "inputs.title.section": "Överlägg",
+  "inputs.title.help": "Valfri rad under namnet — t.ex. en roll eller ett evenemang.",
+
+  "inputs.nameWeight.label": "Namnets vikt",
+  "inputs.nameWeight.section": "Överlägg",
+  "inputs.nameWeight.help": "Typsnittsvikt för namnraden (100 Tunn → 900 Svart).",
+
+  "inputs.subtitleWeight.label": "Undertextens vikt",
+  "inputs.subtitleWeight.section": "Överlägg",
+  "inputs.subtitleWeight.help": "Typsnittsvikt för roll-/undertextraden (100 Tunn → 900 Svart).",
+
+  "inputs.ltHeadshot.label": "Porträttbild (valfritt)",
+  "inputs.ltHeadshot.section": "Överlägg",
+  "inputs.ltHeadshot.help": "Standard är porträttbilden från din profil. Välj eller ladda upp en annan för att ersätta den."
 }

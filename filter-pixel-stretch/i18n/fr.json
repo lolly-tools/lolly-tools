@@ -1,4 +1,146 @@
 {
   "name": "Filtre : Étirement de pixels",
-  "description": "Étire une colonne de pixels sur toute la photo à partir d'une ligne de seuil. Fonctionne en direct."
+  "description": "Étire une colonne de pixels sur toute la photo à partir d'une ligne de seuil. Fonctionne en direct.",
+  "a11yLabel": "Étirement de pixels appliqué à l'image sélectionnée",
+
+  "inputs.image.label": "Image",
+  "inputs.image.help": "Choisis une photo ou importe la tienne. Elle est traitée sur ton appareil — les pixels ne quittent jamais le navigateur. Ou clique sur « Passer en direct » sur le canevas pour étirer ta caméra.",
+
+  "inputs.direction.label": "Direction",
+  "inputs.direction.help": "Sens dans lequel la colonne de pixels figée s'étire sur l'image.",
+  "inputs.direction.options.right": "Étirer à droite →",
+  "inputs.direction.options.left": "Étirer à gauche ←",
+  "inputs.direction.options.down": "Étirer vers le bas ↓",
+  "inputs.direction.options.up": "Étirer vers le haut ↑",
+
+  "inputs.threshold.label": "Début du seuil",
+  "inputs.threshold.help": "L'endroit où la photo se fige. Au-delà de cette ligne, la colonne figée s'étire, puis le reste de la photo continue à ses proportions naturelles, rogné au bord opposé.",
+
+  "inputs.spread.label": "Étalement",
+  "inputs.spread.help": "La part de l'espace après le seuil que remplit la colonne figée. Le reste de la photo glisse ensuite à ses proportions naturelles (rogné au bord). 0 = photo intacte ; 100 = la colonne s'étire jusqu'au bord.",
+
+  "inputs.feather.label": "Adoucissement",
+  "inputs.feather.help": "Adoucit la jointure où la photo rejoint la colonne figée. À l'autre extrémité, là où la colonne cède la place au reste glissant, la continuité des couleurs est déjà assurée : ce réglage agit donc surtout sur la jointure de départ. 0 conserve un bord net.",
+
+  "inputs.contrast.label": "Contraste",
+  "inputs.contrast.section": "Couleur",
+  "inputs.contrast.help": "Accentue l'écart entre les tons (plus élevé) ou les aplatit (plus bas).",
+
+  "inputs.hue.label": "Teinte",
+  "inputs.hue.section": "Couleur",
+  "inputs.hue.help": "Fait tourner toutes les couleurs sur la roue chromatique.",
+
+  "inputs.saturation.label": "Saturation",
+  "inputs.saturation.section": "Couleur",
+  "inputs.saturation.help": "0 = niveaux de gris · 100 = original · 200 = éclatant.",
+
+  "inputs.lightness.label": "Luminosité",
+  "inputs.lightness.section": "Couleur",
+  "inputs.lightness.help": "Éclaircit vers le blanc ou assombrit vers le noir.",
+
+  "inputs.treatmentColor.label": "Traitement couleur",
+  "inputs.treatmentColor.section": "Couleur",
+  "inputs.treatmentColor.help": "Mélange une couleur par-dessus le résultat. Laisse vide pour aucun effet.",
+
+  "inputs.blendMode.label": "Mode de fusion",
+  "inputs.blendMode.section": "Couleur",
+  "inputs.blendMode.help": "Comment la couleur de traitement se mélange à l'image.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplier",
+  "inputs.blendMode.options.screen": "Écran",
+  "inputs.blendMode.options.overlay": "Incrustation",
+  "inputs.blendMode.options.darken": "Assombrir",
+  "inputs.blendMode.options.lighten": "Éclaircir",
+  "inputs.blendMode.options.color-dodge": "Densité couleur -",
+  "inputs.blendMode.options.color-burn": "Densité couleur +",
+  "inputs.blendMode.options.hard-light": "Lumière crue",
+  "inputs.blendMode.options.soft-light": "Lumière douce",
+  "inputs.blendMode.options.difference": "Différence",
+  "inputs.blendMode.options.exclusion": "Exclusion",
+  "inputs.blendMode.options.hue": "Teinte",
+  "inputs.blendMode.options.saturation": "Saturation",
+  "inputs.blendMode.options.color": "Couleur",
+  "inputs.blendMode.options.luminosity": "Luminosité",
+
+  "inputs.treatmentIntensity.label": "Intensité",
+  "inputs.treatmentIntensity.section": "Couleur",
+  "inputs.treatmentIntensity.help": "Opacité de la superposition de couleur.",
+
+  "inputs.imageFraming.label": "Zoom et position",
+  "inputs.imageFraming.section": "Position",
+  "inputs.imageFraming.help": "Le zoom agrandit la photo ; X / Y la déplacent dans le cadre (comme object-position). Fais glisser une étiquette ou saisis une valeur.",
+  "inputs.imageFraming.fields.zoom.label": "Zoom",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "Aucun filtre (afficher l'original)",
+  "inputs.noFilter.section": "Superposition",
+  "inputs.noFilter.help": "Affiche la photo originale ou le flux caméra en direct sans modification — pratique pour placer uniquement un logo ou un bandeau sur les images brutes.",
+
+  "inputs.showLogo.label": "Superposition du logo SUSE",
+  "inputs.showLogo.section": "Superposition",
+  "inputs.showLogo.help": "Superpose le logo SUSE au résultat. Désactivé par défaut.",
+
+  "inputs.logoPosition.label": "Position du logo",
+  "inputs.logoPosition.section": "Superposition",
+  "inputs.logoPosition.options.top-left": "Haut gauche",
+  "inputs.logoPosition.options.top-right": "Haut droite",
+  "inputs.logoPosition.options.bottom-left": "Bas gauche",
+  "inputs.logoPosition.options.bottom-right": "Bas droite",
+  "inputs.logoPosition.options.top": "Haut centre",
+  "inputs.logoPosition.options.bottom": "Bas centre",
+  "inputs.logoPosition.options.center": "Centre",
+  "inputs.logoPosition.options.full": "Plein (filigrane)",
+
+  "inputs.logoStyle.label": "Couleur du logo",
+  "inputs.logoStyle.section": "Superposition",
+  "inputs.logoStyle.help": "Le blanc et le vert ressortent sur des images sombres ou chargées ; le noir convient aux fonds clairs.",
+  "inputs.logoStyle.options.white": "Blanc",
+  "inputs.logoStyle.options.green": "Vert",
+  "inputs.logoStyle.options.black": "Noir",
+
+  "inputs.logoScale.label": "Taille du logo",
+  "inputs.logoScale.section": "Superposition",
+  "inputs.logoScale.help": "Agrandit ou réduit le logo.",
+
+  "inputs.lowerThird.label": "Bandeau de nom",
+  "inputs.lowerThird.section": "Superposition",
+  "inputs.lowerThird.help": "Un bandeau de nom animé en douceur qui apparaît par-dessus les images. Utilise le nom et la photo de ton profil.",
+
+  "inputs.ltTheme.label": "Style du bandeau",
+  "inputs.ltTheme.section": "Superposition",
+  "inputs.ltTheme.options.bar": "Barre de marque SUSE",
+  "inputs.ltTheme.options.minimal": "Minimaliste",
+  "inputs.ltTheme.options.glass": "Verre",
+
+  "inputs.ltPosition.label": "Position du bandeau",
+  "inputs.ltPosition.section": "Superposition",
+  "inputs.ltPosition.options.left": "Bas gauche",
+  "inputs.ltPosition.options.center": "Bas centre",
+  "inputs.ltPosition.options.right": "Bas droite",
+
+  "inputs.firstname.label": "Prénom",
+  "inputs.firstname.section": "Superposition",
+
+  "inputs.lastname.label": "Nom",
+  "inputs.lastname.section": "Superposition",
+
+  "inputs.title.label": "Rôle / sous-titre",
+  "inputs.title.section": "Superposition",
+  "inputs.title.help": "Ligne facultative sous le nom — par exemple un rôle ou un événement.",
+
+  "inputs.nameWeight.label": "Graisse du nom",
+  "inputs.nameWeight.section": "Superposition",
+  "inputs.nameWeight.help": "Graisse de la police de la ligne du nom (100 Fin → 900 Noir).",
+
+  "inputs.subtitleWeight.label": "Graisse du sous-titre",
+  "inputs.subtitleWeight.section": "Superposition",
+  "inputs.subtitleWeight.help": "Graisse de la police de la ligne rôle / sous-titre (100 Fin → 900 Noir).",
+
+  "inputs.ltHeadshot.label": "Photo de profil (facultatif)",
+  "inputs.ltHeadshot.section": "Superposition",
+  "inputs.ltHeadshot.help": "Utilise par défaut la photo de ton profil. Choisis-en une autre ou importe-la pour la remplacer.",
+
+  "inputs.width.label": "Largeur",
+  "inputs.height.label": "Hauteur"
 }

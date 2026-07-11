@@ -1,5 +1,148 @@
 {
   "name": "Grafiekmaker",
   "description": "Grafieken in je huisstijl, gemaakt van je data — staaf, donut, taart of gestapeld.",
-  "featured.blurb": "Grafieken uit je data, in elke vorm en in je huisstijl"
+  "featured.blurb": "Grafieken uit je data, in elke vorm en in je huisstijl",
+
+  "inputs.chartType.label": "Grafiektype",
+  "inputs.chartType.options.vertical-bar": "Verticale staven",
+  "inputs.chartType.options.horizontal-bar": "Horizontale staven",
+  "inputs.chartType.options.donut": "Donut",
+  "inputs.chartType.options.pie": "Taart",
+  "inputs.chartType.options.stacked": "Gestapelde staaf",
+
+  "inputs.donutRadius.label": "Donutstraal",
+
+  "inputs.stackMax.label": "Maximale schaal",
+  "inputs.stackMax.placeholder": "0 = passend bij totaal",
+  "inputs.stackMax.help": "Laat op 0 staan om de staaf te laten passen bij het totaal van je waarden (een composiet). Stel een getal in om de composiet te schalen ten opzichte van een vast maximum — de staaf vult dat aandeel en laat de rest leeg.",
+
+  "inputs.sliceGap.label": "Ruimte tussen segmenten",
+  "inputs.sliceGap.section": "Segmenten",
+  "inputs.sliceGap.help": "Ruimte tussen segmenten, in pixels aan de buitenrand. 0 = segmenten raken elkaar.",
+
+  "inputs.cornerRadius.label": "Hoekradius",
+  "inputs.cornerRadius.section": "Segmenten",
+  "inputs.cornerRadius.help": "Rondt de hoeken van elk segment af. Wordt automatisch beperkt bij dunne of smalle segmenten.",
+
+  "inputs.strokeWidth.label": "Omlijningsdikte",
+  "inputs.strokeWidth.section": "Segmenten",
+  "inputs.strokeWidth.help": "Omlijning rond elk segment. 0 = geen omlijning.",
+
+  "inputs.strokeColor.label": "Omlijningskleur",
+  "inputs.strokeColor.section": "Segmenten",
+
+  "inputs.heading.label": "Titel",
+  "inputs.heading.placeholder": "Titel van de grafiek",
+
+  "inputs.subheading.label": "Ondertitel / bron",
+  "inputs.subheading.placeholder": "Optionele ondertitel of databron",
+
+  "inputs.color.label": "Tekstkleur",
+
+  "inputs.background.label": "Achtergrond",
+
+  "inputs.showLegend.label": "Legenda tonen",
+  "inputs.showLegend.section": "Legenda",
+
+  "inputs.legendPosition.label": "Positie",
+  "inputs.legendPosition.section": "Legenda",
+  "inputs.legendPosition.options.bottom": "Onder",
+  "inputs.legendPosition.options.top": "Boven",
+  "inputs.legendPosition.options.left": "Links",
+  "inputs.legendPosition.options.right": "Rechts",
+
+  "inputs.legendDotShape.label": "Vorm van de stip",
+  "inputs.legendDotShape.section": "Legenda",
+  "inputs.legendDotShape.options.square": "Vierkant",
+  "inputs.legendDotShape.options.circle": "Cirkel",
+
+  "inputs.legendSize.label": "Tekstgrootte",
+  "inputs.legendSize.section": "Legenda",
+
+  "inputs.legendFontWeight.label": "Lettergewicht",
+  "inputs.legendFontWeight.section": "Legenda",
+
+  "inputs.legendMaxChars.label": "Maximale labellengte",
+  "inputs.legendMaxChars.section": "Legenda",
+  "inputs.legendMaxChars.help": "Aantal tekens dat wordt getoond voordat een legendalabel wordt ingekort met “…”. 0 = automatisch.",
+
+  "inputs.legendWidth.label": "Legendabreedte %",
+  "inputs.legendWidth.section": "Legenda",
+
+  "inputs.showLabels.label": "Labels tonen",
+  "inputs.showLabels.section": "Labels",
+
+  "inputs.labelSize.label": "Tekstgrootte",
+  "inputs.labelSize.section": "Labels",
+
+  "inputs.labelWeight.label": "Lettergewicht",
+  "inputs.labelWeight.section": "Labels",
+
+  "inputs.labelMaxChars.label": "Maximale labellengte",
+  "inputs.labelMaxChars.section": "Labels",
+  "inputs.labelMaxChars.help": "Aantal tekens dat wordt getoond voordat een label wordt ingekort met “…”. 0 = automatisch.",
+
+  "inputs.labelPosition.label": "Positie",
+  "inputs.labelPosition.section": "Labels",
+  "inputs.labelPosition.options.inside": "Binnen",
+  "inputs.labelPosition.options.outside": "Buiten",
+
+  "inputs.labelAlign.label": "Uitlijning",
+  "inputs.labelAlign.section": "Labels",
+  "inputs.labelAlign.options.top": "Boven",
+  "inputs.labelAlign.options.center": "Midden",
+  "inputs.labelAlign.options.bottom": "Onder",
+
+  "inputs.labelOffset.label": "Verschuiving",
+  "inputs.labelOffset.section": "Labels",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Ruimte buiten",
+  "inputs.labelGap.section": "Labels",
+
+  "inputs.dataLabels.label": "Waarden tonen",
+  "inputs.dataLabels.section": "Waarde",
+
+  "inputs.valueSize.label": "Tekstgrootte",
+  "inputs.valueSize.section": "Waarde",
+
+  "inputs.valueWeight.label": "Lettergewicht",
+  "inputs.valueWeight.section": "Waarde",
+
+  "inputs.valuePosition.label": "Positie",
+  "inputs.valuePosition.section": "Waarde",
+  "inputs.valuePosition.options.inside": "Binnen",
+  "inputs.valuePosition.options.outside": "Buiten",
+
+  "inputs.valueAlign.label": "Uitlijning",
+  "inputs.valueAlign.section": "Waarde",
+  "inputs.valueAlign.options.top": "Boven",
+  "inputs.valueAlign.options.center": "Midden",
+  "inputs.valueAlign.options.bottom": "Onder",
+
+  "inputs.valueOffset.label": "Verschuiving",
+  "inputs.valueOffset.section": "Waarde",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Ruimte buiten",
+  "inputs.valueGap.section": "Waarde",
+
+  "inputs.valueFormat.label": "Getalnotatie",
+  "inputs.valueFormat.section": "Waarde",
+  "inputs.valueFormat.options.auto": "Automatisch",
+  "inputs.valueFormat.options.value": "Oorspronkelijk getal",
+  "inputs.valueFormat.options.percent": "Percentage",
+
+  "inputs.data.label": "Gegevens",
+  "inputs.data.fields.label.label": "Label",
+  "inputs.data.fields.label.placeholder": "Label",
+  "inputs.data.fields.value.label": "Waarde",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Kleur",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Breedte",
+  "inputs.height.label": "Hoogte"
 }

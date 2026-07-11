@@ -1,4 +1,154 @@
 {
   "name": "Filter: Tontrennung (Bitmap)",
-  "description": "Wandelt jedes Foto in flache Vektor-Farbauszüge im Siebdruck-Stil um."
+  "description": "Wandelt jedes Foto in flache Vektor-Farbauszüge im Siebdruck-Stil um.",
+  "a11yLabel": "{{steps}}-farbige tontrennte Vektorgrafik des Fotos",
+
+  "inputs.photo.label": "Foto",
+  "inputs.photo.help": "Das zu tontrennende Bild. Porträtaufnahmen und kontrastreiche Fotos lassen sich am besten nachzeichnen.",
+
+  "inputs.steps.label": "Farbstufen",
+  "inputs.steps.help": "Wie viele Tonwertabstufungen nachgezeichnet werden. Eine Änderung tastet die Farben erneut aus dem Foto ab.",
+
+  "inputs.threshold.label": "Schwellenwert (1 Farbe)",
+  "inputs.threshold.help": "Reduziert das Foto auf eine einzige Druckfarbe auf Papier – ein harter Schnitt zwischen Hell und Dunkel statt abgestufter Farbauszüge. In Kombination mit „Transparenter Hintergrund” ergibt sich Farbe auf Nichts.",
+
+  "inputs.thresholdLevel.label": "Schwellenwert-Stufe",
+  "inputs.thresholdLevel.help": "Legt fest, wo der Schnitt zwischen Farbe und Papier verläuft. Höhere Werte verwandeln mehr vom Foto in Farbe; niedrigere Werte behalten nur die tiefsten Schatten.",
+
+  "inputs.brightness.label": "Helligkeit",
+  "inputs.brightness.help": "Hellt das Foto vor der Farbtrennung auf oder dunkelt es ab – verschiebt jeden Tonwert nach oben oder unten und verlagert Details zwischen den hellen und dunklen Farbauszügen.",
+
+  "inputs.quality.label": "Qualität",
+  "inputs.quality.help": "Auflösung beim Nachzeichnen – höhere Werte tasten das Foto in einem feineren Raster ab und erfassen mehr Details. Werte über 100 führen zu sehr feinen, langsameren Nachzeichnungen.",
+
+  "inputs.smoothing.label": "Glättung",
+  "inputs.smoothing.help": "Wie stark die nachgezeichneten Konturen zu Kurven abgerundet werden. Niedrige Werte behalten scharfe, originalgetreue Kanten bei; hohe Werte lassen sie in weiche Bézierkurven übergehen.",
+
+  "inputs.invert.label": "Tonwerte umkehren",
+  "inputs.invert.help": "Zeichnet anhand umgekehrter Tonwerte nach – die hellen Bereiche des Fotos werden zu den Vordergrund-Farbauszügen (ein Tonwert-Negativ). Nützlich für ein helles Motiv vor dunklem Hintergrund.",
+
+  "inputs.colors.label": "Farbauszug-Farben",
+  "inputs.colors.help": "Ein Farbfeld pro Tonwert, beginnend mit dem dunkelsten und endend mit dem hellsten (Papier). Automatisch aus Ihrem Foto abgetastet – bearbeiten Sie ein Farbfeld, um diesen Farbauszug neu einzufärben.",
+  "inputs.colors.fields.color.label": "Farbe",
+
+  "inputs.resample.label": "Farben erneut aus dem Foto abtasten",
+  "inputs.resample.help": "Verwirft manuelle Anpassungen und leitet jede Farbauszug-Farbe erneut aus dem aktuellen Foto ab.",
+
+  "inputs.transparentBg.label": "Transparenter Hintergrund",
+  "inputs.transparentBg.help": "Entfernt den hellsten „Papier”-Farbauszug, sodass der Hintergrund transparent wird (PNG / SVG).",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Farbe",
+  "inputs.contrast.help": "Spreizt die Tonwerte auseinander (höhere Werte) oder gleicht sie einander an (niedrigere Werte), bevor die Trennung erfolgt. Mehr Kontrast ergibt kräftigere, grafischere Farbauszüge.",
+
+  "inputs.hue.label": "Farbton",
+  "inputs.hue.section": "Farbe",
+  "inputs.hue.help": "Dreht jede Farbe auf dem Farbkreis.",
+
+  "inputs.saturation.label": "Sättigung",
+  "inputs.saturation.section": "Farbe",
+  "inputs.saturation.help": "0 = Graustufen · 100 = Original · 200 = kräftig.",
+
+  "inputs.lightness.label": "Aufhellung",
+  "inputs.lightness.section": "Farbe",
+  "inputs.lightness.help": "Hellt in Richtung Weiß auf oder verdunkelt in Richtung Schwarz.",
+
+  "inputs.treatmentColor.label": "Farbbehandlung",
+  "inputs.treatmentColor.section": "Farbe",
+  "inputs.treatmentColor.help": "Legt eine Farbe über das Ergebnis. Für keine Behandlung leer lassen.",
+
+  "inputs.blendMode.label": "Mischmodus",
+  "inputs.blendMode.section": "Farbe",
+  "inputs.blendMode.help": "Wie sich die Behandlungsfarbe mit dem Bild mischt.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplizieren",
+  "inputs.blendMode.options.screen": "Negativ multiplizieren",
+  "inputs.blendMode.options.overlay": "Ineinanderkopieren",
+  "inputs.blendMode.options.darken": "Abdunkeln",
+  "inputs.blendMode.options.lighten": "Aufhellen",
+  "inputs.blendMode.options.color-dodge": "Farbig abwedeln",
+  "inputs.blendMode.options.color-burn": "Farbig nachbelichten",
+  "inputs.blendMode.options.hard-light": "Hartes Licht",
+  "inputs.blendMode.options.soft-light": "Weiches Licht",
+  "inputs.blendMode.options.difference": "Differenz",
+  "inputs.blendMode.options.exclusion": "Ausschluss",
+  "inputs.blendMode.options.hue": "Farbton",
+  "inputs.blendMode.options.saturation": "Sättigung",
+  "inputs.blendMode.options.color": "Farbe",
+  "inputs.blendMode.options.luminosity": "Luminanz",
+
+  "inputs.treatmentIntensity.label": "Intensität",
+  "inputs.treatmentIntensity.section": "Farbe",
+  "inputs.treatmentIntensity.help": "Deckkraft der Farbüberlagerung.",
+
+  "inputs.width.label": "Breite",
+  "inputs.height.label": "Höhe",
+
+  "inputs.noFilter.label": "Kein Filter (Original anzeigen)",
+  "inputs.noFilter.section": "Einblendungen",
+  "inputs.noFilter.help": "Zeigt das Originalfoto oder den Live-Kamera-Feed unverändert an – praktisch, um nur ein Logo oder eine Bauchbinde über das unbearbeitete Material zu legen.",
+
+  "inputs.showLogo.label": "SUSE-Logo-Einblendung",
+  "inputs.showLogo.section": "Einblendungen",
+  "inputs.showLogo.help": "Blendet das SUSE-Logo über das Ergebnis ein. Standardmäßig deaktiviert.",
+
+  "inputs.logoPosition.label": "Logoposition",
+  "inputs.logoPosition.section": "Einblendungen",
+  "inputs.logoPosition.options.top-left": "Oben links",
+  "inputs.logoPosition.options.top-right": "Oben rechts",
+  "inputs.logoPosition.options.bottom-left": "Unten links",
+  "inputs.logoPosition.options.bottom-right": "Unten rechts",
+  "inputs.logoPosition.options.top": "Oben mittig",
+  "inputs.logoPosition.options.bottom": "Unten mittig",
+  "inputs.logoPosition.options.center": "Mittig",
+  "inputs.logoPosition.options.full": "Vollflächig (Wasserzeichen)",
+
+  "inputs.logoStyle.label": "Logofarbe",
+  "inputs.logoStyle.section": "Einblendungen",
+  "inputs.logoStyle.options.white": "Weiß",
+  "inputs.logoStyle.options.green": "Grün",
+  "inputs.logoStyle.options.black": "Schwarz",
+  "inputs.logoStyle.help": "Weiß und Grün wirken gut auf dunklem oder unruhigem Bildmaterial; Schwarz eignet sich für helle Hintergründe.",
+
+  "inputs.logoScale.label": "Logogröße",
+  "inputs.logoScale.section": "Einblendungen",
+  "inputs.logoScale.help": "Skaliert das Logo größer oder kleiner.",
+
+  "inputs.lowerThird.label": "Bauchbinden-Namenskarte",
+  "inputs.lowerThird.section": "Einblendungen",
+  "inputs.lowerThird.help": "Eine sanft animierte Namenskarte, die über das Bildmaterial eingeblendet wird. Verwendet Namen und Porträtfoto aus Ihrem Profil.",
+
+  "inputs.ltTheme.label": "Kartenstil",
+  "inputs.ltTheme.section": "Einblendungen",
+  "inputs.ltTheme.options.bar": "SUSE-Markenleiste",
+  "inputs.ltTheme.options.minimal": "Minimalistisch",
+  "inputs.ltTheme.options.glass": "Glas",
+
+  "inputs.ltPosition.label": "Kartenposition",
+  "inputs.ltPosition.section": "Einblendungen",
+  "inputs.ltPosition.options.left": "Unten links",
+  "inputs.ltPosition.options.center": "Unten mittig",
+  "inputs.ltPosition.options.right": "Unten rechts",
+
+  "inputs.firstname.label": "Vorname",
+  "inputs.firstname.section": "Einblendungen",
+
+  "inputs.lastname.label": "Nachname",
+  "inputs.lastname.section": "Einblendungen",
+
+  "inputs.title.label": "Rolle/Untertitel",
+  "inputs.title.section": "Einblendungen",
+  "inputs.title.help": "Optionale Zeile unter dem Namen – z. B. eine Rolle oder eine Veranstaltung.",
+
+  "inputs.nameWeight.label": "Schriftgewicht (Name)",
+  "inputs.nameWeight.section": "Einblendungen",
+  "inputs.nameWeight.help": "Schriftgewicht der Namenszeile (100 Dünn → 900 Schwarz).",
+
+  "inputs.subtitleWeight.label": "Schriftgewicht (Untertitel)",
+  "inputs.subtitleWeight.section": "Einblendungen",
+  "inputs.subtitleWeight.help": "Schriftgewicht der Rollen-/Untertitelzeile (100 Dünn → 900 Schwarz).",
+
+  "inputs.ltHeadshot.label": "Porträtfoto (optional)",
+  "inputs.ltHeadshot.section": "Einblendungen",
+  "inputs.ltHeadshot.help": "Verwendet standardmäßig das Porträtfoto aus Ihrem Profil. Wählen oder laden Sie ein anderes hoch, um es zu ersetzen."
 }

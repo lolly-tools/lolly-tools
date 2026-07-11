@@ -1,4 +1,154 @@
 {
   "name": "Filtro: Posterizar mapa de bits",
-  "description": "Convierte cualquier foto en separaciones de color vectoriales planas, al estilo serigrafía."
+  "description": "Convierte cualquier foto en separaciones de color vectoriales planas, al estilo serigrafía.",
+  "a11yLabel": "Vector posterizado de {{steps}} colores de la foto",
+
+  "inputs.photo.label": "Foto",
+  "inputs.photo.help": "La imagen que quieres posterizar. Los retratos y las fotos de alto contraste se trazan mejor.",
+
+  "inputs.steps.label": "Pasos de color",
+  "inputs.steps.help": "Cuántas separaciones tonales trazar. Cambiar este valor vuelve a muestrear los colores de la foto.",
+
+  "inputs.threshold.label": "Umbral (1 tinta)",
+  "inputs.threshold.help": "Reduce la foto a una sola tinta sobre papel: un corte único entre luces y sombras en lugar de separaciones graduales. Combínalo con Fondo transparente para tinta sobre nada.",
+
+  "inputs.thresholdLevel.label": "Nivel de umbral",
+  "inputs.thresholdLevel.help": "Dónde cae el corte entre tinta y papel. Un valor más alto convierte más foto en tinta; uno más bajo conserva solo las sombras más profundas.",
+
+  "inputs.brightness.label": "Brillo",
+  "inputs.brightness.help": "Aclara u oscurece la foto antes de separarla: desplaza cada tono hacia arriba o hacia abajo, moviendo el detalle entre las separaciones claras y oscuras.",
+
+  "inputs.quality.label": "Calidad",
+  "inputs.quality.help": "Resolución del trazado: un valor más alto muestrea la foto con una cuadrícula más fina y capta más detalle. Por encima de 100 se entra en trazados muy finos y más lentos.",
+
+  "inputs.smoothing.label": "Suavizado",
+  "inputs.smoothing.help": "Cuánto se redondean los contornos trazados en curvas. Un valor bajo mantiene los bordes fieles y nítidos; uno alto los convierte en curvas Bézier suaves.",
+
+  "inputs.invert.label": "Invertir tonos",
+  "inputs.invert.help": "Traza a partir de los tonos invertidos: las zonas claras de la foto se convierten en las separaciones de primer plano (un negativo tonal). Útil para un sujeto claro sobre un fondo oscuro.",
+
+  "inputs.colors.label": "Colores de separación",
+  "inputs.colors.help": "Una muestra por tono, de más oscuro a más claro (el papel al final). Se muestrean automáticamente de tu foto: edita cualquier muestra para recolorear esa separación.",
+  "inputs.colors.fields.color.label": "Color",
+
+  "inputs.resample.label": "Volver a muestrear colores de la foto",
+  "inputs.resample.help": "Descarta las ediciones manuales y vuelve a derivar cada color de separación a partir de la foto actual.",
+
+  "inputs.transparentBg.label": "Fondo transparente",
+  "inputs.transparentBg.help": "Elimina la separación más clara (el «papel») para que el fondo quede transparente (PNG / SVG).",
+
+  "inputs.contrast.label": "Contraste",
+  "inputs.contrast.section": "Color",
+  "inputs.contrast.help": "Separa más los tonos (valor alto) o los aplana (valor bajo) antes de separar. Más contraste da separaciones más audaces y gráficas.",
+
+  "inputs.hue.label": "Tono",
+  "inputs.hue.section": "Color",
+  "inputs.hue.help": "Rota todos los colores alrededor de la rueda cromática.",
+
+  "inputs.saturation.label": "Saturación",
+  "inputs.saturation.section": "Color",
+  "inputs.saturation.help": "0 = escala de grises · 100 = original · 200 = intenso.",
+
+  "inputs.lightness.label": "Luminosidad",
+  "inputs.lightness.section": "Color",
+  "inputs.lightness.help": "Aclara hacia el blanco u oscurece hacia el negro.",
+
+  "inputs.treatmentColor.label": "Tratamiento de color",
+  "inputs.treatmentColor.section": "Color",
+  "inputs.treatmentColor.help": "Mezcla un color sobre el resultado. Déjalo vacío para no aplicar ninguno.",
+
+  "inputs.blendMode.label": "Modo de fusión",
+  "inputs.blendMode.section": "Color",
+  "inputs.blendMode.help": "Cómo se mezcla el color de tratamiento con la imagen.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multiplicar",
+  "inputs.blendMode.options.screen": "Trama",
+  "inputs.blendMode.options.overlay": "Superposición",
+  "inputs.blendMode.options.darken": "Oscurecer",
+  "inputs.blendMode.options.lighten": "Aclarar",
+  "inputs.blendMode.options.color-dodge": "Sobreexponer color",
+  "inputs.blendMode.options.color-burn": "Subexponer color",
+  "inputs.blendMode.options.hard-light": "Luz fuerte",
+  "inputs.blendMode.options.soft-light": "Luz suave",
+  "inputs.blendMode.options.difference": "Diferencia",
+  "inputs.blendMode.options.exclusion": "Exclusión",
+  "inputs.blendMode.options.hue": "Tono",
+  "inputs.blendMode.options.saturation": "Saturación",
+  "inputs.blendMode.options.color": "Color",
+  "inputs.blendMode.options.luminosity": "Luminosidad",
+
+  "inputs.treatmentIntensity.label": "Intensidad",
+  "inputs.treatmentIntensity.section": "Color",
+  "inputs.treatmentIntensity.help": "Opacidad de la superposición de color.",
+
+  "inputs.width.label": "Ancho",
+  "inputs.height.label": "Alto",
+
+  "inputs.noFilter.label": "Sin filtro (mostrar en bruto)",
+  "inputs.noFilter.section": "Superposición",
+  "inputs.noFilter.help": "Muestra la foto original o la imagen de la cámara en directo sin procesar; útil para colocar solo un logotipo o una franja inferior sobre las imágenes en bruto.",
+
+  "inputs.showLogo.label": "Superposición del logotipo de SUSE",
+  "inputs.showLogo.section": "Superposición",
+  "inputs.showLogo.help": "Superpone el logotipo de SUSE sobre el resultado. Desactivado de forma predeterminada.",
+
+  "inputs.logoPosition.label": "Posición del logotipo",
+  "inputs.logoPosition.section": "Superposición",
+  "inputs.logoPosition.options.top-left": "Superior izquierda",
+  "inputs.logoPosition.options.top-right": "Superior derecha",
+  "inputs.logoPosition.options.bottom-left": "Inferior izquierda",
+  "inputs.logoPosition.options.bottom-right": "Inferior derecha",
+  "inputs.logoPosition.options.top": "Superior centro",
+  "inputs.logoPosition.options.bottom": "Inferior centro",
+  "inputs.logoPosition.options.center": "Centro",
+  "inputs.logoPosition.options.full": "Completo (marca de agua)",
+
+  "inputs.logoStyle.label": "Color del logotipo",
+  "inputs.logoStyle.section": "Superposición",
+  "inputs.logoStyle.options.white": "Blanco",
+  "inputs.logoStyle.options.green": "Verde",
+  "inputs.logoStyle.options.black": "Negro",
+  "inputs.logoStyle.help": "El blanco y el verde funcionan sobre imágenes oscuras o recargadas; el negro es mejor para fondos claros.",
+
+  "inputs.logoScale.label": "Tamaño del logotipo",
+  "inputs.logoScale.section": "Superposición",
+  "inputs.logoScale.help": "Aumenta o reduce el tamaño del logotipo.",
+
+  "inputs.lowerThird.label": "Franja inferior con nombre",
+  "inputs.lowerThird.section": "Superposición",
+  "inputs.lowerThird.help": "Una franja con nombre suavemente animada que aparece sobre las imágenes. Usa el nombre y la foto de perfil de tu cuenta.",
+
+  "inputs.ltTheme.label": "Estilo de la franja",
+  "inputs.ltTheme.section": "Superposición",
+  "inputs.ltTheme.options.bar": "Barra de marca SUSE",
+  "inputs.ltTheme.options.minimal": "Minimalista",
+  "inputs.ltTheme.options.glass": "Cristal",
+
+  "inputs.ltPosition.label": "Posición de la franja",
+  "inputs.ltPosition.section": "Superposición",
+  "inputs.ltPosition.options.left": "Inferior izquierda",
+  "inputs.ltPosition.options.center": "Inferior centro",
+  "inputs.ltPosition.options.right": "Inferior derecha",
+
+  "inputs.firstname.label": "Nombre",
+  "inputs.firstname.section": "Superposición",
+
+  "inputs.lastname.label": "Apellidos",
+  "inputs.lastname.section": "Superposición",
+
+  "inputs.title.label": "Cargo / subtítulo",
+  "inputs.title.section": "Superposición",
+  "inputs.title.help": "Línea opcional debajo del nombre, por ejemplo un cargo o un evento.",
+
+  "inputs.nameWeight.label": "Grosor del nombre",
+  "inputs.nameWeight.section": "Superposición",
+  "inputs.nameWeight.help": "Peso tipográfico de la línea del nombre (100 fina → 900 negra).",
+
+  "inputs.subtitleWeight.label": "Grosor del subtítulo",
+  "inputs.subtitleWeight.section": "Superposición",
+  "inputs.subtitleWeight.help": "Peso tipográfico de la línea de cargo o subtítulo (100 fina → 900 negra).",
+
+  "inputs.ltHeadshot.label": "Foto de perfil (opcional)",
+  "inputs.ltHeadshot.section": "Superposición",
+  "inputs.ltHeadshot.help": "Usa por defecto la foto de perfil de tu cuenta. Elige o sube otra para sustituirla."
 }
