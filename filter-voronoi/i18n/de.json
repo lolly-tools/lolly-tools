@@ -1,0 +1,4 @@
+{
+  "name": "Filter: Voronoi-Zellen",
+  "description": "Zersplittert jedes Foto in ein Voronoi-Zellenmosaik — jede Zelle gefüllt mit der nächstgelegenen Farbe, als flacher Vektor."
+}

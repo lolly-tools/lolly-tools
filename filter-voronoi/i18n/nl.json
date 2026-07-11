@@ -1,0 +1,4 @@
+{
+  "name": "Filter: Voronoi-cellen",
+  "description": "Versplinter elke foto tot een Voronoi-celmozaïek — elke cel gevuld met de dichtstbijzijnde kleur, als platte vector."
+}

@@ -1,0 +1,4 @@
+{
+  "name": "Filtre : Étirement de pixels",
+  "description": "Étire une colonne de pixels sur toute la photo à partir d'une ligne de seuil. Fonctionne en direct."
+}

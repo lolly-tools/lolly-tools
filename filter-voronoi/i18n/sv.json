@@ -1,0 +1,4 @@
+{
+  "name": "Filter: Voronoi-celler",
+  "description": "Splittra valfritt foto till en Voronoi-cellmosaik – varje cell fylld med närmaste färg, som platt vektor."
+}

@@ -1,0 +1,4 @@
+{
+  "name": "Filtro: Células de Voronoi",
+  "description": "Fragmenta cualquier foto en un mosaico de células de Voronoi: cada célula se rellena con el color más cercano, en vector plano."
+}
