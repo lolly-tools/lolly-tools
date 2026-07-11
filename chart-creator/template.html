@@ -1,0 +1,33 @@
+<svg id="chart-svg" xmlns="http://www.w3.org/2000/svg"
+     viewBox="0 0 {{width}} {{height}}" width="{{width}}" height="{{height}}"
+     style="width:100%;height:auto;display:block;"
+     data-lolly-anno="{{chartType}} {{strokeColor}} {{color}} {{legendPosition}} {{legendDotShape}} {{labelPosition}} {{labelAlign}} {{valuePosition}} {{valueAlign}} {{valueFormat}}">
+  <defs>
+    <style>
+      /* Brand font via the injected var (community pattern — no @font-face here;
+         the shell loads the active brand's faces). 'SUSE' rides the fallback
+         tail so an already-registered face still resolves on older shells. */
+      text, tspan { font-family: var(--font-brand, 'SUSE', system-ui, sans-serif); }
+      /* Click-to-focus: annotated parts jump to their sidebar control on click — hint it. */
+      #chart-svg [data-canvas-input] { cursor: pointer; }
+    </style>
+  </defs>
+  <rect id="chart-bg" width="{{width}}" height="{{height}}" fill="{{chartBgFill}}" data-canvas-input="background" pointer-events="all"/>
+  {{{chartSvg}}}
+</svg>
+<script>
+(function () {
+  var svg = document.getElementById('chart-svg');
+  if (!svg) return;
+  var wEl = document.querySelector('[data-action="export-width"]');
+  var hEl = document.querySelector('[data-action="export-height"]');
+  var w = wEl ? parseInt(wEl.value, 10) : 0;
+  var h = hEl ? parseInt(hEl.value, 10) : 0;
+  if (!(w > 0 && h > 0)) return;
+  svg.setAttribute('viewBox', '0 0 ' + w + ' ' + h);
+  svg.setAttribute('width', w);
+  svg.setAttribute('height', h);
+  var bg = document.getElementById('chart-bg');
+  if (bg) { bg.setAttribute('width', w); bg.setAttribute('height', h); }
+})();
+</script>

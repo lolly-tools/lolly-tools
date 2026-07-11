@@ -1,0 +1,1116 @@
+{
+  "id": "d3",
+  "name": "D3 Chart Studio",
+  "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap and more, on-brand and vector-clean.",
+  "version": "1.1.0",
+  "engineVersion": "^1.0.0",
+  "status": "official",
+  "category": "designer",
+  "a11yLabel": "{{chartType}} chart{{#if heading}} — {{heading}}{{/if}}",
+  "tags": [
+    "chart",
+    "d3",
+    "data",
+    "visualization",
+    "graph",
+    "plot",
+    "bar",
+    "line",
+    "area",
+    "scatter",
+    "pie",
+    "donut",
+    "radar",
+    "treemap",
+    "heatmap",
+    "histogram",
+    "svg",
+    "vector",
+    "csv"
+  ],
+  "featured": {
+    "order": 4,
+    "blurb": "Paste a table — D3 charts it, on-brand and vector-clean"
+  },
+  "render": {
+    "width": 1280,
+    "height": 800,
+    "formats": [
+      "md",
+      "png",
+      "svg",
+      "emf",
+      "pdf",
+      "pdf-cmyk",
+      "cmyk-tiff",
+      "tiff",
+      "pptx",
+      "webp",
+      "jpg"
+    ],
+    "actions": [
+      "copy",
+      "download",
+      "save"
+    ],
+    "transparentBg": false
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true
+  },
+  "inputs": [
+    {
+      "id": "chartType",
+      "urlKey": "ct",
+      "label": "Chart type",
+      "type": "select",
+      "default": "bar",
+      "options": [
+        {
+          "value": "bar",
+          "label": "Bar — vertical"
+        },
+        {
+          "value": "bar-horizontal",
+          "label": "Bar — horizontal"
+        },
+        {
+          "value": "line",
+          "label": "Line"
+        },
+        {
+          "value": "area",
+          "label": "Area"
+        },
+        {
+          "value": "scatter",
+          "label": "Scatter / bubble"
+        },
+        {
+          "value": "pie",
+          "label": "Pie"
+        },
+        {
+          "value": "donut",
+          "label": "Donut"
+        },
+        {
+          "value": "radial-bar",
+          "label": "Radial bar"
+        },
+        {
+          "value": "radar",
+          "label": "Radar"
+        },
+        {
+          "value": "treemap",
+          "label": "Treemap"
+        },
+        {
+          "value": "pack",
+          "label": "Circle pack"
+        },
+        {
+          "value": "heatmap",
+          "label": "Heatmap"
+        },
+        {
+          "value": "histogram",
+          "label": "Histogram"
+        },
+        {
+          "value": "lollipop",
+          "label": "Lollipop"
+        },
+        {
+          "value": "dumbbell",
+          "label": "Dumbbell / dot plot"
+        },
+        {
+          "value": "slope",
+          "label": "Slope"
+        },
+        {
+          "value": "bump",
+          "label": "Bump / ranking"
+        },
+        {
+          "value": "stream",
+          "label": "Streamgraph"
+        },
+        {
+          "value": "waterfall",
+          "label": "Waterfall"
+        },
+        {
+          "value": "marimekko",
+          "label": "Marimekko / mekko"
+        },
+        {
+          "value": "parallel",
+          "label": "Parallel coordinates"
+        },
+        {
+          "value": "polar",
+          "label": "Polar area / rose"
+        },
+        {
+          "value": "funnel",
+          "label": "Funnel"
+        },
+        {
+          "value": "gauge",
+          "label": "Gauge / dial"
+        },
+        {
+          "value": "waffle",
+          "label": "Waffle / pictogram"
+        },
+        {
+          "value": "sunburst",
+          "label": "Sunburst"
+        },
+        {
+          "value": "icicle",
+          "label": "Icicle"
+        },
+        {
+          "value": "chord",
+          "label": "Chord"
+        }
+      ]
+    },
+    {
+      "id": "data",
+      "urlKey": "d",
+      "label": "Paste your table",
+      "type": "longtext",
+      "rows": 9,
+      "placeholder": "Quarter,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+      "help": "Copy cells straight from Excel, Google Sheets or Numbers and paste here — they come across as a clean table (no fiddling with commas). Or type/paste CSV or TSV. First row = column headers; the first text column becomes the labels and every numeric column a series. The chart rebuilds automatically.",
+      "default": "Quarter,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18\nQ3,55,41,24\nQ4,63,52,33"
+    },
+    {
+      "id": "hasHeader",
+      "urlKey": "hh",
+      "label": "First row is a header",
+      "section": "Data",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "id": "delimiter",
+      "urlKey": "dl",
+      "label": "Column separator",
+      "section": "Data",
+      "type": "select",
+      "default": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto-detect"
+        },
+        {
+          "value": "comma",
+          "label": "Comma  ,"
+        },
+        {
+          "value": "tab",
+          "label": "Tab"
+        },
+        {
+          "value": "semicolon",
+          "label": "Semicolon  ;"
+        },
+        {
+          "value": "pipe",
+          "label": "Pipe  |"
+        }
+      ]
+    },
+    {
+      "id": "transpose",
+      "urlKey": "tp",
+      "label": "Swap rows & columns",
+      "section": "Data",
+      "type": "boolean",
+      "default": false,
+      "help": "Flip the table so the header row becomes the categories and each row becomes a series."
+    },
+    {
+      "id": "labelColumn",
+      "urlKey": "lc",
+      "label": "Label column",
+      "section": "Columns",
+      "type": "text",
+      "default": "",
+      "placeholder": "auto (first column)",
+      "help": "Which column holds the category / x-axis labels — a column name or its number (1 = first). Blank = the first column."
+    },
+    {
+      "id": "seriesColumns",
+      "urlKey": "sc",
+      "label": "Series columns",
+      "section": "Columns",
+      "type": "text",
+      "default": "",
+      "placeholder": "auto (all numeric)",
+      "help": "Which columns to plot, comma-separated (names or numbers), in the order you list them. Blank = every numeric column."
+    },
+    {
+      "id": "pivotColumn",
+      "urlKey": "pv",
+      "label": "Pivot by column",
+      "section": "Columns",
+      "type": "text",
+      "default": "",
+      "placeholder": "auto (for long data)",
+      "help": "For long / tidy data (one row per observation): the column whose values become the separate series. Blank = auto-detect."
+    },
+    {
+      "id": "stackMode",
+      "urlKey": "sm",
+      "label": "Series layout",
+      "section": "Chart",
+      "type": "select",
+      "default": "grouped",
+      "options": [
+        {
+          "value": "grouped",
+          "label": "Grouped (side by side)"
+        },
+        {
+          "value": "stacked",
+          "label": "Stacked"
+        },
+        {
+          "value": "stacked100",
+          "label": "Stacked 100%"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "area"
+        ]
+      }
+    },
+    {
+      "id": "curve",
+      "urlKey": "cv",
+      "label": "Line shape",
+      "section": "Chart",
+      "type": "select",
+      "default": "monotone",
+      "options": [
+        {
+          "value": "linear",
+          "label": "Straight"
+        },
+        {
+          "value": "monotone",
+          "label": "Smooth (monotone)"
+        },
+        {
+          "value": "natural",
+          "label": "Smooth (natural)"
+        },
+        {
+          "value": "catmullRom",
+          "label": "Smooth (Catmull–Rom)"
+        },
+        {
+          "value": "cardinal",
+          "label": "Smooth (cardinal)"
+        },
+        {
+          "value": "basis",
+          "label": "Smooth (basis)"
+        },
+        {
+          "value": "step",
+          "label": "Step (mid)"
+        },
+        {
+          "value": "stepBefore",
+          "label": "Step (before)"
+        },
+        {
+          "value": "stepAfter",
+          "label": "Step (after)"
+        },
+        {
+          "value": "bumpX",
+          "label": "Bump"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "line",
+          "area"
+        ]
+      }
+    },
+    {
+      "id": "showPoints",
+      "urlKey": "pt",
+      "label": "Show point markers",
+      "section": "Chart",
+      "type": "boolean",
+      "default": false,
+      "showIf": {
+        "chartType": [
+          "line",
+          "area"
+        ]
+      }
+    },
+    {
+      "id": "pointSize",
+      "urlKey": "ps",
+      "label": "Point size",
+      "section": "Chart",
+      "type": "number",
+      "display": "slider",
+      "default": 10,
+      "min": 2,
+      "max": 48,
+      "step": 1,
+      "showIf": {
+        "chartType": [
+          "scatter",
+          "line",
+          "area",
+          "slope",
+          "bump",
+          "dumbbell",
+          "lollipop"
+        ]
+      }
+    },
+    {
+      "id": "sizeBy",
+      "urlKey": "sz",
+      "label": "Bubble size",
+      "section": "Chart",
+      "type": "select",
+      "default": "uniform",
+      "options": [
+        {
+          "value": "uniform",
+          "label": "Uniform dots"
+        },
+        {
+          "value": "auto",
+          "label": "By 3rd number column (bubble)"
+        }
+      ],
+      "showIf": {
+        "chartType": "scatter"
+      }
+    },
+    {
+      "id": "lineWidth",
+      "urlKey": "lw",
+      "label": "Line width",
+      "section": "Chart",
+      "type": "number",
+      "display": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 16,
+      "step": 1,
+      "showIf": {
+        "chartType": [
+          "line",
+          "area",
+          "radar",
+          "lollipop",
+          "dumbbell",
+          "slope",
+          "bump",
+          "stream",
+          "parallel"
+        ]
+      }
+    },
+    {
+      "id": "fillOpacity",
+      "urlKey": "fo",
+      "label": "Fill opacity %",
+      "section": "Chart",
+      "type": "number",
+      "display": "slider",
+      "default": 85,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "showIf": {
+        "chartType": [
+          "area",
+          "radar",
+          "scatter",
+          "stream",
+          "parallel",
+          "chord"
+        ]
+      }
+    },
+    {
+      "id": "donutRadius",
+      "urlKey": "dr",
+      "label": "Inner radius (hole)",
+      "section": "Chart",
+      "type": "number",
+      "display": "slider",
+      "default": 0.55,
+      "min": 0,
+      "max": 0.9,
+      "step": 0.01,
+      "showIf": {
+        "chartType": [
+          "donut",
+          "radial-bar",
+          "gauge"
+        ]
+      }
+    },
+    {
+      "id": "sliceGap",
+      "urlKey": "sg",
+      "label": "Gap between slices",
+      "section": "Chart",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "showIf": {
+        "chartType": [
+          "pie",
+          "donut",
+          "radial-bar"
+        ]
+      }
+    },
+    {
+      "id": "cornerRadius",
+      "urlKey": "cr",
+      "label": "Corner radius",
+      "section": "Chart",
+      "type": "number",
+      "display": "slider",
+      "default": 3,
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut",
+          "radial-bar",
+          "treemap",
+          "heatmap",
+          "histogram",
+          "polar",
+          "funnel",
+          "waffle",
+          "sunburst",
+          "icicle",
+          "waterfall"
+        ]
+      }
+    },
+    {
+      "id": "barPadding",
+      "urlKey": "bp",
+      "label": "Bar spacing",
+      "section": "Chart",
+      "type": "number",
+      "display": "slider",
+      "default": 0.2,
+      "min": 0,
+      "max": 0.9,
+      "step": 0.01,
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "radial-bar",
+          "histogram",
+          "waterfall",
+          "lollipop"
+        ]
+      }
+    },
+    {
+      "id": "binCount",
+      "urlKey": "bc",
+      "label": "Bins (0 = auto)",
+      "section": "Chart",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "showIf": {
+        "chartType": "histogram"
+      }
+    },
+    {
+      "id": "sort",
+      "urlKey": "so",
+      "label": "Sort",
+      "section": "Chart",
+      "type": "select",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "As entered"
+        },
+        {
+          "value": "desc",
+          "label": "Largest first"
+        },
+        {
+          "value": "asc",
+          "label": "Smallest first"
+        },
+        {
+          "value": "alpha",
+          "label": "A → Z by label"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut",
+          "radial-bar",
+          "treemap",
+          "pack",
+          "polar",
+          "funnel",
+          "waffle"
+        ]
+      }
+    },
+    {
+      "id": "yScaleType",
+      "urlKey": "ys",
+      "label": "Value scale",
+      "section": "Axes & scale",
+      "type": "select",
+      "default": "linear",
+      "options": [
+        {
+          "value": "linear",
+          "label": "Linear"
+        },
+        {
+          "value": "log",
+          "label": "Logarithmic"
+        },
+        {
+          "value": "sqrt",
+          "label": "Square-root"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter",
+          "histogram",
+          "lollipop",
+          "dumbbell",
+          "slope",
+          "bump",
+          "waterfall",
+          "marimekko",
+          "parallel"
+        ]
+      }
+    },
+    {
+      "id": "yZero",
+      "urlKey": "yz",
+      "label": "Start value axis at zero",
+      "section": "Axes & scale",
+      "type": "boolean",
+      "default": true,
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter",
+          "lollipop",
+          "dumbbell",
+          "slope",
+          "bump"
+        ]
+      }
+    },
+    {
+      "id": "yMax",
+      "urlKey": "ym",
+      "label": "Value axis max (0 = auto)",
+      "section": "Axes & scale",
+      "type": "number",
+      "default": 0,
+      "min": 0,
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter",
+          "histogram",
+          "lollipop",
+          "dumbbell",
+          "slope",
+          "bump",
+          "waterfall",
+          "gauge"
+        ]
+      }
+    },
+    {
+      "id": "showGrid",
+      "urlKey": "gd",
+      "label": "Gridlines",
+      "section": "Axes & scale",
+      "type": "boolean",
+      "default": true,
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter",
+          "histogram",
+          "lollipop",
+          "dumbbell",
+          "slope",
+          "bump",
+          "waterfall",
+          "polar"
+        ]
+      }
+    },
+    {
+      "id": "showAxes",
+      "urlKey": "ax",
+      "label": "Axis lines & ticks",
+      "section": "Axes & scale",
+      "type": "boolean",
+      "default": true,
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter",
+          "histogram",
+          "lollipop",
+          "dumbbell",
+          "slope",
+          "bump",
+          "waterfall",
+          "marimekko",
+          "parallel"
+        ]
+      }
+    },
+    {
+      "id": "tickCount",
+      "urlKey": "tk",
+      "label": "Approx. tick count",
+      "section": "Axes & scale",
+      "type": "number",
+      "display": "slider",
+      "default": 5,
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter",
+          "histogram",
+          "lollipop",
+          "dumbbell",
+          "slope",
+          "bump",
+          "waterfall"
+        ]
+      }
+    },
+    {
+      "id": "numberFormat",
+      "urlKey": "nf",
+      "label": "Number format",
+      "section": "Axes & scale",
+      "type": "select",
+      "default": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "si",
+          "label": "SI (1.2k, 3.4M)"
+        },
+        {
+          "value": "comma",
+          "label": "Thousands (1,234)"
+        },
+        {
+          "value": "integer",
+          "label": "Integer"
+        },
+        {
+          "value": "decimal1",
+          "label": "1 decimal"
+        },
+        {
+          "value": "decimal2",
+          "label": "2 decimals"
+        },
+        {
+          "value": "percent",
+          "label": "Percent"
+        },
+        {
+          "value": "currency",
+          "label": "Currency (€)"
+        }
+      ]
+    },
+    {
+      "id": "xTitle",
+      "urlKey": "xt",
+      "label": "X-axis title",
+      "section": "Axes & scale",
+      "type": "text",
+      "default": "",
+      "placeholder": "Optional",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter",
+          "histogram",
+          "lollipop",
+          "dumbbell",
+          "slope",
+          "bump",
+          "waterfall",
+          "marimekko"
+        ]
+      }
+    },
+    {
+      "id": "yTitle",
+      "urlKey": "yt",
+      "label": "Y-axis title",
+      "section": "Axes & scale",
+      "type": "text",
+      "default": "",
+      "placeholder": "Optional",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter",
+          "histogram",
+          "lollipop",
+          "dumbbell",
+          "slope",
+          "bump",
+          "waterfall",
+          "marimekko"
+        ]
+      }
+    },
+    {
+      "id": "palette",
+      "urlKey": "pl",
+      "label": "Palette",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "suse",
+      "options": [
+        {
+          "value": "suse",
+          "label": "Brand (categorical)"
+        },
+        {
+          "value": "pine",
+          "label": "Pine (sequential)"
+        },
+        {
+          "value": "waterhole",
+          "label": "Waterhole (sequential)"
+        },
+        {
+          "value": "warm",
+          "label": "Warm (sequential)"
+        },
+        {
+          "value": "cool",
+          "label": "Cool (sequential)"
+        },
+        {
+          "value": "diverging",
+          "label": "Diverging (blue↔orange)"
+        },
+        {
+          "value": "mono",
+          "label": "Mono (green)"
+        }
+      ]
+    },
+    {
+      "id": "colorBy",
+      "urlKey": "cb",
+      "label": "Colour by",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "series",
+      "options": [
+        {
+          "value": "series",
+          "label": "Series"
+        },
+        {
+          "value": "category",
+          "label": "Category"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal"
+        ]
+      }
+    },
+    {
+      "id": "background",
+      "urlKey": "bg",
+      "label": "Background",
+      "section": "Colour & style",
+      "type": "color",
+      "default": "{color.semantic.surface}"
+    },
+    {
+      "id": "textColor",
+      "urlKey": "tc",
+      "label": "Text & axis colour",
+      "section": "Colour & style",
+      "type": "color",
+      "default": "{color.semantic.text}"
+    },
+    {
+      "id": "strokeWidth",
+      "urlKey": "ow",
+      "label": "Mark outline width",
+      "section": "Colour & style",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut",
+          "radial-bar",
+          "treemap",
+          "pack",
+          "heatmap",
+          "scatter",
+          "histogram"
+        ]
+      }
+    },
+    {
+      "id": "strokeColor",
+      "urlKey": "oc",
+      "label": "Mark outline colour",
+      "section": "Colour & style",
+      "type": "color",
+      "default": "{color.semantic.surface}",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut",
+          "radial-bar",
+          "treemap",
+          "pack",
+          "heatmap",
+          "scatter",
+          "histogram"
+        ]
+      }
+    },
+    {
+      "id": "heading",
+      "urlKey": "t",
+      "label": "Title",
+      "section": "Titles & labels",
+      "type": "text",
+      "default": "",
+      "placeholder": "Chart title"
+    },
+    {
+      "id": "subheading",
+      "urlKey": "st",
+      "label": "Subtitle / source",
+      "section": "Titles & labels",
+      "type": "text",
+      "default": "",
+      "placeholder": "Optional subtitle or data source"
+    },
+    {
+      "id": "titleSize",
+      "urlKey": "tz",
+      "label": "Title text size",
+      "section": "Titles & labels",
+      "type": "number",
+      "display": "slider",
+      "default": 34,
+      "min": 14,
+      "max": 72,
+      "step": 1
+    },
+    {
+      "id": "titleWeight",
+      "urlKey": "tw",
+      "label": "Title weight",
+      "section": "Titles & labels",
+      "type": "number",
+      "display": "slider",
+      "default": 500,
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "help": "Font weight of the chart title (100 Thin → 900 Black)."
+    },
+    {
+      "id": "showValues",
+      "urlKey": "sv",
+      "label": "Show data labels",
+      "section": "Titles & labels",
+      "type": "boolean",
+      "default": false
+    },
+    {
+      "id": "labelSize",
+      "urlKey": "lz",
+      "label": "Label text size",
+      "section": "Titles & labels",
+      "type": "number",
+      "display": "slider",
+      "default": 22,
+      "min": 8,
+      "max": 56,
+      "step": 1
+    },
+    {
+      "id": "labelWeight",
+      "urlKey": "lb",
+      "label": "Label weight",
+      "section": "Titles & labels",
+      "type": "number",
+      "display": "slider",
+      "default": 500,
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "help": "Font weight of the axis category labels and legend (100 Thin → 900 Black)."
+    },
+    {
+      "id": "showLegend",
+      "urlKey": "lg",
+      "label": "Show legend",
+      "section": "Legend",
+      "type": "boolean",
+      "default": true
+    },
+    {
+      "id": "legendPosition",
+      "urlKey": "lp",
+      "label": "Legend position",
+      "section": "Legend",
+      "type": "select",
+      "default": "bottom",
+      "options": [
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        },
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        },
+        {
+          "value": "left",
+          "label": "Left"
+        }
+      ],
+      "showIf": {
+        "showLegend": true
+      }
+    },
+    {
+      "id": "width",
+      "label": "Width",
+      "type": "number",
+      "default": 1280,
+      "min": 100,
+      "max": 8000,
+      "group": "export"
+    },
+    {
+      "id": "height",
+      "label": "Height",
+      "type": "number",
+      "default": 800,
+      "min": 100,
+      "max": 8000,
+      "group": "export"
+    }
+  ]
+}

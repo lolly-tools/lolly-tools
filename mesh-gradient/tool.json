@@ -1,0 +1,222 @@
+{
+  "id": "mesh-gradient",
+  "name": "Mesh Gradient",
+  "description": "Soft mesh-style gradients from your brand swatches. Drag the colour points right on the canvas.",
+  "a11yLabel": "Mesh gradient blending {{count}} colours",
+  "version": "1.0.0",
+  "engineVersion": "^1.0.0",
+  "status": "official",
+  "category": "everyone",
+  "tags": ["gradient", "mesh", "background", "wallpaper", "hero", "brand"],
+  "render": {
+    "width": 1600,
+    "height": 900,
+    "formats": ["svg", "png", "jpg", "webp", "avif", "webm", "mp4"],
+    "actions": ["copy", "download", "save"],
+    "video": { "wait": 0, "duration": 6 }
+  },
+  "inputs": [
+    {
+      "id": "count",
+      "label": "Colour points",
+      "type": "number",
+      "display": "slider",
+      "default": 4,
+      "min": 2,
+      "max": 6,
+      "step": 1
+    },
+    {
+      "id": "color1",
+      "label": "Colour 1 (base)",
+      "type": "color",
+      "default": "{color.semantic.primary}"
+    },
+    {
+      "id": "pos1",
+      "label": "Position 1",
+      "type": "vector",
+      "help": "Drag the dot on the canvas, or set X / Y here (% of the frame).",
+      "fields": [
+        { "id": "x", "label": "X", "min": 0, "max": 100, "step": 1, "default": 14 },
+        { "id": "y", "label": "Y", "min": 0, "max": 100, "step": 1, "default": 20 }
+      ]
+    },
+    {
+      "id": "color2",
+      "label": "Colour 2",
+      "type": "color",
+      "default": "{color.semantic.secondary}"
+    },
+    {
+      "id": "pos2",
+      "label": "Position 2",
+      "type": "vector",
+      "fields": [
+        { "id": "x", "label": "X", "min": 0, "max": 100, "step": 1, "default": 85 },
+        { "id": "y", "label": "Y", "min": 0, "max": 100, "step": 1, "default": 18 }
+      ]
+    },
+    {
+      "id": "color3",
+      "label": "Colour 3",
+      "type": "color",
+      "default": "{color.spectrum.teal}",
+      "showIf": { "count": [3, 4, 5, 6] }
+    },
+    {
+      "id": "pos3",
+      "label": "Position 3",
+      "type": "vector",
+      "showIf": { "count": [3, 4, 5, 6] },
+      "fields": [
+        { "id": "x", "label": "X", "min": 0, "max": 100, "step": 1, "default": 80 },
+        { "id": "y", "label": "Y", "min": 0, "max": 100, "step": 1, "default": 82 }
+      ]
+    },
+    {
+      "id": "color4",
+      "label": "Colour 4",
+      "type": "color",
+      "default": "{color.semantic.surface}",
+      "showIf": { "count": [4, 5, 6] }
+    },
+    {
+      "id": "pos4",
+      "label": "Position 4",
+      "type": "vector",
+      "showIf": { "count": [4, 5, 6] },
+      "fields": [
+        { "id": "x", "label": "X", "min": 0, "max": 100, "step": 1, "default": 18 },
+        { "id": "y", "label": "Y", "min": 0, "max": 100, "step": 1, "default": 78 }
+      ]
+    },
+    {
+      "id": "color5",
+      "label": "Colour 5",
+      "type": "color",
+      "default": "#f2a65a",
+      "showIf": { "count": [5, 6] }
+    },
+    {
+      "id": "pos5",
+      "label": "Position 5",
+      "type": "vector",
+      "showIf": { "count": [5, 6] },
+      "fields": [
+        { "id": "x", "label": "X", "min": 0, "max": 100, "step": 1, "default": 52 },
+        { "id": "y", "label": "Y", "min": 0, "max": 100, "step": 1, "default": 10 }
+      ]
+    },
+    {
+      "id": "color6",
+      "label": "Colour 6",
+      "type": "color",
+      "default": "#5b8def",
+      "showIf": { "count": [6] }
+    },
+    {
+      "id": "pos6",
+      "label": "Position 6",
+      "type": "vector",
+      "showIf": { "count": [6] },
+      "fields": [
+        { "id": "x", "label": "X", "min": 0, "max": 100, "step": 1, "default": 50 },
+        { "id": "y", "label": "Y", "min": 0, "max": 100, "step": 1, "default": 88 }
+      ]
+    },
+    {
+      "id": "blend",
+      "label": "Blend mode",
+      "section": "Texture",
+      "type": "select",
+      "default": "normal",
+      "help": "How the colour points mix into each other.",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "multiply", "label": "Multiply" },
+        { "value": "screen", "label": "Screen" },
+        { "value": "overlay", "label": "Overlay" },
+        { "value": "soft-light", "label": "Soft light" },
+        { "value": "hard-light", "label": "Hard light" },
+        { "value": "lighten", "label": "Lighten" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "luminosity", "label": "Luminosity" }
+      ]
+    },
+    {
+      "id": "spread",
+      "label": "Spread",
+      "section": "Texture",
+      "type": "number",
+      "display": "slider",
+      "default": 75,
+      "min": 30,
+      "max": 140,
+      "step": 1,
+      "help": "How far each colour reaches across the frame."
+    },
+    {
+      "id": "blur",
+      "label": "Extra blur",
+      "section": "Texture",
+      "type": "number",
+      "display": "slider",
+      "default": 6,
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "help": "Melts the colours together. 0 keeps the SVG export filter-free."
+    },
+    {
+      "id": "grain",
+      "label": "Grain",
+      "section": "Texture",
+      "type": "number",
+      "display": "slider",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 1
+    },
+    {
+      "id": "grainBlend",
+      "label": "Grain blend",
+      "section": "Texture",
+      "type": "select",
+      "default": "soft-light",
+      "options": [
+        { "value": "soft-light", "label": "Soft light (smooth)" },
+        { "value": "overlay", "label": "Overlay (gritty)" },
+        { "value": "luminosity", "label": "Luminosity (classic)" }
+      ]
+    },
+    {
+      "id": "animate",
+      "label": "Drift",
+      "section": "Motion",
+      "type": "boolean",
+      "default": false,
+      "help": "Slow, looping drift of the colour points — export as WebM/MP4 for a live background."
+    },
+    {
+      "id": "speed",
+      "label": "Loop length",
+      "section": "Motion",
+      "type": "number",
+      "display": "slider",
+      "default": 12,
+      "min": 4,
+      "max": 24,
+      "step": 1,
+      "showIf": { "animate": true },
+      "help": "Seconds per drift loop. Video exports capture one loop where the frame budget allows (long loops are shortened at 60 fps)."
+    }
+  ],
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "beforeExport": true,
+    "afterExport": true
+  }
+}

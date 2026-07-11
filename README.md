@@ -24,6 +24,7 @@ own). Each tool is a directory of *data, not code*:
 | Tool | What it does |
 |---|---|
 | `qr-code` | QR code generator (SVG/PNG, custom colors, joined modules) |
+| `mesh-gradient` | Mesh-style gradients from brand swatches — draggable colour points, grain, drift animation |
 | `street-map` | Vector street-map posters from OSM data |
 | `color-palette` | Browse the active brand palette, click-to-copy |
 | `compress-pdf` | On-device PDF compression |
