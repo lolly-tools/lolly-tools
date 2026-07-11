@@ -1,11 +1,15 @@
-<div class="url-shot">
+<div class="url-shot" data-shot-root>
   <img data-capture class="shot" alt="" data-lolly-anno="{{recolor}} {{tintColor}}"/>
+  <canvas data-shot-canvas class="shot" hidden></canvas>
   <div class="placeholder" data-placeholder>
     <div class="badge">URL Capture</div>
     <p class="target">{{default url "No URL set"}}</p>
     <button type="button" class="preview-btn" data-preview data-busy-label="Capturing…">
       Click to preview
     </button>
-    <p class="hint">Captured live in a real browser — preview here, then Export to save.</p>
+    <p class="hint">Captured live in a real browser — preview here, then Export to save. SVG gives a true vector; webm/mp4 pans a scroll of the page.</p>
   </div>
+  <button type="button" class="shot-refresh" data-preview data-icon-only aria-label="Re-capture the page" title="Re-capture the page">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><polyline points="21 3 21 9 15 9"/></svg>
+  </button>
 </div>

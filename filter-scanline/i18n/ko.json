@@ -1,0 +1,152 @@
+{
+  "name": "필터: 스캔라인",
+  "description": "모든 사진에 수평 '무한선' 스캔라인 벡터 효과를 적용해요",
+  "a11yLabel": "선택한 이미지를 브랜드 톤으로 표현한 스캔라인 렌더링",
+
+  "inputs.image.label": "이미지",
+  "inputs.image.help": "사진을 선택하거나 직접 업로드하세요. 처리는 기기에서 이루어지며, 픽셀 데이터가 브라우저 밖으로 나가지 않아요.",
+
+  "inputs.lineSize.label": "선 높이",
+  "inputs.lineSize.help": "각 스캔라인의 높이이자 셀의 크기예요. 값이 작을수록 선이 얇아지고 디테일이 세밀해져요.",
+
+  "inputs.gapSize.label": "간격 높이",
+  "inputs.gapSize.help": "각 스캔라인 아래의 빈 간격 크기를 선 대비 비율로 지정해요. 값이 클수록 선은 얇아지고 간격은 넓어지며, 0이면 간격 없는 이미지가 돼요. 이미지의 디테일이나 위치는 바뀌지 않아요.",
+
+  "inputs.separatePixels.label": "픽셀 분리",
+  "inputs.separatePixels.help": "셀 사이에도 간격을 추가해 각 셀을 독립된 사각형으로 만들어요 — 이어진 스캔라인 막대 대신 LED/픽셀 매트릭스 느낌을 줘요.",
+
+  "inputs.everyLine.label": "모든 선 채우기",
+  "inputs.everyLine.help": "간격 없이 모든 선을 그려요 — 간격 높이를 0으로 설정한 것과 같아요. 끄면 클래식 스캔라인, 켜면 통짜 포스터화 이미지가 돼요.",
+
+  "inputs.fit.label": "이미지 맞춤",
+  "inputs.fit.options.contain": "포함 (전체 이미지)",
+  "inputs.fit.options.cover": "채우기 (여백 없이 가장자리 잘림)",
+
+  "inputs.highlight.label": "하이라이트",
+  "inputs.highlight.help": "가장 밝은 톤이에요.",
+
+  "inputs.light.label": "라이트",
+
+  "inputs.mid.label": "미드",
+
+  "inputs.shade.label": "쉐이드",
+
+  "inputs.shadow.label": "섀도우",
+  "inputs.shadow.help": "가장 어두운 톤이에요.",
+
+  "inputs.background.label": "배경",
+  "inputs.background.help": "빈 선과 간격을 채워요. 배경을 투명하게 두려면 비워두세요 (PNG/WebP/AVIF/SVG는 투명도를 유지해요).",
+
+  "inputs.brightness.label": "밝기",
+
+  "inputs.contrast.label": "대비",
+  "inputs.contrast.section": "색상",
+
+  "inputs.hue.label": "색조",
+  "inputs.hue.section": "색상",
+  "inputs.hue.help": "모든 색상을 색상환에서 회전시켜요.",
+
+  "inputs.saturation.label": "채도",
+  "inputs.saturation.section": "색상",
+  "inputs.saturation.help": "0 = 흑백 · 100 = 원본 · 200 = 선명하게.",
+
+  "inputs.lightness.label": "명도",
+  "inputs.lightness.section": "색상",
+  "inputs.lightness.help": "흰색 쪽으로 밝게 하거나 검은색 쪽으로 어둡게 해요.",
+
+  "inputs.treatmentColor.label": "색상 보정",
+  "inputs.treatmentColor.section": "색상",
+  "inputs.treatmentColor.help": "결과물 위에 색상을 섞어요. 적용하지 않으려면 비워두세요.",
+
+  "inputs.blendMode.label": "블렌드 모드",
+  "inputs.blendMode.section": "색상",
+  "inputs.blendMode.help": "보정 색상이 이미지와 섞이는 방식이에요.",
+  "inputs.blendMode.options.normal": "표준",
+  "inputs.blendMode.options.multiply": "곱하기",
+  "inputs.blendMode.options.screen": "스크린",
+  "inputs.blendMode.options.overlay": "오버레이",
+  "inputs.blendMode.options.darken": "어둡게 하기",
+  "inputs.blendMode.options.lighten": "밝게 하기",
+  "inputs.blendMode.options.color-dodge": "색상 닷지",
+  "inputs.blendMode.options.color-burn": "색상 번",
+  "inputs.blendMode.options.hard-light": "하드 라이트",
+  "inputs.blendMode.options.soft-light": "소프트 라이트",
+  "inputs.blendMode.options.difference": "차이",
+  "inputs.blendMode.options.exclusion": "제외",
+  "inputs.blendMode.options.hue": "색조",
+  "inputs.blendMode.options.saturation": "채도",
+  "inputs.blendMode.options.color": "색상",
+  "inputs.blendMode.options.luminosity": "광도",
+
+  "inputs.treatmentIntensity.label": "강도",
+  "inputs.treatmentIntensity.section": "색상",
+  "inputs.treatmentIntensity.help": "색상 오버레이의 불투명도예요.",
+
+  "inputs.noFilter.label": "필터 없음 (원본 표시)",
+  "inputs.noFilter.section": "오버레이",
+  "inputs.noFilter.help": "원본 사진이나 실시간 카메라 화면을 그대로 표시해요 — 원본 영상 위에 로고나 하단 자막만 올리고 싶을 때 유용해요.",
+
+  "inputs.showLogo.label": "SUSE 로고 오버레이",
+  "inputs.showLogo.section": "오버레이",
+  "inputs.showLogo.help": "결과물 위에 SUSE 로고를 겹쳐요. 기본값은 꺼짐이에요.",
+
+  "inputs.logoPosition.label": "로고 위치",
+  "inputs.logoPosition.section": "오버레이",
+  "inputs.logoPosition.options.top-left": "왼쪽 위",
+  "inputs.logoPosition.options.top-right": "오른쪽 위",
+  "inputs.logoPosition.options.bottom-left": "왼쪽 아래",
+  "inputs.logoPosition.options.bottom-right": "오른쪽 아래",
+  "inputs.logoPosition.options.top": "위쪽 가운데",
+  "inputs.logoPosition.options.bottom": "아래쪽 가운데",
+  "inputs.logoPosition.options.center": "가운데",
+  "inputs.logoPosition.options.full": "전체 (워터마크)",
+
+  "inputs.logoStyle.label": "로고 색상",
+  "inputs.logoStyle.section": "오버레이",
+  "inputs.logoStyle.help": "흰색과 초록색은 어둡거나 복잡한 영상에서 잘 보이고, 검은색은 밝은 배경에 어울려요.",
+  "inputs.logoStyle.options.white": "흰색",
+  "inputs.logoStyle.options.green": "초록색",
+  "inputs.logoStyle.options.black": "검은색",
+
+  "inputs.logoScale.label": "로고 크기",
+  "inputs.logoScale.section": "오버레이",
+  "inputs.logoScale.help": "로고 크기를 키우거나 줄여요.",
+
+  "inputs.lowerThird.label": "하단 자막 네임 카드",
+  "inputs.lowerThird.section": "오버레이",
+  "inputs.lowerThird.help": "영상 위로 부드럽게 애니메이션되며 나타나는 네임 카드예요. 프로필 이름과 프로필 사진을 사용해요.",
+
+  "inputs.ltTheme.label": "카드 스타일",
+  "inputs.ltTheme.section": "오버레이",
+  "inputs.ltTheme.options.bar": "SUSE 브랜드 바",
+  "inputs.ltTheme.options.minimal": "미니멀",
+  "inputs.ltTheme.options.glass": "글래스",
+
+  "inputs.ltPosition.label": "카드 위치",
+  "inputs.ltPosition.section": "오버레이",
+  "inputs.ltPosition.options.left": "왼쪽 아래",
+  "inputs.ltPosition.options.center": "아래쪽 가운데",
+  "inputs.ltPosition.options.right": "오른쪽 아래",
+
+  "inputs.firstname.label": "이름",
+  "inputs.firstname.section": "오버레이",
+
+  "inputs.lastname.label": "성",
+  "inputs.lastname.section": "오버레이",
+
+  "inputs.title.label": "직함 / 부제",
+  "inputs.title.section": "오버레이",
+  "inputs.title.help": "이름 아래에 표시되는 선택 항목이에요 — 예: 직함이나 행사명.",
+
+  "inputs.nameWeight.label": "이름 글자 굵기",
+  "inputs.nameWeight.section": "오버레이",
+  "inputs.nameWeight.help": "이름 줄의 글자 굵기예요 (100 얇게 → 900 두껍게).",
+
+  "inputs.subtitleWeight.label": "부제 글자 굵기",
+  "inputs.subtitleWeight.section": "오버레이",
+  "inputs.subtitleWeight.help": "직함/부제 줄의 글자 굵기예요 (100 얇게 → 900 두껍게).",
+
+  "inputs.ltHeadshot.label": "프로필 사진 (선택)",
+  "inputs.ltHeadshot.section": "오버레이",
+  "inputs.ltHeadshot.help": "기본적으로 프로필 사진을 사용해요. 다른 사진을 선택하거나 업로드해 덮어쓸 수 있어요."
+}

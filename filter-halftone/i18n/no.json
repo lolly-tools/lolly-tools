@@ -1,0 +1,172 @@
+{
+  "name": "Filter: Raster",
+  "description": "Vektorraster fra ethvert foto – prikkstørrelse etter lysstyrke.",
+  "a11yLabel": "Rastergjengivelse av det valgte bildet som et rutenett av ensfargede prikker",
+
+  "inputs.image.label": "Bilde",
+  "inputs.image.help": "Velg et bilde, eller last opp ditt eget. Det behandles på enheten din – pikslene forlater aldri nettleseren.",
+
+  "inputs.gridSize.label": "Rasterstørrelse",
+  "inputs.gridSize.help": "Avstand mellom prikkene. Mindre = finere detaljer og flere prikker; større = et grovere, kraftigere raster.",
+
+  "inputs.dotScale.label": "Prikkstørrelse",
+  "inputs.dotScale.help": "Skalerer hver prikk. Under 1 åpner opp rasteret; over 1 gjør prikkene tykkere slik at mørke partier fylles igjen.",
+
+  "inputs.shape.label": "Prikkform",
+  "inputs.shape.options.circle": "Sirkel",
+  "inputs.shape.options.square": "Kvadrat",
+  "inputs.shape.options.diamond": "Rombe",
+
+  "inputs.colorSource.label": "Fargekilde",
+  "inputs.colorSource.help": "Farge prikkene ut fra bildet under, eller med én enkelt farge.",
+  "inputs.colorSource.options.image": "Fra bildet",
+  "inputs.colorSource.options.solid": "Ensfarget",
+
+  "inputs.colorLevels.label": "Fargenivåer",
+  "inputs.colorLevels.help": "Reduser prikkfargene til en begrenset palett (nivåer per kanal). Full farge beholder bildets farger.",
+  "inputs.colorLevels.options.0": "Full farge",
+  "inputs.colorLevels.options.8": "8 nivåer",
+  "inputs.colorLevels.options.6": "6 nivåer",
+  "inputs.colorLevels.options.4": "4 nivåer",
+  "inputs.colorLevels.options.3": "3 nivåer",
+  "inputs.colorLevels.options.2": "2 nivåer",
+
+  "inputs.fgColor.label": "Prikkfarge",
+  "inputs.fgColor.help": "Prikkfarge når fargekilden er satt til Ensfarget.",
+
+  "inputs.bgColor.label": "Bakgrunn",
+  "inputs.bgColor.help": "Fyll bak prikkene. Slå på «Ingen bakgrunn» i eksportalternativene for gjennomsiktig bakgrunn i stedet.",
+
+  "inputs.invert.label": "Inverter",
+  "inputs.invert.help": "La prikkene vokse i lyse områder i stedet for mørke – ideelt for en lys farge på mørk bakgrunn.",
+
+  "inputs.fit.label": "Bildetilpasning",
+  "inputs.fit.options.contain": "Tilpass (hele bildet)",
+  "inputs.fit.options.cover": "Fyll (beskjærer kantene)",
+
+  "inputs.brightness.label": "Lysstyrke",
+
+  "inputs.gamma.label": "Gamma",
+  "inputs.gamma.help": "Vekting av mellomtoner. Under 1 mørkner mellomtonene (tettere prikker); over 1 lysner dem.",
+
+  "inputs.smoothing.label": "Utjevning",
+  "inputs.smoothing.help": "Mykner opp prikkrasteret ved å flette sammen naboceller. Temmer støyete bilder.",
+
+  "inputs.dither.label": "Tekstur",
+  "inputs.dither.help": "Legger til en avistrykk-aktig 1-bits tekstur ved å sette celler til fulle eller tomme prikker.",
+  "inputs.dither.options.none": "Glatt (ingen)",
+  "inputs.dither.options.floyd": "Diffus (Floyd–Steinberg)",
+  "inputs.dither.options.ordered": "Mønstret (ordnet)",
+  "inputs.dither.options.noise": "Kornete (støy)",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Farge",
+
+  "inputs.hue.label": "Fargetone",
+  "inputs.hue.section": "Farge",
+  "inputs.hue.help": "Roter alle farger rundt fargehjulet.",
+
+  "inputs.saturation.label": "Metning",
+  "inputs.saturation.section": "Farge",
+  "inputs.saturation.help": "0 = gråtone · 100 = original · 200 = intens.",
+
+  "inputs.lightness.label": "Lyshet",
+  "inputs.lightness.section": "Farge",
+  "inputs.lightness.help": "Løft mot hvitt eller senk mot svart.",
+
+  "inputs.treatmentColor.label": "Fargebehandling",
+  "inputs.treatmentColor.section": "Farge",
+  "inputs.treatmentColor.help": "Bland en farge over resultatet. La stå tomt for ingen.",
+
+  "inputs.blendMode.label": "Blandingsmodus",
+  "inputs.blendMode.section": "Farge",
+  "inputs.blendMode.help": "Hvordan behandlingsfargen blandes med bildet.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multipliser",
+  "inputs.blendMode.options.screen": "Skjerm",
+  "inputs.blendMode.options.overlay": "Overlegg",
+  "inputs.blendMode.options.darken": "Mørkere",
+  "inputs.blendMode.options.lighten": "Lysere",
+  "inputs.blendMode.options.color-dodge": "Fargeglød",
+  "inputs.blendMode.options.color-burn": "Fargeetterbelysning",
+  "inputs.blendMode.options.hard-light": "Hardt lys",
+  "inputs.blendMode.options.soft-light": "Mykt lys",
+  "inputs.blendMode.options.difference": "Differanse",
+  "inputs.blendMode.options.exclusion": "Ekskludering",
+  "inputs.blendMode.options.hue": "Fargetone",
+  "inputs.blendMode.options.saturation": "Metning",
+  "inputs.blendMode.options.color": "Farge",
+  "inputs.blendMode.options.luminosity": "Lysstyrke",
+
+  "inputs.treatmentIntensity.label": "Intensitet",
+  "inputs.treatmentIntensity.section": "Farge",
+  "inputs.treatmentIntensity.help": "Dekkevne for fargeoverlegget.",
+
+  "inputs.noFilter.label": "Ingen filter (vis original)",
+  "inputs.noFilter.section": "Overlegg",
+  "inputs.noFilter.help": "Vis det originale bildet eller den direkte kamerastrømmen uendret – praktisk når du bare vil legge en logo eller et navneskilt over det rå opptaket.",
+
+  "inputs.showLogo.label": "SUSE-logooverlegg",
+  "inputs.showLogo.section": "Overlegg",
+  "inputs.showLogo.help": "Legg SUSE-logoen over resultatet. Av som standard.",
+
+  "inputs.logoPosition.label": "Logoposisjon",
+  "inputs.logoPosition.section": "Overlegg",
+  "inputs.logoPosition.options.top-left": "Øverst til venstre",
+  "inputs.logoPosition.options.top-right": "Øverst til høyre",
+  "inputs.logoPosition.options.bottom-left": "Nederst til venstre",
+  "inputs.logoPosition.options.bottom-right": "Nederst til høyre",
+  "inputs.logoPosition.options.top": "Øverst midtstilt",
+  "inputs.logoPosition.options.bottom": "Nederst midtstilt",
+  "inputs.logoPosition.options.center": "Midtstilt",
+  "inputs.logoPosition.options.full": "Full (vannmerke)",
+
+  "inputs.logoStyle.label": "Logofarge",
+  "inputs.logoStyle.section": "Overlegg",
+  "inputs.logoStyle.help": "Hvit og grønn er tydelig på mørkt eller travelt opptak; svart passer til lyse bakgrunner.",
+  "inputs.logoStyle.options.white": "Hvit",
+  "inputs.logoStyle.options.green": "Grønn",
+  "inputs.logoStyle.options.black": "Svart",
+
+  "inputs.logoScale.label": "Logostørrelse",
+  "inputs.logoScale.section": "Overlegg",
+  "inputs.logoScale.help": "Skaler logoen opp eller ned.",
+
+  "inputs.lowerThird.label": "Navneskilt (lower third)",
+  "inputs.lowerThird.section": "Overlegg",
+  "inputs.lowerThird.help": "Et mykt animert navneskilt som tegnes inn over opptaket. Bruker navnet og profilbildet fra profilen din.",
+
+  "inputs.ltTheme.label": "Kortstil",
+  "inputs.ltTheme.section": "Overlegg",
+  "inputs.ltTheme.options.bar": "SUSE-merkevarelinje",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glass",
+
+  "inputs.ltPosition.label": "Kortposisjon",
+  "inputs.ltPosition.section": "Overlegg",
+  "inputs.ltPosition.options.left": "Nederst til venstre",
+  "inputs.ltPosition.options.center": "Nederst midtstilt",
+  "inputs.ltPosition.options.right": "Nederst til høyre",
+
+  "inputs.firstname.label": "Fornavn",
+  "inputs.firstname.section": "Overlegg",
+
+  "inputs.lastname.label": "Etternavn",
+  "inputs.lastname.section": "Overlegg",
+
+  "inputs.title.label": "Rolle / undertittel",
+  "inputs.title.section": "Overlegg",
+  "inputs.title.help": "Valgfri linje under navnet – f.eks. en rolle eller et arrangement.",
+
+  "inputs.nameWeight.label": "Navnets vekt",
+  "inputs.nameWeight.section": "Overlegg",
+  "inputs.nameWeight.help": "Skriftvekt for navnelinjen (100 Tynn → 900 Svart).",
+
+  "inputs.subtitleWeight.label": "Undertittelens vekt",
+  "inputs.subtitleWeight.section": "Overlegg",
+  "inputs.subtitleWeight.help": "Skriftvekt for rolle-/undertittellinjen (100 Tynn → 900 Svart).",
+
+  "inputs.ltHeadshot.label": "Profilbilde (valgfritt)",
+  "inputs.ltHeadshot.section": "Overlegg",
+  "inputs.ltHeadshot.help": "Bruker profilbildet ditt som standard. Velg eller last opp et annet for å overstyre det."
+}

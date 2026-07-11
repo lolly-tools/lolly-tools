@@ -1,0 +1,146 @@
+{
+  "name": "필터: 픽셀 스트레치",
+  "description": "기준선을 기점으로 픽셀 열을 사진 전체에 번지게 해요. 실시간으로 작동해요.",
+  "a11yLabel": "선택한 이미지에 적용한 픽셀 스트레치 번짐 효과",
+
+  "inputs.image.label": "이미지",
+  "inputs.image.help": "사진을 선택하거나 직접 업로드하세요. 기기에서 처리되며 픽셀이 브라우저 밖으로 나가지 않아요. 또는 캔버스에서 “실시간 시작”을 눌러 카메라 화면을 번지게 할 수 있어요.",
+
+  "inputs.direction.label": "방향",
+  "inputs.direction.help": "고정된 픽셀 열이 프레임을 가로질러 번지는 방향이에요.",
+  "inputs.direction.options.right": "오른쪽으로 늘리기 →",
+  "inputs.direction.options.left": "왼쪽으로 늘리기 ←",
+  "inputs.direction.options.down": "아래로 늘리기 ↓",
+  "inputs.direction.options.up": "위로 늘리기 ↑",
+
+  "inputs.threshold.label": "기준선 시작 위치",
+  "inputs.threshold.help": "사진이 고정되는 지점이에요. 이 선을 지나면 고정된 열이 늘어나고, 이후 사진의 나머지 부분은 원래 비율대로 이어지다가 먼 쪽 가장자리에서 잘려요.",
+
+  "inputs.spread.label": "퍼짐 정도",
+  "inputs.spread.help": "기준선 너머 공간을 고정된 열이 얼마나 채우는지예요. 나머지 사진은 그 뒤로 원래 비율대로 밀려 들어와요(가장자리에서 잘림). 0 = 원본 사진 그대로, 100 = 열이 가장자리까지 늘어나요.",
+
+  "inputs.feather.label": "페더",
+  "inputs.feather.help": "사진과 고정된 열이 만나는 이음매를 부드럽게 해요. 열이 밀려 들어오는 나머지 부분으로 이어지는 먼 쪽 끝은 이미 색이 자연스럽게 이어져 있어서, 주로 시작 이음매에 영향을 줘요. 0이면 경계가 뚜렷하게 유지돼요.",
+
+  "inputs.contrast.label": "대비",
+  "inputs.contrast.section": "색상",
+  "inputs.contrast.help": "값을 높이면 톤 차이를 벌리고, 낮추면 평평하게 해요.",
+
+  "inputs.hue.label": "색조",
+  "inputs.hue.section": "색상",
+  "inputs.hue.help": "모든 색상을 색상환에서 회전시켜요.",
+
+  "inputs.saturation.label": "채도",
+  "inputs.saturation.section": "색상",
+  "inputs.saturation.help": "0 = 흑백 · 100 = 원본 · 200 = 선명함.",
+
+  "inputs.lightness.label": "명도",
+  "inputs.lightness.section": "색상",
+  "inputs.lightness.help": "흰색 쪽으로 밝게 하거나 검은색 쪽으로 어둡게 해요.",
+
+  "inputs.treatmentColor.label": "색상 보정",
+  "inputs.treatmentColor.section": "색상",
+  "inputs.treatmentColor.help": "결과물에 색을 덧입혀요. 적용하지 않으려면 비워 두세요.",
+
+  "inputs.blendMode.label": "블렌드 모드",
+  "inputs.blendMode.section": "색상",
+  "inputs.blendMode.help": "보정 색상이 이미지와 섞이는 방식이에요.",
+  "inputs.blendMode.options.normal": "표준",
+  "inputs.blendMode.options.multiply": "곱하기",
+  "inputs.blendMode.options.screen": "스크린",
+  "inputs.blendMode.options.overlay": "오버레이",
+  "inputs.blendMode.options.darken": "어둡게 하기",
+  "inputs.blendMode.options.lighten": "밝게 하기",
+  "inputs.blendMode.options.color-dodge": "색상 닷지",
+  "inputs.blendMode.options.color-burn": "색상 번",
+  "inputs.blendMode.options.hard-light": "하드 라이트",
+  "inputs.blendMode.options.soft-light": "소프트 라이트",
+  "inputs.blendMode.options.difference": "차이",
+  "inputs.blendMode.options.exclusion": "제외",
+  "inputs.blendMode.options.hue": "색조",
+  "inputs.blendMode.options.saturation": "채도",
+  "inputs.blendMode.options.color": "색상",
+  "inputs.blendMode.options.luminosity": "광도",
+
+  "inputs.treatmentIntensity.label": "강도",
+  "inputs.treatmentIntensity.section": "색상",
+  "inputs.treatmentIntensity.help": "색상 오버레이의 불투명도예요.",
+
+  "inputs.imageFraming.label": "확대 & 위치",
+  "inputs.imageFraming.section": "위치",
+  "inputs.imageFraming.help": "확대는 사진을 키우고, X / Y는 프레임 안에서 위치를 조정해요(object-position과 비슷해요). 라벨을 드래그하거나 값을 직접 입력하세요.",
+  "inputs.imageFraming.fields.zoom.label": "확대",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "필터 없음(원본 표시)",
+  "inputs.noFilter.section": "오버레이",
+  "inputs.noFilter.help": "원본 사진이나 실시간 카메라 화면을 그대로 보여줘요. 원본 화면에 로고나 하단 자막만 올리고 싶을 때 유용해요.",
+
+  "inputs.showLogo.label": "SUSE 로고 오버레이",
+  "inputs.showLogo.section": "오버레이",
+  "inputs.showLogo.help": "결과물에 SUSE 로고를 겹쳐 표시해요. 기본값은 꺼짐이에요.",
+
+  "inputs.logoPosition.label": "로고 위치",
+  "inputs.logoPosition.section": "오버레이",
+  "inputs.logoPosition.options.top-left": "왼쪽 위",
+  "inputs.logoPosition.options.top-right": "오른쪽 위",
+  "inputs.logoPosition.options.bottom-left": "왼쪽 아래",
+  "inputs.logoPosition.options.bottom-right": "오른쪽 아래",
+  "inputs.logoPosition.options.top": "위 가운데",
+  "inputs.logoPosition.options.bottom": "아래 가운데",
+  "inputs.logoPosition.options.center": "가운데",
+  "inputs.logoPosition.options.full": "전체(워터마크)",
+
+  "inputs.logoStyle.label": "로고 색상",
+  "inputs.logoStyle.section": "오버레이",
+  "inputs.logoStyle.options.white": "흰색",
+  "inputs.logoStyle.options.green": "초록색",
+  "inputs.logoStyle.options.black": "검은색",
+  "inputs.logoStyle.help": "흰색과 초록색은 어둡거나 복잡한 화면에서 잘 보이고, 검은색은 밝은 배경에 어울려요.",
+
+  "inputs.logoScale.label": "로고 크기",
+  "inputs.logoScale.section": "오버레이",
+  "inputs.logoScale.help": "로고 크기를 키우거나 줄여요.",
+
+  "inputs.lowerThird.label": "하단 자막 이름 카드",
+  "inputs.lowerThird.section": "오버레이",
+  "inputs.lowerThird.help": "화면 위로 부드럽게 애니메이션되며 나타나는 이름 카드예요. 프로필 이름과 프로필 사진을 사용해요.",
+
+  "inputs.ltTheme.label": "카드 스타일",
+  "inputs.ltTheme.section": "오버레이",
+  "inputs.ltTheme.options.bar": "SUSE 브랜드 바",
+  "inputs.ltTheme.options.minimal": "미니멀",
+  "inputs.ltTheme.options.glass": "글라스",
+
+  "inputs.ltPosition.label": "카드 위치",
+  "inputs.ltPosition.section": "오버레이",
+  "inputs.ltPosition.options.left": "왼쪽 아래",
+  "inputs.ltPosition.options.center": "아래 가운데",
+  "inputs.ltPosition.options.right": "오른쪽 아래",
+
+  "inputs.firstname.label": "이름",
+  "inputs.firstname.section": "오버레이",
+
+  "inputs.lastname.label": "성",
+  "inputs.lastname.section": "오버레이",
+
+  "inputs.title.label": "직함 / 부제목",
+  "inputs.title.section": "오버레이",
+  "inputs.title.help": "이름 아래에 표시할 선택 항목이에요 — 예: 직함이나 행사명.",
+
+  "inputs.nameWeight.label": "이름 글자 굵기",
+  "inputs.nameWeight.section": "오버레이",
+  "inputs.nameWeight.help": "이름 줄의 글자 굵기예요(100 얇게 → 900 매우 굵게).",
+
+  "inputs.subtitleWeight.label": "부제목 글자 굵기",
+  "inputs.subtitleWeight.section": "오버레이",
+  "inputs.subtitleWeight.help": "직함 / 부제목 줄의 글자 굵기예요(100 얇게 → 900 매우 굵게).",
+
+  "inputs.ltHeadshot.label": "프로필 사진(선택)",
+  "inputs.ltHeadshot.section": "오버레이",
+  "inputs.ltHeadshot.help": "기본값은 프로필 사진이에요. 다른 사진을 선택하거나 업로드해서 바꿀 수 있어요.",
+
+  "inputs.width.label": "너비",
+  "inputs.height.label": "높이"
+}

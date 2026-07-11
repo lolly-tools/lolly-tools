@@ -1,0 +1,146 @@
+{
+  "name": "Filtro: Stiramento pixel",
+  "description": "Sfuma una colonna di pixel lungo la foto a partire da una linea di soglia. Funziona anche in diretta.",
+  "a11yLabel": "Effetto di stiramento pixel sull'immagine selezionata",
+
+  "inputs.image.label": "Immagine",
+  "inputs.image.help": "Scegli una foto o caricane una tua. Viene elaborata sul tuo dispositivo: i pixel non lasciano mai il browser. Oppure tocca «Vai in diretta» sulla tela per applicare l'effetto alla tua fotocamera.",
+
+  "inputs.direction.label": "Direzione",
+  "inputs.direction.help": "La direzione in cui si sfuma la colonna di pixel congelata lungo il fotogramma.",
+  "inputs.direction.options.right": "Stira a destra →",
+  "inputs.direction.options.left": "Stira a sinistra ←",
+  "inputs.direction.options.down": "Stira verso il basso ↓",
+  "inputs.direction.options.up": "Stira verso l'alto ↑",
+
+  "inputs.threshold.label": "Inizio soglia",
+  "inputs.threshold.help": "Il punto in cui la foto si blocca. Oltre questa linea la colonna congelata si allunga, poi il resto della foto prosegue nelle sue proporzioni naturali, tagliato al bordo opposto.",
+
+  "inputs.spread.label": "Estensione",
+  "inputs.spread.help": "Quanto dello spazio oltre la soglia viene riempito dalla colonna congelata. Il resto della foto scorre dopo di essa nelle sue proporzioni naturali (tagliato al bordo). 0 = foto invariata; 100 = la colonna si allunga fino al bordo.",
+
+  "inputs.feather.label": "Sfumatura",
+  "inputs.feather.help": "Ammorbidisce la giunzione dove la foto incontra la colonna congelata. L'estremità opposta, dove la colonna passa il testimone al resto scorrevole, è già continua nel colore, quindi questo interessa soprattutto la giunzione iniziale. 0 mantiene un bordo netto.",
+
+  "inputs.contrast.label": "Contrasto",
+  "inputs.contrast.section": "Colore",
+  "inputs.contrast.help": "Allontana i toni tra loro (valore più alto) o li appiattisce (valore più basso).",
+
+  "inputs.hue.label": "Tonalità",
+  "inputs.hue.section": "Colore",
+  "inputs.hue.help": "Ruota tutti i colori sulla ruota cromatica.",
+
+  "inputs.saturation.label": "Saturazione",
+  "inputs.saturation.section": "Colore",
+  "inputs.saturation.help": "0 = scala di grigi · 100 = originale · 200 = vivido.",
+
+  "inputs.lightness.label": "Luminosità",
+  "inputs.lightness.section": "Colore",
+  "inputs.lightness.help": "Schiarisce verso il bianco o scurisce verso il nero.",
+
+  "inputs.treatmentColor.label": "Trattamento colore",
+  "inputs.treatmentColor.section": "Colore",
+  "inputs.treatmentColor.help": "Sovrappone un colore al risultato. Lascia vuoto per non applicarne nessuno.",
+
+  "inputs.blendMode.label": "Modalità di fusione",
+  "inputs.blendMode.section": "Colore",
+  "inputs.blendMode.help": "Come il colore di trattamento si fonde con l'immagine.",
+  "inputs.blendMode.options.normal": "Normale",
+  "inputs.blendMode.options.multiply": "Moltiplica",
+  "inputs.blendMode.options.screen": "Scherma",
+  "inputs.blendMode.options.overlay": "Sovrapponi",
+  "inputs.blendMode.options.darken": "Scurisci",
+  "inputs.blendMode.options.lighten": "Schiarisci",
+  "inputs.blendMode.options.color-dodge": "Scherma colore",
+  "inputs.blendMode.options.color-burn": "Brucia colore",
+  "inputs.blendMode.options.hard-light": "Luce intensa",
+  "inputs.blendMode.options.soft-light": "Luce soffusa",
+  "inputs.blendMode.options.difference": "Differenza",
+  "inputs.blendMode.options.exclusion": "Esclusione",
+  "inputs.blendMode.options.hue": "Tonalità",
+  "inputs.blendMode.options.saturation": "Saturazione",
+  "inputs.blendMode.options.color": "Colore",
+  "inputs.blendMode.options.luminosity": "Luminosità",
+
+  "inputs.treatmentIntensity.label": "Intensità",
+  "inputs.treatmentIntensity.section": "Colore",
+  "inputs.treatmentIntensity.help": "Opacità della sovrapposizione di colore.",
+
+  "inputs.imageFraming.label": "Zoom e posizione",
+  "inputs.imageFraming.section": "Posizione",
+  "inputs.imageFraming.help": "Lo zoom ingrandisce la foto; X / Y la spostano all'interno del riquadro (come object-position). Trascina un'etichetta o digita un valore.",
+  "inputs.imageFraming.fields.zoom.label": "Zoom",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "Nessun filtro (mostra originale)",
+  "inputs.noFilter.section": "Sovrapposizione",
+  "inputs.noFilter.help": "Mostra la foto originale o il flusso della fotocamera in diretta senza modifiche: utile per aggiungere solo un logo o un sottopancia sopra il materiale originale.",
+
+  "inputs.showLogo.label": "Sovrapposizione logo SUSE",
+  "inputs.showLogo.section": "Sovrapposizione",
+  "inputs.showLogo.help": "Sovrappone il logo SUSE al risultato. Disattivato per impostazione predefinita.",
+
+  "inputs.logoPosition.label": "Posizione logo",
+  "inputs.logoPosition.section": "Sovrapposizione",
+  "inputs.logoPosition.options.top-left": "In alto a sinistra",
+  "inputs.logoPosition.options.top-right": "In alto a destra",
+  "inputs.logoPosition.options.bottom-left": "In basso a sinistra",
+  "inputs.logoPosition.options.bottom-right": "In basso a destra",
+  "inputs.logoPosition.options.top": "In alto al centro",
+  "inputs.logoPosition.options.bottom": "In basso al centro",
+  "inputs.logoPosition.options.center": "Centro",
+  "inputs.logoPosition.options.full": "Intero (filigrana)",
+
+  "inputs.logoStyle.label": "Colore del logo",
+  "inputs.logoStyle.section": "Sovrapposizione",
+  "inputs.logoStyle.options.white": "Bianco",
+  "inputs.logoStyle.options.green": "Verde",
+  "inputs.logoStyle.options.black": "Nero",
+  "inputs.logoStyle.help": "Il bianco e il verde risaltano su sfondi scuri o affollati; il nero è adatto agli sfondi chiari.",
+
+  "inputs.logoScale.label": "Dimensione logo",
+  "inputs.logoScale.section": "Sovrapposizione",
+  "inputs.logoScale.help": "Ingrandisce o riduce il logo.",
+
+  "inputs.lowerThird.label": "Sottopancia con nome",
+  "inputs.lowerThird.section": "Sovrapposizione",
+  "inputs.lowerThird.help": "Una scheda con il nome, animata delicatamente, che appare sopra il video. Usa il nome e la foto del tuo profilo.",
+
+  "inputs.ltTheme.label": "Stile scheda",
+  "inputs.ltTheme.section": "Sovrapposizione",
+  "inputs.ltTheme.options.bar": "Barra del marchio SUSE",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Vetro",
+
+  "inputs.ltPosition.label": "Posizione scheda",
+  "inputs.ltPosition.section": "Sovrapposizione",
+  "inputs.ltPosition.options.left": "In basso a sinistra",
+  "inputs.ltPosition.options.center": "In basso al centro",
+  "inputs.ltPosition.options.right": "In basso a destra",
+
+  "inputs.firstname.label": "Nome",
+  "inputs.firstname.section": "Sovrapposizione",
+
+  "inputs.lastname.label": "Cognome",
+  "inputs.lastname.section": "Sovrapposizione",
+
+  "inputs.title.label": "Ruolo / sottotitolo",
+  "inputs.title.section": "Sovrapposizione",
+  "inputs.title.help": "Riga facoltativa sotto il nome, ad esempio un ruolo o un evento.",
+
+  "inputs.nameWeight.label": "Peso del nome",
+  "inputs.nameWeight.section": "Sovrapposizione",
+  "inputs.nameWeight.help": "Peso del carattere della riga del nome (100 Sottile → 900 Nero).",
+
+  "inputs.subtitleWeight.label": "Peso del sottotitolo",
+  "inputs.subtitleWeight.section": "Sovrapposizione",
+  "inputs.subtitleWeight.help": "Peso del carattere della riga di ruolo/sottotitolo (100 Sottile → 900 Nero).",
+
+  "inputs.ltHeadshot.label": "Foto profilo (opzionale)",
+  "inputs.ltHeadshot.section": "Sovrapposizione",
+  "inputs.ltHeadshot.help": "Per impostazione predefinita usa la foto del tuo profilo. Scegline un'altra o caricane una per sostituirla.",
+
+  "inputs.width.label": "Larghezza",
+  "inputs.height.label": "Altezza"
+}

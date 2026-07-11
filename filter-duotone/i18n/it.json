@@ -1,0 +1,129 @@
+{
+  "name": "Filtro: Duotono",
+  "description": "Un duotono a due colori per qualsiasi foto — ombre di un colore, luci di un altro.",
+
+  "inputs.bgImage.label": "Immagine di sfondo",
+
+  "inputs.colorFg.label": "Colore delle ombre",
+
+  "inputs.colorBg.label": "Colore delle luci",
+
+  "inputs.imageFraming.label": "Zoom e posizione",
+  "inputs.imageFraming.section": "Posizione",
+  "inputs.imageFraming.help": "Lo zoom ingrandisce la foto; X/Y la spostano all'interno del riquadro (come object-position). Trascina un'etichetta o inserisci un valore.",
+  "inputs.imageFraming.fields.zoom.label": "Zoom",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.hue.label": "Tonalità",
+  "inputs.hue.section": "Colore",
+  "inputs.hue.help": "Ruota tutti i colori sulla ruota cromatica.",
+
+  "inputs.saturation.label": "Saturazione",
+  "inputs.saturation.section": "Colore",
+  "inputs.saturation.help": "0 = scala di grigi · 100 = originale · 200 = vivido.",
+
+  "inputs.lightness.label": "Luminosità",
+  "inputs.lightness.section": "Colore",
+  "inputs.lightness.help": "Schiarisce verso il bianco o scurisce verso il nero.",
+
+  "inputs.treatmentColor.label": "Trattamento colore",
+  "inputs.treatmentColor.section": "Colore",
+  "inputs.treatmentColor.help": "Sovrappone un colore al risultato. Lascia vuoto per nessun trattamento.",
+
+  "inputs.blendMode.label": "Modalità di fusione",
+  "inputs.blendMode.section": "Colore",
+  "inputs.blendMode.help": "Come il colore del trattamento si fonde con l'immagine.",
+  "inputs.blendMode.options.normal": "Normale",
+  "inputs.blendMode.options.multiply": "Moltiplica",
+  "inputs.blendMode.options.screen": "Scherma",
+  "inputs.blendMode.options.overlay": "Sovrapponi",
+  "inputs.blendMode.options.darken": "Scurisci",
+  "inputs.blendMode.options.lighten": "Schiarisci",
+  "inputs.blendMode.options.color-dodge": "Scherma colore",
+  "inputs.blendMode.options.color-burn": "Brucia colore",
+  "inputs.blendMode.options.hard-light": "Luce intensa",
+  "inputs.blendMode.options.soft-light": "Luce soffusa",
+  "inputs.blendMode.options.difference": "Differenza",
+  "inputs.blendMode.options.exclusion": "Esclusione",
+  "inputs.blendMode.options.hue": "Tonalità",
+  "inputs.blendMode.options.saturation": "Saturazione",
+  "inputs.blendMode.options.color": "Colore",
+  "inputs.blendMode.options.luminosity": "Luminosità",
+
+  "inputs.treatmentIntensity.label": "Intensità",
+  "inputs.treatmentIntensity.section": "Colore",
+  "inputs.treatmentIntensity.help": "Opacità della sovrapposizione colore.",
+
+  "inputs.width.label": "Larghezza",
+
+  "inputs.height.label": "Altezza",
+
+  "inputs.noFilter.label": "Nessun filtro (mostra originale)",
+  "inputs.noFilter.section": "Sovrapposizione",
+  "inputs.noFilter.help": "Mostra la foto originale o il feed della fotocamera in diretta senza modifiche — utile per inserire solo un logo o una fascia con il nome sopra il filmato originale.",
+
+  "inputs.showLogo.label": "Sovrapposizione logo SUSE",
+  "inputs.showLogo.section": "Sovrapposizione",
+  "inputs.showLogo.help": "Sovrappone il logo SUSE al risultato. Disattivato per impostazione predefinita.",
+
+  "inputs.logoPosition.label": "Posizione logo",
+  "inputs.logoPosition.section": "Sovrapposizione",
+  "inputs.logoPosition.options.top-left": "In alto a sinistra",
+  "inputs.logoPosition.options.top-right": "In alto a destra",
+  "inputs.logoPosition.options.bottom-left": "In basso a sinistra",
+  "inputs.logoPosition.options.bottom-right": "In basso a destra",
+  "inputs.logoPosition.options.top": "In alto al centro",
+  "inputs.logoPosition.options.bottom": "In basso al centro",
+  "inputs.logoPosition.options.center": "Al centro",
+  "inputs.logoPosition.options.full": "A schermo intero (filigrana)",
+
+  "inputs.logoStyle.label": "Colore logo",
+  "inputs.logoStyle.section": "Sovrapposizione",
+  "inputs.logoStyle.options.white": "Bianco",
+  "inputs.logoStyle.options.green": "Verde",
+  "inputs.logoStyle.options.black": "Nero",
+  "inputs.logoStyle.help": "Bianco e verde si leggono bene su filmati scuri o movimentati; il nero è adatto a sfondi chiari.",
+
+  "inputs.logoScale.label": "Dimensione logo",
+  "inputs.logoScale.section": "Sovrapposizione",
+  "inputs.logoScale.help": "Ingrandisce o riduce il logo.",
+
+  "inputs.lowerThird.label": "Fascia con il nome",
+  "inputs.lowerThird.section": "Sovrapposizione",
+  "inputs.lowerThird.help": "Una scheda con il nome animata delicatamente che compare sopra il filmato. Usa il tuo nome e la tua foto profilo.",
+
+  "inputs.ltTheme.label": "Stile scheda",
+  "inputs.ltTheme.section": "Sovrapposizione",
+  "inputs.ltTheme.options.bar": "Barra brand SUSE",
+  "inputs.ltTheme.options.minimal": "Minimale",
+  "inputs.ltTheme.options.glass": "Vetro",
+
+  "inputs.ltPosition.label": "Posizione scheda",
+  "inputs.ltPosition.section": "Sovrapposizione",
+  "inputs.ltPosition.options.left": "In basso a sinistra",
+  "inputs.ltPosition.options.center": "In basso al centro",
+  "inputs.ltPosition.options.right": "In basso a destra",
+
+  "inputs.firstname.label": "Nome",
+  "inputs.firstname.section": "Sovrapposizione",
+
+  "inputs.lastname.label": "Cognome",
+  "inputs.lastname.section": "Sovrapposizione",
+
+  "inputs.title.label": "Ruolo / sottotitolo",
+  "inputs.title.section": "Sovrapposizione",
+  "inputs.title.help": "Riga facoltativa sotto il nome — ad esempio un ruolo o un evento.",
+
+  "inputs.nameWeight.label": "Peso del nome",
+  "inputs.nameWeight.section": "Sovrapposizione",
+  "inputs.nameWeight.help": "Peso del carattere della riga del nome (100 Sottile → 900 Nero).",
+
+  "inputs.subtitleWeight.label": "Peso del sottotitolo",
+  "inputs.subtitleWeight.section": "Sovrapposizione",
+  "inputs.subtitleWeight.help": "Peso del carattere della riga di ruolo/sottotitolo (100 Sottile → 900 Nero).",
+
+  "inputs.ltHeadshot.label": "Foto profilo (facoltativa)",
+  "inputs.ltHeadshot.section": "Sovrapposizione",
+  "inputs.ltHeadshot.help": "Usa per impostazione predefinita la tua foto profilo. Scegline un'altra o caricane una per sostituirla."
+}

@@ -1,0 +1,5 @@
+{
+  "name": "텍스트 도우미",
+  "description": "텍스트를 포맷팅, 디코딩, 해시, 비식별화해요 — JSON, JWT 등을 지원해요.",
+  "a11yLabel": "텍스트 도우미 — 기기 내 JSON / YAML / Helm / JWT / Base64 / 해시 / 비식별화 작업 공간"
+}

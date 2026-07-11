@@ -1,0 +1,172 @@
+{
+  "name": "필터: 하프톤",
+  "description": "모든 사진을 벡터 하프톤으로 변환해요 — 점 크기가 밝기에 따라 달라져요.",
+  "a11yLabel": "선택한 이미지를 단색 점 격자로 표현한 하프톤 렌더링이에요",
+
+  "inputs.image.label": "이미지",
+  "inputs.image.help": "사진을 선택하거나 직접 업로드하세요. 처리는 기기에서 이루어지며, 픽셀 데이터가 브라우저 밖으로 나가지 않아요.",
+
+  "inputs.gridSize.label": "그리드 크기",
+  "inputs.gridSize.help": "점 사이의 간격이에요. 값이 작을수록 세부 묘사가 정교해지고 점 수가 많아지며, 클수록 더 대담하고 거친 스크린이 돼요.",
+
+  "inputs.dotScale.label": "점 크기",
+  "inputs.dotScale.help": "모든 점의 크기를 조절해요. 1 미만이면 스크린이 열리고, 1을 초과하면 점이 굵어져 어두운 영역이 채워져요.",
+
+  "inputs.shape.label": "점 모양",
+  "inputs.shape.options.circle": "원",
+  "inputs.shape.options.square": "사각형",
+  "inputs.shape.options.diamond": "마름모",
+
+  "inputs.colorSource.label": "색상 소스",
+  "inputs.colorSource.help": "점 색상을 아래 사진에서 가져오거나, 단일 잉크색으로 채워요.",
+  "inputs.colorSource.options.image": "이미지에서",
+  "inputs.colorSource.options.solid": "단색",
+
+  "inputs.colorLevels.label": "색상 단계",
+  "inputs.colorLevels.help": "점 색상을 제한된 팔레트로 줄여요(채널당 단계 수). '전체 색상'은 사진의 색상을 그대로 유지해요.",
+  "inputs.colorLevels.options.0": "전체 색상",
+  "inputs.colorLevels.options.8": "8단계",
+  "inputs.colorLevels.options.6": "6단계",
+  "inputs.colorLevels.options.4": "4단계",
+  "inputs.colorLevels.options.3": "3단계",
+  "inputs.colorLevels.options.2": "2단계",
+
+  "inputs.fgColor.label": "점 색상",
+  "inputs.fgColor.help": "색상 소스가 '단색'일 때의 점 색상이에요.",
+
+  "inputs.bgColor.label": "배경",
+  "inputs.bgColor.help": "점 뒤를 채우는 색이에요. 배경을 투명하게 하려면 내보내기 옵션에서 '배경 없음'을 켜세요.",
+
+  "inputs.invert.label": "반전",
+  "inputs.invert.help": "어두운 영역 대신 밝은 영역에서 점이 커지도록 해요 — 어두운 배경 위의 밝은 색에 적합해요.",
+
+  "inputs.fit.label": "이미지 맞춤",
+  "inputs.fit.options.contain": "포함 (전체 이미지)",
+  "inputs.fit.options.cover": "채우기 (여백 없이 가장자리 잘림)",
+
+  "inputs.brightness.label": "밝기",
+
+  "inputs.gamma.label": "감마",
+  "inputs.gamma.help": "중간 톤 가중치예요. 1 미만이면 중간 톤이 어두워지고(점이 촘촘해짐), 1을 초과하면 밝아져요.",
+
+  "inputs.smoothing.label": "스무딩",
+  "inputs.smoothing.help": "인접한 셀을 혼합해 점 격자를 부드럽게 해요. 노이즈가 있는 사진을 안정시켜요.",
+
+  "inputs.dither.label": "텍스처",
+  "inputs.dither.help": "셀을 꽉 찬 점 또는 빈 점으로 맞춰 신문 인쇄 느낌의 1비트 텍스처를 더해요.",
+  "inputs.dither.options.none": "매끄럽게(없음)",
+  "inputs.dither.options.floyd": "확산(플로이드-스타인버그)",
+  "inputs.dither.options.ordered": "패턴(정렬)",
+  "inputs.dither.options.noise": "입자감(노이즈)",
+
+  "inputs.contrast.label": "대비",
+  "inputs.contrast.section": "색상",
+
+  "inputs.hue.label": "색조",
+  "inputs.hue.section": "색상",
+  "inputs.hue.help": "모든 색상을 색상환에서 회전시켜요.",
+
+  "inputs.saturation.label": "채도",
+  "inputs.saturation.section": "색상",
+  "inputs.saturation.help": "0 = 흑백 · 100 = 원본 · 200 = 선명하게.",
+
+  "inputs.lightness.label": "명도",
+  "inputs.lightness.section": "색상",
+  "inputs.lightness.help": "흰색 쪽으로 밝게 하거나 검은색 쪽으로 어둡게 해요.",
+
+  "inputs.treatmentColor.label": "색상 보정",
+  "inputs.treatmentColor.section": "색상",
+  "inputs.treatmentColor.help": "결과물 위에 색상을 블렌드해요. 사용하지 않으려면 비워 두세요.",
+
+  "inputs.blendMode.label": "블렌드 모드",
+  "inputs.blendMode.section": "색상",
+  "inputs.blendMode.help": "보정 색상이 이미지와 어떻게 섞이는지 설정해요.",
+  "inputs.blendMode.options.normal": "표준",
+  "inputs.blendMode.options.multiply": "곱하기",
+  "inputs.blendMode.options.screen": "스크린",
+  "inputs.blendMode.options.overlay": "오버레이",
+  "inputs.blendMode.options.darken": "어둡게 하기",
+  "inputs.blendMode.options.lighten": "밝게 하기",
+  "inputs.blendMode.options.color-dodge": "색상 닷지",
+  "inputs.blendMode.options.color-burn": "색상 번",
+  "inputs.blendMode.options.hard-light": "하드 라이트",
+  "inputs.blendMode.options.soft-light": "소프트 라이트",
+  "inputs.blendMode.options.difference": "차이",
+  "inputs.blendMode.options.exclusion": "제외",
+  "inputs.blendMode.options.hue": "색조",
+  "inputs.blendMode.options.saturation": "채도",
+  "inputs.blendMode.options.color": "색상",
+  "inputs.blendMode.options.luminosity": "광도",
+
+  "inputs.treatmentIntensity.label": "강도",
+  "inputs.treatmentIntensity.section": "색상",
+  "inputs.treatmentIntensity.help": "색상 오버레이의 불투명도예요.",
+
+  "inputs.noFilter.label": "필터 없음(원본 표시)",
+  "inputs.noFilter.section": "오버레이",
+  "inputs.noFilter.help": "원본 사진이나 실시간 카메라 화면을 그대로 표시해요 — 가공하지 않은 화면 위에 로고나 하단 자막만 올리고 싶을 때 유용해요.",
+
+  "inputs.showLogo.label": "SUSE 로고 오버레이",
+  "inputs.showLogo.section": "오버레이",
+  "inputs.showLogo.help": "결과물 위에 SUSE 로고를 겹쳐요. 기본값은 꺼짐이에요.",
+
+  "inputs.logoPosition.label": "로고 위치",
+  "inputs.logoPosition.section": "오버레이",
+  "inputs.logoPosition.options.top-left": "왼쪽 위",
+  "inputs.logoPosition.options.top-right": "오른쪽 위",
+  "inputs.logoPosition.options.bottom-left": "왼쪽 아래",
+  "inputs.logoPosition.options.bottom-right": "오른쪽 아래",
+  "inputs.logoPosition.options.top": "위쪽 가운데",
+  "inputs.logoPosition.options.bottom": "아래쪽 가운데",
+  "inputs.logoPosition.options.center": "가운데",
+  "inputs.logoPosition.options.full": "전체(워터마크)",
+
+  "inputs.logoStyle.label": "로고 색상",
+  "inputs.logoStyle.section": "오버레이",
+  "inputs.logoStyle.help": "흰색과 초록색은 어둡거나 복잡한 화면에서 잘 보이고, 검은색은 밝은 배경에 어울려요.",
+  "inputs.logoStyle.options.white": "흰색",
+  "inputs.logoStyle.options.green": "초록색",
+  "inputs.logoStyle.options.black": "검은색",
+
+  "inputs.logoScale.label": "로고 크기",
+  "inputs.logoScale.section": "오버레이",
+  "inputs.logoScale.help": "로고 크기를 키우거나 줄여요.",
+
+  "inputs.lowerThird.label": "하단 이름 카드",
+  "inputs.lowerThird.section": "오버레이",
+  "inputs.lowerThird.help": "영상 위에 부드럽게 애니메이션되며 나타나는 이름 카드예요. 프로필 이름과 프로필 사진을 사용해요.",
+
+  "inputs.ltTheme.label": "카드 스타일",
+  "inputs.ltTheme.section": "오버레이",
+  "inputs.ltTheme.options.bar": "SUSE 브랜드 바",
+  "inputs.ltTheme.options.minimal": "미니멀",
+  "inputs.ltTheme.options.glass": "글래스",
+
+  "inputs.ltPosition.label": "카드 위치",
+  "inputs.ltPosition.section": "오버레이",
+  "inputs.ltPosition.options.left": "왼쪽 아래",
+  "inputs.ltPosition.options.center": "아래쪽 가운데",
+  "inputs.ltPosition.options.right": "오른쪽 아래",
+
+  "inputs.firstname.label": "이름",
+  "inputs.firstname.section": "오버레이",
+
+  "inputs.lastname.label": "성",
+  "inputs.lastname.section": "오버레이",
+
+  "inputs.title.label": "역할 / 부제목",
+  "inputs.title.section": "오버레이",
+  "inputs.title.help": "이름 아래에 표시되는 선택 항목이에요 — 예: 역할이나 이벤트.",
+
+  "inputs.nameWeight.label": "이름 글자 굵기",
+  "inputs.nameWeight.section": "오버레이",
+  "inputs.nameWeight.help": "이름 줄의 글자 굵기예요(100 얇게 → 900 매우 굵게).",
+
+  "inputs.subtitleWeight.label": "부제목 글자 굵기",
+  "inputs.subtitleWeight.section": "오버레이",
+  "inputs.subtitleWeight.help": "역할 / 부제목 줄의 글자 굵기예요(100 얇게 → 900 매우 굵게).",
+
+  "inputs.ltHeadshot.label": "프로필 사진(선택)",
+  "inputs.ltHeadshot.section": "오버레이",
+  "inputs.ltHeadshot.help": "기본적으로 프로필 사진을 사용해요. 다른 사진을 선택하거나 업로드해서 바꿀 수 있어요."
+}

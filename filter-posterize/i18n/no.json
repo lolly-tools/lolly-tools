@@ -1,0 +1,154 @@
+{
+  "name": "Filter: Posterisering (bitmap)",
+  "description": "Omdanner ethvert foto til flate vektorbaserte fargeseparasjoner i silketrykk-stil.",
+  "a11yLabel": "{{steps}}-farget posterisert vektorgrafikk av fotoet",
+
+  "inputs.photo.label": "Foto",
+  "inputs.photo.help": "Bildet som skal posteriseres. Portrettbilder og kontrastrike foto sporer best.",
+
+  "inputs.steps.label": "Fargetrinn",
+  "inputs.steps.help": "Hvor mange toneseparasjoner som skal spores. Endring av denne verdien henter fargene på nytt fra fotoet.",
+
+  "inputs.threshold.label": "Terskel (1 farge)",
+  "inputs.threshold.help": "Reduserer fotoet til én enkelt farge på papir – et hardt skille mellom mørkt og lyst i stedet for gradvise separasjoner. Kombiner med «Transparent bakgrunn» for farge på ingenting.",
+
+  "inputs.thresholdLevel.label": "Terskelnivå",
+  "inputs.thresholdLevel.help": "Hvor skillet mellom farge og papir går. Høyere verdier gjør mer av fotoet til farge; lavere beholder bare de dypeste skyggene.",
+
+  "inputs.brightness.label": "Lysstyrke",
+  "inputs.brightness.help": "Gjør fotoet lysere eller mørkere før det separeres – flytter hver tone opp eller ned, og forskyver detaljer mellom de lyse og mørke separasjonene.",
+
+  "inputs.quality.label": "Kvalitet",
+  "inputs.quality.help": "Sporingsoppløsning – høyere verdier samler fotoet i et finere rutenett og fanger mer detaljer. Over 100 gir svært fin, tregere sporing.",
+
+  "inputs.smoothing.label": "Utjevning",
+  "inputs.smoothing.help": "Hvor mye de sporede konturene avrundes til kurver. Lavt beholder kantene skarpe og tro mot originalen; høyt lar dem flyte ut i myke Bézier-kurver.",
+
+  "inputs.invert.label": "Inverter toner",
+  "inputs.invert.help": "Sporer fra inverterte toner – fotoets lyse partier blir forgrunnsseparasjonene (et tonalt negativ). Nyttig for et lyst motiv mot en mørk bakgrunn.",
+
+  "inputs.colors.label": "Separasjonsfarger",
+  "inputs.colors.help": "Én fargeprøve per tone, mørkest først og lysest (papir) sist. Hentes automatisk fra fotoet ditt – rediger en fargeprøve for å gi den separasjonen ny farge.",
+  "inputs.colors.fields.color.label": "Farge",
+
+  "inputs.resample.label": "Hent farger på nytt fra fotoet",
+  "inputs.resample.help": "Forkaster manuelle endringer og henter hver separasjonsfarge på nytt fra det gjeldende fotoet.",
+
+  "inputs.transparentBg.label": "Transparent bakgrunn",
+  "inputs.transparentBg.help": "Fjerner den lyseste «papir»-separasjonen slik at bakgrunnen blir transparent (PNG/SVG).",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Farge",
+  "inputs.contrast.help": "Skyver tonene fra hverandre (høyere) eller flater dem ut (lavere) før separering. Mer kontrast gir dristigere, mer grafiske separasjoner.",
+
+  "inputs.hue.label": "Fargetone",
+  "inputs.hue.section": "Farge",
+  "inputs.hue.help": "Roterer alle farger rundt fargehjulet.",
+
+  "inputs.saturation.label": "Metning",
+  "inputs.saturation.section": "Farge",
+  "inputs.saturation.help": "0 = gråtoner · 100 = original · 200 = intens.",
+
+  "inputs.lightness.label": "Lyshet",
+  "inputs.lightness.section": "Farge",
+  "inputs.lightness.help": "Lysner mot hvitt eller mørkner mot svart.",
+
+  "inputs.treatmentColor.label": "Fargebehandling",
+  "inputs.treatmentColor.section": "Farge",
+  "inputs.treatmentColor.help": "Blander en farge over resultatet. La stå tom for ingen.",
+
+  "inputs.blendMode.label": "Blandingsmodus",
+  "inputs.blendMode.section": "Farge",
+  "inputs.blendMode.help": "Hvordan behandlingsfargen blandes med bildet.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multipliser",
+  "inputs.blendMode.options.screen": "Skjerm",
+  "inputs.blendMode.options.overlay": "Overlegg",
+  "inputs.blendMode.options.darken": "Mørkere",
+  "inputs.blendMode.options.lighten": "Lysere",
+  "inputs.blendMode.options.color-dodge": "Farge tone opp",
+  "inputs.blendMode.options.color-burn": "Farge tone ned",
+  "inputs.blendMode.options.hard-light": "Hardt lys",
+  "inputs.blendMode.options.soft-light": "Mykt lys",
+  "inputs.blendMode.options.difference": "Differanse",
+  "inputs.blendMode.options.exclusion": "Ekskluder",
+  "inputs.blendMode.options.hue": "Fargetone",
+  "inputs.blendMode.options.saturation": "Metning",
+  "inputs.blendMode.options.color": "Farge",
+  "inputs.blendMode.options.luminosity": "Lysstyrke",
+
+  "inputs.treatmentIntensity.label": "Intensitet",
+  "inputs.treatmentIntensity.section": "Farge",
+  "inputs.treatmentIntensity.help": "Dekkevne for fargeoverlegget.",
+
+  "inputs.width.label": "Bredde",
+  "inputs.height.label": "Høyde",
+
+  "inputs.noFilter.label": "Ingen filter (vis original)",
+  "inputs.noFilter.section": "Overlegg",
+  "inputs.noFilter.help": "Viser det originale bildet eller det direktesendte kamerabildet ubehandlet — praktisk når du bare vil legge en logo eller et navneskilt over det ubehandlede opptaket.",
+
+  "inputs.showLogo.label": "SUSE-logo-overlegg",
+  "inputs.showLogo.section": "Overlegg",
+  "inputs.showLogo.help": "Legger SUSE-logoen over resultatet. Avslått som standard.",
+
+  "inputs.logoPosition.label": "Logoposisjon",
+  "inputs.logoPosition.section": "Overlegg",
+  "inputs.logoPosition.options.top-left": "Øverst til venstre",
+  "inputs.logoPosition.options.top-right": "Øverst til høyre",
+  "inputs.logoPosition.options.bottom-left": "Nederst til venstre",
+  "inputs.logoPosition.options.bottom-right": "Nederst til høyre",
+  "inputs.logoPosition.options.top": "Øverst, sentrert",
+  "inputs.logoPosition.options.bottom": "Nederst, sentrert",
+  "inputs.logoPosition.options.center": "Sentrert",
+  "inputs.logoPosition.options.full": "Full (vannmerke)",
+
+  "inputs.logoStyle.label": "Logofarge",
+  "inputs.logoStyle.section": "Overlegg",
+  "inputs.logoStyle.options.white": "Hvit",
+  "inputs.logoStyle.options.green": "Grønn",
+  "inputs.logoStyle.options.black": "Svart",
+  "inputs.logoStyle.help": "Hvit og grønn er lett lesbare mot mørkt eller urolig opptak; svart passer til lyse bakgrunner.",
+
+  "inputs.logoScale.label": "Logostørrelse",
+  "inputs.logoScale.section": "Overlegg",
+  "inputs.logoScale.help": "Skalerer logoen større eller mindre.",
+
+  "inputs.lowerThird.label": "Navneskilt (lower third)",
+  "inputs.lowerThird.section": "Overlegg",
+  "inputs.lowerThird.help": "Et mykt animert navnekort som tones inn over opptaket. Bruker navnet og profilbildet fra profilen din.",
+
+  "inputs.ltTheme.label": "Kortstil",
+  "inputs.ltTheme.section": "Overlegg",
+  "inputs.ltTheme.options.bar": "SUSE-merkebjelke",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glass",
+
+  "inputs.ltPosition.label": "Kortposisjon",
+  "inputs.ltPosition.section": "Overlegg",
+  "inputs.ltPosition.options.left": "Nederst til venstre",
+  "inputs.ltPosition.options.center": "Nederst, sentrert",
+  "inputs.ltPosition.options.right": "Nederst til høyre",
+
+  "inputs.firstname.label": "Fornavn",
+  "inputs.firstname.section": "Overlegg",
+
+  "inputs.lastname.label": "Etternavn",
+  "inputs.lastname.section": "Overlegg",
+
+  "inputs.title.label": "Rolle / undertittel",
+  "inputs.title.section": "Overlegg",
+  "inputs.title.help": "Valgfri linje under navnet — for eksempel en rolle eller et arrangement.",
+
+  "inputs.nameWeight.label": "Navnets vekt",
+  "inputs.nameWeight.section": "Overlegg",
+  "inputs.nameWeight.help": "Skriftvekt for navnelinjen (100 Tynn → 900 Svart).",
+
+  "inputs.subtitleWeight.label": "Undertittelens vekt",
+  "inputs.subtitleWeight.section": "Overlegg",
+  "inputs.subtitleWeight.help": "Skriftvekt for rolle-/undertittellinjen (100 Tynn → 900 Svart).",
+
+  "inputs.ltHeadshot.label": "Profilbilde (valgfritt)",
+  "inputs.ltHeadshot.section": "Overlegg",
+  "inputs.ltHeadshot.help": "Bruker profilbildet ditt som standard. Velg eller last opp et annet for å overstyre."
+}

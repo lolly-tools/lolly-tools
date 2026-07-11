@@ -1,0 +1,154 @@
+{
+  "name": "Filtro: Posterizzazione Bitmap",
+  "description": "Trasforma qualsiasi foto in separazioni cromatiche vettoriali piatte in stile serigrafico.",
+  "a11yLabel": "Grafica vettoriale posterizzata a {{steps}} colori della foto",
+
+  "inputs.photo.label": "Foto",
+  "inputs.photo.help": "L'immagine da posterizzare. I primi piani e le foto ad alto contrasto si ricalcano meglio.",
+
+  "inputs.steps.label": "Livelli di colore",
+  "inputs.steps.help": "Quante separazioni tonali ricalcare. Modificare questo valore ricampiona i colori dalla foto.",
+
+  "inputs.threshold.label": "Soglia (1 colore)",
+  "inputs.threshold.help": "Riduce la foto a un solo colore di stampa su carta: un taglio netto tra chiaro e scuro invece di separazioni graduali. Abbinalo a «Sfondo trasparente» per ottenere colore su nulla.",
+
+  "inputs.thresholdLevel.label": "Livello soglia",
+  "inputs.thresholdLevel.help": "Determina dove cade il taglio tra colore e carta. Valori più alti trasformano più foto in colore; valori più bassi mantengono solo le ombre più profonde.",
+
+  "inputs.brightness.label": "Luminosità",
+  "inputs.brightness.help": "Schiarisce o scurisce la foto prima della separazione: sposta ogni tono verso l'alto o il basso, spostando i dettagli tra le separazioni chiare e scure.",
+
+  "inputs.quality.label": "Qualità",
+  "inputs.quality.help": "Risoluzione di ricalco: valori più alti campionano la foto con una griglia più fine e catturano più dettagli. Oltre 100 si ottengono ricalchi molto fini ma più lenti.",
+
+  "inputs.smoothing.label": "Levigatura",
+  "inputs.smoothing.help": "Quanto i contorni ricalcati si arrotondano in curve. Valori bassi mantengono bordi nitidi e fedeli; valori alti li trasformano in morbide curve di Bézier.",
+
+  "inputs.invert.label": "Inverti toni",
+  "inputs.invert.help": "Ricalca a partire da toni invertiti: le aree chiare della foto diventano le separazioni in primo piano (un negativo tonale). Utile per un soggetto chiaro su sfondo scuro.",
+
+  "inputs.colors.label": "Colori delle separazioni",
+  "inputs.colors.help": "Un campione per ogni tono, dal più scuro al più chiaro (carta). Campionati automaticamente dalla tua foto: modifica un campione per ricolorare quella separazione.",
+  "inputs.colors.fields.color.label": "Colore",
+
+  "inputs.resample.label": "Ricampiona i colori dalla foto",
+  "inputs.resample.help": "Annulla le modifiche manuali e ricava di nuovo ogni colore di separazione dalla foto attuale.",
+
+  "inputs.transparentBg.label": "Sfondo trasparente",
+  "inputs.transparentBg.help": "Rimuove la separazione più chiara («carta») così lo sfondo diventa trasparente (PNG / SVG).",
+
+  "inputs.contrast.label": "Contrasto",
+  "inputs.contrast.section": "Colore",
+  "inputs.contrast.help": "Allontana i toni tra loro (valori più alti) o li appiattisce (valori più bassi) prima della separazione. Più contrasto dà separazioni più decise e grafiche.",
+
+  "inputs.hue.label": "Tonalità",
+  "inputs.hue.section": "Colore",
+  "inputs.hue.help": "Ruota ogni colore lungo la ruota cromatica.",
+
+  "inputs.saturation.label": "Saturazione",
+  "inputs.saturation.section": "Colore",
+  "inputs.saturation.help": "0 = scala di grigi · 100 = originale · 200 = vivido.",
+
+  "inputs.lightness.label": "Chiarezza",
+  "inputs.lightness.section": "Colore",
+  "inputs.lightness.help": "Schiarisce verso il bianco o scurisce verso il nero.",
+
+  "inputs.treatmentColor.label": "Trattamento colore",
+  "inputs.treatmentColor.section": "Colore",
+  "inputs.treatmentColor.help": "Sovrappone un colore al risultato. Lascia vuoto per nessun trattamento.",
+
+  "inputs.blendMode.label": "Modalità di fusione",
+  "inputs.blendMode.section": "Colore",
+  "inputs.blendMode.help": "Come il colore di trattamento si fonde con l'immagine.",
+  "inputs.blendMode.options.normal": "Normale",
+  "inputs.blendMode.options.multiply": "Moltiplica",
+  "inputs.blendMode.options.screen": "Scherma",
+  "inputs.blendMode.options.overlay": "Sovrapponi",
+  "inputs.blendMode.options.darken": "Scurisci",
+  "inputs.blendMode.options.lighten": "Schiarisci",
+  "inputs.blendMode.options.color-dodge": "Scherma colore",
+  "inputs.blendMode.options.color-burn": "Brucia colore",
+  "inputs.blendMode.options.hard-light": "Luce intensa",
+  "inputs.blendMode.options.soft-light": "Luce soffusa",
+  "inputs.blendMode.options.difference": "Differenza",
+  "inputs.blendMode.options.exclusion": "Esclusione",
+  "inputs.blendMode.options.hue": "Tonalità",
+  "inputs.blendMode.options.saturation": "Saturazione",
+  "inputs.blendMode.options.color": "Colore",
+  "inputs.blendMode.options.luminosity": "Luminosità",
+
+  "inputs.treatmentIntensity.label": "Intensità",
+  "inputs.treatmentIntensity.section": "Colore",
+  "inputs.treatmentIntensity.help": "Opacità della sovrapposizione colore.",
+
+  "inputs.width.label": "Larghezza",
+  "inputs.height.label": "Altezza",
+
+  "inputs.noFilter.label": "Nessun filtro (mostra originale)",
+  "inputs.noFilter.section": "Sovrapposizioni",
+  "inputs.noFilter.help": "Mostra la foto originale o il feed della videocamera dal vivo senza modifiche: utile per inserire solo un logo o una fascia inferiore sopra il materiale grezzo.",
+
+  "inputs.showLogo.label": "Sovrapposizione logo SUSE",
+  "inputs.showLogo.section": "Sovrapposizioni",
+  "inputs.showLogo.help": "Sovrappone il logo SUSE al risultato. Disattivato per impostazione predefinita.",
+
+  "inputs.logoPosition.label": "Posizione del logo",
+  "inputs.logoPosition.section": "Sovrapposizioni",
+  "inputs.logoPosition.options.top-left": "In alto a sinistra",
+  "inputs.logoPosition.options.top-right": "In alto a destra",
+  "inputs.logoPosition.options.bottom-left": "In basso a sinistra",
+  "inputs.logoPosition.options.bottom-right": "In basso a destra",
+  "inputs.logoPosition.options.top": "In alto al centro",
+  "inputs.logoPosition.options.bottom": "In basso al centro",
+  "inputs.logoPosition.options.center": "Al centro",
+  "inputs.logoPosition.options.full": "A tutto schermo (filigrana)",
+
+  "inputs.logoStyle.label": "Colore del logo",
+  "inputs.logoStyle.section": "Sovrapposizioni",
+  "inputs.logoStyle.options.white": "Bianco",
+  "inputs.logoStyle.options.green": "Verde",
+  "inputs.logoStyle.options.black": "Nero",
+  "inputs.logoStyle.help": "Bianco e verde risaltano su filmati scuri o affollati; il nero è adatto a sfondi chiari.",
+
+  "inputs.logoScale.label": "Dimensione del logo",
+  "inputs.logoScale.section": "Sovrapposizioni",
+  "inputs.logoScale.help": "Ridimensiona il logo in aumento o in diminuzione.",
+
+  "inputs.lowerThird.label": "Scheda nome (fascia inferiore)",
+  "inputs.lowerThird.section": "Sovrapposizioni",
+  "inputs.lowerThird.help": "Una scheda nome con animazione delicata che appare sopra il filmato. Usa nome e foto profilo dal tuo profilo.",
+
+  "inputs.ltTheme.label": "Stile scheda",
+  "inputs.ltTheme.section": "Sovrapposizioni",
+  "inputs.ltTheme.options.bar": "Barra del brand SUSE",
+  "inputs.ltTheme.options.minimal": "Minimale",
+  "inputs.ltTheme.options.glass": "Vetro",
+
+  "inputs.ltPosition.label": "Posizione scheda",
+  "inputs.ltPosition.section": "Sovrapposizioni",
+  "inputs.ltPosition.options.left": "In basso a sinistra",
+  "inputs.ltPosition.options.center": "In basso al centro",
+  "inputs.ltPosition.options.right": "In basso a destra",
+
+  "inputs.firstname.label": "Nome",
+  "inputs.firstname.section": "Sovrapposizioni",
+
+  "inputs.lastname.label": "Cognome",
+  "inputs.lastname.section": "Sovrapposizioni",
+
+  "inputs.title.label": "Ruolo/Sottotitolo",
+  "inputs.title.section": "Sovrapposizioni",
+  "inputs.title.help": "Riga facoltativa sotto il nome, ad esempio un ruolo o un evento.",
+
+  "inputs.nameWeight.label": "Peso del carattere (nome)",
+  "inputs.nameWeight.section": "Sovrapposizioni",
+  "inputs.nameWeight.help": "Peso del carattere della riga del nome (100 Sottile → 900 Nero).",
+
+  "inputs.subtitleWeight.label": "Peso del carattere (sottotitolo)",
+  "inputs.subtitleWeight.section": "Sovrapposizioni",
+  "inputs.subtitleWeight.help": "Peso del carattere della riga ruolo/sottotitolo (100 Sottile → 900 Nero).",
+
+  "inputs.ltHeadshot.label": "Foto profilo (opzionale)",
+  "inputs.ltHeadshot.section": "Sovrapposizioni",
+  "inputs.ltHeadshot.help": "Per impostazione predefinita usa la foto del tuo profilo. Scegline o caricane un'altra per sostituirla."
+}

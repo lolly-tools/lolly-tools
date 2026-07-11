@@ -1,0 +1,146 @@
+{
+  "name": "Filter: Pikselstrekk",
+  "description": "Smører en pikselkolonne utover et bilde fra en terskellinje. Fungerer live.",
+  "a11yLabel": "Pikselstrekk-smøring av det valgte bildet",
+
+  "inputs.image.label": "Bilde",
+  "inputs.image.help": "Velg et bilde eller last opp ditt eget. Det behandles på enheten din – pikslene forlater aldri nettleseren. Eller trykk på «Gå live» på lerretet for å smøre ut kameraet ditt.",
+
+  "inputs.direction.label": "Retning",
+  "inputs.direction.help": "Hvilken vei den fastfrosne pikselkolonnen smøres utover bildet.",
+  "inputs.direction.options.right": "Strekk mot høyre →",
+  "inputs.direction.options.left": "Strekk mot venstre ←",
+  "inputs.direction.options.down": "Strekk nedover ↓",
+  "inputs.direction.options.up": "Strekk oppover ↑",
+
+  "inputs.threshold.label": "Terskelstart",
+  "inputs.threshold.help": "Hvor bildet fryser. Forbi denne linjen strekker den fastfrosne kolonnen seg, deretter fortsetter resten av bildet i sine naturlige proporsjoner, avkuttet ved den fjerne kanten.",
+
+  "inputs.spread.label": "Spredning",
+  "inputs.spread.help": "Hvor mye av rommet forbi terskelen den fastfrosne kolonnen fyller. Resten av bildet glir inn etter den i sine naturlige proporsjoner (avkuttet ved kanten). 0 = uendret bilde; 100 = kolonnen strekker seg helt ut til kanten.",
+
+  "inputs.feather.label": "Mykning",
+  "inputs.feather.help": "Mykner opp sømmen der bildet møter den fastfrosne kolonnen. Den fjerne enden, der kolonnen går over i den glidende resten, er allerede fargemessig sammenhengende, så dette påvirker hovedsakelig startsømmen. 0 beholder en skarp kant.",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Farge",
+  "inputs.contrast.help": "Skyver tonene fra hverandre (høyere) eller flater dem ut (lavere).",
+
+  "inputs.hue.label": "Fargetone",
+  "inputs.hue.section": "Farge",
+  "inputs.hue.help": "Roterer alle farger rundt fargehjulet.",
+
+  "inputs.saturation.label": "Metning",
+  "inputs.saturation.section": "Farge",
+  "inputs.saturation.help": "0 = gråtone · 100 = original · 200 = intens.",
+
+  "inputs.lightness.label": "Lyshet",
+  "inputs.lightness.section": "Farge",
+  "inputs.lightness.help": "Løfter mot hvitt eller senker mot svart.",
+
+  "inputs.treatmentColor.label": "Fargebehandling",
+  "inputs.treatmentColor.section": "Farge",
+  "inputs.treatmentColor.help": "Bland en farge over resultatet. La stå tom for ingen.",
+
+  "inputs.blendMode.label": "Blandingsmodus",
+  "inputs.blendMode.section": "Farge",
+  "inputs.blendMode.help": "Hvordan behandlingsfargen blandes med bildet.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multipliser",
+  "inputs.blendMode.options.screen": "Skjerm",
+  "inputs.blendMode.options.overlay": "Overlegg",
+  "inputs.blendMode.options.darken": "Mørkere",
+  "inputs.blendMode.options.lighten": "Lysere",
+  "inputs.blendMode.options.color-dodge": "Fargeavtoning",
+  "inputs.blendMode.options.color-burn": "Fargeetterbelysning",
+  "inputs.blendMode.options.hard-light": "Hardt lys",
+  "inputs.blendMode.options.soft-light": "Mykt lys",
+  "inputs.blendMode.options.difference": "Differanse",
+  "inputs.blendMode.options.exclusion": "Eksklusjon",
+  "inputs.blendMode.options.hue": "Fargetone",
+  "inputs.blendMode.options.saturation": "Metning",
+  "inputs.blendMode.options.color": "Farge",
+  "inputs.blendMode.options.luminosity": "Lysstyrke",
+
+  "inputs.treatmentIntensity.label": "Intensitet",
+  "inputs.treatmentIntensity.section": "Farge",
+  "inputs.treatmentIntensity.help": "Dekkevne for fargeoverlegget.",
+
+  "inputs.imageFraming.label": "Zoom og posisjon",
+  "inputs.imageFraming.section": "Posisjon",
+  "inputs.imageFraming.help": "Zoom skalerer bildet opp; X/Y panorerer det innenfor rammen (som object-position). Dra en etikett eller skriv inn en verdi.",
+  "inputs.imageFraming.fields.zoom.label": "Zoom",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+
+  "inputs.noFilter.label": "Uten filter (vis rått)",
+  "inputs.noFilter.section": "Overlegg",
+  "inputs.noFilter.help": "Viser det opprinnelige bildet eller kameraets direktestrøm urørt – praktisk for å bare legge en logo eller navnestripe over det rå opptaket.",
+
+  "inputs.showLogo.label": "SUSE-logooverlegg",
+  "inputs.showLogo.section": "Overlegg",
+  "inputs.showLogo.help": "Legger SUSE-logoen over resultatet. Av som standard.",
+
+  "inputs.logoPosition.label": "Logoposisjon",
+  "inputs.logoPosition.section": "Overlegg",
+  "inputs.logoPosition.options.top-left": "Øverst til venstre",
+  "inputs.logoPosition.options.top-right": "Øverst til høyre",
+  "inputs.logoPosition.options.bottom-left": "Nederst til venstre",
+  "inputs.logoPosition.options.bottom-right": "Nederst til høyre",
+  "inputs.logoPosition.options.top": "Øverst i midten",
+  "inputs.logoPosition.options.bottom": "Nederst i midten",
+  "inputs.logoPosition.options.center": "Midtstilt",
+  "inputs.logoPosition.options.full": "Full flate (vannmerke)",
+
+  "inputs.logoStyle.label": "Logofarge",
+  "inputs.logoStyle.section": "Overlegg",
+  "inputs.logoStyle.options.white": "Hvit",
+  "inputs.logoStyle.options.green": "Grønn",
+  "inputs.logoStyle.options.black": "Svart",
+  "inputs.logoStyle.help": "Hvitt og grønt fungerer godt på mørkt eller travelt materiale; svart passer til lyse bakgrunner.",
+
+  "inputs.logoScale.label": "Logostørrelse",
+  "inputs.logoScale.section": "Overlegg",
+  "inputs.logoScale.help": "Skalerer logoen opp eller ned.",
+
+  "inputs.lowerThird.label": "Navnestripe",
+  "inputs.lowerThird.section": "Overlegg",
+  "inputs.lowerThird.help": "Et mykt animert navnekort som tones inn over opptaket. Bruker navnet og profilbildet fra profilen din.",
+
+  "inputs.ltTheme.label": "Kortstil",
+  "inputs.ltTheme.section": "Overlegg",
+  "inputs.ltTheme.options.bar": "SUSE-merkevarelinje",
+  "inputs.ltTheme.options.minimal": "Minimalistisk",
+  "inputs.ltTheme.options.glass": "Glass",
+
+  "inputs.ltPosition.label": "Kortposisjon",
+  "inputs.ltPosition.section": "Overlegg",
+  "inputs.ltPosition.options.left": "Nederst til venstre",
+  "inputs.ltPosition.options.center": "Nederst i midten",
+  "inputs.ltPosition.options.right": "Nederst til høyre",
+
+  "inputs.firstname.label": "Fornavn",
+  "inputs.firstname.section": "Overlegg",
+
+  "inputs.lastname.label": "Etternavn",
+  "inputs.lastname.section": "Overlegg",
+
+  "inputs.title.label": "Rolle / undertittel",
+  "inputs.title.section": "Overlegg",
+  "inputs.title.help": "Valgfri linje under navnet – f.eks. en rolle eller et arrangement.",
+
+  "inputs.nameWeight.label": "Navnevekt",
+  "inputs.nameWeight.section": "Overlegg",
+  "inputs.nameWeight.help": "Skriftvekt for navnelinjen (100 Tynn → 900 Svart).",
+
+  "inputs.subtitleWeight.label": "Undertittelvekt",
+  "inputs.subtitleWeight.section": "Overlegg",
+  "inputs.subtitleWeight.help": "Skriftvekt for rolle-/undertittellinjen (100 Tynn → 900 Svart).",
+
+  "inputs.ltHeadshot.label": "Profilbilde (valgfritt)",
+  "inputs.ltHeadshot.section": "Overlegg",
+  "inputs.ltHeadshot.help": "Bruker profilbildet ditt som standard. Velg eller last opp et annet for å overstyre.",
+
+  "inputs.width.label": "Bredde",
+  "inputs.height.label": "Høyde"
+}

@@ -1,0 +1,172 @@
+{
+  "name": "Filtro: Retino",
+  "description": "Retinatura vettoriale da qualsiasi foto — punti la cui dimensione dipende dalla luminosità.",
+  "a11yLabel": "Resa a retino dell'immagine scelta come griglia di punti di un unico colore",
+
+  "inputs.image.label": "Immagine",
+  "inputs.image.help": "Scegli una foto o caricane una tua. Viene elaborata sul tuo dispositivo: i pixel non lasciano mai il browser.",
+
+  "inputs.gridSize.label": "Dimensione griglia",
+  "inputs.gridSize.help": "Spaziatura tra i punti. Più piccola = dettagli più fini e più punti; più grande = un retino più marcato e grossolano.",
+
+  "inputs.dotScale.label": "Dimensione punto",
+  "inputs.dotScale.help": "Scala ogni punto. Sotto 1 apre il retino; sopra 1 ingrossa i punti facendo riempire le zone scure.",
+
+  "inputs.shape.label": "Forma del punto",
+  "inputs.shape.options.circle": "Cerchio",
+  "inputs.shape.options.square": "Quadrato",
+  "inputs.shape.options.diamond": "Rombo",
+
+  "inputs.colorSource.label": "Origine colore",
+  "inputs.colorSource.help": "Colora i punti in base alla foto sottostante oppure con un unico colore.",
+  "inputs.colorSource.options.image": "Dall'immagine",
+  "inputs.colorSource.options.solid": "Tinta unita",
+
+  "inputs.colorLevels.label": "Livelli di colore",
+  "inputs.colorLevels.help": "Riduce i colori dei punti a una palette limitata (livelli per canale). «Colore pieno» mantiene i colori della foto.",
+  "inputs.colorLevels.options.0": "Colore pieno",
+  "inputs.colorLevels.options.8": "8 livelli",
+  "inputs.colorLevels.options.6": "6 livelli",
+  "inputs.colorLevels.options.4": "4 livelli",
+  "inputs.colorLevels.options.3": "3 livelli",
+  "inputs.colorLevels.options.2": "2 livelli",
+
+  "inputs.fgColor.label": "Colore punto",
+  "inputs.fgColor.help": "Colore del punto quando l'origine colore è impostata su Tinta unita.",
+
+  "inputs.bgColor.label": "Sfondo",
+  "inputs.bgColor.help": "Riempimento dietro i punti. Attiva «Nessuno sfondo» nelle opzioni di esportazione per uno sfondo trasparente.",
+
+  "inputs.invert.label": "Inverti",
+  "inputs.invert.help": "Fa crescere i punti nelle zone chiare anziché in quelle scure — ideale per un colore chiaro su sfondo scuro.",
+
+  "inputs.fit.label": "Adattamento immagine",
+  "inputs.fit.options.contain": "Contieni (immagine intera)",
+  "inputs.fit.options.cover": "Riempi (ritaglia i bordi)",
+
+  "inputs.brightness.label": "Luminosità",
+
+  "inputs.gamma.label": "Gamma",
+  "inputs.gamma.help": "Peso dei mezzitoni. Sotto 1 scurisce i mezzitoni (punti più densi); sopra 1 li schiarisce.",
+
+  "inputs.smoothing.label": "Levigatura",
+  "inputs.smoothing.help": "Ammorbidisce la griglia di punti sfumando le celle vicine. Doma le foto rumorose.",
+
+  "inputs.dither.label": "Texture",
+  "inputs.dither.help": "Aggiunge una texture in stile giornale (1 bit) forzando le celle a punti pieni o vuoti.",
+  "inputs.dither.options.none": "Uniforme (nessuna)",
+  "inputs.dither.options.floyd": "Diffusa (Floyd–Steinberg)",
+  "inputs.dither.options.ordered": "A motivo (ordinata)",
+  "inputs.dither.options.noise": "Granulosa (rumore)",
+
+  "inputs.contrast.label": "Contrasto",
+  "inputs.contrast.section": "Colore",
+
+  "inputs.hue.label": "Tonalità",
+  "inputs.hue.section": "Colore",
+  "inputs.hue.help": "Ruota ogni colore lungo la ruota cromatica.",
+
+  "inputs.saturation.label": "Saturazione",
+  "inputs.saturation.section": "Colore",
+  "inputs.saturation.help": "0 = scala di grigi · 100 = originale · 200 = vivido.",
+
+  "inputs.lightness.label": "Luminosità",
+  "inputs.lightness.section": "Colore",
+  "inputs.lightness.help": "Schiarisce verso il bianco o scurisce verso il nero.",
+
+  "inputs.treatmentColor.label": "Trattamento colore",
+  "inputs.treatmentColor.section": "Colore",
+  "inputs.treatmentColor.help": "Sovrappone un colore al risultato. Lascia vuoto per nessuno.",
+
+  "inputs.blendMode.label": "Modalità di fusione",
+  "inputs.blendMode.section": "Colore",
+  "inputs.blendMode.help": "Come si mescola il colore di trattamento con l'immagine.",
+  "inputs.blendMode.options.normal": "Normale",
+  "inputs.blendMode.options.multiply": "Moltiplica",
+  "inputs.blendMode.options.screen": "Scherma",
+  "inputs.blendMode.options.overlay": "Sovrapponi",
+  "inputs.blendMode.options.darken": "Scurisci",
+  "inputs.blendMode.options.lighten": "Schiarisci",
+  "inputs.blendMode.options.color-dodge": "Scherma colore",
+  "inputs.blendMode.options.color-burn": "Brucia colore",
+  "inputs.blendMode.options.hard-light": "Luce intensa",
+  "inputs.blendMode.options.soft-light": "Luce soffusa",
+  "inputs.blendMode.options.difference": "Differenza",
+  "inputs.blendMode.options.exclusion": "Esclusione",
+  "inputs.blendMode.options.hue": "Tonalità",
+  "inputs.blendMode.options.saturation": "Saturazione",
+  "inputs.blendMode.options.color": "Colore",
+  "inputs.blendMode.options.luminosity": "Luminosità",
+
+  "inputs.treatmentIntensity.label": "Intensità",
+  "inputs.treatmentIntensity.section": "Colore",
+  "inputs.treatmentIntensity.help": "Opacità della sovrapposizione colore.",
+
+  "inputs.noFilter.label": "Nessun filtro (mostra originale)",
+  "inputs.noFilter.section": "Sovrapposizione",
+  "inputs.noFilter.help": "Mostra la foto originale o il flusso della fotocamera in diretta senza modifiche — utile per aggiungere solo un logo o una fascia inferiore sopra le riprese grezze.",
+
+  "inputs.showLogo.label": "Sovrapposizione logo SUSE",
+  "inputs.showLogo.section": "Sovrapposizione",
+  "inputs.showLogo.help": "Sovrappone il logo SUSE al risultato. Disattivata per impostazione predefinita.",
+
+  "inputs.logoPosition.label": "Posizione logo",
+  "inputs.logoPosition.section": "Sovrapposizione",
+  "inputs.logoPosition.options.top-left": "In alto a sinistra",
+  "inputs.logoPosition.options.top-right": "In alto a destra",
+  "inputs.logoPosition.options.bottom-left": "In basso a sinistra",
+  "inputs.logoPosition.options.bottom-right": "In basso a destra",
+  "inputs.logoPosition.options.top": "In alto al centro",
+  "inputs.logoPosition.options.bottom": "In basso al centro",
+  "inputs.logoPosition.options.center": "Al centro",
+  "inputs.logoPosition.options.full": "A tutto campo (filigrana)",
+
+  "inputs.logoStyle.label": "Colore logo",
+  "inputs.logoStyle.section": "Sovrapposizione",
+  "inputs.logoStyle.help": "Bianco e verde risaltano su riprese scure o mosse; il nero è adatto a sfondi chiari.",
+  "inputs.logoStyle.options.white": "Bianco",
+  "inputs.logoStyle.options.green": "Verde",
+  "inputs.logoStyle.options.black": "Nero",
+
+  "inputs.logoScale.label": "Dimensione logo",
+  "inputs.logoScale.section": "Sovrapposizione",
+  "inputs.logoScale.help": "Aumenta o riduce la dimensione del logo.",
+
+  "inputs.lowerThird.label": "Fascia inferiore con nome",
+  "inputs.lowerThird.section": "Sovrapposizione",
+  "inputs.lowerThird.help": "Una fascia con il nome, animata delicatamente, che compare sopra le riprese. Usa il nome e la foto profilo del tuo account.",
+
+  "inputs.ltTheme.label": "Stile fascia",
+  "inputs.ltTheme.section": "Sovrapposizione",
+  "inputs.ltTheme.options.bar": "Barra brand SUSE",
+  "inputs.ltTheme.options.minimal": "Minimale",
+  "inputs.ltTheme.options.glass": "Vetro",
+
+  "inputs.ltPosition.label": "Posizione fascia",
+  "inputs.ltPosition.section": "Sovrapposizione",
+  "inputs.ltPosition.options.left": "In basso a sinistra",
+  "inputs.ltPosition.options.center": "In basso al centro",
+  "inputs.ltPosition.options.right": "In basso a destra",
+
+  "inputs.firstname.label": "Nome",
+  "inputs.firstname.section": "Sovrapposizione",
+
+  "inputs.lastname.label": "Cognome",
+  "inputs.lastname.section": "Sovrapposizione",
+
+  "inputs.title.label": "Ruolo / sottotitolo",
+  "inputs.title.section": "Sovrapposizione",
+  "inputs.title.help": "Riga facoltativa sotto il nome — ad es. un ruolo o un evento.",
+
+  "inputs.nameWeight.label": "Spessore del nome",
+  "inputs.nameWeight.section": "Sovrapposizione",
+  "inputs.nameWeight.help": "Spessore del carattere della riga del nome (100 Sottile → 900 Nero).",
+
+  "inputs.subtitleWeight.label": "Spessore del sottotitolo",
+  "inputs.subtitleWeight.section": "Sovrapposizione",
+  "inputs.subtitleWeight.help": "Spessore del carattere della riga di ruolo/sottotitolo (100 Sottile → 900 Nero).",
+
+  "inputs.ltHeadshot.label": "Foto profilo (opzionale)",
+  "inputs.ltHeadshot.section": "Sovrapposizione",
+  "inputs.ltHeadshot.help": "Per impostazione predefinita usa la foto profilo del tuo account. Scegline o caricane un'altra per sostituirla."
+}

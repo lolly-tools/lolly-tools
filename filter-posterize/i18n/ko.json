@@ -1,0 +1,154 @@
+{
+  "name": "필터: 포스터라이즈 비트맵",
+  "description": "사진을 실크스크린 스타일의 플랫한 벡터 색 분리 이미지로 변환해요.",
+  "a11yLabel": "사진을 {{steps}}색으로 포스터화한 벡터 이미지",
+
+  "inputs.photo.label": "사진",
+  "inputs.photo.help": "포스터라이즈할 이미지예요. 인물 사진이나 대비가 강한 사진이 가장 깔끔하게 변환돼요.",
+
+  "inputs.steps.label": "색상 단계",
+  "inputs.steps.help": "몇 단계의 톤으로 분리할지 정해요. 이 값을 바꾸면 사진에서 색상을 다시 샘플링해요.",
+
+  "inputs.threshold.label": "임계값(단색 잉크)",
+  "inputs.threshold.help": "사진을 종이 위 단일 잉크로 단순화해요 — 단계적인 색 분리 대신 밝고 어두운 부분을 한 번에 나누는 방식이에요. '투명 배경'과 함께 사용하면 아무것도 없는 배경 위에 잉크만 남길 수 있어요.",
+
+  "inputs.thresholdLevel.label": "임계값 수준",
+  "inputs.thresholdLevel.help": "잉크와 종이를 나누는 기준점을 정해요. 값이 높을수록 사진의 더 많은 부분이 잉크가 되고, 낮을수록 가장 짙은 그림자만 남아요.",
+
+  "inputs.brightness.label": "밝기",
+  "inputs.brightness.help": "색 분리 전에 사진을 밝게 하거나 어둡게 해요 — 모든 톤을 위아래로 이동시켜 밝은 영역과 어두운 영역 사이에서 디테일을 옮겨요.",
+
+  "inputs.quality.label": "품질",
+  "inputs.quality.help": "트레이싱 해상도예요 — 값이 높을수록 더 촘촘한 격자로 사진을 샘플링해 디테일을 더 많이 담아요. 100을 넘으면 매우 정밀하지만 처리 속도가 느려져요.",
+
+  "inputs.smoothing.label": "매끄럽기",
+  "inputs.smoothing.help": "트레이싱한 윤곽선이 얼마나 곡선으로 둥글어지는지예요. 값이 낮으면 원본에 가까운 날카로운 가장자리를 유지하고, 높으면 부드러운 베지어 곡선으로 흘러가요.",
+
+  "inputs.invert.label": "톤 반전",
+  "inputs.invert.help": "반전된 톤을 기준으로 변환해요 — 사진의 밝은 영역이 전경 색 분리가 돼요(톤 네거티브). 어두운 배경 위의 밝은 피사체에 유용해요.",
+
+  "inputs.colors.label": "분리 색상",
+  "inputs.colors.help": "톤마다 하나씩, 가장 어두운 색부터 시작해 가장 밝은 색(종이)으로 끝나는 색상 견본이에요. 사진에서 자동으로 샘플링돼요 — 견본을 편집하면 해당 분리 색을 바꿀 수 있어요.",
+  "inputs.colors.fields.color.label": "색상",
+
+  "inputs.resample.label": "사진에서 색상 다시 샘플링",
+  "inputs.resample.help": "수동으로 편집한 내용을 버리고 현재 사진에서 모든 분리 색상을 다시 추출해요.",
+
+  "inputs.transparentBg.label": "투명 배경",
+  "inputs.transparentBg.help": "가장 밝은 '종이' 분리를 제거해 배경을 투명하게 만들어요(PNG / SVG).",
+
+  "inputs.contrast.label": "대비",
+  "inputs.contrast.section": "색상",
+  "inputs.contrast.help": "분리 전에 톤을 서로 멀어지게(값이 높을수록) 하거나 가깝게(값이 낮을수록) 만들어요. 대비가 높을수록 더 선명하고 그래픽적인 분리가 돼요.",
+
+  "inputs.hue.label": "색조",
+  "inputs.hue.section": "색상",
+  "inputs.hue.help": "모든 색상을 색상환에서 회전시켜요.",
+
+  "inputs.saturation.label": "채도",
+  "inputs.saturation.section": "색상",
+  "inputs.saturation.help": "0 = 흑백 · 100 = 원본 · 200 = 선명함.",
+
+  "inputs.lightness.label": "명도",
+  "inputs.lightness.section": "색상",
+  "inputs.lightness.help": "흰색 쪽으로 밝게 하거나 검은색 쪽으로 어둡게 해요.",
+
+  "inputs.treatmentColor.label": "색상 보정",
+  "inputs.treatmentColor.section": "색상",
+  "inputs.treatmentColor.help": "결과물 위에 색상을 블렌드해요. 사용하지 않으려면 비워 두세요.",
+
+  "inputs.blendMode.label": "블렌드 모드",
+  "inputs.blendMode.section": "색상",
+  "inputs.blendMode.help": "보정 색상이 이미지와 어떻게 섞이는지 정해요.",
+  "inputs.blendMode.options.normal": "표준",
+  "inputs.blendMode.options.multiply": "곱하기",
+  "inputs.blendMode.options.screen": "스크린",
+  "inputs.blendMode.options.overlay": "오버레이",
+  "inputs.blendMode.options.darken": "어둡게 하기",
+  "inputs.blendMode.options.lighten": "밝게 하기",
+  "inputs.blendMode.options.color-dodge": "색상 닷지",
+  "inputs.blendMode.options.color-burn": "색상 번",
+  "inputs.blendMode.options.hard-light": "하드 라이트",
+  "inputs.blendMode.options.soft-light": "소프트 라이트",
+  "inputs.blendMode.options.difference": "차이",
+  "inputs.blendMode.options.exclusion": "제외",
+  "inputs.blendMode.options.hue": "색조",
+  "inputs.blendMode.options.saturation": "채도",
+  "inputs.blendMode.options.color": "색상",
+  "inputs.blendMode.options.luminosity": "광도",
+
+  "inputs.treatmentIntensity.label": "강도",
+  "inputs.treatmentIntensity.section": "색상",
+  "inputs.treatmentIntensity.help": "색상 오버레이의 불투명도예요.",
+
+  "inputs.width.label": "너비",
+  "inputs.height.label": "높이",
+
+  "inputs.noFilter.label": "필터 없음(원본 표시)",
+  "inputs.noFilter.section": "오버레이",
+  "inputs.noFilter.help": "원본 사진이나 실시간 카메라 화면을 그대로 표시해요 — 가공하지 않은 화면 위에 로고나 하단 자막만 얹고 싶을 때 유용해요.",
+
+  "inputs.showLogo.label": "SUSE 로고 오버레이",
+  "inputs.showLogo.section": "오버레이",
+  "inputs.showLogo.help": "결과물 위에 SUSE 로고를 겹쳐요. 기본값은 꺼짐이에요.",
+
+  "inputs.logoPosition.label": "로고 위치",
+  "inputs.logoPosition.section": "오버레이",
+  "inputs.logoPosition.options.top-left": "왼쪽 위",
+  "inputs.logoPosition.options.top-right": "오른쪽 위",
+  "inputs.logoPosition.options.bottom-left": "왼쪽 아래",
+  "inputs.logoPosition.options.bottom-right": "오른쪽 아래",
+  "inputs.logoPosition.options.top": "위 가운데",
+  "inputs.logoPosition.options.bottom": "아래 가운데",
+  "inputs.logoPosition.options.center": "가운데",
+  "inputs.logoPosition.options.full": "전체(워터마크)",
+
+  "inputs.logoStyle.label": "로고 색상",
+  "inputs.logoStyle.section": "오버레이",
+  "inputs.logoStyle.options.white": "흰색",
+  "inputs.logoStyle.options.green": "초록색",
+  "inputs.logoStyle.options.black": "검은색",
+  "inputs.logoStyle.help": "흰색과 초록색은 어둡거나 복잡한 화면에서 잘 보이고, 검은색은 밝은 배경에 어울려요.",
+
+  "inputs.logoScale.label": "로고 크기",
+  "inputs.logoScale.section": "오버레이",
+  "inputs.logoScale.help": "로고를 크게 또는 작게 조절해요.",
+
+  "inputs.lowerThird.label": "하단 자막 네임 카드",
+  "inputs.lowerThird.section": "오버레이",
+  "inputs.lowerThird.help": "화면 위에 부드럽게 애니메이션되며 나타나는 네임 카드예요. 프로필의 이름과 인물 사진을 사용해요.",
+
+  "inputs.ltTheme.label": "카드 스타일",
+  "inputs.ltTheme.section": "오버레이",
+  "inputs.ltTheme.options.bar": "SUSE 브랜드 바",
+  "inputs.ltTheme.options.minimal": "미니멀",
+  "inputs.ltTheme.options.glass": "글래스",
+
+  "inputs.ltPosition.label": "카드 위치",
+  "inputs.ltPosition.section": "오버레이",
+  "inputs.ltPosition.options.left": "왼쪽 아래",
+  "inputs.ltPosition.options.center": "아래 가운데",
+  "inputs.ltPosition.options.right": "오른쪽 아래",
+
+  "inputs.firstname.label": "이름",
+  "inputs.firstname.section": "오버레이",
+
+  "inputs.lastname.label": "성",
+  "inputs.lastname.section": "오버레이",
+
+  "inputs.title.label": "직책 / 부제목",
+  "inputs.title.section": "오버레이",
+  "inputs.title.help": "이름 아래에 표시할 선택 항목이에요 — 예: 직책이나 행사명.",
+
+  "inputs.nameWeight.label": "글자 굵기(이름)",
+  "inputs.nameWeight.section": "오버레이",
+  "inputs.nameWeight.help": "이름 줄의 글꼴 굵기예요(100 얇게 → 900 굵게).",
+
+  "inputs.subtitleWeight.label": "글자 굵기(부제목)",
+  "inputs.subtitleWeight.section": "오버레이",
+  "inputs.subtitleWeight.help": "직책 / 부제목 줄의 글꼴 굵기예요(100 얇게 → 900 굵게).",
+
+  "inputs.ltHeadshot.label": "인물 사진(선택)",
+  "inputs.ltHeadshot.section": "오버레이",
+  "inputs.ltHeadshot.help": "기본적으로 프로필의 인물 사진을 사용해요. 다른 사진을 선택하거나 업로드해서 바꿀 수 있어요."
+}

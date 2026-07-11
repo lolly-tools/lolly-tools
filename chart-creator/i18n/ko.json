@@ -1,0 +1,148 @@
+{
+  "name": "Chart Creator",
+  "description": "데이터로 브랜드에 맞는 차트를 만들어요 — 막대, 도넛, 원형, 누적형.",
+  "featured.blurb": "데이터로 브랜드에 맞는 차트를, 어떤 형태로든",
+
+  "inputs.chartType.label": "차트 유형",
+  "inputs.chartType.options.vertical-bar": "세로 막대형",
+  "inputs.chartType.options.horizontal-bar": "가로 막대형",
+  "inputs.chartType.options.donut": "도넛형",
+  "inputs.chartType.options.pie": "원형",
+  "inputs.chartType.options.stacked": "누적 막대형",
+
+  "inputs.donutRadius.label": "도넛 반지름",
+
+  "inputs.stackMax.label": "최대 눈금",
+  "inputs.stackMax.placeholder": "0 = 합계에 맞춤",
+  "inputs.stackMax.help": "0으로 두면 값의 합계(구성 요소들의 합)에 맞춰 막대가 조정돼요. 숫자를 지정하면 그 고정된 최대값에 맞춰 비율로 표시하고, 나머지는 비워둬요.",
+
+  "inputs.sliceGap.label": "조각 간 간격",
+  "inputs.sliceGap.section": "조각",
+  "inputs.sliceGap.help": "조각 사이 간격이에요(바깥쪽 가장자리 기준, 픽셀 단위). 0 = 조각이 서로 닿아요.",
+
+  "inputs.cornerRadius.label": "모서리 반경",
+  "inputs.cornerRadius.section": "조각",
+  "inputs.cornerRadius.help": "각 조각의 모서리를 둥글게 해요. 얇거나 좁은 조각에서는 자동으로 제한돼요.",
+
+  "inputs.strokeWidth.label": "윤곽선 두께",
+  "inputs.strokeWidth.section": "조각",
+  "inputs.strokeWidth.help": "각 조각을 둘러싼 윤곽선이에요. 0 = 윤곽선 없음.",
+
+  "inputs.strokeColor.label": "윤곽선 색상",
+  "inputs.strokeColor.section": "조각",
+
+  "inputs.heading.label": "제목",
+  "inputs.heading.placeholder": "차트 제목",
+
+  "inputs.subheading.label": "부제목 / 출처",
+  "inputs.subheading.placeholder": "부제목 또는 데이터 출처(선택 사항)",
+
+  "inputs.color.label": "텍스트 색상",
+
+  "inputs.background.label": "배경",
+
+  "inputs.showLegend.label": "범례 표시",
+  "inputs.showLegend.section": "범례",
+
+  "inputs.legendPosition.label": "위치",
+  "inputs.legendPosition.section": "범례",
+  "inputs.legendPosition.options.bottom": "아래",
+  "inputs.legendPosition.options.top": "위",
+  "inputs.legendPosition.options.left": "왼쪽",
+  "inputs.legendPosition.options.right": "오른쪽",
+
+  "inputs.legendDotShape.label": "점 모양",
+  "inputs.legendDotShape.section": "범례",
+  "inputs.legendDotShape.options.square": "정사각형",
+  "inputs.legendDotShape.options.circle": "원형",
+
+  "inputs.legendSize.label": "텍스트 크기",
+  "inputs.legendSize.section": "범례",
+
+  "inputs.legendFontWeight.label": "글자 굵기",
+  "inputs.legendFontWeight.section": "범례",
+
+  "inputs.legendMaxChars.label": "최대 라벨 길이",
+  "inputs.legendMaxChars.section": "범례",
+  "inputs.legendMaxChars.help": "범례 라벨이 “…”로 줄여지기 전까지 표시할 글자 수예요. 0 = 자동.",
+
+  "inputs.legendWidth.label": "범례 너비 %",
+  "inputs.legendWidth.section": "범례",
+
+  "inputs.showLabels.label": "라벨 표시",
+  "inputs.showLabels.section": "라벨",
+
+  "inputs.labelSize.label": "텍스트 크기",
+  "inputs.labelSize.section": "라벨",
+
+  "inputs.labelWeight.label": "글자 굵기",
+  "inputs.labelWeight.section": "라벨",
+
+  "inputs.labelMaxChars.label": "최대 라벨 길이",
+  "inputs.labelMaxChars.section": "라벨",
+  "inputs.labelMaxChars.help": "라벨이 “…”로 줄여지기 전까지 표시할 글자 수예요. 0 = 자동.",
+
+  "inputs.labelPosition.label": "위치",
+  "inputs.labelPosition.section": "라벨",
+  "inputs.labelPosition.options.inside": "안쪽",
+  "inputs.labelPosition.options.outside": "바깥쪽",
+
+  "inputs.labelAlign.label": "정렬",
+  "inputs.labelAlign.section": "라벨",
+  "inputs.labelAlign.options.top": "위",
+  "inputs.labelAlign.options.center": "가운데",
+  "inputs.labelAlign.options.bottom": "아래",
+
+  "inputs.labelOffset.label": "오프셋",
+  "inputs.labelOffset.section": "라벨",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "바깥 여백",
+  "inputs.labelGap.section": "라벨",
+
+  "inputs.dataLabels.label": "값 표시",
+  "inputs.dataLabels.section": "값",
+
+  "inputs.valueSize.label": "텍스트 크기",
+  "inputs.valueSize.section": "값",
+
+  "inputs.valueWeight.label": "글자 굵기",
+  "inputs.valueWeight.section": "값",
+
+  "inputs.valuePosition.label": "위치",
+  "inputs.valuePosition.section": "값",
+  "inputs.valuePosition.options.inside": "안쪽",
+  "inputs.valuePosition.options.outside": "바깥쪽",
+
+  "inputs.valueAlign.label": "정렬",
+  "inputs.valueAlign.section": "값",
+  "inputs.valueAlign.options.top": "위",
+  "inputs.valueAlign.options.center": "가운데",
+  "inputs.valueAlign.options.bottom": "아래",
+
+  "inputs.valueOffset.label": "오프셋",
+  "inputs.valueOffset.section": "값",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "바깥 여백",
+  "inputs.valueGap.section": "값",
+
+  "inputs.valueFormat.label": "숫자 형식",
+  "inputs.valueFormat.section": "값",
+  "inputs.valueFormat.options.auto": "자동",
+  "inputs.valueFormat.options.value": "원래 숫자",
+  "inputs.valueFormat.options.percent": "백분율",
+
+  "inputs.data.label": "데이터",
+  "inputs.data.fields.label.label": "라벨",
+  "inputs.data.fields.label.placeholder": "라벨",
+  "inputs.data.fields.value.label": "값",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "색상",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "너비",
+  "inputs.height.label": "높이"
+}

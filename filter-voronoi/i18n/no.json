@@ -1,0 +1,144 @@
+{
+  "name": "Filter: Voronoi-celler",
+  "description": "Splitter et hvilket som helst bilde til en Voronoi-cellemosaikk — hver celle fylt med nærmeste farge, som flat vektor.",
+  "a11yLabel": "Voronoi-cellemosaikk av bildet",
+
+  "inputs.image.label": "Foto",
+  "inputs.image.help": "Bildet som skal deles opp i celler. Alle foto fungerer; portretter og tydelige former blir ekstra bra.",
+
+  "inputs.cells.label": "Celler",
+  "inputs.cells.help": "Hvor mange Voronoi-celler bildet skal splittes i. Flere celler = finere, mer trofast; færre = grove, kraftige fasetter.",
+
+  "inputs.jitter.label": "Uregelmessighet",
+  "inputs.jitter.help": "0 = et regelmessig rutenett av celler · 100 = helt spredte, organiske celleformer.",
+
+  "inputs.relax.label": "Utjevn (relax)",
+  "inputs.relax.help": "Lloyd-relaksasjon — dytter cellene mot jevnere størrelse og rundere former. Høyere verdier gir et roligere, mer ensartet resultat.",
+
+  "inputs.seed.label": "Frø (kast om)",
+  "inputs.seed.help": "Kaster om den tilfeldige celleplasseringen. Samme frø = samme celler hver gang.",
+
+  "inputs.edgeWidth.label": "Kantbredde",
+  "inputs.edgeWidth.help": "Fugen mellom cellene. 0 = et sømløst fargenett; høyere verdier tegner et mellomrom i kantfargen for et blyglass-uttrykk.",
+
+  "inputs.edgeColor.label": "Kantfarge",
+  "inputs.edgeColor.help": "Fargen på mellomrommene mellom cellene (og ytterkanten).",
+
+  "inputs.transparentBg.label": "Gjennomsiktig bakgrunn",
+  "inputs.transparentBg.help": "Fjerner bakgrunnen slik at eventuelle mellomrom/kanter blir gjennomsiktige (PNG/SVG).",
+
+  "inputs.contrast.label": "Kontrast",
+  "inputs.contrast.section": "Farge",
+  "inputs.contrast.help": "Sprer tonene fra hverandre (høyere) eller flater dem ut (lavere) før cellene henter fargene sine.",
+
+  "inputs.hue.label": "Fargetone",
+  "inputs.hue.section": "Farge",
+  "inputs.hue.help": "Roterer hver farge rundt fargehjulet.",
+
+  "inputs.saturation.label": "Metning",
+  "inputs.saturation.section": "Farge",
+  "inputs.saturation.help": "0 = gråtoner · 100 = original · 200 = kraftig.",
+
+  "inputs.lightness.label": "Lyshet",
+  "inputs.lightness.section": "Farge",
+  "inputs.lightness.help": "Løfter mot hvitt eller senker mot svart.",
+
+  "inputs.treatmentColor.label": "Fargebehandling",
+  "inputs.treatmentColor.section": "Farge",
+  "inputs.treatmentColor.help": "Legger en farge over resultatet. La stå tomt for ingen.",
+
+  "inputs.blendMode.label": "Blandingsmodus",
+  "inputs.blendMode.section": "Farge",
+  "inputs.blendMode.help": "Hvordan behandlingsfargen blandes med bildet.",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.blendMode.options.multiply": "Multipliser",
+  "inputs.blendMode.options.screen": "Filtrer",
+  "inputs.blendMode.options.overlay": "Overlegg",
+  "inputs.blendMode.options.darken": "Mørkne",
+  "inputs.blendMode.options.lighten": "Lysne",
+  "inputs.blendMode.options.color-dodge": "Fargeavskygg",
+  "inputs.blendMode.options.color-burn": "Fargebrenn",
+  "inputs.blendMode.options.hard-light": "Sterkt lys",
+  "inputs.blendMode.options.soft-light": "Mykt lys",
+  "inputs.blendMode.options.difference": "Differanse",
+  "inputs.blendMode.options.exclusion": "Ekskludering",
+  "inputs.blendMode.options.hue": "Fargetone",
+  "inputs.blendMode.options.saturation": "Metning",
+  "inputs.blendMode.options.color": "Farge",
+  "inputs.blendMode.options.luminosity": "Luminans",
+
+  "inputs.treatmentIntensity.label": "Intensitet",
+  "inputs.treatmentIntensity.section": "Farge",
+  "inputs.treatmentIntensity.help": "Dekkevne for fargeoverlegget.",
+
+  "inputs.width.label": "Bredde",
+  "inputs.height.label": "Høyde",
+
+  "inputs.noFilter.label": "Ingen filter (vis original)",
+  "inputs.noFilter.section": "Overlegg",
+  "inputs.noFilter.help": "Vis originalbildet eller livekameraet uendret — praktisk når du bare vil legge en logo/navnestripe over det rå bildematerialet.",
+
+  "inputs.showLogo.label": "SUSE-logo-overlegg",
+  "inputs.showLogo.section": "Overlegg",
+  "inputs.showLogo.help": "Legger SUSE-logoen over resultatet. Av som standard.",
+
+  "inputs.logoPosition.label": "Logoposisjon",
+  "inputs.logoPosition.section": "Overlegg",
+  "inputs.logoPosition.options.top-left": "Øverst til venstre",
+  "inputs.logoPosition.options.top-right": "Øverst til høyre",
+  "inputs.logoPosition.options.bottom-left": "Nederst til venstre",
+  "inputs.logoPosition.options.bottom-right": "Nederst til høyre",
+  "inputs.logoPosition.options.top": "Øverst i midten",
+  "inputs.logoPosition.options.bottom": "Nederst i midten",
+  "inputs.logoPosition.options.center": "Midtstilt",
+  "inputs.logoPosition.options.full": "Full flate (vannmerke)",
+
+  "inputs.logoStyle.label": "Logofarge",
+  "inputs.logoStyle.section": "Overlegg",
+  "inputs.logoStyle.help": "Hvitt og grønt fungerer godt på mørkt eller rotete bildemateriale; svart passer til lyse bakgrunner.",
+  "inputs.logoStyle.options.white": "Hvit",
+  "inputs.logoStyle.options.green": "Grønn",
+  "inputs.logoStyle.options.black": "Svart",
+
+  "inputs.logoScale.label": "Logostørrelse",
+  "inputs.logoScale.section": "Overlegg",
+  "inputs.logoScale.help": "Skalerer logoen større eller mindre.",
+
+  "inputs.lowerThird.label": "Navnestripe (lower third)",
+  "inputs.lowerThird.section": "Overlegg",
+  "inputs.lowerThird.help": "Et mykt animert navnekort som tegnes inn over bildematerialet. Bruker navnet og profilbildet fra profilen din.",
+
+  "inputs.ltTheme.label": "Kortstil",
+  "inputs.ltTheme.section": "Overlegg",
+  "inputs.ltTheme.options.bar": "SUSE-merkevarelinje",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Glass",
+
+  "inputs.ltPosition.label": "Kortposisjon",
+  "inputs.ltPosition.section": "Overlegg",
+  "inputs.ltPosition.options.left": "Nederst til venstre",
+  "inputs.ltPosition.options.center": "Nederst i midten",
+  "inputs.ltPosition.options.right": "Nederst til høyre",
+
+  "inputs.firstname.label": "Fornavn",
+  "inputs.firstname.section": "Overlegg",
+
+  "inputs.lastname.label": "Etternavn",
+  "inputs.lastname.section": "Overlegg",
+
+  "inputs.title.label": "Rolle/undertekst",
+  "inputs.title.section": "Overlegg",
+  "inputs.title.help": "Valgfri linje under navnet — f.eks. en rolle eller et arrangement.",
+
+  "inputs.nameWeight.label": "Skriftvekt for navn",
+  "inputs.nameWeight.section": "Overlegg",
+  "inputs.nameWeight.help": "Skriftvekt for navnelinjen (100 Tynn → 900 Ekstra fet).",
+
+  "inputs.subtitleWeight.label": "Skriftvekt for undertekst",
+  "inputs.subtitleWeight.section": "Overlegg",
+  "inputs.subtitleWeight.help": "Skriftvekt for rolle-/undertekstlinjen (100 Tynn → 900 Ekstra fet).",
+
+  "inputs.ltHeadshot.label": "Profilbilde (valgfritt)",
+  "inputs.ltHeadshot.section": "Overlegg",
+  "inputs.ltHeadshot.help": "Bruker profilbildet ditt som standard. Velg eller last opp et annet for å overstyre."
+}

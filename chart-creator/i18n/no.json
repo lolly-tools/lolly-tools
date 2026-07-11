@@ -1,0 +1,148 @@
+{
+  "name": "Chart Creator",
+  "description": "Merkevaretilpassede diagrammer fra dataene dine — søyler, smultring, sirkel eller stablet.",
+  "featured.blurb": "Merkevaretilpassede diagrammer fra dataene dine, i alle former",
+
+  "inputs.chartType.label": "Diagramtype",
+  "inputs.chartType.options.vertical-bar": "Loddrette søyler",
+  "inputs.chartType.options.horizontal-bar": "Vannrette søyler",
+  "inputs.chartType.options.donut": "Smultring",
+  "inputs.chartType.options.pie": "Sirkel",
+  "inputs.chartType.options.stacked": "Stablet søyle",
+
+  "inputs.donutRadius.label": "Smultringradius",
+
+  "inputs.stackMax.label": "Maksverdi for skala",
+  "inputs.stackMax.placeholder": "0 = tilpass til totalen",
+  "inputs.stackMax.help": "La stå på 0 for å tilpasse søylen til totalsummen av verdiene dine (en sammensatt søyle). Angi et tall for å skalere den sammensatte søylen mot en fast maksverdi — søylen fyller sin andel og lar resten stå tom.",
+
+  "inputs.sliceGap.label": "Avstand mellom segmenter",
+  "inputs.sliceGap.section": "Segmenter",
+  "inputs.sliceGap.help": "Avstand mellom segmentene, i piksler ved ytterkanten. 0 = segmentene berører hverandre.",
+
+  "inputs.cornerRadius.label": "Hjørneradius",
+  "inputs.cornerRadius.section": "Segmenter",
+  "inputs.cornerRadius.help": "Runder av hjørnene på hvert segment. Begrenses automatisk for tynne eller smale segmenter.",
+
+  "inputs.strokeWidth.label": "Konturbredde",
+  "inputs.strokeWidth.section": "Segmenter",
+  "inputs.strokeWidth.help": "Kontur rundt hvert segment. 0 = ingen kontur.",
+
+  "inputs.strokeColor.label": "Konturfarge",
+  "inputs.strokeColor.section": "Segmenter",
+
+  "inputs.heading.label": "Tittel",
+  "inputs.heading.placeholder": "Diagramtittel",
+
+  "inputs.subheading.label": "Undertittel / kilde",
+  "inputs.subheading.placeholder": "Valgfri undertittel eller datakilde",
+
+  "inputs.color.label": "Tekstfarge",
+
+  "inputs.background.label": "Bakgrunn",
+
+  "inputs.showLegend.label": "Vis forklaring",
+  "inputs.showLegend.section": "Forklaring",
+
+  "inputs.legendPosition.label": "Posisjon",
+  "inputs.legendPosition.section": "Forklaring",
+  "inputs.legendPosition.options.bottom": "Nederst",
+  "inputs.legendPosition.options.top": "Øverst",
+  "inputs.legendPosition.options.left": "Venstre",
+  "inputs.legendPosition.options.right": "Høyre",
+
+  "inputs.legendDotShape.label": "Punktform",
+  "inputs.legendDotShape.section": "Forklaring",
+  "inputs.legendDotShape.options.square": "Firkant",
+  "inputs.legendDotShape.options.circle": "Sirkel",
+
+  "inputs.legendSize.label": "Tekststørrelse",
+  "inputs.legendSize.section": "Forklaring",
+
+  "inputs.legendFontWeight.label": "Skriftvekt",
+  "inputs.legendFontWeight.section": "Forklaring",
+
+  "inputs.legendMaxChars.label": "Maks etikettlengde",
+  "inputs.legendMaxChars.section": "Forklaring",
+  "inputs.legendMaxChars.help": "Antall tegn som vises før en etikett i forklaringen forkortes med «…». 0 = automatisk.",
+
+  "inputs.legendWidth.label": "Bredde på forklaring %",
+  "inputs.legendWidth.section": "Forklaring",
+
+  "inputs.showLabels.label": "Vis etiketter",
+  "inputs.showLabels.section": "Etiketter",
+
+  "inputs.labelSize.label": "Tekststørrelse",
+  "inputs.labelSize.section": "Etiketter",
+
+  "inputs.labelWeight.label": "Skriftvekt",
+  "inputs.labelWeight.section": "Etiketter",
+
+  "inputs.labelMaxChars.label": "Maks etikettlengde",
+  "inputs.labelMaxChars.section": "Etiketter",
+  "inputs.labelMaxChars.help": "Antall tegn som vises før en etikett forkortes med «…». 0 = automatisk.",
+
+  "inputs.labelPosition.label": "Posisjon",
+  "inputs.labelPosition.section": "Etiketter",
+  "inputs.labelPosition.options.inside": "Innenfor",
+  "inputs.labelPosition.options.outside": "Utenfor",
+
+  "inputs.labelAlign.label": "Justering",
+  "inputs.labelAlign.section": "Etiketter",
+  "inputs.labelAlign.options.top": "Øverst",
+  "inputs.labelAlign.options.center": "Midtstilt",
+  "inputs.labelAlign.options.bottom": "Nederst",
+
+  "inputs.labelOffset.label": "Forskyvning",
+  "inputs.labelOffset.section": "Etiketter",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Ytre avstand",
+  "inputs.labelGap.section": "Etiketter",
+
+  "inputs.dataLabels.label": "Vis verdier",
+  "inputs.dataLabels.section": "Verdi",
+
+  "inputs.valueSize.label": "Tekststørrelse",
+  "inputs.valueSize.section": "Verdi",
+
+  "inputs.valueWeight.label": "Skriftvekt",
+  "inputs.valueWeight.section": "Verdi",
+
+  "inputs.valuePosition.label": "Posisjon",
+  "inputs.valuePosition.section": "Verdi",
+  "inputs.valuePosition.options.inside": "Innenfor",
+  "inputs.valuePosition.options.outside": "Utenfor",
+
+  "inputs.valueAlign.label": "Justering",
+  "inputs.valueAlign.section": "Verdi",
+  "inputs.valueAlign.options.top": "Øverst",
+  "inputs.valueAlign.options.center": "Midtstilt",
+  "inputs.valueAlign.options.bottom": "Nederst",
+
+  "inputs.valueOffset.label": "Forskyvning",
+  "inputs.valueOffset.section": "Verdi",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Ytre avstand",
+  "inputs.valueGap.section": "Verdi",
+
+  "inputs.valueFormat.label": "Tallformat",
+  "inputs.valueFormat.section": "Verdi",
+  "inputs.valueFormat.options.auto": "Automatisk",
+  "inputs.valueFormat.options.value": "Opprinnelig tall",
+  "inputs.valueFormat.options.percent": "Prosent",
+
+  "inputs.data.label": "Data",
+  "inputs.data.fields.label.label": "Etikett",
+  "inputs.data.fields.label.placeholder": "Etikett",
+  "inputs.data.fields.value.label": "Verdi",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Farge",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Bredde",
+  "inputs.height.label": "Høyde"
+}

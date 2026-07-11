@@ -1,0 +1,148 @@
+{
+  "name": "Chart Creator",
+  "description": "Grafici in linea con il tuo brand a partire dai tuoi dati — a barre, a ciambella, a torta o impilati.",
+  "featured.blurb": "Grafici in linea con il tuo brand a partire dai tuoi dati, in qualsiasi forma",
+
+  "inputs.chartType.label": "Tipo di grafico",
+  "inputs.chartType.options.vertical-bar": "Barre verticali",
+  "inputs.chartType.options.horizontal-bar": "Barre orizzontali",
+  "inputs.chartType.options.donut": "Ciambella",
+  "inputs.chartType.options.pie": "Torta",
+  "inputs.chartType.options.stacked": "Barra impilata",
+
+  "inputs.donutRadius.label": "Raggio ciambella",
+
+  "inputs.stackMax.label": "Massimo scala",
+  "inputs.stackMax.placeholder": "0 = adatta al totale",
+  "inputs.stackMax.help": "Lascia 0 per adattare la barra al totale dei tuoi valori (una composizione). Imposta un numero per scalare la composizione su un massimo fisso — la barra riempie quella quota e lascia vuoto il resto.",
+
+  "inputs.sliceGap.label": "Spazio tra i segmenti",
+  "inputs.sliceGap.section": "Segmenti",
+  "inputs.sliceGap.help": "Spazio tra i segmenti, in pixel al bordo esterno. 0 = i segmenti si toccano.",
+
+  "inputs.cornerRadius.label": "Raggio angoli",
+  "inputs.cornerRadius.section": "Segmenti",
+  "inputs.cornerRadius.help": "Arrotonda gli angoli di ogni segmento. Viene limitato automaticamente per segmenti sottili o stretti.",
+
+  "inputs.strokeWidth.label": "Spessore contorno",
+  "inputs.strokeWidth.section": "Segmenti",
+  "inputs.strokeWidth.help": "Contorno attorno a ogni segmento. 0 = nessun contorno.",
+
+  "inputs.strokeColor.label": "Colore contorno",
+  "inputs.strokeColor.section": "Segmenti",
+
+  "inputs.heading.label": "Titolo",
+  "inputs.heading.placeholder": "Titolo del grafico",
+
+  "inputs.subheading.label": "Sottotitolo / fonte",
+  "inputs.subheading.placeholder": "Sottotitolo o fonte dei dati (opzionale)",
+
+  "inputs.color.label": "Colore testo",
+
+  "inputs.background.label": "Sfondo",
+
+  "inputs.showLegend.label": "Mostra legenda",
+  "inputs.showLegend.section": "Legenda",
+
+  "inputs.legendPosition.label": "Posizione",
+  "inputs.legendPosition.section": "Legenda",
+  "inputs.legendPosition.options.bottom": "In basso",
+  "inputs.legendPosition.options.top": "In alto",
+  "inputs.legendPosition.options.left": "A sinistra",
+  "inputs.legendPosition.options.right": "A destra",
+
+  "inputs.legendDotShape.label": "Forma del punto",
+  "inputs.legendDotShape.section": "Legenda",
+  "inputs.legendDotShape.options.square": "Quadrato",
+  "inputs.legendDotShape.options.circle": "Cerchio",
+
+  "inputs.legendSize.label": "Dimensione testo",
+  "inputs.legendSize.section": "Legenda",
+
+  "inputs.legendFontWeight.label": "Peso carattere",
+  "inputs.legendFontWeight.section": "Legenda",
+
+  "inputs.legendMaxChars.label": "Lunghezza massima etichetta",
+  "inputs.legendMaxChars.section": "Legenda",
+  "inputs.legendMaxChars.help": "Numero di caratteri mostrati prima che un'etichetta della legenda venga troncata con «…». 0 = automatico.",
+
+  "inputs.legendWidth.label": "Larghezza legenda %",
+  "inputs.legendWidth.section": "Legenda",
+
+  "inputs.showLabels.label": "Mostra etichette",
+  "inputs.showLabels.section": "Etichette",
+
+  "inputs.labelSize.label": "Dimensione testo",
+  "inputs.labelSize.section": "Etichette",
+
+  "inputs.labelWeight.label": "Peso carattere",
+  "inputs.labelWeight.section": "Etichette",
+
+  "inputs.labelMaxChars.label": "Lunghezza massima etichetta",
+  "inputs.labelMaxChars.section": "Etichette",
+  "inputs.labelMaxChars.help": "Numero di caratteri mostrati prima che un'etichetta venga troncata con «…». 0 = automatico.",
+
+  "inputs.labelPosition.label": "Posizione",
+  "inputs.labelPosition.section": "Etichette",
+  "inputs.labelPosition.options.inside": "Interno",
+  "inputs.labelPosition.options.outside": "Esterno",
+
+  "inputs.labelAlign.label": "Allineamento",
+  "inputs.labelAlign.section": "Etichette",
+  "inputs.labelAlign.options.top": "In alto",
+  "inputs.labelAlign.options.center": "Centro",
+  "inputs.labelAlign.options.bottom": "In basso",
+
+  "inputs.labelOffset.label": "Scostamento",
+  "inputs.labelOffset.section": "Etichette",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+
+  "inputs.labelGap.label": "Margine esterno",
+  "inputs.labelGap.section": "Etichette",
+
+  "inputs.dataLabels.label": "Mostra valori",
+  "inputs.dataLabels.section": "Valore",
+
+  "inputs.valueSize.label": "Dimensione testo",
+  "inputs.valueSize.section": "Valore",
+
+  "inputs.valueWeight.label": "Peso carattere",
+  "inputs.valueWeight.section": "Valore",
+
+  "inputs.valuePosition.label": "Posizione",
+  "inputs.valuePosition.section": "Valore",
+  "inputs.valuePosition.options.inside": "Interno",
+  "inputs.valuePosition.options.outside": "Esterno",
+
+  "inputs.valueAlign.label": "Allineamento",
+  "inputs.valueAlign.section": "Valore",
+  "inputs.valueAlign.options.top": "In alto",
+  "inputs.valueAlign.options.center": "Centro",
+  "inputs.valueAlign.options.bottom": "In basso",
+
+  "inputs.valueOffset.label": "Scostamento",
+  "inputs.valueOffset.section": "Valore",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+
+  "inputs.valueGap.label": "Margine esterno",
+  "inputs.valueGap.section": "Valore",
+
+  "inputs.valueFormat.label": "Formato numero",
+  "inputs.valueFormat.section": "Valore",
+  "inputs.valueFormat.options.auto": "Automatico",
+  "inputs.valueFormat.options.value": "Numero originale",
+  "inputs.valueFormat.options.percent": "Percentuale",
+
+  "inputs.data.label": "Dati",
+  "inputs.data.fields.label.label": "Etichetta",
+  "inputs.data.fields.label.placeholder": "Etichetta",
+  "inputs.data.fields.value.label": "Valore",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.label": "Colore",
+  "inputs.data.fields.color.placeholder": "#30ba78",
+
+  "inputs.width.label": "Larghezza",
+  "inputs.height.label": "Altezza"
+}

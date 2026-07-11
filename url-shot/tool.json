@@ -12,12 +12,16 @@
   "render": {
     "width": 1280,
     "height": 720,
-    "formats": ["png", "jpg", "webp", "pdf", "svg"],
+    "formats": ["png", "jpg", "webp", "svg", "pdf", "webm", "mp4"],
     "actions": ["download", "save"],
     "convertPaths": false,
     "preview": {
       "format": "webp",
       "auto": true
+    },
+    "video": {
+      "wait": 0,
+      "duration": 4
     }
   },
   "inputs": [
@@ -38,7 +42,29 @@
       "min": 0,
       "max": 1,
       "step": 0.05,
-      "help": "How far down the page to scroll before capturing. 0 = top, 1 = bottom."
+      "help": "How far down the page to scroll before capturing. 0 = top, 1 = bottom. For a video, this is where the pan STARTS."
+    },
+    {
+      "id": "scrollTo",
+      "label": "Scroll to (video)",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0,
+      "max": 1,
+      "step": 0.05,
+      "help": "Video export only: pan DOWN to this depth over the clip — a scroll of the page from 'Scroll depth' to here. Set equal to 'Scroll depth' for a still hold. Ignored for image formats."
+    },
+    {
+      "id": "zoom",
+      "label": "Zoom",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0.25,
+      "max": 5,
+      "step": 0.25,
+      "help": "Browser zoom level — magnifies the page before the shot (like Ctrl/Cmd +), so even a bitmap capture is enlarged and crisp rather than upscaled. 1 = 100%."
     },
     {
       "id": "waitMs",

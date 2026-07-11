@@ -20,8 +20,14 @@
   height: 100%;
   object-fit: contain;
 }
-/* Hide the image until a capture has set its src. */
-.url-shot .shot:not([src]) {
+/* Explicit hidden wins over the block above (higher specificity): the hook shows
+   exactly one .shot at a time — the <img> for a raster/vector still, the <canvas>
+   for a panned scroll video. */
+.url-shot .shot[hidden] {
+  display: none;
+}
+/* Hide the image until a capture has set its src (canvas has no src, so scope to img). */
+.url-shot img.shot:not([src]) {
   display: none;
 }
 
@@ -111,3 +117,42 @@
   white-space: normal;
   max-width: 32ch;
 }
+
+/* Persistent re-capture affordance. Staging environments rotate, so once a shot is
+   on the canvas you can re-screenshot without touching an input: this floating
+   button (also [data-preview], so the shell's delegation re-captures) fades in when
+   you hover the captured canvas. Hidden before the first capture (the placeholder's
+   big button owns that state) — data-captured is set by the hook on first paint. */
+.url-shot .shot-refresh {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--brand-on-primary, #fff);
+  background: color-mix(in oklab, var(--brand-primary, #30ba78), black 6%);
+  box-shadow: 0 2px 8px rgba(12, 50, 44, 0.3);
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+.url-shot[data-captured]:hover .shot-refresh,
+.url-shot .shot-refresh:focus-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+.url-shot .shot-refresh:hover { background: var(--brand-primary, #30ba78); }
+.url-shot .shot-refresh:active { transform: scale(0.94); }
+.url-shot .shot-refresh svg { width: 1.15rem; height: 1.15rem; display: block; }
+.url-shot .shot-refresh.is-busy { cursor: progress; pointer-events: none; opacity: 1; transform: none; }
+.url-shot .shot-refresh.is-busy svg { animation: url-shot-spin 0.7s linear infinite; }
+.url-shot .shot-refresh.is-error { background: #b32d2d; opacity: 1; transform: none; }

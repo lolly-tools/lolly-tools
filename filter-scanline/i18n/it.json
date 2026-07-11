@@ -1,0 +1,152 @@
+{
+  "name": "Filtro: Linee di scansione",
+  "description": "Effetto vettoriale di linee di scansione orizzontali in stile «linee infinite», da qualsiasi foto",
+  "a11yLabel": "Resa a linee di scansione dell'immagine scelta nei toni del brand",
+
+  "inputs.image.label": "Immagine",
+  "inputs.image.help": "Scegli una foto o carica la tua. Viene elaborata sul tuo dispositivo: i pixel non lasciano mai il browser.",
+
+  "inputs.lineSize.label": "Altezza linea",
+  "inputs.lineSize.help": "Altezza di ogni linea di scansione e dimensione di ogni cella: valori più piccoli significano linee più sottili e dettagli più fini.",
+
+  "inputs.gapSize.label": "Altezza spazio",
+  "inputs.gapSize.help": "Dimensione dello spazio vuoto sotto ogni linea di scansione, rispetto alla linea. Valori più alti danno linee più sottili con più spazio tra loro; 0 crea un'immagine piena senza spazi. Non cambia il dettaglio né la posizione dell'immagine.",
+
+  "inputs.separatePixels.label": "Separa i pixel",
+  "inputs.separatePixels.help": "Aggiunge uno spazio anche tra le celle, così ognuna forma un quadrato distinto: un look LED/matrice di pixel invece di barre di scansione piene.",
+
+  "inputs.everyLine.label": "Riempi ogni linea",
+  "inputs.everyLine.help": "Disegna ogni linea senza spazi: equivale a impostare l'altezza dello spazio a zero. Off = linee di scansione classiche; on = immagine posterizzata piena.",
+
+  "inputs.fit.label": "Adattamento immagine",
+  "inputs.fit.options.contain": "Contieni (immagine intera)",
+  "inputs.fit.options.cover": "Copri (riempie, ritaglia i bordi)",
+
+  "inputs.highlight.label": "Luce",
+  "inputs.highlight.help": "Tono più chiaro.",
+
+  "inputs.light.label": "Chiaro",
+
+  "inputs.mid.label": "Medio",
+
+  "inputs.shade.label": "Ombreggiatura",
+
+  "inputs.shadow.label": "Ombra",
+  "inputs.shadow.help": "Tono più scuro.",
+
+  "inputs.background.label": "Sfondo",
+  "inputs.background.help": "Riempie le linee e gli spazi vuoti. Lascia vuoto per uno sfondo trasparente (PNG/WebP/AVIF/SVG mantengono la trasparenza).",
+
+  "inputs.brightness.label": "Luminosità",
+
+  "inputs.contrast.label": "Contrasto",
+  "inputs.contrast.section": "Colore",
+
+  "inputs.hue.label": "Tonalità",
+  "inputs.hue.section": "Colore",
+  "inputs.hue.help": "Ruota ogni colore lungo la ruota cromatica.",
+
+  "inputs.saturation.label": "Saturazione",
+  "inputs.saturation.section": "Colore",
+  "inputs.saturation.help": "0 = scala di grigi · 100 = originale · 200 = vivido.",
+
+  "inputs.lightness.label": "Chiarezza",
+  "inputs.lightness.section": "Colore",
+  "inputs.lightness.help": "Schiarisce verso il bianco o scurisce verso il nero.",
+
+  "inputs.treatmentColor.label": "Trattamento colore",
+  "inputs.treatmentColor.section": "Colore",
+  "inputs.treatmentColor.help": "Sovrappone un colore al risultato. Lascia vuoto per nessuno.",
+
+  "inputs.blendMode.label": "Modalità di fusione",
+  "inputs.blendMode.section": "Colore",
+  "inputs.blendMode.help": "Come si mescola il colore di trattamento con l'immagine.",
+  "inputs.blendMode.options.normal": "Normale",
+  "inputs.blendMode.options.multiply": "Moltiplica",
+  "inputs.blendMode.options.screen": "Scherma",
+  "inputs.blendMode.options.overlay": "Sovrapponi",
+  "inputs.blendMode.options.darken": "Scurisci",
+  "inputs.blendMode.options.lighten": "Schiarisci",
+  "inputs.blendMode.options.color-dodge": "Scherma colore",
+  "inputs.blendMode.options.color-burn": "Brucia colore",
+  "inputs.blendMode.options.hard-light": "Luce intensa",
+  "inputs.blendMode.options.soft-light": "Luce soffusa",
+  "inputs.blendMode.options.difference": "Differenza",
+  "inputs.blendMode.options.exclusion": "Esclusione",
+  "inputs.blendMode.options.hue": "Tonalità",
+  "inputs.blendMode.options.saturation": "Saturazione",
+  "inputs.blendMode.options.color": "Colore",
+  "inputs.blendMode.options.luminosity": "Luminosità",
+
+  "inputs.treatmentIntensity.label": "Intensità",
+  "inputs.treatmentIntensity.section": "Colore",
+  "inputs.treatmentIntensity.help": "Opacità della sovrapposizione colore.",
+
+  "inputs.noFilter.label": "Nessun filtro (mostra originale)",
+  "inputs.noFilter.section": "Sovrapposizione",
+  "inputs.noFilter.help": "Mostra la foto originale o il feed live della fotocamera senza modifiche: utile per inserire solo un logo o una fascia inferiore sopra il girato originale.",
+
+  "inputs.showLogo.label": "Sovrapposizione logo SUSE",
+  "inputs.showLogo.section": "Sovrapposizione",
+  "inputs.showLogo.help": "Sovrappone il logo SUSE al risultato. Disattivato per impostazione predefinita.",
+
+  "inputs.logoPosition.label": "Posizione logo",
+  "inputs.logoPosition.section": "Sovrapposizione",
+  "inputs.logoPosition.options.top-left": "In alto a sinistra",
+  "inputs.logoPosition.options.top-right": "In alto a destra",
+  "inputs.logoPosition.options.bottom-left": "In basso a sinistra",
+  "inputs.logoPosition.options.bottom-right": "In basso a destra",
+  "inputs.logoPosition.options.top": "In alto al centro",
+  "inputs.logoPosition.options.bottom": "In basso al centro",
+  "inputs.logoPosition.options.center": "Centro",
+  "inputs.logoPosition.options.full": "Intero (filigrana)",
+
+  "inputs.logoStyle.label": "Colore logo",
+  "inputs.logoStyle.section": "Sovrapposizione",
+  "inputs.logoStyle.help": "Bianco e verde si leggono bene su riprese scure o affollate; il nero è adatto a sfondi chiari.",
+  "inputs.logoStyle.options.white": "Bianco",
+  "inputs.logoStyle.options.green": "Verde",
+  "inputs.logoStyle.options.black": "Nero",
+
+  "inputs.logoScale.label": "Dimensione logo",
+  "inputs.logoScale.section": "Sovrapposizione",
+  "inputs.logoScale.help": "Ingrandisce o riduce il logo.",
+
+  "inputs.lowerThird.label": "Fascia con nome (lower-third)",
+  "inputs.lowerThird.section": "Sovrapposizione",
+  "inputs.lowerThird.help": "Una fascia con il nome, animata delicatamente, che compare sopra le riprese. Usa il nome e la foto del tuo profilo.",
+
+  "inputs.ltTheme.label": "Stile fascia",
+  "inputs.ltTheme.section": "Sovrapposizione",
+  "inputs.ltTheme.options.bar": "Barra brand SUSE",
+  "inputs.ltTheme.options.minimal": "Minimal",
+  "inputs.ltTheme.options.glass": "Vetro",
+
+  "inputs.ltPosition.label": "Posizione fascia",
+  "inputs.ltPosition.section": "Sovrapposizione",
+  "inputs.ltPosition.options.left": "In basso a sinistra",
+  "inputs.ltPosition.options.center": "In basso al centro",
+  "inputs.ltPosition.options.right": "In basso a destra",
+
+  "inputs.firstname.label": "Nome",
+  "inputs.firstname.section": "Sovrapposizione",
+
+  "inputs.lastname.label": "Cognome",
+  "inputs.lastname.section": "Sovrapposizione",
+
+  "inputs.title.label": "Ruolo/sottotitolo",
+  "inputs.title.section": "Sovrapposizione",
+  "inputs.title.help": "Riga facoltativa sotto il nome, ad esempio un ruolo o un evento.",
+
+  "inputs.nameWeight.label": "Peso del nome",
+  "inputs.nameWeight.section": "Sovrapposizione",
+  "inputs.nameWeight.help": "Peso del carattere per la riga del nome (100 Sottile → 900 Nero).",
+
+  "inputs.subtitleWeight.label": "Peso del sottotitolo",
+  "inputs.subtitleWeight.section": "Sovrapposizione",
+  "inputs.subtitleWeight.help": "Peso del carattere per la riga di ruolo/sottotitolo (100 Sottile → 900 Nero).",
+
+  "inputs.ltHeadshot.label": "Foto profilo (opzionale)",
+  "inputs.ltHeadshot.section": "Sovrapposizione",
+  "inputs.ltHeadshot.help": "Per impostazione predefinita usa la foto del tuo profilo. Scegline o caricane un'altra per sostituirla."
+}
