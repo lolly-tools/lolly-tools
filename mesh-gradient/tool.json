@@ -21,7 +21,7 @@
       "label": "Colour points",
       "type": "number",
       "display": "slider",
-      "default": 4,
+      "default": 5,
       "min": 2,
       "max": 6,
       "step": 1
@@ -130,7 +130,7 @@
       "label": "Blend mode",
       "section": "Texture",
       "type": "select",
-      "default": "normal",
+      "default": "hard-light",
       "help": "How the colour points mix into each other.",
       "options": [
         { "value": "normal", "label": "Normal" },

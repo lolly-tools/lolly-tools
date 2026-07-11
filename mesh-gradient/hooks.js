@@ -113,7 +113,7 @@ var _memoResult = null;
 function compute(model) {
   var a = Object.fromEntries(model.map(function (i) { return [i.id, i.value]; }));
 
-  var count = _clamp(Math.round(_num(a.count, 4)), 2, 6);
+  var count = _clamp(Math.round(_num(a.count, 5)), 2, 6); // fallback = the manifest default; clamp ceiling = the declared color1–6/pos1–6 inputs
   var pts = [];
   for (var i = 0; i < count; i++) {
     var p = _pos(a['pos' + (i + 1)], DEF_POS[i]);
