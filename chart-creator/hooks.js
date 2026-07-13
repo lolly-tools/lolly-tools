@@ -64,7 +64,7 @@ function lum(hex) {
 }
 
 function autoText(hex) {
-  return lum(hex) > 0.179 ? '#0c322c' : '#ffffff';
+  return lum(hex) > 0.179 ? '#111111' : '#ffffff';
 }
 
 function isValidHex(s) {
@@ -97,7 +97,7 @@ function toHex(rgb) {
 // FLOOR (1.9) sits just BELOW the palette's lightest intentional mark
 // (Teal #00bda7 ≈ 2.38:1 on white), so the guard NEVER "corrects" a deliberate
 // palette colour — it only rescues marks that would otherwise disappear
-// (e.g. legacy Mint #90ebcd 1.40:1 on white, or #0c322c 1.00:1 on the Jungle tile).
+// (e.g. legacy Mint #90ebcd 1.40:1 on white, or a dark ink on its own dark tile).
 function legibleFill(hex, bg) {
   if (!isValidHex(hex) || !isValidHex(bg)) return hex;
   const FLOOR = 1.9;
@@ -687,7 +687,7 @@ function buildChart(inputs) {
   const chartType = inputs.chartType  || 'donut';
   const title     = (inputs.heading    || '').trim();
   const subtitle  = (inputs.subheading || '').trim();
-  const textColor = isValidHex(inputs.color) ? inputs.color : '#0c322c';
+  const textColor = isValidHex(inputs.color) ? inputs.color : '#111111';
   const bgColor   = isValidHex(inputs.background) ? inputs.background : '#ffffff';
   // Transparent → the chart composites onto the theme surface; assume white
   // (the common light-theme surface) for the legibility guard.

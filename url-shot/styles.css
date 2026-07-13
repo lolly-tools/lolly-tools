@@ -44,7 +44,7 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--brand-text, #0c322c);
+  color: var(--brand-text, #111);
   background: var(--brand-surface, #efefef);
   border: 1px solid var(--brand-edge, #d6d6d6);
   border-radius: 999px;
@@ -58,7 +58,7 @@
 }
 .url-shot .placeholder .target {
   margin: 0 0 1.25rem;
-  color: var(--brand-text, #0c322c);
+  color: var(--brand-text, #111);
   font-size: 1.1rem;
   font-weight: 600;
   word-break: break-all;

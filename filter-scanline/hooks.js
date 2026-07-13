@@ -29,7 +29,9 @@ var _bgTransparent = true; // for beforeExport: is the background empty (transpa
 
 function inputsFrom(model) { var o = {}; model.forEach(function (i) { o[i.id] = i.value; }); return o; }
 function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+// === /lolly:shared clamp ===
 function f2(v) { return Math.round(v * 100) / 100; }
 
 // Colours land in raw SVG fill attributes, so validate them (a crafted shared URL
@@ -54,12 +56,15 @@ function placeholder(message) {
     + message + '</text></svg>';
 }
 
+// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function canRaster() {
   if (typeof document === 'undefined' || !document.createElement) return false;
   try { var c = document.createElement('canvas'); return !!(c.getContext && c.getContext('2d')); }
   catch (e) { return false; }
 }
+// === /lolly:shared canRaster ===
 
+// === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function loadImage(url) {
   return new Promise(function (resolve, reject) {
     if (typeof Image === 'undefined') { reject(new Error('no Image')); return; }
@@ -70,6 +75,7 @@ function loadImage(url) {
     im.src = url;
   });
 }
+// === /lolly:shared loadImage ===
 function getImage(url) {
   if (_imgCache.url === url && _imgCache.promise) return _imgCache.promise;
   var promise = loadImage(url);
@@ -184,7 +190,7 @@ function sampleGrid(img, cols, rows, fit, hueDeg, sat, light) {
 // ══════════════════════════════════════════════════════════════════════════════
 // Brand overlay — optional SUSE logo + gently-animated "lower third" name card.
 //
-// Kept BYTE-IDENTICAL across every filter-* tool (paste target). Emits SVG children
+// Synced from community/_shared/overlay.js (npm run sync:shared). Emits SVG children
 // so the overlay survives ALL export paths — raster (png/webp/jpg), motion
 // (gif/webm/mp4) AND vector (svg/pdf). Everything is OFF by default → overlayActive()
 // is false → buildOverlaySvg() returns '' (zero markup / zero cost).
@@ -199,6 +205,7 @@ function sampleGrid(img, cols, rows, fit, hueDeg, sat, light) {
 // Module state used: _logoCache, _profileHeadshotUrl, _liveOvStart. Depends on `host`
 // (host.assets.get / host.profile.get) being in scope.
 // ══════════════════════════════════════════════════════════════════════════════
+// === lolly:shared overlay — generated from community/_shared/overlay.js; edit there and run npm run sync:shared ===
 var LOGO_ASPECT = 210.179 / 37.666;   // SUSE horizontal lockup, from its own viewBox
 var _logoCache = {};                  // variantId -> url | null (resolved once per variant)
 var _profileHeadshotUrl;              // undefined = not looked up; null = none; string = url
@@ -324,7 +331,7 @@ function buildOverlaySvg(OW, OH, o) {
       + (p < 1 ? ' opacity="' + ovF2(p) + '"' : '') + '>';
 
     if (theme === 'bar') {
-      g += ovRRect(0, 0, cardW, cardH, r, '#0c322c', 0.97);
+      g += ovRRect(0, 0, cardW, cardH, r, '#111111', 0.97);
     } else if (theme === 'glass') {
       g += ovRRect(0, 0, cardW, cardH, r, '#0b1512', 0.34);
       g += '<rect x="0.75" y="0.75" width="' + ovF2(cardW - 1.5) + '" height="' + ovF2(cardH - 1.5)
@@ -375,6 +382,7 @@ function ovRRect(x, y, w, h, r, fill, op) {
     + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="' + fill + '"'
     + (op != null && op < 1 ? ' fill-opacity="' + ovF2(op) + '"' : '') + '/>';
 }
+// === /lolly:shared overlay ===
 
 // ── render ───────────────────────────────────────────────────────────────────
 

@@ -60,15 +60,16 @@
   /* Lead with a green that clears WCAG 1.4.11 (3:1) on white — Pine #30BA78 is
      only ~2.5:1, so the deeper #008657 takes slot 0 (like the reference tool). */
   var CATEGORICAL = ['#008657','#2453FF','#FE7C3F','#5D4F99','#00BDA7','#BD3314','#3C8EEF','#192072','#30BA78','#FAB088'];
-  /* Sequential ramps, light → dark, as interpolate anchors. */
+  /* Sequential ramps, light → dark, as interpolate anchors. The dark anchor is the
+     neutral near-black ink #111111 (not any brand's ink hex). */
   var RAMPS = {
-    suse:      ['#DDF3EA','#8FE3C0','#30BA78','#0C7C4E','#0C322C'],
-    pine:      ['#DDF3EA','#8FE3C0','#30BA78','#0C7C4E','#0C322C'],
+    suse:      ['#DDF3EA','#8FE3C0','#30BA78','#0C7C4E','#111111'],
+    pine:      ['#DDF3EA','#8FE3C0','#30BA78','#0C7C4E','#111111'],
     waterhole: ['#E3EAFF','#93A9FF','#2453FF','#1B37B8','#192072'],
     warm:      ['#FDE7D8','#FAB088','#FE7C3F','#C6461B','#7A2A10'],
     cool:      ['#BFF1EA','#5FC7D8','#2E77E6','#1E2C86','#192072'],
     diverging: ['#2453FF','#93A9FF','#EFEFEF','#FCB98F','#FE7C3F'],
-    mono:      ['#D6E3DE','#93B7AA','#3E7D68','#1C4E40','#0C322C']
+    mono:      ['#D6E3DE','#93B7AA','#3E7D68','#1C4E40','#111111']
   };
 
   /* ── colour helpers (WCAG legibility guard, ported from chart-creator) ─────── */
@@ -81,9 +82,9 @@
     return 0.2126*f(parseInt(c.slice(0,2),16)) + 0.7152*f(parseInt(c.slice(2,4),16)) + 0.0722*f(parseInt(c.slice(4,6),16));
   }
   function contrast(a, b) { var hi = Math.max(lum(a),lum(b)), lo = Math.min(lum(a),lum(b)); return (hi+0.05)/(lo+0.05); }
-  /* Crossover for the non-black ink #0c322c (luminance 0.025) is ~0.23 — above it
-     dark ink out-contrasts white on the mark. (0.42 wrongly whitened mid greens.) */
-  function autoText(bg) { return lum(bg) > 0.22 ? '#0c322c' : '#ffffff'; }
+  /* Crossover for the near-black ink #111111 (luminance ~0.005) is ~0.18 — above it
+     dark ink out-contrasts white on the mark (matches chart-creator's autoText). */
+  function autoText(bg) { return lum(bg) > 0.179 ? '#111111' : '#ffffff'; }
   function toRgb(hex){var c=String(hex).replace('#','');return [parseInt(c.slice(0,2),16),parseInt(c.slice(2,4),16),parseInt(c.slice(4,6),16)];}
   function toHex(a){return '#'+a.map(function(v){return clamp(Math.round(v),0,255).toString(16).padStart(2,'0');}).join('');}
   /* Nudge a fill away from the surface until it clears a legibility floor. */
@@ -118,7 +119,7 @@
     var cfg = state.cfg, data = state.data;
     var W = cfg.width, H = cfg.height;
     var guardBg = cfg.transparent ? '#ffffff' : (isHex(cfg.background) ? cfg.background : '#ffffff');
-    var ink = isHex(cfg.textColor) ? cfg.textColor : '#0c322c';
+    var ink = isHex(cfg.textColor) ? cfg.textColor : '#111111';
 
     var svg = d3.select('#d3-svg');
     svg.attr('viewBox', '0 0 '+W+' '+H).attr('width', W).attr('height', H);

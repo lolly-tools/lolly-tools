@@ -51,13 +51,16 @@ function inputsFrom(model) {
   return o;
 }
 function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+// === /lolly:shared clamp ===
 function f2(v) { return Math.round(v * 100) / 100; }
+// === lolly:shared esc — generated from community/_shared/text.js; edit there and run npm run sync:shared ===
 function esc(s) {
   return String(s == null ? '' : s)
-    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;');
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+// === /lolly:shared esc ===
 
 // A valid CSS colour string, or a fallback. Keeps stray input out of the SVG.
 function color(v, fallback) {
@@ -82,6 +85,7 @@ function placeholder(message) {
 
 // ── image decoding ───────────────────────────────────────────────────────────
 
+// === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function loadImage(url) {
   return new Promise(function (resolve, reject) {
     if (typeof Image === 'undefined') { reject(new Error('no Image')); return; }
@@ -92,6 +96,7 @@ function loadImage(url) {
     im.src = url;
   });
 }
+// === /lolly:shared loadImage ===
 
 function getImage(url) {
   if (_imgCache.url === url && _imgCache.promise) return _imgCache.promise;
@@ -106,13 +111,13 @@ function getImage(url) {
 // context). Headless shells (CLI/jsdom) can't, and their <img> never fires load,
 // so we probe up front and skip image loading entirely rather than hang to the
 // hook timeout.
+// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function canRaster() {
   if (typeof document === 'undefined' || !document.createElement) return false;
-  try {
-    var c = document.createElement('canvas');
-    return !!(c.getContext && c.getContext('2d'));
-  } catch (e) { return false; }
+  try { var c = document.createElement('canvas'); return !!(c.getContext && c.getContext('2d')); }
+  catch (e) { return false; }
 }
+// === /lolly:shared canRaster ===
 
 // Downsample the image into a cols×rows grid. Returns an object carrying the
 // per-cell luminance (0..255, transparency composited over white — drives dot
@@ -371,7 +376,7 @@ function treatHex(baseHex, t) {
 // ══════════════════════════════════════════════════════════════════════════════
 // Brand overlay — optional SUSE logo + gently-animated "lower third" name card.
 //
-// Kept BYTE-IDENTICAL across every filter-* tool (paste target). Emits SVG children
+// Synced from community/_shared/overlay.js (npm run sync:shared). Emits SVG children
 // so the overlay survives ALL export paths — raster (png/webp/jpg), motion
 // (gif/webm/mp4) AND vector (svg/pdf). Everything is OFF by default → overlayActive()
 // is false → buildOverlaySvg() returns '' (zero markup / zero cost).
@@ -386,6 +391,7 @@ function treatHex(baseHex, t) {
 // Module state used: _logoCache, _profileHeadshotUrl, _liveOvStart. Depends on `host`
 // (host.assets.get / host.profile.get) being in scope.
 // ══════════════════════════════════════════════════════════════════════════════
+// === lolly:shared overlay — generated from community/_shared/overlay.js; edit there and run npm run sync:shared ===
 var LOGO_ASPECT = 210.179 / 37.666;   // SUSE horizontal lockup, from its own viewBox
 var _logoCache = {};                  // variantId -> url | null (resolved once per variant)
 var _profileHeadshotUrl;              // undefined = not looked up; null = none; string = url
@@ -511,7 +517,7 @@ function buildOverlaySvg(OW, OH, o) {
       + (p < 1 ? ' opacity="' + ovF2(p) + '"' : '') + '>';
 
     if (theme === 'bar') {
-      g += ovRRect(0, 0, cardW, cardH, r, '#0c322c', 0.97);
+      g += ovRRect(0, 0, cardW, cardH, r, '#111111', 0.97);
     } else if (theme === 'glass') {
       g += ovRRect(0, 0, cardW, cardH, r, '#0b1512', 0.34);
       g += '<rect x="0.75" y="0.75" width="' + ovF2(cardW - 1.5) + '" height="' + ovF2(cardH - 1.5)
@@ -562,6 +568,7 @@ function ovRRect(x, y, w, h, r, fill, op) {
     + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="' + fill + '"'
     + (op != null && op < 1 ? ' fill-opacity="' + ovF2(op) + '"' : '') + '/>';
 }
+// === /lolly:shared overlay ===
 
 function buildSvg(args) {
   // No-filter bypass: show the raw source (still image or live camera frame) with the
@@ -635,7 +642,7 @@ function buildSvg(args) {
   var colorSource = args.colorSource === 'solid' ? 'solid' : 'image';
   var levels = parseInt(args.colorLevels, 10) || 0;
   var _t = treatmentFrom(args);
-  var solidHex = colorSource === 'solid' ? treatHex(color(args.fgColor, '#0c322c'), _t) : null;
+  var solidHex = colorSource === 'solid' ? treatHex(color(args.fgColor, '#111111'), _t) : null;
 
   // Group dots by fill colour: one <g fill> for solid, many for a full-colour photo.
   var groups = {};

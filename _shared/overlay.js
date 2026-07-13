@@ -1,90 +1,18 @@
-/* global onInit, onInput, onFrame, host */
+/**
+ * Shared hook helpers — the filter-* brand overlay (logo + lower-third).
+ *
+ * CANONICAL SOURCE for the `overlay` region below. Tool hooks.js ship as
+ * self-contained data (no imports), so each consumer carries a byte-for-byte
+ * copy of this region between `lolly:shared` marker comments. Edit the region
+ * HERE, then run `npm run sync:shared` to rewrite every consumer;
+ * `npm run validate:catalog` fails if any consumer drifts from this file.
+ *
+ * The region depends on `host` (host.assets.get / host.profile.get) being in
+ * scope — true inside any hooks.js — and declares its own module state
+ * (_logoCache, _profileHeadshotUrl, _liveOvStart).
+ */
 
-// A raster library asset shown when the user hasn't picked an image yet, so the
-// tool demonstrates the effect on load. Same default as filter-scanline /
-// filter-halftone, kept in sync deliberately.
-// A Lolly tool URL (bag-video → PNG), resolved via host.compose. A plain catalog
-// id still works (the resolver below branches on whether this is a URL).
-var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
-
-// Resolved URL of the demo default asset, cached so repeated input changes don't
-// re-fetch it. Stays null until the first lookup succeeds.
-var _defaultUrl = null;
-
-function hexToChannels(hex) {
-  const c = (hex || '#000000').replace('#', '');
-  return {
-    r: parseInt(c.slice(0, 2), 16) / 255,
-    g: parseInt(c.slice(2, 4), 16) / 255,
-    b: parseInt(c.slice(4, 6), 16) / 255,
-  };
-}
-
-function ch(n) {
-  return parseFloat(n.toFixed(4));
-}
-
-// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
-function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
-// === /lolly:shared clamp ===
-
-function buildDuo(inputs) {
-  const fg = hexToChannels(inputs.colorFg);
-  const bg = hexToChannels(inputs.colorBg);
-
-  // Colour grade — applied as SVG filter primitives upstream of the duotone table
-  // (hueRotate → saturate → lightness), then a colour-treatment overlay after it.
-  // Defaults are a strict no-op: hue 0, saturation 100, lightness 0, no treatment.
-  var hueDeg = clamp(parseFloat(inputs.hue) || 0, -180, 180);
-  var sat = clamp(parseFloat(inputs.saturation == null ? 100 : inputs.saturation) || 0, 0, 200) / 100;
-  var lightV = clamp(parseFloat(inputs.lightness) || 0, -100, 100) / 100;
-  var liteSlope = lightV >= 0 ? (1 - lightV) : (1 + lightV);
-  var liteIntercept = lightV >= 0 ? lightV : 0;
-  // treatment: feFlood + feBlend after the duotone table, opacity = intensity.
-  // Off (empty / invalid colour) ⇒ amt 0, so the overlay contributes nothing.
-  var tc = (typeof inputs.treatmentColor === 'string' ? inputs.treatmentColor.trim() : '');
-  var tOn = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(tc);
-  var treatAmt = tOn ? clamp(parseFloat(inputs.treatmentIntensity == null ? 20 : inputs.treatmentIntensity) || 0, 0, 100) / 100 : 0;
-  var treatColor = tOn ? tc : '#000000';
-  var blendMode = (typeof inputs.blendMode === 'string' && inputs.blendMode) ? inputs.blendMode : 'multiply';
-
-  return {
-    tableR: `${ch(fg.r)} ${ch(bg.r)}`,
-    tableG: `${ch(fg.g)} ${ch(bg.g)}`,
-    tableB: `${ch(fg.b)} ${ch(bg.b)}`,
-    hueDeg: String(hueDeg),
-    satFrac: String(sat),
-    liteSlope: String(liteSlope),
-    liteIntercept: String(liteIntercept),
-    treatColor: treatColor,
-    // Returned as `treatBlend` (NOT `blendMode`) on purpose: a patch key equal to a
-    // declared input id is treated by the runtime as a write-back to that input
-    // (mergePatch), which is redundant and opens a stale-overwrite window. Keep it
-    // an extra so the template reads a computed value, never the input echoed back.
-    treatBlend: blendMode,
-    treatAmt: String(treatAmt),
-  };
-}
-
-// ══════════════════════════════════════════════════════════════════════════════
-// Brand overlay — optional SUSE logo + gently-animated "lower third" name card.
-//
-// Synced from community/_shared/overlay.js (npm run sync:shared). Emits SVG children
-// so the overlay survives ALL export paths — raster (png/webp/jpg), motion
-// (gif/webm/mp4) AND vector (svg/pdf). Everything is OFF by default → overlayActive()
-// is false → buildOverlaySvg() returns '' (zero markup / zero cost).
-//
-// Animation is ATTRIBUTE-BAKED (computed transform/opacity per render), never CSS
-// @keyframes or SMIL: the tool's whole SVG is replaced on every paint / every live
-// camera frame, which would reset a CSS/SMIL animation to t=0 each frame. Baking the
-// pose means it looks identical in the live preview, in each captured video frame,
-// and in a static vector snapshot. In live mode the gentle intro is driven by the
-// camera clock (elapsed since the overlay first appeared).
-//
-// Module state used: _logoCache, _profileHeadshotUrl, _liveOvStart. Depends on `host`
-// (host.assets.get / host.profile.get) being in scope.
-// ══════════════════════════════════════════════════════════════════════════════
-// === lolly:shared overlay — generated from community/_shared/overlay.js; edit there and run npm run sync:shared ===
+// === lolly:shared overlay — canonical source; edit here and run npm run sync:shared ===
 var LOGO_ASPECT = 210.179 / 37.666;   // SUSE horizontal lockup, from its own viewBox
 var _logoCache = {};                  // variantId -> url | null (resolved once per variant)
 var _profileHeadshotUrl;              // undefined = not looked up; null = none; string = url
@@ -262,94 +190,3 @@ function ovRRect(x, y, w, h, r, fill, op) {
     + (op != null && op < 1 ? ' fill-opacity="' + ovF2(op) + '"' : '') + '/>';
 }
 // === /lolly:shared overlay ===
-
-// Overlay geometry uses the export canvas size (width/height inputs, default 1080).
-function overlayDims(inputs) {
-  var W = Number(inputs.width) > 0 ? Number(inputs.width) : 1080;
-  var H = Number(inputs.height) > 0 ? Number(inputs.height) : 1080;
-  return { W: W, H: H };
-}
-
-async function patch({ model }) {
-  const inputs = Object.fromEntries(model.map(i => [i.id, i.value]));
-  const out = buildDuo(inputs);
-
-  // No image picked → fall back to the shared demo image (resolved once), exposed
-  // to the template as an extra. The template uses {{asset bgImage}} for the
-  // user's own pick and {{defaultImageUrl}} for this fallback.
-  if (!inputs.bgImage) {
-    if (!_defaultUrl) {
-      try {
-        // Tool URL → render via compose; plain catalog id → host.assets.
-        const def = (DEFAULT_IMAGE_ID.indexOf('://') !== -1)
-          ? (host.compose && host.compose.renderUrl ? await host.compose.renderUrl(DEFAULT_IMAGE_ID) : null)
-          : await host.assets.get(DEFAULT_IMAGE_ID);
-        _defaultUrl = def && def.url;
-      }
-      catch (e) { if (host.log) host.log('warn', 'filter-duotone: default image unavailable', { error: String(e) }); }
-    }
-    if (_defaultUrl) out.defaultImageUrl = _defaultUrl;
-  }
-
-  // Brand overlay (still) — resolve logo + headshot URLs (cached) before building so
-  // the render already carries them. Off by default → buildOverlaySvg returns ''.
-  const ovi = overlayInputs(inputs);
-  if (ovi.showLogo) await resolveLogoUrl(ovi.logoStyle);
-  let headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || '';
-  if (ovi.lowerThird && !headUrl) headUrl = (await resolveProfileHeadshot()) || '';
-  const ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: 'still' });
-  const d = overlayDims(inputs);
-  out.overlaySvg = buildOverlaySvg(d.W, d.H, ov);
-  out.noFilter = ovi.noFilter;
-
-  return out;
-}
-
-function onInit(ctx) {
-  return patch(ctx);
-}
-
-function onInput(ctx) {
-  return patch(ctx);
-}
-
-// Live camera (engine v1.4): the runtime calls this once per frame with raw RGBA
-// pixels. Unlike the pixel-tracing filters, duotone is a browser SVG filter on an
-// <image>, so we just hand the frame back as the image source (a data URL) plus the
-// current colour tables — the browser applies the #duo filter to it (GPU-fast). The
-// template renders it as #duo-live (see template.html), so the framing script skips
-// re-probing a fresh data URL every frame. null = no patch (last frame stays).
-function onFrame({ frame, model }) {
-  if (!frame || !frame.data || !frame.width || !frame.height) return null;
-  if (typeof document === 'undefined' || typeof ImageData === 'undefined') return null;
-  const inputs = Object.fromEntries(model.map(i => [i.id, i.value]));
-  let liveSrc;
-  try {
-    const c = document.createElement('canvas');
-    c.width = frame.width; c.height = frame.height;
-    c.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
-    // JPEG: cheap to encode and the duotone filter discards colour fidelity anyway.
-    liveSrc = c.toDataURL('image/jpeg', 0.85);
-  } catch (e) { return null; }
-
-  // Brand overlay (live): warm caches without awaiting; drive the intro from camera time.
-  const ovi = overlayInputs(inputs);
-  if (overlayActive(ovi)) { if (_liveOvStart == null) _liveOvStart = frame.t; }
-  else _liveOvStart = null;
-  if (ovi.showLogo && _logoCache[logoVariantId(ovi.logoStyle)] === undefined) resolveLogoUrl(ovi.logoStyle);
-  if (ovi.lowerThird && _profileHeadshotUrl === undefined) resolveProfileHeadshot();
-  const headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || _profileHeadshotUrl || '';
-  const ov = Object.assign({}, ovi, {
-    logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl,
-    mode: 'live', elapsed: frame.t - (_liveOvStart == null ? frame.t : _liveOvStart),
-  });
-  const d = overlayDims(inputs);
-
-  // The live frame IS the source <image> (id duo-live); the #duo filter is removed by
-  // the template's {{#unless noFilter}} when No-filter is on, so noFilter needs no
-  // separate rawSrc here — just carry the boolean + the overlay children.
-  const out = Object.assign(buildDuo(inputs), { liveSrc });
-  out.overlaySvg = buildOverlaySvg(d.W, d.H, ov);
-  out.noFilter = ovi.noFilter;
-  return out;
-}

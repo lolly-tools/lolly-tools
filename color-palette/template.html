@@ -478,115 +478,25 @@ scoped to .suse-pl class for easier merging with existing code bases
 // built — leaving only the static button. Function scope keeps each run clean.
 (function () {
 
-const llmColorInstructions = `SUSE's brand colors are inspired by natural elements, symbolizing the environment where the chameleon thrives. The color palette is a star player in the brand identity and is one way to foster recognition with audiences.
-## Primary colors
-
-SUSE remains a green brand through and through. The primary color palette reflects SUSE's unique identity green roots.
-
-Pine: #0c322c
-White: #ffffff
-Jungle: #30ba78
-Fog:  #efefef
-Midnight:  #192072
-Persimmon:  #fe7c3f
-Waterhole: #2453ff
-Mint:  #90ebcd
-
-## Color combinations and backgrounds
-
-Pine, Jungle, White and Fog are the primary background colors.
-
-Use the following color palette combinations (background and foregrounds) to ensure accessibility, clarity and legibility for both written and graphic content.
-
-- Pine Background:  Mint, Persimmon, Jungle, Fog, White
-- Jungle background: White - Graphics only, White - Graphics only, Pine, Midnight
-- White bacground: Jungle - Graphics Only, Pine, Watehole, Midnight
-- Fog: Jungle - Graphics only, Pine, Waterhole, Midnight
-
-## Primary colors shades
-
-To create depth and contrast, graphic designs may feature shades of primary colors. Do not use these shades as a replacement for primary colors.
-
-#0c322c, #025937, #008657, #30ba78, #42d29f, #83e1be, #c0efde, #eafaf4, #47190d, #8e2810, #bd3314, #ff5a2b, #fe7c3f, #ffb184, #ffd3bd, #ffefe9, #0a112b, #192072, #0b41b7, #2453ff, #3c8eef, #81aefc, #c8dafc, #e6edfe, #0c322c, #01564a, #008878, #00bda7, #38d5b4, #90ebcd, #bff1ea, #eafaf8, #1d1d1d, #3e3e3e, #525252, #6f6f6f, #999999, #bababa, #dcdbdc, #efefef
-
-## Infographics palette
-
-The infographics palette is a secondary palette designed to complement and expand upon the primary palette. Filling gaps in the color wheel, it maximizes flexibility while maintaining harmony with the primary SUSE palette.
-This secondary palette is for limited uses only (e.g., infographics, charts and other data visualizations).
-Do not use secondary colors as a replacement for primary colors or shades.
-
-#00bda7, #a1ef8b, #7dc6e2, #e8c1f7, #5d4f99, #f9cabf, #fcb244, #bd3314
-
-## Dont's
-Do not:
-- use too many colors from different spectrums.
-- create unpleasant combinations.
-- use typography or the logo with a lack of contrast.
-- use the infographics palette for primary situations (e.g. illustrations and icons).
-
-The full color palette with color names:
-
-pine #0c322c
-jungle #30ba78
-mint #90ebcd
-persimmon #fe7c3f
-midnight #192072
-waterhole #2453ff
-fog #efefef
-white #ffffff
-jungle-1 #0c322c
-jungle-2 #025937
-jungle-3 #008657
-jungle-4 #30ba78
-jungle-5 #42d29f
-jungle-6 #83e1be
-jungle-7 #c0efde
-jungle-8 #eafaf4
-pine-1 #0c322c
-pine-2 #01564a
-pine-3 #008878
-pine-4 #00bda7
-pine-5 #38d5b4
-pine-6 #90ebcd
-pine-7 #bff1ea
-pine-8 #eafaf8
-persimmon-1 #47190d
-persimmon-2 #8e2810
-persimmon-3 #bd3314
-persimmon-4 #ff5a2b
-persimmon-5 #fe7c3f
-persimmon-6 #ffb184
-persimmon-7 #ffd3bd
-persimmon-8 #ffefe9
-blue-1 #0a112b
-blue-2 #192072
-blue-3 #0b41b7
-blue-4 #2453ff
-blue-5 #3c8eef
-blue-6 #81aefc
-blue-7 #c8dafc
-blue-8 #e6edfe
-teal #00bda7
-lime #a1ef8b
-sky #7dc6e2
-lilac #e8c1f7
-amethyst #5d4f99
-peach #f9cabf
-marigold #fcb244
-rust #bd3314
-black #000000
-fog-1 #1d1d1d
-fog-2 #3e3e3e
-fog-3 #525252
-fog-4 #6f6f6f
-fog-5 #999999
-fog-6 #bababa
-fog-7 #dcdbdc
-fog-8 #efefef
-white #ffffff`;
+// "Copy LLM Instructions" builds its prompt from the palette that is actually
+// rendered (each .swatch tile's name + computed hex), so the copied text always
+// matches the tiles above and no brand values are hardcoded here.
+function buildLlmColorInstructions() {
+  var lines = [];
+  document.querySelectorAll('.swatch').forEach(function (sw) {
+    var name = sw.getAttribute('name');
+    var hex = rgbToHex(window.getComputedStyle(sw).getPropertyValue('background-color'));
+    if (name && hex) lines.push(name + ' ' + hex);
+  });
+  return 'Use this design system\'s color palette. Prefer these exact hex values over invented ones, '
+    + 'keep combinations legible (check the contrast between any text and its background), '
+    + 'and do not introduce colors from outside the palette.\n\n'
+    + 'The full color palette with color names:\n\n'
+    + lines.join('\n');
+}
 
 document.getElementById('copyLlmBtn').addEventListener('click', function() {
-  navigator.clipboard.writeText(llmColorInstructions).then(() => {
+  navigator.clipboard.writeText(buildLlmColorInstructions()).then(() => {
     const btn = this;
     const original = btn.textContent;
     btn.textContent = 'Copied!';

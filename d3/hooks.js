@@ -307,7 +307,7 @@ function buildConfig(inp) {
   const H = clamp(Math.round(num(inp.height, 800)), 100, 8000);
   const transparent = inp.transparentBg === true || inp.transparentBg === 'true';
   const background = isHex(inp.background) ? inp.background.trim() : '#ffffff';
-  const textColor = isHex(inp.textColor) ? inp.textColor.trim() : '#0c322c';
+  const textColor = isHex(inp.textColor) ? inp.textColor.trim() : '#111111';
 
   return {
     chartType:      String(inp.chartType || 'bar'),

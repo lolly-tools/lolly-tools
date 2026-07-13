@@ -229,7 +229,7 @@ function _errorSvg(note) {
   return '<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="100%" height="100%" viewBox="0 0 600 600">'
     + '<rect x="0" y="0" width="600" height="600" fill="#fff5f5"/>'
     + '<text x="300" y="286" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="700" fill="#bd3314">QR code unavailable</text>'
-    + '<text x="300" y="326" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#0c322c">' + _esc(note) + '</text>'
+    + '<text x="300" y="326" text-anchor="middle" font-family="sans-serif" font-size="20" fill="#111111">' + _esc(note) + '</text>'
     + '</svg>';
 }
 
@@ -252,7 +252,7 @@ function compute(args) {
   try {
     var qr = new QRCode({
       content:    content,
-      color:      args.color || '#0c322c',
+      color:      args.color || '#111111',
       background: _transparentBg ? 'none' : (args.background || '#ffffff'),
       ecl:        args.ecl || 'M',
       padding:    Number.isFinite(Number(args.padding)) ? Math.max(0, Math.round(Number(args.padding))) : 4,

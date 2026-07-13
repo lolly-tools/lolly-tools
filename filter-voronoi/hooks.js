@@ -46,12 +46,16 @@ var _transparent = false, _paper = '#ffffff';
 // ── small helpers (shared with the filter-* family) ───────────────────────────
 function inputsFrom(model) { var o = {}; model.forEach(function (i) { o[i.id] = i.value; }); return o; }
 function num(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+// === /lolly:shared clamp ===
 function f2(v) { return Math.round(v * 100) / 100; }
+// === lolly:shared esc — generated from community/_shared/text.js; edit there and run npm run sync:shared ===
 function esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
+// === /lolly:shared esc ===
 function color(v, fallback) {
   var s = (typeof v === 'string' ? v : '').trim();
   return /^#[0-9a-f]{3,8}$/i.test(s) || /^(rgb|hsl)a?\([\d%.,\s/]+\)$/i.test(s) ? s : fallback;
@@ -159,13 +163,14 @@ function treatHex(baseHex, t) {
 
 // ══════════════════════════════════════════════════════════════════════════════
 // Brand overlay — optional SUSE logo + gently-animated "lower third" name card.
-// Kept BYTE-IDENTICAL across every filter-* tool (paste target). Emits SVG children
+// Synced from community/_shared/overlay.js (npm run sync:shared). Emits SVG children
 // so it survives raster + motion + vector export. Everything OFF by default → ''.
 // ══════════════════════════════════════════════════════════════════════════════
-var LOGO_ASPECT = 210.179 / 37.666;
-var _logoCache = {};
-var _profileHeadshotUrl;
-var _liveOvStart = null;
+// === lolly:shared overlay — generated from community/_shared/overlay.js; edit there and run npm run sync:shared ===
+var LOGO_ASPECT = 210.179 / 37.666;   // SUSE horizontal lockup, from its own viewBox
+var _logoCache = {};                  // variantId -> url | null (resolved once per variant)
+var _profileHeadshotUrl;              // undefined = not looked up; null = none; string = url
+var _liveOvStart = null;              // frame.t when the overlay first became active while live
 
 function ovEsc(s) {
   return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
@@ -177,6 +182,7 @@ function ovClamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 function ovF2(v) { return Math.round(v * 100) / 100; }
 function ovEaseOut(p) { p = ovClamp(p, 0, 1); return 1 - Math.pow(1 - p, 3); }
 
+// Normalise the overlay-related inputs into one flat object (reused by still + live).
 function overlayInputs(inp) {
   return {
     noFilter: !!inp.noFilter,
@@ -196,11 +202,15 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
+// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
+// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
 function logoVariantId(style) {
   return style === 'green' ? 'suse/logo/hor-neg-green'
     : style === 'black' ? 'suse/logo/hor-pos-black'
       : 'suse/logo/hor-neg-white';
 }
+// Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
+// compute/onInit; call WITHOUT await from onFrame — it just warms the cache.
 function resolveLogoUrl(style) {
   var id = logoVariantId(style);
   if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
@@ -210,6 +220,8 @@ function resolveLogoUrl(style) {
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
+// Resolve the user's PROFILE headshot to a URL once (async). Used as the auto default
+// for the lower-third chip when the headshot input is empty. null = none / unavailable.
 function resolveProfileHeadshot() {
   if (_profileHeadshotUrl !== undefined) return Promise.resolve(_profileHeadshotUrl);
   _profileHeadshotUrl = null;
@@ -221,12 +233,15 @@ function resolveProfileHeadshot() {
   }).catch(function () { }).then(function () { return _profileHeadshotUrl; });
 }
 
+// Build the overlay SVG children. OW/OH = the output coordinate box (viewBox units).
+// o = normalised overlay inputs + { logoUrl, headshotUrl, mode:'still'|'live', elapsed }.
 function buildOverlaySvg(OW, OH, o) {
   if (!overlayActive(o)) return '';
   var live = o.mode === 'live';
   var elapsed = live ? ovNum(o.elapsed, 1e9) : 1e9;
   var out = '';
 
+  // ── SUSE logo ──────────────────────────────────────────────────────────────
   if (o.showLogo && o.logoUrl) {
     var pos = o.logoPosition || 'top-right';
     var m = OW * 0.045;
@@ -246,6 +261,7 @@ function buildOverlaySvg(OW, OH, o) {
       + (lop < 1 ? ' opacity="' + ovF2(lop) + '"' : '') + '/>';
   }
 
+  // ── lower-third name card ────────────────────────────────────────────────────
   if (o.lowerThird) {
     var name = [String(o.firstname || '').trim(), String(o.lastname || '').trim()].filter(Boolean).join(' ') || 'Your name';
     var title = String(o.title || '').trim();
@@ -276,12 +292,12 @@ function buildOverlaySvg(OW, OH, o) {
       + (p < 1 ? ' opacity="' + ovF2(p) + '"' : '') + '>';
 
     if (theme === 'bar') {
-      g += ovRRect(0, 0, cardW, cardH, r, '#0c322c', 0.97);
+      g += ovRRect(0, 0, cardW, cardH, r, '#111111', 0.97);
     } else if (theme === 'glass') {
       g += ovRRect(0, 0, cardW, cardH, r, '#0b1512', 0.34);
       g += '<rect x="0.75" y="0.75" width="' + ovF2(cardW - 1.5) + '" height="' + ovF2(cardH - 1.5)
         + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="none" stroke="#ffffff" stroke-opacity="0.3" stroke-width="1.4"/>';
-    }
+    } // 'minimal' → no plate; text carries a soft outline for legibility
 
     var textX = padX + (hasShot ? chip + gap : 0);
     var blockTop = (cardH - lineH) / 2;
@@ -320,19 +336,24 @@ function buildOverlaySvg(OW, OH, o) {
 
   return out;
 }
+// A rounded rect (rx clamped) shared by the overlay themes.
 function ovRRect(x, y, w, h, r, fill, op) {
   r = Math.min(r, w / 2, h / 2);
   return '<rect x="' + ovF2(x) + '" y="' + ovF2(y) + '" width="' + ovF2(w) + '" height="' + ovF2(h)
     + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="' + fill + '"'
     + (op != null && op < 1 ? ' fill-opacity="' + ovF2(op) + '"' : '') + '/>';
 }
+// === /lolly:shared overlay ===
 
 // ── decode ────────────────────────────────────────────────────────────────────
+// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function canRaster() {
   if (typeof document === 'undefined' || !document.createElement) return false;
   try { var c = document.createElement('canvas'); return !!(c.getContext && c.getContext('2d')); }
   catch (e) { return false; }
 }
+// === /lolly:shared canRaster ===
+// === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function loadImage(url) {
   return new Promise(function (resolve, reject) {
     if (typeof Image === 'undefined') { reject(new Error('no Image')); return; }
@@ -343,6 +364,7 @@ function loadImage(url) {
     im.src = url;
   });
 }
+// === /lolly:shared loadImage ===
 function getImage(url) {
   if (_imgCache[url]) return _imgCache[url];
   var p = loadImage(url);
