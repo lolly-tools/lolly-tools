@@ -245,7 +245,10 @@
       window.__smCities = window.__smCities ||
         fetch(LIB + 'cities.json').then(function (r) {
           if (!r.ok) throw new Error('HTTP ' + r.status); return r.json();
-        });
+        })
+        /* Evict on failure so a transient blip doesn't poison every instance
+           until reload (matches the __smLoading loader cache above). */
+        .catch(function (e) { window.__smCities = null; throw e; });
       return window.__smCities;
     })
     .then(function (cities) {
@@ -256,7 +259,10 @@
       if (!window.__smClip[city]) {
         window.__smClip[city] = fetch(LIB + entry.data).then(function (r) {
           if (!r.ok) throw new Error('HTTP ' + r.status); return r.json();
-        });
+        })
+        /* Evict on failure so a blip loading one city doesn't blank every
+           sibling cell of that city until reload (see __smLoading above). */
+        .catch(function (e) { delete window.__smClip[city]; throw e; });
       }
       return window.__smClip[city].then(function (fc) { draw(fc); });
     })
