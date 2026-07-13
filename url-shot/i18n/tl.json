@@ -29,5 +29,8 @@
   "inputs.hue.label": "Angle ng hue",
   "inputs.hue.help": "Bilang ng degrees na ipapaikot sa bawat kulay kapag 'Paikot ng hue' ang Recolor.",
   "inputs.tintColor.label": "Kulay ng tint",
-  "inputs.tintColor.help": "Ang kulay na ilulubog sa page kapag 'Tint' ang Recolor."
+  "inputs.tintColor.help": "Ang kulay na ilulubog sa page kapag 'Tint' ang Recolor.",
+  "inputs.scrollTo.label": "I-scroll hanggang (video)",
+  "inputs.scrollTo.help": "Para sa video export lang: pan PABABA hanggang sa depth na ito sa buong clip — isang scroll ng page mula sa 'Scroll depth' hanggang dito. I-set na kapareho ng 'Scroll depth' para sa still hold. Hindi ito ginagamit para sa image formats.",
+  "inputs.zoom.help": "Zoom level ng browser — nag-magnify ng page bago kunin ang shot (parang Ctrl/Cmd +), kaya kahit bitmap capture ay pinalaki at malinaw sa halip na upscaled. 1 = 100%."
 }

@@ -29,5 +29,8 @@
   "inputs.hue.label": "Ângulo de matiz",
   "inputs.hue.help": "Graus para girar cada cor quando Recolorir estiver definido como 'Mudança de matiz'.",
   "inputs.tintColor.label": "Cor de tonalização",
-  "inputs.tintColor.help": "A cor na qual a página é banhada quando Recolorir estiver definido como 'Tonalizar'."
+  "inputs.tintColor.help": "A cor na qual a página é banhada quando Recolorir estiver definido como 'Tonalizar'.",
+  "inputs.scrollTo.label": "Rolar até (vídeo)",
+  "inputs.scrollTo.help": "Somente para exportação em vídeo: role para BAIXO até esta profundidade ao longo do clipe — uma rolagem da página de 'Profundidade de rolagem' até aqui. Defina igual a 'Profundidade de rolagem' para um quadro estático. Ignorado para formatos de imagem.",
+  "inputs.zoom.help": "Nível de zoom do navegador — amplia a página antes da captura (como Ctrl/Cmd +), então até uma captura em bitmap fica ampliada e nítida, em vez de esticada. 1 = 100%."
 }

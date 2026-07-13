@@ -29,5 +29,9 @@
   "inputs.hue.label": "色相角度",
   "inputs.hue.help": "當「重新上色」設為「色相偏移」時，所有顏色要旋轉的角度。",
   "inputs.tintColor.label": "染色顏色",
-  "inputs.tintColor.help": "當「重新上色」設為「染色」時，頁面要套上的顏色。"
+  "inputs.tintColor.help": "當「重新上色」設為「染色」時，頁面要套上的顏色。",
+  "inputs.scrollTo.label": "捲動至（影片）",
+  "inputs.scrollTo.help": "僅限影片匯出：在片段中向下平移至此深度 — 頁面會從「捲動深度」捲動至此處。設為與「捲動深度」相同即為靜止畫面。圖片格式會忽略此設定。",
+  "inputs.zoom.label": "縮放",
+  "inputs.zoom.help": "瀏覽器縮放層級 — 在截圖前放大頁面（類似 Ctrl/Cmd +），因此即使是位圖擷取也會放大且清晰，而非事後放大失真。1 = 100%。"
 }

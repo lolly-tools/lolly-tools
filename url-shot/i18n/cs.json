@@ -29,5 +29,9 @@
   "inputs.hue.label": "Úhel odstínu",
   "inputs.hue.help": "O kolik stupňů otočit každou barvu, když je Přebarvení nastaveno na „Posun odstínu“.",
   "inputs.tintColor.label": "Tónovací barva",
-  "inputs.tintColor.help": "Barva, kterou se stránka zalije, když je Přebarvení nastaveno na „Tónování“."
+  "inputs.tintColor.help": "Barva, kterou se stránka zalije, když je Přebarvení nastaveno na „Tónování“.",
+  "inputs.scrollTo.label": "Posunout na (video)",
+  "inputs.scrollTo.help": "Pouze u exportu videa: v průběhu klipu posune stránku DOLŮ na tuto hloubku — posun stránky od 'Hloubka posunu' až sem. Nastav stejně jako 'Hloubka posunu' pro statický záběr. U obrazových formátů se ignoruje.",
+  "inputs.zoom.label": "Přiblížení",
+  "inputs.zoom.help": "Úroveň přiblížení prohlížeče — zvětší stránku před snímkem (jako Ctrl/Cmd +), takže i rastrový snímek je zvětšený a ostrý, ne jen přeškálovaný. 1 = 100 %."
 }

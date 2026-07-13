@@ -29,5 +29,8 @@
   "inputs.hue.label": "Sudut rona",
   "inputs.hue.help": "Derajat putaran setiap warna saat Ubah warna diatur ke 'Pergeseran rona'.",
   "inputs.tintColor.label": "Warna tint",
-  "inputs.tintColor.help": "Warna yang melapisi halaman saat Ubah warna diatur ke 'Tint'."
+  "inputs.tintColor.help": "Warna yang melapisi halaman saat Ubah warna diatur ke 'Tint'.",
+  "inputs.scrollTo.label": "Gulir ke (video)",
+  "inputs.scrollTo.help": "Hanya untuk ekspor video: geser ke BAWAH hingga kedalaman ini selama klip — gulir halaman dari 'Kedalaman gulir' hingga ke sini. Setel sama dengan 'Kedalaman gulir' untuk tahan diam. Diabaikan untuk format gambar.",
+  "inputs.zoom.help": "Tingkat zoom browser — memperbesar halaman sebelum pengambilan (seperti Ctrl/Cmd +), sehingga bahkan tangkapan bitmap diperbesar dan tetap tajam, bukan di-upscale. 1 = 100%."
 }

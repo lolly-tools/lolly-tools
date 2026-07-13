@@ -1,5 +1,5 @@
 {
-  "name": "Filter: Duotone",
+  "name": "Filter: Duotoon",
   "description": "Een tweekleurige duotone voor elke foto — schaduwen in de ene kleur, lichtpartijen in de andere.",
   "inputs.bgImage.label": "Achtergrondafbeelding",
   "inputs.colorFg.label": "Schaduwkleur",

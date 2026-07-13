@@ -1,4 +1,5 @@
 {
   "name": "Asistent de text",
-  "description": "Formatează, decodează, aplică hash și anonimizează text — JSON, JWT și altele."
+  "description": "Formatează, decodează, aplică hash și anonimizează text — JSON, JWT și altele.",
+  "a11yLabel": "Text Helper — spațiu de lucru local pentru JSON / YAML / Helm / JWT / Base64 / hash / de-identificare"
 }

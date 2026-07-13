@@ -29,5 +29,9 @@
   "inputs.hue.label": "Góc xoay tông màu",
   "inputs.hue.help": "Số độ để xoay mọi màu sắc khi Đổi màu là 'Xoay tông màu'.",
   "inputs.tintColor.label": "Màu nhuộm",
-  "inputs.tintColor.help": "Màu mà trang được nhuộm vào khi Đổi màu là 'Nhuộm màu'."
+  "inputs.tintColor.help": "Màu mà trang được nhuộm vào khi Đổi màu là 'Nhuộm màu'.",
+  "inputs.scrollTo.label": "Cuộn đến (video)",
+  "inputs.scrollTo.help": "Chỉ áp dụng khi xuất video: cuộn XUỐNG đến độ sâu này trong suốt đoạn clip — một lần cuộn trang từ 'Độ cuộn' đến đây. Đặt bằng 'Độ cuộn' để giữ hình tĩnh. Bị bỏ qua với các định dạng hình ảnh.",
+  "inputs.zoom.label": "Thu phóng",
+  "inputs.zoom.help": "Mức thu phóng của trình duyệt — phóng to trang trước khi chụp (giống Ctrl/Cmd +), để ngay cả ảnh chụp bitmap cũng được phóng to và sắc nét thay vì bị nội suy. 1 = 100%."
 }

@@ -29,5 +29,9 @@
   "inputs.hue.label": "色相角度",
   "inputs.hue.help": "当“重新着色”设为“色相偏移”时，每种颜色旋转的角度。",
   "inputs.tintColor.label": "染色颜色",
-  "inputs.tintColor.help": "当“重新着色”设为“染色”时，页面所染上的颜色。"
+  "inputs.tintColor.help": "当“重新着色”设为“染色”时，页面所染上的颜色。",
+  "inputs.scrollTo.label": "滚动到（视频）",
+  "inputs.scrollTo.help": "仅视频导出：在片段中向下平移到此深度——即页面从“滚动深度”滚动到此处。设置为与“滚动深度”相同即可保持静止。图片格式将忽略此设置。",
+  "inputs.zoom.label": "缩放",
+  "inputs.zoom.help": "浏览器缩放级别——在截图前放大页面（类似 Ctrl/Cmd +），因此即使是位图截图也会被放大且清晰，而非事后放大失真。1 = 100%。"
 }
