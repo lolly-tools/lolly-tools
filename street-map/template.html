@@ -9,11 +9,35 @@
 
 <script>
 (function () {
-  /* ── Epoch guard — stale async callbacks from a previous render must not draw ─ */
-  window.__smEpoch = (window.__smEpoch || 0) + 1;
-  var _ep = window.__smEpoch;
-  function alive() { return window.__smEpoch === _ep; }
-  clearTimeout(window.__smViewTimer);
+  /* ── Resolve THIS instance's own root (multi-edit mounts several maps) ──────── */
+  /* Own root = this script's previous sibling; fall back to the newest .sm-root
+     when the shell executes the script detached (currentScript null). Every id
+     below (#sm-map, #sm-zi…) repeats across instances, so all lookups are scoped
+     to smRoot rather than document-global. */
+  var cs = document.currentScript;
+  var smRoot = cs && cs.previousElementSibling && cs.previousElementSibling.classList
+    && cs.previousElementSibling.classList.contains('sm-root')
+    ? cs.previousElementSibling : null;
+  if (!smRoot) { var roots = document.querySelectorAll('.sm-root'); smRoot = roots[roots.length - 1] || null; }
+  if (!smRoot) return;
+  var mapEl = smRoot.querySelector('#sm-map') || smRoot.querySelector('.sm-map-wrap');
+  if (!mapEl) return;
+
+  /* Per-canvas commit channel + per-instance state live on the STABLE canvas
+     element (it survives each paint's innerHTML swap), so N mounted maps never
+     share one viewport / epoch / debounce timer. Absent offscreen and in older
+     shells — then the window fallback keeps the previous single-instance path.
+     __smLoading/__smCities/__smClip below stay window-global on purpose: those
+     are content caches every instance should share. */
+  var canvasRoot = smRoot.closest('[data-lolly-canvas]');
+  var commitFn = canvasRoot && canvasRoot.__lollyCommit;
+  var stateStore = canvasRoot || window;
+
+  /* ── Epoch guard — a newer render of THIS map cancels its own stale draws ───── */
+  stateStore.__smEpoch = (stateStore.__smEpoch || 0) + 1;
+  var _ep = stateStore.__smEpoch;
+  function alive() { return stateStore.__smEpoch === _ep && document.contains(mapEl); }
+  clearTimeout(stateStore.__smViewTimer);
 
   /* ── Inputs (via _-prefixed extras so annotateTemplate leaves them alone) ──── */
   var city       = '{{_city}}' || 'nuremberg';
@@ -39,9 +63,6 @@
 
   /* Stroke width (px) per road tier, before the roadWeight multiplier. */
   var TIER_W = { 0: 0.4, 1: 0.6, 2: 1.0, 3: 1.5, 4: 2.0, 5: 2.6 };
-
-  var mapEl = document.getElementById('sm-map');
-  if (!mapEl) return;
 
   /* ── Script loader (dedupes concurrent loads across re-renders) ────────────── */
   function loadScript(src, present) {
@@ -164,15 +185,20 @@
     var _applying = false;
     var zoomFn = window.d3.zoom().scaleExtent([0.3, 8]).on('zoom', function (event) {
       gMap.attr('transform', event.transform);
-      window.__smView = event.transform;
+      stateStore.__smView = event.transform;
       if (_applying) return;
       /* Debounce-save the viewport to the `view` input so it survives reload and
          is URL-shareable / part of saved state. */
-      clearTimeout(window.__smViewTimer);
-      window.__smViewTimer = setTimeout(function () {
+      clearTimeout(stateStore.__smViewTimer);
+      stateStore.__smViewTimer = setTimeout(function () {
         if (!alive()) return;
-        var t = window.__smView; if (!t) return;
+        var t = stateStore.__smView; if (!t) return;
         var encoded = t.k.toFixed(4) + ',' + t.x.toFixed(2) + ',' + t.y.toFixed(2);
+        if (encoded === stateStore.__smViewSaved) return; /* unchanged → no needless re-render */
+        stateStore.__smViewSaved = encoded;
+        /* Preferred: 1:1 to this canvas's own runtime. */
+        if (commitFn) { commitFn('view', encoded); return; }
+        /* Fallback (offscreen / legacy shell): poke the one sidebar control. */
         var inp = document.querySelector('[data-input-id="view"]');
         if (inp && inp.value !== encoded) {
           inp.value = encoded;
@@ -184,8 +210,11 @@
 
     /* Restore: prefer live in-session transform (so theme/weight tweaks don't
        reset the pan), else the saved `view` param from URL / saved slot. */
-    if (!viewIn) window.__smView = null;
-    var restore = window.__smView || (function () {
+    if (!viewIn) stateStore.__smView = null;
+    /* Seed the "last saved" guard from the persisted value so a restore doesn't
+       immediately re-commit the same viewport. */
+    if (viewIn) stateStore.__smViewSaved = viewIn;
+    var restore = stateStore.__smView || (function () {
       if (!viewIn) return null;
       var p = viewIn.split(',').map(Number);
       return (p.length === 3 && p[0] > 0 && p.every(isFinite))
@@ -197,14 +226,14 @@
       _applying = false;
     }
 
-    /* Zoom buttons */
-    var zi = document.getElementById('sm-zi');
-    var zo = document.getElementById('sm-zo');
-    var zr = document.getElementById('sm-zr');
+    /* Zoom buttons (scoped to this instance's own root — ids repeat across maps) */
+    var zi = smRoot.querySelector('#sm-zi');
+    var zo = smRoot.querySelector('#sm-zo');
+    var zr = smRoot.querySelector('#sm-zr');
     if (zi) zi.onclick = function () { svg.transition().duration(220).call(zoomFn.scaleBy, 1.5); };
     if (zo) zo.onclick = function () { svg.transition().duration(220).call(zoomFn.scaleBy, 0.667); };
     if (zr) zr.onclick = function () {
-      window.__smView = null;
+      stateStore.__smView = null;
       svg.transition().duration(280).call(zoomFn.transform, window.d3.zoomIdentity);
     };
   }

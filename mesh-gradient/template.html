@@ -34,6 +34,14 @@
       wrap = wraps[wraps.length - 1];
     }
     if (!wrap) return;
+    /* Per-canvas commit channel (the shell binds it to THIS session's runtime,
+       so an edit never leaks to sibling designs in multi-edit). Absent offscreen
+       and in older shells — then commit() falls back to the sidebar poke below.
+       The stable canvas element also holds our focus marker so N mounted
+       instances don't stomp one shared window global. */
+    var canvasRoot = wrap.closest('[data-lolly-canvas]');
+    var commitFn = canvasRoot && canvasRoot.__lollyCommit;
+    var focusStore = canvasRoot || window;
     var svg = wrap.querySelector('svg.mg-svg');
     var dotsBox = wrap.querySelector('.mg-dots');
     if (!svg || !dotsBox || dotsBox.dataset.mgWired) return;
@@ -46,6 +54,9 @@
     function alive() { return document.contains(wrap); }
 
     function commit(n, x, y) {
+      /* Preferred: 1:1 to this canvas's own runtime. */
+      if (commitFn) { commitFn('pos' + n, { x: Math.round(x), y: Math.round(y) }); return; }
+      /* Fallback (offscreen / legacy shell): poke the one sidebar control. */
       var box = document.querySelector('[data-input-id="pos' + n + '"]');
       if (!box) return;
       var nx = box.querySelector('.vec-num[data-vec-field="x"]');
@@ -64,15 +75,15 @@
       clearTimeout(nudgeTimer);
       nudgeTimer = setTimeout(function () {
         if (!alive()) return;
-        window.__mgFocusDot = { n: n, t: Date.now() };
+        focusStore.__mgFocusDot = { n: n, t: Date.now() };
         commit(n, x, y);
       }, 350);
     }
     /* Consume the marker only when fresh: a commit whose hydrated output is
        byte-identical skips the repaint, and a stale marker must not steal
        focus on some unrelated render minutes later. */
-    var refocusMark = window.__mgFocusDot;
-    window.__mgFocusDot = null;
+    var refocusMark = focusStore.__mgFocusDot;
+    focusStore.__mgFocusDot = null;
     var refocus = refocusMark && typeof refocusMark === 'object'
       && Date.now() - refocusMark.t < 2000 ? refocusMark.n : null;
 
@@ -129,7 +140,7 @@
           dot.removeEventListener('pointerup', onUp);
           dot.removeEventListener('pointercancel', onUp);
           if (alive()) {
-            window.__mgFocusDot = { n: n, t: Date.now() }; // keep the dot focused across the commit re-render
+            focusStore.__mgFocusDot = { n: n, t: Date.now() }; // keep the dot focused across the commit re-render
             commit(n, cur.x, cur.y);
           }
         }
@@ -175,6 +186,9 @@
           for (var j = 1; j <= pts.length; j++) {
             if (!pool.length) pool = palette.slice();
             var pick = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+            /* Preferred: 1:1 to this canvas's own runtime. */
+            if (commitFn) { commitFn('color' + j, pick); continue; }
+            /* Fallback (offscreen / legacy shell): poke the one sidebar control. */
             var inp = document.querySelector('input[type="color"][data-input-id="color' + j + '"]');
             if (inp) {
               inp.value = pick;
