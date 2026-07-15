@@ -50,6 +50,55 @@
       "type": "boolean",
       "default": true,
       "help": "On preserves the original line breaks — right for code, lists and structured prompts. Off reflows each paragraph to fill the width, which fits more in."
+    },
+    {
+      "id": "lineHeight",
+      "label": "Line height",
+      "type": "number",
+      "default": 1.35,
+      "min": 0.9,
+      "max": 2,
+      "step": 0.05,
+      "help": "Tighten this to fit more text at the same type size. Below ~1.1 the lines start to touch."
+    },
+    {
+      "id": "paraGap",
+      "label": "Paragraph gap",
+      "type": "number",
+      "default": 1,
+      "min": 0,
+      "max": 2,
+      "step": 0.1,
+      "help": "Blank space between paragraphs, in line-heights. 0 closes it up entirely — worth it when the text is mostly short paragraphs."
+    },
+    {
+      "id": "padding",
+      "label": "Margin",
+      "type": "number",
+      "default": 32,
+      "min": 0,
+      "max": 128,
+      "step": 4,
+      "help": "Border of empty page around the text, in pixels. Nothing reads it, so trimming it is free space."
+    },
+    {
+      "id": "width",
+      "label": "Width",
+      "type": "number",
+      "default": 1024,
+      "min": 256,
+      "max": 4096,
+      "group": "export",
+      "help": "Page width. A bigger page fits more text but costs more image tokens — the readout does that arithmetic."
+    },
+    {
+      "id": "height",
+      "label": "Height",
+      "type": "number",
+      "default": 1024,
+      "min": 256,
+      "max": 4096,
+      "group": "export"
     }
   ]
 }

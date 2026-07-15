@@ -1,8 +1,10 @@
 <div class="p2i-root"
-     style="--p2i-pad:{{pad}}px; --p2i-line:{{line}}; --p2i-fs:{{fontSize}}px; --p2i-cols:{{initialColumns}}; --p2i-wrap:{{wrap}};"
+     style="--p2i-pad:{{pad}}px; --p2i-line:{{line}}; --p2i-para:{{para}}; --p2i-fs:{{fontSize}}px; --p2i-cols:{{initialColumns}}; --p2i-wrap:{{wrap}};"
      data-columns="{{columns}}"
      data-min="{{minSize}}"
-     data-max="{{maxSize}}">
+     data-max="{{maxSize}}"
+     data-pad="{{pad}}"
+     data-page-w="{{pageW}}">
 
   <div class="p2i-cols" data-canvas-input="text">
     {{#each paras}}<p>{{this}}</p>{{/each}}
@@ -13,7 +15,14 @@
   {{else}}
   <div class="p2i-stats" data-export-hide>
     <b>{{chars}}</b> chars &middot; ~<b>{{textTokens}}</b> text tokens<br>
-    image ~<b>{{imageTokens}}</b> tokens &middot; <span class="p2i-fit">measuring&hellip;</span>
+    <b>{{dims}}</b> page &middot; ~<b>{{imageTokens}}</b> image tokens &middot; <span class="p2i-fit">measuring&hellip;</span>
+    {{#if verdict}}
+    {{#if verdict.cheaper}}
+    <span class="p2i-verdict is-win">Image wins by <b>{{verdict.factor}}&times;</b> &middot; saves ~{{verdict.delta}} tokens</span>
+    {{else}}
+    <span class="p2i-verdict is-loss">Text wins by <b>{{verdict.factor}}&times;</b> &middot; page costs ~{{verdict.delta}} more</span>
+    {{/if}}
+    {{/if}}
     <span class="p2i-note">Estimates. Image cost is Claude&rsquo;s w&times;h&divide;750; other models tile differently.</span>
   </div>
   {{/if}}
@@ -33,6 +42,23 @@
 
   var MIN = Number(root.dataset.min) || 6;
   var MAX = Number(root.dataset.max) || 44;
+  var PAD = Number(root.dataset.pad) || 32;
+  var PAGE_W = Number(root.dataset.pageW) || 1024;
+
+  // ── Export px → DOM px ─────────────────────────────────────────────────────
+  // Every number hooks.js hands over is in export pixels, but the stage only
+  // paints the canvas 1:1 up to the tool's native 1024 — ask for a bigger page
+  // and it's previewed shrunk and scaled back up at capture. So a size that
+  // "fits" is scale-invariant (both axes shrink together) but the LEGIBILITY
+  // FLOOR is not: 6px of preview is 12px of a 2048 export, and it's the exported
+  // pixels a model has to read. Convert once, fit in DOM px, report in export px.
+  //
+  // clientWidth is immune to the stage's fit-to-window transform (which scales
+  // visually and leaves the DOM box alone), so this reads the export scale only.
+  function domScale() {
+    var w = root.clientWidth;
+    return w > 0 && PAGE_W > 0 ? w / PAGE_W : 1;
+  }
 
   // ── Writing back to the sidebar ────────────────────────────────────────────
   // A canvas paste/drop has to land in the "text" input, and the only supported
@@ -74,19 +100,19 @@
     root.style.setProperty('--p2i-fs', fs + 'px');
   }
 
-  // Largest size at which `n` columns hold all the text. `over` is 0 when it
-  // fits, else how far past the edge it spills at the legibility floor — which
-  // is what we rank by when nothing fits.
-  function measure(n) {
-    apply(n, MAX);
-    if (fits()) return { n: n, fs: MAX, over: 0 };
+  // Largest size at which `n` columns hold all the text, searched between the
+  // floor and ceiling in DOM px. `over` is 0 when it fits, else how far past the
+  // edge it spills at the floor — which is what we rank by when nothing fits.
+  function measure(n, min, max) {
+    apply(n, max);
+    if (fits()) return { n: n, fs: max, over: 0 };
 
-    apply(n, MIN);
-    if (!fits()) return { n: n, fs: MIN, over: cols.scrollWidth - cols.clientWidth };
+    apply(n, min);
+    if (!fits()) return { n: n, fs: min, over: cols.scrollWidth - cols.clientWidth };
 
     // Bisect between the two: 8 rounds over a ~38px range lands inside 0.15px,
     // well under one device pixel at any sane export scale.
-    var lo = MIN, hi = MAX;
+    var lo = min, hi = max;
     for (var i = 0; i < 8; i++) {
       var mid = (lo + hi) / 2;
       apply(n, mid);
@@ -98,6 +124,11 @@
   function fit() {
     if (!cols || !cols.clientWidth) return;   // no layout engine (jsdom/CLI) — keep the estimate
 
+    // Re-scale the margin before anything is measured: it sets the inner box the
+    // whole search runs against.
+    var s = domScale();
+    root.style.setProperty('--p2i-pad', (PAD * s) + 'px');
+
     var declared = root.dataset.columns;
     // A mono grid holds ~the same number of glyphs however you slice it — the
     // column count only changes how much is WASTED. Narrow columns waste less on
@@ -105,7 +136,7 @@
     // and which way that falls is not worth predicting, so auto just tries them.
     var candidates = declared === 'auto' ? [1, 2, 3, 4] : [Number(declared) || 1];
 
-    var results = candidates.map(measure);
+    var results = candidates.map(function (n) { return measure(n, MIN * s, MAX * s); });
     var fitting = results.filter(function (r) { return r.over === 0; });
 
     var pick = fitting.length
@@ -113,10 +144,10 @@
       : results.reduce(function (a, b) { return b.over < a.over ? b : a; });
 
     apply(pick.n, pick.fs);
-    report(pick);
+    report(pick, s);
   }
 
-  function report(pick) {
+  function report(pick, s) {
     if (!stats || !fitEl) return;
     if (pick.over > 0) {
       // Clamped at the floor and still overflowing. Say so rather than shrinking
@@ -126,7 +157,9 @@
       fitEl.textContent = 'clipped at ' + MIN + ' px — too much text';
     } else {
       stats.classList.remove('is-over');
-      fitEl.textContent = (Math.round(pick.fs * 10) / 10) + ' px type';
+      // Back into export px: the preview's size is an artefact of the stage, the
+      // exported size is the one a model actually gets.
+      fitEl.textContent = (Math.round((pick.fs / (s || 1)) * 10) / 10) + ' px type';
     }
   }
 

@@ -47,8 +47,9 @@
 .p2i-cols p {
   /* One blank line between paragraphs — the mono convention, and the clearest
      structural signal a reader (human or model) gets out of an untitled wall of
-     text. em resolves against --p2i-fs, so the gap tracks the fitted size. */
-  margin: 0 0 calc(var(--p2i-line, 1.35) * 1em);
+     text. em resolves against --p2i-fs, so the gap tracks the fitted size, and
+     --p2i-para scales it from the "Paragraph gap" input (0 closes it entirely). */
+  margin: 0 0 calc(var(--p2i-line, 1.35) * var(--p2i-para, 1) * 1em);
   /* pre-wrap keeps the author's line breaks; normal reflows the paragraph to the
      column width. Set per-render from the "Keep line breaks" input. */
   white-space: var(--p2i-wrap, pre-wrap);
@@ -100,6 +101,19 @@
   color: #111111;
 }
 
+/* The verdict: is this page actually cheaper than sending the text? An image is
+   a flat price whatever it holds, so the answer flips as the page is dragged
+   bigger — it earns its own line, and a colour, because it's the one number that
+   says whether the export was worth making. */
+.p2i-stats .p2i-verdict {
+  display: block;
+  margin-top: 0.5cqmin;
+  font-weight: 700;
+}
+.p2i-stats .p2i-verdict.is-win  { color: #1f6b3b; }
+.p2i-stats .p2i-verdict.is-loss { color: #8a4b00; }
+.p2i-stats .p2i-verdict b { color: inherit; }
+
 .p2i-stats .p2i-note {
   display: block;
   margin-top: 0.5cqmin;
@@ -115,6 +129,11 @@
 }
 .p2i-stats.is-over b { color: #7a4a00; }
 .p2i-stats.is-over .p2i-note { color: #9a6a24; }
+/* A clipped page can't be compared honestly — it doesn't hold all the text, so a
+   "saving" measured against the full prompt is really just the words that fell
+   off the end. Fold the verdict into the warning until it fits. */
+.p2i-stats.is-over .p2i-verdict.is-win,
+.p2i-stats.is-over .p2i-verdict.is-loss { color: #9a6a24; }
 
 /* Drop target. Painted only while a drag is actually over the canvas. */
 .p2i-drop {
