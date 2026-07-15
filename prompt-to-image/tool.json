@@ -1,0 +1,55 @@
+{
+  "id": "prompt-to-image",
+  "name": "Prompt to Image",
+  "description": "AI models are cheaper at processing images than they are text",
+  "version": "1.0.0",
+  "engineVersion": "^1.0.0",
+  "status": "official",
+  "category": "utility",
+  "privacy": "on-device",
+  "tags": ["ai", "llm", "prompt", "tokens", "context", "text", "image", "vision", "developer", "paste", "on-device"],
+  "a11yLabel": "Prompt to Image — paste or drop text on the canvas and it is laid out to fit inside one small image",
+  "render": {
+    "width": 1024,
+    "height": 1024,
+    "formats": ["png", "webp"],
+    "actions": ["copy", "download", "save"],
+    "transparentBg": false
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true
+  },
+  "inputs": [
+    {
+      "id": "text",
+      "label": "Text",
+      "type": "longtext",
+      "rows": 14,
+      "placeholder": "Paste or drop text on the canvas…",
+      "help": "Paste or drop anywhere on the canvas to fill this.",
+      "default": "You are a release-notes editor.\n\nInput: a list of merged pull request titles with their labels.\nOutput: a single markdown document, grouped under these headings, in this order:\n\n  ## Added\n  ## Changed\n  ## Fixed\n  ## Removed\n\nRules:\n- One bullet per user-visible change. Skip anything labelled `chore`, `ci`, or `deps` unless it changes behaviour someone outside the team would notice.\n- Write each bullet in the present tense, describing the effect on the user — not the mechanics of the patch. \"Exports keep their original filename\" beats \"refactor filename handling in export.ts\".\n- Merge duplicates. If three PRs fix one bug, that is one bullet.\n- Never invent a change that is not in the input. If a title is too vague to summarise, quote it verbatim and add `(needs description)`.\n- Omit a heading entirely when it has no bullets. Do not write \"None\".\n\nEnd with a `## Upgrade notes` section only when something is breaking. Describe what breaks and the smallest edit that fixes it."
+    },
+    {
+      "id": "columns",
+      "label": "Columns",
+      "type": "select",
+      "default": "auto",
+      "help": "Auto picks whatever packs the text at the largest size.",
+      "options": [
+        { "value": "auto", "label": "Auto" },
+        { "value": "1", "label": "1" },
+        { "value": "2", "label": "2" },
+        { "value": "3", "label": "3" },
+        { "value": "4", "label": "4" }
+      ]
+    },
+    {
+      "id": "keepLines",
+      "label": "Keep line breaks",
+      "type": "boolean",
+      "default": true,
+      "help": "On preserves the original line breaks — right for code, lists and structured prompts. Off reflows each paragraph to fill the width, which fits more in."
+    }
+  ]
+}
