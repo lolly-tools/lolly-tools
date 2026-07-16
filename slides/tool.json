@@ -1,0 +1,241 @@
+{
+  "id": "slides",
+  "name": "Slides",
+  "description": "Build a deck where every slide arranges other Lolly tools in a chosen layout, with its own title, background and speaker notes — then export to PowerPoint, PDF, GIF or MP4.",
+  "a11yLabel": "Slide deck with {{slideCount}} slides",
+  "version": "1.0.0",
+  "engineVersion": "^1.3.0",
+  "status": "community",
+  "category": "designer",
+  "tags": [
+    "slides",
+    "deck",
+    "presentation",
+    "pptx",
+    "powerpoint",
+    "video",
+    "layout",
+    "blocks"
+  ],
+  "render": {
+    "width": 1920,
+    "height": 1920,
+    "formats": [
+      "pptx",
+      "pdf",
+      "mp4",
+      "webm",
+      "gif"
+    ],
+    "actions": [
+      "download",
+      "save"
+    ],
+    "dims": true,
+    "printMarks": false,
+    "video": {
+      "wait": 0,
+      "duration": 6
+    }
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "beforeExport": true,
+    "afterExport": true
+  },
+  "inputs": [
+    {
+      "id": "size",
+      "label": "Deck size",
+      "type": "select",
+      "default": "wide",
+      "help": "One size for the whole deck — PowerPoint gives every slide the same size. Override it in pixels in the export bar.",
+      "options": [
+        { "value": "wide",    "label": "16:9 · 1920 × 1080", "width": 1920, "height": 1080, "unit": "px" },
+        { "value": "classic", "label": "4:3 · 1440 × 1080",  "width": 1440, "height": 1080, "unit": "px" },
+        { "value": "square",  "label": "1:1 · 1080 × 1080",  "width": 1080, "height": 1080, "unit": "px" },
+        { "value": "story",   "label": "9:16 · 1080 × 1920", "width": 1080, "height": 1920, "unit": "px" }
+      ]
+    },
+    {
+      "id": "transition",
+      "label": "Transition",
+      "type": "select",
+      "default": "fade",
+      "section": "Animation",
+      "help": "How each slide arrives over the one before it. Only GIF, MP4 and WebM carry the motion — PowerPoint and PDF get every slide still.",
+      "options": [
+        { "value": "cut",   "label": "Cut" },
+        { "value": "fade",  "label": "Fade" },
+        { "value": "slide", "label": "Slide" },
+        { "value": "zoom",  "label": "Zoom" }
+      ]
+    },
+    {
+      "id": "transitionSpeed",
+      "label": "Transition length",
+      "type": "number",
+      "display": "slider",
+      "section": "Animation",
+      "min": 0.1,
+      "max": 1.5,
+      "step": 0.05,
+      "default": 0.5,
+      "help": "Seconds each slide takes to arrive. A fade takes the whole length; a slide or zoom glides over it while the opacity snaps in, which keeps GIF/MP4 exports crisp."
+    },
+    {
+      "id": "slideDuration",
+      "label": "Seconds per slide",
+      "type": "number",
+      "display": "slider",
+      "section": "Animation",
+      "min": 0.5,
+      "max": 20,
+      "step": 0.5,
+      "default": 3,
+      "help": "How long each slide holds before the next one arrives. This plus the transitions is the length of the exported clip."
+    },
+    {
+      "id": "loop",
+      "label": "Loop",
+      "type": "select",
+      "default": "loop",
+      "section": "Animation",
+      "help": "How many times the deck plays in the GIF/MP4.",
+      "options": [
+        { "value": "loop", "label": "Forever" },
+        { "value": "once", "label": "Play once" }
+      ]
+    },
+    {
+      "id": "focusSlide",
+      "label": "Pause on slide",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "default": 0,
+      "help": "0 plays the whole deck in the preview. Set a slide number to hold it there while you edit — exports still play."
+    },
+    {
+      "id": "deck",
+      "label": "Slides",
+      "type": "blocks",
+      "help": "Each block is one slide. Pick its layout when you add it; in a slot, choose another Lolly tool or an image from the picker's Tools tab. Reorder by dragging.",
+      "addMenu": { "field": "layout", "label": "Add slide" },
+      "fields": [
+        {
+          "id": "layout",
+          "label": "Layout",
+          "type": "select",
+          "default": "title",
+          "options": [
+            { "value": "title",  "label": "Title only",        "repeatable": true },
+            { "value": "full",   "label": "Full bleed (1)",    "repeatable": true },
+            { "value": "hero",   "label": "Hero + title (1)",  "repeatable": true },
+            { "value": "split",  "label": "Side by side (2)",  "repeatable": true },
+            { "value": "stack",  "label": "Stacked (2)",       "repeatable": true },
+            { "value": "golden", "label": "Golden ratio (2)",  "repeatable": true },
+            { "value": "cols3",  "label": "Three columns (3)", "repeatable": true },
+            { "value": "grid4",  "label": "Four grid (4)",     "repeatable": true }
+          ]
+        },
+        {
+          "id": "title",
+          "label": "Title",
+          "type": "text",
+          "default": "",
+          "placeholder": "Slide title"
+        },
+        {
+          "id": "subtitle",
+          "label": "Subtitle",
+          "type": "text",
+          "default": "",
+          "placeholder": "Optional subtitle"
+        },
+        {
+          "id": "bg",
+          "label": "Background",
+          "type": "color",
+          "default": "#141b2d"
+        },
+        {
+          "id": "media1",
+          "label": "Slot 1 — tool or image",
+          "type": "asset",
+          "assetType": "any",
+          "allowUpload": true,
+          "help": "Paste a Lolly tool link, or pick a tool in the picker's Tools tab, and its render fills the slot.",
+          "showFor": ["full", "hero", "split", "stack", "golden", "cols3", "grid4"]
+        },
+        {
+          "id": "media2",
+          "label": "Slot 2",
+          "type": "asset",
+          "assetType": "any",
+          "allowUpload": true,
+          "showFor": ["split", "stack", "golden", "cols3", "grid4"]
+        },
+        {
+          "id": "media3",
+          "label": "Slot 3",
+          "type": "asset",
+          "assetType": "any",
+          "allowUpload": true,
+          "showFor": ["cols3", "grid4"]
+        },
+        {
+          "id": "media4",
+          "label": "Slot 4",
+          "type": "asset",
+          "assetType": "any",
+          "allowUpload": true,
+          "showFor": ["grid4"]
+        },
+        {
+          "id": "notes",
+          "label": "Speaker notes",
+          "type": "text",
+          "default": "",
+          "rows": 3,
+          "placeholder": "Presenter notes — never shown on the slide.",
+          "help": "Travels into PowerPoint's notes pane. Never rendered on the slide, in any format.",
+          "multilineFor": ["title", "full", "hero", "split", "stack", "golden", "cols3", "grid4"]
+        }
+      ],
+      "default": [
+        {
+          "layout": "title",
+          "title": "Slides",
+          "subtitle": "Every slide can hold another Lolly tool.",
+          "bg": "#141b2d",
+          "notes": "Open with why the deck exists — the agenda can wait."
+        },
+        {
+          "layout": "full",
+          "title": "One layout per slide",
+          "subtitle": "Title, hero, split, columns, grid",
+          "bg": "#2f6df6",
+          "notes": "Pick the layout from the Add slide menu — it is fixed once the slide exists."
+        },
+        {
+          "layout": "title",
+          "title": "Drop a tool into a slot",
+          "subtitle": "A QR code, a chart, a map — rendered straight into the slide.",
+          "bg": "#f3f1ec",
+          "notes": "Slots read from the asset picker's Tools tab, so a slot stays live: change the tool link and the slide re-renders."
+        },
+        {
+          "layout": "title",
+          "title": "Export the deck",
+          "subtitle": "PowerPoint · PDF · GIF · MP4",
+          "bg": "#141b2d",
+          "notes": "PowerPoint and PDF get every slide still. GIF and MP4 get the transitions."
+        }
+      ]
+    }
+  ]
+}

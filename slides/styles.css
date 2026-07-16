@@ -1,0 +1,180 @@
+/**
+ * Slides — structural CSS.
+ *
+ * Auto-scoped to the tool canvas by the shell. The per-slide @keyframes and their
+ * play bindings are NOT here: the timeline depends on the slide count, so the hook
+ * generates them into the template's trailing <style>{{{animCss}}}</style>.
+ */
+
+.slides, .slides * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* The deck root fills the (reshaped) canvas and is the ONE query container: every
+   cq unit below resolves against it. Container-query units used ON a container
+   resolve against that container's ANCESTOR, never itself — so the per-slide
+   padding and type must query the root, not `.sl-slide`. Every slide is inset:0 on
+   the root, so "the root box" and "a slide box" are the same box anyway. */
+.slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  container-type: size;
+  isolation: isolate;
+  background: #141b2d;
+  font-family: var(--font-brand, SUSE, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Every slide is a co-located, full-frame layer (the cover model): a later slide
+   animates in OVER the one before it, so the deck never shows a blank gap.
+   Stacking is safe for the paged exports because both walkers measure each
+   [data-pdf-page] against its OWN rect and descend only its own subtree — an
+   overlapping sibling is not a descendant, so it can never contaminate a page.
+   Stack with `inset`, NEVER a transform on the slide itself: the pptx walker
+   derives every child box from this element's rect, so a transform here would skew
+   the whole slide. (The transition transforms are stripped for the paged formats
+   by .sl-static — see beforeExport.) */
+.sl-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3cqmin;
+  padding: 5cqmin 6cqmin;
+  background-color: var(--bg, #141b2d);
+  color: var(--ink, #ffffff);
+  opacity: 0;                       /* the state classes below own visibility */
+  will-change: opacity, transform;
+}
+/* Slide 1 is the always-on base layer the rest animate over. */
+.slides .sl-slide--0 { opacity: 1; }
+
+/* ── Title band ─────────────────────────────────────────────────────────────── */
+.sl-head { flex: 0 0 auto; }
+.sl-title {
+  font-size: clamp(18px, 7cqmin, 96px);
+  line-height: 1.04;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+.sl-sub {
+  margin-top: 1.2cqmin;
+  font-size: clamp(12px, 3.4cqmin, 44px);
+  line-height: 1.2;
+  font-weight: 500;
+  opacity: 0.82;
+  overflow-wrap: anywhere;
+}
+
+/* ── Slot grid — fills whatever the title band leaves ────────────────────────── */
+.sl-grid { flex: 1 1 auto; min-height: 0; display: grid; gap: 3cqmin; }
+.sl-slot {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.4cqmin;
+  min-width: 0;
+  min-height: 0;
+}
+/* An empty slot reads as a deliberate panel in the slide's own ink, so a
+   half-built layout is legible rather than a void. */
+.sl-slot:not(.is-filled) { background: color-mix(in oklab, currentColor 10%, transparent); }
+.sl-fill { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* ── Layout presets ─────────────────────────────────────────────────────────── */
+/* title (0 slots) — the head is the whole slide. */
+.sl-l-title { justify-content: center; align-items: center; text-align: center; }
+.sl-l-title .sl-title { font-size: clamp(20px, 10cqmin, 132px); }
+.sl-l-title .sl-sub { font-size: clamp(12px, 4cqmin, 52px); }
+
+/* full (1) — media covers the frame, title overlaid on a scrim at the foot. */
+.sl-l-full { padding: 0; gap: 0; }
+.sl-l-full .sl-grid { grid-template-columns: 1fr; }
+.sl-l-full .sl-slot { border-radius: 0; }
+.sl-l-full .sl-slot:not(.is-filled) { background: none; }
+.sl-l-full .sl-fill { object-fit: cover; }
+.sl-l-full .sl-head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 6cqmin;
+  color: #ffffff;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+}
+
+/* hero (1) — title band, then one media panel filling the rest. */
+.sl-l-hero .sl-grid { grid-template-columns: 1fr; }
+.sl-l-hero .sl-fill { object-fit: cover; }
+
+/* split (2) — side by side. */
+.sl-l-split .sl-grid { grid-template-columns: 1fr 1fr; }
+
+/* stack (2) — one over the other. */
+.sl-l-stack .sl-grid { grid-template-rows: 1fr 1fr; }
+
+/* golden (2) — the golden-ratio split. */
+.sl-l-golden .sl-grid { grid-template-columns: 1.618fr 1fr; }
+
+/* cols3 (3) — three columns. */
+.sl-l-cols3 .sl-grid { grid-template-columns: repeat(3, 1fr); }
+
+/* grid4 (4) — 2 × 2. */
+.sl-l-grid4 .sl-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+
+@container (max-aspect-ratio: 4/5) {
+  /* Portrait decks (9:16): the wide type scale and the column layouts don't survive
+     a tall, narrow frame — turn the columns into rows and pull the titles back.
+     (This comment lives INSIDE the block on purpose: scopeCss decides an at-rule is
+     an at-rule by trimming its prelude and testing for a leading "@", and trim()
+     doesn't strip comments — so a comment directly ABOVE an at-rule makes the shell
+     scope it as if it were a selector, producing `#tool-canvas @container (…)`,
+     which matches nothing and leaves every rule inside it unscoped and leaking into
+     the app. Verified against shells/web/src/lib/scope-css.ts.) */
+  .sl-title { font-size: clamp(16px, 8cqmin, 76px); }
+  .sl-l-title .sl-title { font-size: clamp(18px, 11cqmin, 96px); }
+  .sl-l-split .sl-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+  .sl-l-golden .sl-grid { grid-template-columns: 1fr; grid-template-rows: 1.618fr 1fr; }
+  .sl-l-cols3 .sl-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); }
+}
+
+/* ── State classes — the format reconciler (beforeExport swaps these) ────────── */
+/* pdf / pptx: EVERY stacked slide fully opaque and motionless. A slide left hidden
+   (display:none / visibility:hidden / opacity:0) is dropped by both walkers — and
+   pptx still emits the slide, blank. transform:none matters just as much: a
+   transition transform on the page element would skew every box the pptx walker
+   derives from its rect. */
+.slides.sl-static .sl-slide {
+  opacity: 1 !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Editor freeze: hold one slide still so it can be edited. animCss re-shows the
+   focused one. */
+.slides.sl-frozen .sl-slide {
+  opacity: 0 !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Restart helper: animation:none → reflow → back re-arms every named animation from
+   t=0, so a clip opens on a clean first frame (and so the live preview is handed
+   back playing after an export's frame clock paused and seeked it). */
+.slides.sl-restart .sl-slide { animation: none !important; }
+
+/* Speaker notes never render — see the template for why they aren't
+   [data-export-hide]. */
+.sl-notes { display: none; }
+
+/* The export frame clock (see hooks.js). It must not paint, must not lay out, and
+   must not become a shape — but it must stay findable by frameClockCanvas()'s
+   querySelectorAll('canvas'). Hence: out of flow and 0 × 0 (nothing to paint),
+   rather than display:none. The 0 × 0 bitmap is load-bearing — the DOM serialiser
+   copies every <canvas> by calling toDataURL() on it, and a zero-dimension bitmap
+   returns "data:," which the serialiser drops outright; a sized canvas would
+   instead cost an image decode on each of up to 600 captured frames. It also sits
+   OUTSIDE every [data-pdf-page], so neither paged walker ever reaches it (and its
+   sub-0.5px box would be dropped even if one did). */
+.sl-clock { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; }

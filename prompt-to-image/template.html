@@ -17,11 +17,13 @@
     <b>{{chars}}</b> chars &middot; ~<b>{{textTokens}}</b> text tokens<br>
     <b>{{dims}}</b> page &middot; ~<b>{{imageTokens}}</b> image tokens &middot; <span class="p2i-fit">measuring&hellip;</span>
     {{#if verdict}}
-    {{#if verdict.cheaper}}
+    {{#if verdict.even}}
+    <span class="p2i-verdict is-even">Line ball &middot; image and text cost about the same</span>
+    {{else}}{{#if verdict.cheaper}}
     <span class="p2i-verdict is-win">Image wins by <b>{{verdict.factor}}&times;</b> &middot; saves ~{{verdict.delta}} tokens</span>
     {{else}}
     <span class="p2i-verdict is-loss">Text wins by <b>{{verdict.factor}}&times;</b> &middot; page costs ~{{verdict.delta}} more</span>
-    {{/if}}
+    {{/if}}{{/if}}
     {{/if}}
     <span class="p2i-note">Estimates. Image cost is Claude&rsquo;s w&times;h&divide;750; other models tile differently.</span>
   </div>
@@ -40,10 +42,19 @@
   var stats = root.querySelector('.p2i-stats');
   var fitEl = root.querySelector('.p2i-fit');
 
-  var MIN = Number(root.dataset.min) || 6;
-  var MAX = Number(root.dataset.max) || 44;
-  var PAD = Number(root.dataset.pad) || 32;
-  var PAGE_W = Number(root.dataset.pageW) || 1024;
+  // `|| fallback` is safe for MIN/MAX (never legitimately 0) but WRONG for PAD:
+  // the new Margin input can be 0, and `Number("0") || 32` would silently reinstate
+  // a 32px margin — making the control dead at its own minimum and, worse, diverging
+  // from the CLI (whose jsdom path keeps the inline --p2i-pad:0px). Read it NaN-aware
+  // so an explicit 0 survives.
+  function readNum(v, fallback) {
+    var n = Number(v);
+    return isFinite(n) ? n : fallback;
+  }
+  var MIN = readNum(root.dataset.min, 6);
+  var MAX = readNum(root.dataset.max, 44);
+  var PAD = readNum(root.dataset.pad, 32);
+  var PAGE_W = readNum(root.dataset.pageW, 1024) || 1024;   // never divide by 0
 
   // ── Export px → DOM px ─────────────────────────────────────────────────────
   // Every number hooks.js hands over is in export pixels, but the stage only

@@ -14,7 +14,8 @@
     "height": 1024,
     "formats": ["png", "webp"],
     "actions": ["copy", "download", "save"],
-    "transparentBg": false
+    "transparentBg": false,
+    "units": false
   },
   "hooks": {
     "onInit": true,
@@ -86,8 +87,6 @@
       "label": "Width",
       "type": "number",
       "default": 1024,
-      "min": 256,
-      "max": 4096,
       "group": "export",
       "help": "Page width. A bigger page fits more text but costs more image tokens — the readout does that arithmetic."
     },
@@ -96,8 +95,6 @@
       "label": "Height",
       "type": "number",
       "default": 1024,
-      "min": 256,
-      "max": 4096,
       "group": "export"
     }
   ]

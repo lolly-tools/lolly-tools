@@ -1,0 +1,150 @@
+{
+  "id": "deck-studio",
+  "name": "Deck Studio",
+  "description": "Build a native, editable PowerPoint deck — real text, bullets, tables and brand theme — from a simple slide builder, pasted Markdown, or a JSON spec. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
+  "a11yLabel": "Presentation deck with {{_slideCount}} slides",
+  "version": "1.0.0",
+  "engineVersion": "^1.56.0",
+  "status": "community",
+  "category": "designer",
+  "tags": ["slides", "deck", "presentation", "pptx", "powerpoint", "tables", "brand", "blocks"],
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "formats": ["pptx", "pdf", "png", "html"],
+    "actions": ["download", "save"],
+    "paged": true,
+    "dims": false
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true
+  },
+  "inputs": [
+    {
+      "id": "size",
+      "label": "Deck size",
+      "type": "select",
+      "default": "wide",
+      "help": "One size for the whole deck — PowerPoint gives every slide the same size.",
+      "options": [
+        { "value": "wide", "label": "16:9 · widescreen" },
+        { "value": "classic", "label": "4:3 · classic" },
+        { "value": "square", "label": "1:1 · square" },
+        { "value": "story", "label": "9:16 · portrait" }
+      ]
+    },
+    {
+      "id": "pageNumbers",
+      "label": "Slide numbers",
+      "type": "boolean",
+      "default": true,
+      "help": "Show a small slide number in the corner of every slide."
+    },
+    {
+      "id": "brandLogo",
+      "label": "Brand logo",
+      "type": "boolean",
+      "default": true,
+      "help": "Place the active brand's logo on each slide — automatically the light or dark version to suit the slide's background. Override per slide in the builder."
+    },
+    {
+      "id": "spec",
+      "label": "Paste a deck — Markdown or JSON",
+      "type": "longtext",
+      "default": "",
+      "rows": 4,
+      "section": "Advanced",
+      "placeholder": "# Title slide\n## Subtitle\n\n---\n\n## Bullets\n- point one\n- point two\n\n---\n\n## A table\n| Name | Value |\n| --- | --- |\n| A | 1 |",
+      "help": "Paste a whole deck as **Markdown** (`---` or headings split slides; pipe tables and `![](url)` images render natively) or as **JSON** (a `slides` array of `{ layout, title, subtitle, body, table, image, notes }`). When filled it drives the whole deck and the builder below is ignored. Leave it blank to use the builder."
+    },
+    {
+      "id": "deck",
+      "label": "Slides",
+      "type": "blocks",
+      "help": "Each block is one slide. Pick a layout when you add it. Paste Markdown to fill it fast (one slide per heading), or import a CSV/JSON.",
+      "addMenu": { "field": "layout", "label": "Add slide" },
+      "mdPaste": true,
+      "importData": { "formats": ["csv", "json"] },
+      "fields": [
+        {
+          "id": "layout",
+          "label": "Layout",
+          "type": "select",
+          "default": "content",
+          "options": [
+            { "value": "title", "label": "Title", "repeatable": true },
+            { "value": "section", "label": "Section header", "repeatable": true },
+            { "value": "agenda", "label": "Agenda (linked contents)", "repeatable": true },
+            { "value": "content", "label": "Title + bullets", "repeatable": true },
+            { "value": "two-col", "label": "Two columns", "repeatable": true },
+            { "value": "split", "label": "Bullets + visual", "repeatable": true },
+            { "value": "table", "label": "Table", "repeatable": true },
+            { "value": "visual", "label": "Big visual", "repeatable": true },
+            { "value": "full-image", "label": "Full-bleed image", "repeatable": true },
+            { "value": "quote", "label": "Quote", "repeatable": true }
+          ]
+        },
+        { "id": "heading", "label": "Title", "type": "text", "default": "", "placeholder": "Slide title" },
+        { "id": "subtitle", "label": "Subtitle", "type": "text", "default": "", "placeholder": "Optional subtitle", "showFor": ["title", "section", "content", "two-col", "split", "quote"] },
+        {
+          "id": "body",
+          "label": "Body",
+          "type": "text",
+          "default": "",
+          "rows": 5,
+          "placeholder": "One line per bullet. Indent with two spaces for a sub-bullet. **bold**, *italic*, __underline__.",
+          "showFor": ["content", "two-col", "split", "quote"],
+          "multilineFor": ["content", "two-col", "split", "quote"]
+        },
+        {
+          "id": "visual",
+          "label": "Visual — a Lolly tool link or image",
+          "type": "asset",
+          "assetType": "any",
+          "allowUpload": true,
+          "help": "Paste a Lolly tool link (a D3 chart, Flow Chart, Chart Creator, map…) or pick an image. It renders straight into the slide.",
+          "showFor": ["split", "visual", "full-image"]
+        },
+        {
+          "id": "data",
+          "label": "Table data",
+          "type": "text",
+          "default": "",
+          "rows": 5,
+          "placeholder": "CSV or a Markdown pipe table. First row is the header.",
+          "multilineFor": ["table"],
+          "showFor": ["table"]
+        },
+        { "id": "accent", "label": "Accent", "type": "color", "default": "", "showFor": ["title", "section", "quote"] },
+        {
+          "id": "logo",
+          "label": "Logo on this slide",
+          "type": "select",
+          "default": "auto",
+          "help": "Overrides the deck's brand-logo setting for this one slide.",
+          "options": [
+            { "value": "auto", "label": "Brand logo" },
+            { "value": "mono", "label": "Mono logo" },
+            { "value": "off", "label": "No logo" }
+          ]
+        },
+        {
+          "id": "notes",
+          "label": "Speaker notes",
+          "type": "text",
+          "default": "",
+          "rows": 3,
+          "placeholder": "Presenter notes — travel into PowerPoint's notes pane, never shown on the slide.",
+          "multilineFor": ["title", "section", "content", "two-col", "split", "table", "visual", "full-image", "quote"]
+        }
+      ],
+      "default": [
+        { "layout": "title", "heading": "Deck Studio", "subtitle": "Native PowerPoint, on brand", "body": "", "notes": "Open with why the deck exists." },
+        { "layout": "content", "heading": "One model, many ways in", "subtitle": "", "body": "Type in the builder\nPaste **Markdown** — one slide per heading\n  each bullet becomes editable text\nOr paste a JSON spec", "notes": "Every entry mode lands in the same deck." },
+        { "layout": "table", "heading": "Native editable tables", "data": "Metric,Q1,Q2\nRevenue,$1.2M,$1.6M\nGrowth,+18%,+33%", "notes": "This is a real PowerPoint table — click to edit." },
+        { "layout": "split", "heading": "Charts from your tools", "body": "Drop a **D3** or **Flow Chart** link into the visual slot\nIt renders as a crisp vector\nNo chart engine to learn", "notes": "Compose any Lolly tool as a slide visual." }
+      ]
+    }
+  ]
+}

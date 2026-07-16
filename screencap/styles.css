@@ -1,0 +1,57 @@
+.sc-window {
+  position: relative;
+  overflow: hidden;          /* THE crop — a clip, never a scale */
+  width: 100%;
+  height: 100%;
+  background: var(--brand-surface, #f4f4f5);
+}
+
+.sc-img {
+  position: absolute;
+  display: block;
+  image-rendering: auto;     /* at renderScale === 1 there is nothing to filter */
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+.sc-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  text-align: center;
+  padding: 1rem;
+  color: var(--brand-muted, #6b7280);
+  font-family: var(--brand-font-body, system-ui, sans-serif);
+}
+
+.sc-empty-title {
+  margin: 0;
+  font-size: 1em;
+}
+
+/* The empty state adapts to whether screen capture is actually usable. The shell
+   control adds .has-record to #tool-stage ONLY when it mounts (getDisplayMedia is
+   present in a secure context) — where it doesn't, the Screenshot/Record buttons never
+   appear, so pointing at them would be a lie. Default to the upload instruction; show
+   the capture instruction only under the class. The class lives on the stage (outside
+   #tool-content), so it survives the per-paint template rebuild. */
+.sc-empty-capture { display: none; }
+.sc-empty-upload { display: block; }
+
+#tool-stage.has-record .sc-empty-capture { display: block; }
+#tool-stage.has-record .sc-empty-upload { display: none; }
+
+.sc-empty-title strong {
+  color: var(--brand-text, #18181b);
+  font-weight: 600;
+}
+
+.sc-empty-sub {
+  margin: 0;
+  font-size: 0.875em;
+  opacity: 0.75;
+}

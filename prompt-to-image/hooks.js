@@ -80,14 +80,16 @@ function group(n) {
 // only one who can resolve that, so state it plainly rather than pick for them.
 function verdictOf(textTokens, imageTokens) {
   if (textTokens <= 0 || imageTokens <= 0) return null;
-  var cheaper = imageTokens < textTokens;
-  var hi = cheaper ? textTokens : imageTokens;
-  var lo = cheaper ? imageTokens : textTokens;
-  return {
-    cheaper: cheaper,
-    factor: Math.round((hi / lo) * 10) / 10,
-    delta: group(Math.abs(textTokens - imageTokens))
-  };
+  var hi = Math.max(textTokens, imageTokens);
+  var lo = Math.min(textTokens, imageTokens);
+  var factor = Math.round((hi / lo) * 10) / 10;
+  var delta = group(Math.abs(textTokens - imageTokens));
+  // A ratio that rounds to 1.0 is a tie in all but name — claiming "wins by 1×"
+  // asserts a winner and denies there is one in the same breath. Report the
+  // dead-heat instead, across the whole break-even neighbourhood (~5,330–5,880
+  // chars at 1024²), not just the exact-equal point.
+  if (factor <= 1) return { even: true, factor: factor, delta: delta };
+  return { cheaper: imageTokens < textTokens, factor: factor, delta: delta };
 }
 
 function compute(inputs) {
@@ -98,8 +100,19 @@ function compute(inputs) {
   // The export bar owns width/height (they're `group: "export"`, so they have no
   // sidebar control) and syncs them here in px on every size change — which is
   // what makes the readout below track the page as it's dragged taller.
-  var W = Math.round(clamp(num(inputs.width, DEF.W), 64, 8192));
-  var H = Math.round(clamp(num(inputs.height, DEF.H), 64, 8192));
+  //
+  // Use the value VERBATIM — do NOT clamp it to some inner ceiling. The token
+  // readout is the whole point of the tool, and it has to describe the page that
+  // is actually EXPORTED. If a hook ceiling (say 8192) were below the export bar's
+  // range (1..100000), then dragging past it would leave the hook costing a
+  // smaller page than the one rendered, and the verdict could flip to the wrong
+  // answer in green. The only floor is sanity: a page is at least 1px. Absurd
+  // sizes just yield an honest, absurd token count — which is the correct signal.
+  // (The manifest deliberately leaves width/height min/max UNSET for the same
+  // reason: an input clamp narrower than the export bar would reintroduce exactly
+  // this divergence via updateInput's constrain().)
+  var W = Math.max(1, Math.round(num(inputs.width, DEF.W)));
+  var H = Math.max(1, Math.round(num(inputs.height, DEF.H)));
   var line = clamp(num(inputs.lineHeight, DEF.LINE), 0.9, 2);
   var para = clamp(num(inputs.paraGap, DEF.PARA), 0, 2);
   // A margin can't be allowed to eat the page: leave at least a 32px strip of

@@ -1,0 +1,41 @@
+<div class="slides {{rootClass}}" style="--dur: {{durSec}}s;">
+  {{#each pages}}
+  <section class="sl-slide sl-slide--{{idx}} sl-l-{{layout}}"
+           data-pdf-page
+           style="--bg: {{bg}}; --ink: {{ink}}; z-index: {{idx}};">
+
+    {{#if hasHead}}
+    <header class="sl-head">
+      {{#if title}}<h1 class="sl-title">{{title}}</h1>{{/if}}
+      {{#if subtitle}}<p class="sl-sub">{{subtitle}}</p>{{/if}}
+    </header>
+    {{/if}}
+
+    {{#if slotCount}}
+    <div class="sl-grid">
+      {{#each slots}}
+      <div class="sl-slot sl-slot--{{n}}{{#if url}} is-filled{{/if}}">
+        {{#if url}}<img class="sl-fill" src="{{url}}" alt="">{{/if}}
+      </div>
+      {{/each}}
+    </div>
+    {{/if}}
+
+    {{!-- Speaker notes: never rendered, in any format. The paged walkers skip a
+          display:none node, so the note can't become a shape; the pptx bridge reads
+          its textContent out of [data-slide-notes] and carries it to the notes pane
+          instead. NOT [data-export-hide] — detachExportHidden pulls those nodes out
+          of the tree for the whole capture, which would take the note with them. --}}
+    {{#if notes}}<div class="sl-notes" data-slide-notes hidden>{{notes}}</div>{{/if}}
+  </section>
+  {{/each}}
+
+  {{!-- The export frame clock — hooks.js registers __lollyFrameRender on it for the
+        motion formats. See .sl-clock in styles.css for why it is 0 × 0 and absolutely
+        positioned rather than display:none. --}}
+  <canvas class="sl-clock" data-slide-clock width="0" height="0" aria-hidden="true"></canvas>
+
+  {{!-- The per-slide @keyframes + play bindings: the timeline depends on the slide
+        count, so it can't be static CSS. Never move these into styles.css. --}}
+  <style>{{{animCss}}}</style>
+</div>

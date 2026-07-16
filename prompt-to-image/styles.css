@@ -112,6 +112,9 @@
 }
 .p2i-stats .p2i-verdict.is-win  { color: #1f6b3b; }
 .p2i-stats .p2i-verdict.is-loss { color: #8a4b00; }
+/* Break-even: neither wins, so neither colour — a neutral grey that reads as
+   "your call" rather than a verdict. */
+.p2i-stats .p2i-verdict.is-even { color: #555555; }
 .p2i-stats .p2i-verdict b { color: inherit; }
 
 .p2i-stats .p2i-note {
@@ -133,7 +136,8 @@
    "saving" measured against the full prompt is really just the words that fell
    off the end. Fold the verdict into the warning until it fits. */
 .p2i-stats.is-over .p2i-verdict.is-win,
-.p2i-stats.is-over .p2i-verdict.is-loss { color: #9a6a24; }
+.p2i-stats.is-over .p2i-verdict.is-loss,
+.p2i-stats.is-over .p2i-verdict.is-even { color: #9a6a24; }
 
 /* Drop target. Painted only while a drag is actually over the canvas. */
 .p2i-drop {
