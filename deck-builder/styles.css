@@ -1,0 +1,355 @@
+/**
+ * Slides — structural CSS.
+ *
+ * Auto-scoped to the tool canvas by the shell. The per-slide @keyframes and their
+ * play bindings are NOT here: the timeline depends on the slide count, so the hook
+ * generates them into the template's trailing <style>{{{animCss}}}</style>.
+ */
+
+.slides, .slides * { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* The deck root fills the (reshaped) canvas and is the ONE query container: every
+   cq unit below resolves against it. Container-query units used ON a container
+   resolve against that container's ANCESTOR, never itself — so the per-slide
+   padding and type must query the root, not `.sl-slide`. Every slide is inset:0 on
+   the root, so "the root box" and "a slide box" are the same box anyway. */
+.slides {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  container-type: size;
+  isolation: isolate;
+  background: #141b2d;
+  font-family: var(--font-brand, SUSE, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Every slide is a co-located, full-frame layer (the cover model): a later slide
+   animates in OVER the one before it, so the deck never shows a blank gap.
+   Stacking is safe for the paged exports because both walkers measure each
+   [data-pdf-page] against its OWN rect and descend only its own subtree — an
+   overlapping sibling is not a descendant, so it can never contaminate a page.
+   Stack with `inset`, NEVER a transform on the slide itself: the pptx walker
+   derives every child box from this element's rect, so a transform here would skew
+   the whole slide. (The transition transforms are stripped for the paged formats
+   by .sl-static — see beforeExport.) */
+.sl-slide {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3cqmin;
+  padding: 5cqmin 6cqmin;
+  background-color: var(--bg, #141b2d);
+  color: var(--ink, #ffffff);
+  opacity: 0;                       /* the state classes below own visibility */
+  will-change: opacity, transform;
+}
+/* Slide 1 is the always-on base layer the rest animate over. */
+.slides .sl-slide--0 { opacity: 1; }
+
+/* ── Title band ─────────────────────────────────────────────────────────────── */
+.sl-head { flex: 0 0 auto; }
+.sl-title {
+  font-size: clamp(18px, 7cqmin, 96px);
+  line-height: 1.04;
+  font-weight: 700;
+  letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+.sl-title strong { font-weight: 800; }
+.sl-title em { font-style: italic; }
+
+/* ── Markdown body (## / ### subheads, bullets, paragraphs, bold/italic) ─────── */
+.sl-body {
+  flex: 0 1 auto;
+  min-height: 0;
+  font-size: clamp(12px, 3cqmin, 40px);
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.sl-body > :first-child { margin-top: 0; }
+.sl-h { line-height: 1.12; font-weight: 700; overflow-wrap: anywhere; }
+.sl-h2 { font-size: clamp(14px, 4.2cqmin, 56px); margin-top: 2cqmin; }
+.sl-h3 { font-size: clamp(13px, 3.4cqmin, 44px); margin-top: 1.6cqmin; opacity: 0.92; }
+.sl-p { margin-top: 1.4cqmin; opacity: 0.9; }
+.sl-ul { margin-top: 1.4cqmin; padding-left: 3cqmin; list-style: none; }
+/* Child combinator (not descendant): a dot decorates only DIRECT <ul> children, so a
+   nested <ol> keeps its numbers and a nested <ul> keeps getting dots. */
+.sl-ul > li { position: relative; margin-top: 0.9cqmin; padding-left: 2.6cqmin; opacity: 0.9; }
+.sl-ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 1cqmin;
+  height: 1cqmin;
+  border-radius: 50%;
+  background: var(--accent, currentColor);
+}
+/* Ordered lists — native decimal markers (no dot). */
+.sl-ol { margin-top: 1.4cqmin; padding-left: 4cqmin; }
+.sl-ol > li { margin-top: 0.9cqmin; opacity: 0.9; }
+.sl-ol > li::marker { color: var(--accent, currentColor); font-weight: 700; }
+/* Nested lists tighten and drop the leading gap. */
+.sl-ul .sl-ul, .sl-ul .sl-ol, .sl-ol .sl-ol, .sl-ol .sl-ul { margin-top: 0.5cqmin; }
+
+/* Pipe tables — capped to the slide, long cells wrap, so a wide table never makes
+   the slide scroll. Cell borders + header rule are derived from the slide ink
+   (currentColor) via color-mix — the same pattern as .sl-slot; the slide sets
+   --ink/--accent, not an --edge, so the edge tint comes from the ink. */
+.sl-table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 1.6cqmin;
+  table-layout: fixed;
+  font-size: 0.92em;
+}
+.sl-table th, .sl-table td {
+  padding: 0.35em 0.6em;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  border: 1px solid color-mix(in oklab, currentColor 18%, transparent);
+}
+.sl-table thead th {
+  font-weight: 700;
+  border-bottom: 0.4cqmin solid color-mix(in oklab, currentColor 42%, transparent);
+}
+.sl-table tbody tr:nth-child(even) td { background: color-mix(in oklab, currentColor 5%, transparent); }
+
+/* Links + inline code in the body. */
+.sl-body a { color: var(--accent, currentColor); text-decoration: underline; text-underline-offset: 0.14em; }
+.sl-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  padding: 0.06em 0.34em;
+  border-radius: 0.5cqmin;
+  background: color-mix(in oklab, currentColor 10%, transparent);
+}
+.sl-body strong { font-weight: 700; }
+.sl-body em { font-style: italic; }
+
+/* ── Slot grid — fills whatever the title band leaves ────────────────────────── */
+.sl-grid { flex: 1 1 auto; min-height: 0; display: grid; gap: 3cqmin; }
+.sl-slot {
+  position: relative;
+  overflow: hidden;
+  border-radius: 1.4cqmin;
+  min-width: 0;
+  min-height: 0;
+}
+/* An empty slot reads as a deliberate panel in the slide's own ink, so a
+   half-built layout is legible rather than a void. */
+.sl-slot:not(.is-filled) { background: color-mix(in oklab, currentColor 10%, transparent); }
+.sl-fill { width: 100%; height: 100%; object-fit: contain; display: block; }
+
+/* ── Layout presets ─────────────────────────────────────────────────────────── */
+/* title (0 slots) — the head + body are the whole slide, centred. */
+.sl-l-title { justify-content: center; align-items: center; text-align: center; }
+.sl-l-title .sl-title { font-size: clamp(20px, 10cqmin, 132px); }
+.sl-l-title .sl-body { font-size: clamp(12px, 3.6cqmin, 48px); max-width: 78%; }
+.sl-l-title .sl-ul { display: inline-block; text-align: left; }
+
+/* full (1) — media covers the frame, title overlaid on a scrim at the foot. */
+.sl-l-full { padding: 0; gap: 0; }
+.sl-l-full .sl-grid { grid-template-columns: 1fr; }
+.sl-l-full .sl-slot { border-radius: 0; }
+.sl-l-full .sl-slot:not(.is-filled) { background: none; }
+.sl-l-full .sl-fill { object-fit: cover; }
+.sl-l-full .sl-head {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2;
+  padding: 6cqmin;
+  color: #ffffff;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
+}
+
+/* hero (1) — title band, then one media panel filling the rest. */
+.sl-l-hero .sl-grid { grid-template-columns: 1fr; }
+.sl-l-hero .sl-fill { object-fit: cover; }
+
+/* split (2) — side by side. */
+.sl-l-split .sl-grid { grid-template-columns: 1fr 1fr; }
+
+/* stack (2) — one over the other. */
+.sl-l-stack .sl-grid { grid-template-rows: 1fr 1fr; }
+
+/* golden (2) — the golden-ratio split. */
+.sl-l-golden .sl-grid { grid-template-columns: 1.618fr 1fr; }
+
+/* cols3 (3) — three columns. */
+.sl-l-cols3 .sl-grid { grid-template-columns: repeat(3, 1fr); }
+
+/* grid4 (4) — 2 × 2. */
+.sl-l-grid4 .sl-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+
+/* ── Freeform canvas — hand-positioned boxes ─────────────────────────────────── */
+/* mode:"freeform" replaces the flex layout with a full-frame canvas: boxes are
+   absolutely placed as a % of the slide (the hook divides px on the 1920² native
+   canvas by native W/H). The slide keeps its theme bg/ink + the logo/page-number
+   furniture, which sit ABOVE the canvas (z-index 4 > 1). No padding, so a box's
+   0..native coordinate spans the whole frame. */
+.sl-l-freeform { padding: 0; gap: 0; }
+.sl-canvas { position: absolute; inset: 0; z-index: 1; }
+.sl-box {
+  position: absolute;
+  box-sizing: border-box;
+  transform-origin: center center;   /* rotation is about the box centre */
+  min-width: 0;
+  min-height: 0;
+}
+.sl-box--image { overflow: hidden; border-radius: 1cqmin; }
+.sl-box-img { width: 100%; height: 100%; object-fit: contain; display: block; }
+/* Shape box (kind:"box"): a plain filled div that fills the .sl-box wrapper. The base
+   .sl-box carries no border/overflow (only .sl-box--image does), so the fill, its
+   border-radius (calc(cqw)/9999px/50%) and its cqw border are the shape's alone —
+   box-sizing:border-box keeps the border inside the box the geometry sized. */
+.sl-box-shape { width: 100%; height: 100%; box-sizing: border-box; }
+/* Text box: markdown rendered by mdBox() in the hook (plain h1-3/p/ul/li/strong/em,
+   no slide classes). Sized in `em` off the box's own font-size so headings/bullets
+   scale WITH the box, not the slide. */
+.sl-box-text {
+  width: 100%;
+  height: 100%;
+  font-size: 3cqw;                   /* default; the hook overrides inline per box */
+  line-height: 1.22;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+}
+.sl-box-text > :first-child { margin-top: 0; }
+.sl-box-text h1 { font-size: 1.7em; font-weight: 700; line-height: 1.05; letter-spacing: -0.015em; }
+.sl-box-text h2 { font-size: 1.32em; font-weight: 700; line-height: 1.12; margin-top: 0.5em; }
+.sl-box-text h3 { font-size: 1.12em; font-weight: 700; line-height: 1.14; margin-top: 0.45em; opacity: 0.92; }
+.sl-box-text p { margin-top: 0.5em; opacity: 0.92; }
+.sl-box-text ul { margin-top: 0.5em; padding-left: 1.2em; list-style: none; }
+/* Child combinator so a nested <ol> in a box keeps its numbers (see the layout note). */
+.sl-box-text ul > li { position: relative; margin-top: 0.32em; padding-left: 0.9em; opacity: 0.92; }
+.sl-box-text ul > li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.62em;
+  width: 0.32em;
+  height: 0.32em;
+  border-radius: 50%;
+  background: var(--accent, currentColor);
+}
+.sl-box-text ol { margin-top: 0.5em; padding-left: 1.4em; }
+.sl-box-text ol > li { margin-top: 0.32em; opacity: 0.92; }
+.sl-box-text ol > li::marker { color: var(--accent, currentColor); font-weight: 700; }
+.sl-box-text ul ul, .sl-box-text ul ol, .sl-box-text ol ol, .sl-box-text ol ul { margin-top: 0.25em; }
+/* Tables inside a freeform box — same cap-and-wrap discipline, sized in em. */
+.sl-box-text table {
+  border-collapse: collapse;
+  width: 100%;
+  max-width: 100%;
+  margin-top: 0.5em;
+  table-layout: fixed;
+  font-size: 0.9em;
+}
+.sl-box-text th, .sl-box-text td {
+  padding: 0.2em 0.4em;
+  text-align: left;
+  vertical-align: top;
+  overflow-wrap: anywhere;
+  border: 1px solid color-mix(in oklab, currentColor 18%, transparent);
+}
+.sl-box-text thead th { font-weight: 700; border-bottom: 0.12em solid color-mix(in oklab, currentColor 42%, transparent); }
+.sl-box-text a { color: var(--accent, currentColor); text-decoration: underline; text-underline-offset: 0.12em; }
+.sl-box-text code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.88em;
+  padding: 0.05em 0.28em;
+  border-radius: 0.3em;
+  background: color-mix(in oklab, currentColor 10%, transparent);
+}
+.sl-box-text strong { font-weight: 700; }
+.sl-box-text em { font-style: italic; }
+
+@container (max-aspect-ratio: 4/5) {
+  /* Portrait decks (9:16): the wide type scale and the column layouts don't survive
+     a tall, narrow frame — turn the columns into rows and pull the titles back.
+     (This comment lives INSIDE the block on purpose: scopeCss decides an at-rule is
+     an at-rule by trimming its prelude and testing for a leading "@", and trim()
+     doesn't strip comments — so a comment directly ABOVE an at-rule makes the shell
+     scope it as if it were a selector, producing `#tool-canvas @container (…)`,
+     which matches nothing and leaves every rule inside it unscoped and leaking into
+     the app. Verified against shells/web/src/lib/scope-css.ts.) */
+  .sl-title { font-size: clamp(16px, 8cqmin, 76px); }
+  .sl-l-title .sl-title { font-size: clamp(18px, 11cqmin, 96px); }
+  .sl-l-split .sl-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
+  .sl-l-golden .sl-grid { grid-template-columns: 1fr; grid-template-rows: 1.618fr 1fr; }
+  .sl-l-cols3 .sl-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); }
+}
+
+/* ── State classes — the format reconciler (beforeExport swaps these) ────────── */
+/* pdf / pptx: EVERY stacked slide fully opaque and motionless. A slide left hidden
+   (display:none / visibility:hidden / opacity:0) is dropped by both walkers — and
+   pptx still emits the slide, blank. transform:none matters just as much: a
+   transition transform on the page element would skew every box the pptx walker
+   derives from its rect. */
+.slides.sl-static .sl-slide {
+  opacity: 1 !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Editor freeze: hold one slide still so it can be edited. animCss re-shows the
+   focused one. */
+.slides.sl-frozen .sl-slide {
+  opacity: 0 !important;
+  animation: none !important;
+  transform: none !important;
+}
+
+/* Restart helper: animation:none → reflow → back re-arms every named animation from
+   t=0, so a clip opens on a clean first frame (and so the live preview is handed
+   back playing after an export's frame clock paused and seeked it). */
+.slides.sl-restart .sl-slide { animation: none !important; }
+
+/* ── Bottom-corner furniture (logo + page number) ────────────────────────────── */
+/* Both sit over whatever the slide drew, in the slide's own ink, out of the flex
+   flow so they never shift the content. They are REAL slide content and export
+   (NOT [data-export-hide]). The logo box is sized inline (cqh from the hook, from
+   the SVG's real aspect) and fits `contain` so a wide lockup is never clipped. */
+.sl-logo {
+  position: absolute;
+  left: 4cqmin;
+  bottom: 3.6cqmin;
+  z-index: 4;
+  pointer-events: none;
+}
+.sl-logo img { width: 100%; height: 100%; object-fit: contain; object-position: left center; display: block; }
+.sl-pageno {
+  position: absolute;
+  right: 4cqmin;
+  bottom: 3.6cqmin;
+  z-index: 4;
+  color: var(--ink, #ffffff);
+  font-size: clamp(9px, 1.9cqmin, 22px);
+  font-weight: 600;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}
+
+/* Speaker notes never render — see the template for why they aren't
+   [data-export-hide]. */
+.sl-notes { display: none; }
+
+/* The export frame clock (see hooks.js). It must not paint, must not lay out, and
+   must not become a shape — but it must stay findable by frameClockCanvas()'s
+   querySelectorAll('canvas'). Hence: out of flow and 0 × 0 (nothing to paint),
+   rather than display:none. The 0 × 0 bitmap is load-bearing — the DOM serialiser
+   copies every <canvas> by calling toDataURL() on it, and a zero-dimension bitmap
+   returns "data:," which the serialiser drops outright; a sized canvas would
+   instead cost an image decode on each of up to 600 captured frames. It also sits
+   OUTSIDE every [data-pdf-page], so neither paged walker ever reaches it (and its
+   sub-0.5px box would be dropped even if one did). */
+.sl-clock { position: absolute; left: 0; top: 0; width: 0; height: 0; pointer-events: none; }

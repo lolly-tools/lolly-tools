@@ -1,0 +1,467 @@
+{
+  "id": "deck-builder",
+  "name": "Deck Builder",
+  "description": "Build a slide deck with a live on-canvas editor — edit text, colours and images directly on each slide.",
+  "a11yLabel": "Slide deck with {{slideCount}} slides",
+  "version": "1.0.0",
+  "engineVersion": "^1.3.0",
+  "status": "community",
+  "category": "designer",
+  "tags": [
+    "deck",
+    "slides",
+    "presentation",
+    "editor",
+    "pptx",
+    "on-canvas"
+  ],
+  "render": {
+    "width": 1920,
+    "height": 1920,
+    "formats": [
+      "pptx",
+      "pdf",
+      "mp4",
+      "webm",
+      "gif"
+    ],
+    "actions": [
+      "download",
+      "save"
+    ],
+    "dims": true,
+    "printMarks": false,
+    "video": {
+      "wait": 0,
+      "duration": 6
+    },
+    "layout": "deck"
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "beforeExport": true,
+    "afterExport": true
+  },
+  "inputs": [
+    {
+      "id": "size",
+      "label": "Deck size",
+      "type": "select",
+      "default": "wide",
+      "help": "One size for the whole deck — PowerPoint gives every slide the same size. Override it in pixels in the export bar.",
+      "options": [
+        {
+          "value": "wide",
+          "label": "16:9 · 1920 × 1080",
+          "width": 1920,
+          "height": 1080,
+          "unit": "px"
+        },
+        {
+          "value": "classic",
+          "label": "4:3 · 1440 × 1080",
+          "width": 1440,
+          "height": 1080,
+          "unit": "px"
+        },
+        {
+          "value": "square",
+          "label": "1:1 · 1080 × 1080",
+          "width": 1080,
+          "height": 1080,
+          "unit": "px"
+        },
+        {
+          "value": "story",
+          "label": "9:16 · 1080 × 1920",
+          "width": 1080,
+          "height": 1920,
+          "unit": "px"
+        }
+      ]
+    },
+    {
+      "id": "transition",
+      "label": "Transition",
+      "type": "select",
+      "default": "none",
+      "section": "Animation",
+      "help": "Animation is OFF by default (None) — the deck sits still. Pick a transition to make slides animate in; only GIF, MP4 and WebM carry the motion (PowerPoint and PDF are always still).",
+      "options": [
+        {
+          "value": "none",
+          "label": "None (static)"
+        },
+        {
+          "value": "cut",
+          "label": "Cut"
+        },
+        {
+          "value": "fade",
+          "label": "Fade"
+        },
+        {
+          "value": "slide",
+          "label": "Slide"
+        },
+        {
+          "value": "zoom",
+          "label": "Zoom"
+        }
+      ]
+    },
+    {
+      "id": "transitionSpeed",
+      "label": "Transition length",
+      "type": "number",
+      "display": "slider",
+      "section": "Animation",
+      "min": 0.1,
+      "max": 1.5,
+      "step": 0.05,
+      "default": 0.5,
+      "help": "Seconds each slide takes to arrive. A fade takes the whole length; a slide or zoom glides over it while the opacity snaps in, which keeps GIF/MP4 exports crisp."
+    },
+    {
+      "id": "slideDuration",
+      "label": "Seconds per slide",
+      "type": "number",
+      "display": "slider",
+      "section": "Animation",
+      "min": 0.5,
+      "max": 20,
+      "step": 0.5,
+      "default": 3,
+      "help": "How long each slide holds before the next one arrives. This plus the transitions is the length of the exported clip."
+    },
+    {
+      "id": "loop",
+      "label": "Loop",
+      "type": "select",
+      "default": "loop",
+      "section": "Animation",
+      "help": "How many times the deck plays in the GIF/MP4.",
+      "options": [
+        {
+          "value": "loop",
+          "label": "Forever"
+        },
+        {
+          "value": "once",
+          "label": "Play once"
+        }
+      ]
+    },
+    {
+      "id": "focusSlide",
+      "label": "Pause on slide",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "default": 0,
+      "help": "0 plays the whole deck in the preview. Set a slide number to hold it there while you edit — exports still play."
+    },
+    {
+      "id": "theme",
+      "label": "Deck theme",
+      "type": "select",
+      "default": "auto",
+      "section": "Brand",
+      "help": "The deck's colour scheme, derived from your brand tokens. Each slide can override it.",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Brand (light)"
+        },
+        {
+          "value": "light",
+          "label": "Light"
+        },
+        {
+          "value": "dark",
+          "label": "Dark"
+        },
+        {
+          "value": "primary",
+          "label": "Primary"
+        },
+        {
+          "value": "accent",
+          "label": "Accent"
+        }
+      ]
+    },
+    {
+      "id": "pageNumbers",
+      "label": "Page numbers",
+      "type": "boolean",
+      "default": true,
+      "section": "Brand",
+      "help": "Show a slide number in the bottom-right of every slide."
+    },
+    {
+      "id": "brandLogo",
+      "label": "Brand logo",
+      "type": "boolean",
+      "default": true,
+      "section": "Brand",
+      "help": "Place your brand logo in the bottom-left of every slide, picking the light or dark variant to suit each background."
+    },
+    {
+      "id": "deck",
+      "label": "Slides",
+      "type": "blocks",
+      "help": "Each block is one slide. Pick its layout when you add it; in a slot, choose another Lolly tool or an image from the picker's Tools tab. Reorder by dragging.",
+      "addMenu": {
+        "field": "layout",
+        "label": "Add slide"
+      },
+      "fields": [
+        {
+          "id": "layout",
+          "label": "Layout",
+          "type": "select",
+          "default": "title",
+          "options": [
+            {
+              "value": "title",
+              "label": "Title only",
+              "repeatable": true
+            },
+            {
+              "value": "full",
+              "label": "Full bleed (1)",
+              "repeatable": true
+            },
+            {
+              "value": "hero",
+              "label": "Hero + title (1)",
+              "repeatable": true
+            },
+            {
+              "value": "split",
+              "label": "Side by side (2)",
+              "repeatable": true
+            },
+            {
+              "value": "stack",
+              "label": "Stacked (2)",
+              "repeatable": true
+            },
+            {
+              "value": "golden",
+              "label": "Golden ratio (2)",
+              "repeatable": true
+            },
+            {
+              "value": "cols3",
+              "label": "Three columns (3)",
+              "repeatable": true
+            },
+            {
+              "value": "grid4",
+              "label": "Four grid (4)",
+              "repeatable": true
+            }
+          ]
+        },
+        {
+          "id": "content",
+          "label": "Content",
+          "type": "text",
+          "default": "",
+          "rows": 4,
+          "placeholder": "# Slide title\n\nSupports ## headings, - bullets, **bold** and *italic*.",
+          "help": "Markdown. The first # heading is the slide title; below it, ## / ### subheads, - bullets and **bold** / *italic* become the body.",
+          "multilineFor": [
+            "title",
+            "full",
+            "hero",
+            "split",
+            "stack",
+            "golden",
+            "cols3",
+            "grid4"
+          ]
+        },
+        {
+          "id": "theme",
+          "label": "Slide theme",
+          "type": "select",
+          "default": "auto",
+          "help": "Colour scheme for this slide. Deck theme inherits the deck-level choice.",
+          "options": [
+            {
+              "value": "auto",
+              "label": "Deck theme"
+            },
+            {
+              "value": "light",
+              "label": "Light"
+            },
+            {
+              "value": "dark",
+              "label": "Dark"
+            },
+            {
+              "value": "primary",
+              "label": "Primary"
+            },
+            {
+              "value": "accent",
+              "label": "Accent"
+            }
+          ]
+        },
+        {
+          "id": "bg",
+          "label": "Background",
+          "type": "color",
+          "default": "",
+          "help": "Optional — overrides the theme background for this slide. Leave empty to use the theme."
+        },
+        {
+          "id": "logo",
+          "label": "Logo",
+          "type": "select",
+          "default": "auto",
+          "help": "Brand logo for this slide. Auto picks light/dark to suit the background; Mono uses the single-colour lockup; Off hides it.",
+          "options": [
+            {
+              "value": "auto",
+              "label": "Auto"
+            },
+            {
+              "value": "mono",
+              "label": "Mono"
+            },
+            {
+              "value": "off",
+              "label": "Off"
+            }
+          ]
+        },
+        {
+          "id": "media1",
+          "label": "Slot 1 — tool or image",
+          "type": "asset",
+          "assetType": "any",
+          "allowUpload": true,
+          "help": "Paste a Lolly tool link, or pick a tool in the picker's Tools tab, and its render fills the slot.",
+          "showFor": [
+            "full",
+            "hero",
+            "split",
+            "stack",
+            "golden",
+            "cols3",
+            "grid4"
+          ]
+        },
+        {
+          "id": "media2",
+          "label": "Slot 2",
+          "type": "asset",
+          "assetType": "any",
+          "allowUpload": true,
+          "showFor": [
+            "split",
+            "stack",
+            "golden",
+            "cols3",
+            "grid4"
+          ]
+        },
+        {
+          "id": "media3",
+          "label": "Slot 3",
+          "type": "asset",
+          "assetType": "any",
+          "allowUpload": true,
+          "showFor": [
+            "cols3",
+            "grid4"
+          ]
+        },
+        {
+          "id": "media4",
+          "label": "Slot 4",
+          "type": "asset",
+          "assetType": "any",
+          "allowUpload": true,
+          "showFor": [
+            "grid4"
+          ]
+        },
+        {
+          "id": "notes",
+          "label": "Speaker notes",
+          "type": "text",
+          "default": "",
+          "rows": 3,
+          "placeholder": "Presenter notes — never shown on the slide.",
+          "help": "Travels into PowerPoint's notes pane. Never rendered on the slide, in any format.",
+          "multilineFor": [
+            "title",
+            "full",
+            "hero",
+            "split",
+            "stack",
+            "golden",
+            "cols3",
+            "grid4"
+          ]
+        },
+        {
+          "id": "mode",
+          "label": "Slide mode",
+          "type": "select",
+          "default": "layout",
+          "help": "Layout uses the structured templates above. Freeform turns the slide into a free canvas of hand-positioned text and image boxes you arrange directly on the slide.",
+          "options": [
+            {
+              "value": "layout",
+              "label": "Layout"
+            },
+            {
+              "value": "freeform",
+              "label": "Freeform"
+            }
+          ]
+        },
+        {
+          "id": "boxes",
+          "label": "Freeform boxes",
+          "type": "text",
+          "default": "",
+          "rows": 4,
+          "showIf": {
+            "mode": "freeform"
+          },
+          "placeholder": "[]",
+          "help": "The freeform canvas contents — a JSON array of positioned boxes, edited directly on the slide. Coordinates are pixels on the 1920 × 1920 native canvas.",
+          "multilineFor": [
+            "title",
+            "full",
+            "hero",
+            "split",
+            "stack",
+            "golden",
+            "cols3",
+            "grid4"
+          ]
+        }
+      ],
+      "default": [
+        {
+          "layout": "title",
+          "content": "# New deck\n\nType here to edit this slide, or **Load** a whole deck from Markdown or JSON. Add slides from the filmstrip, then set each one’s type, theme and images.",
+          "theme": "auto"
+        }
+      ]
+    }
+  ]
+}
