@@ -49,10 +49,19 @@
 /* Slide 1 is the always-on base layer the rest animate over. */
 .slides .sl-slide--0 { opacity: 1; }
 
+/* ── The text-fit multiplier ─────────────────────────────────────────────────── */
+/* EVERY fittable size below is `calc(<authored size> * var(--fit, 1))`. The template's
+   fit pass measures the laid-out text and writes ONE unitless --fit onto the fit root
+   (a .sl-slide, or a freeform .sl-box-text); the default of 1 makes the calc inert
+   everywhere else, so a deck with fit off computes exactly what it always did.
+   Why a multiplier and not a px size: the pass runs against the canvas at its CURRENT
+   size and the export bridge scales that same DOM up to the export size — a ratio
+   survives that, an absolute px size doesn't. See template.html. */
+
 /* ── Title band ─────────────────────────────────────────────────────────────── */
 .sl-head { flex: 0 0 auto; }
 .sl-title {
-  font-size: clamp(18px, 7cqmin, 96px);
+  font-size: calc(clamp(18px, 7cqmin, 96px) * var(--fit, 1));
   line-height: 1.04;
   font-weight: 700;
   letter-spacing: -0.015em;
@@ -65,14 +74,14 @@
 .sl-body {
   flex: 0 1 auto;
   min-height: 0;
-  font-size: clamp(12px, 3cqmin, 40px);
+  font-size: calc(clamp(12px, 3cqmin, 40px) * var(--fit, 1));
   line-height: 1.3;
   overflow-wrap: anywhere;
 }
 .sl-body > :first-child { margin-top: 0; }
 .sl-h { line-height: 1.12; font-weight: 700; overflow-wrap: anywhere; }
-.sl-h2 { font-size: clamp(14px, 4.2cqmin, 56px); margin-top: 2cqmin; }
-.sl-h3 { font-size: clamp(13px, 3.4cqmin, 44px); margin-top: 1.6cqmin; opacity: 0.92; }
+.sl-h2 { font-size: calc(clamp(14px, 4.2cqmin, 56px) * var(--fit, 1)); margin-top: 2cqmin; }
+.sl-h3 { font-size: calc(clamp(13px, 3.4cqmin, 44px) * var(--fit, 1)); margin-top: 1.6cqmin; opacity: 0.92; }
 .sl-p { margin-top: 1.4cqmin; opacity: 0.9; }
 .sl-ul { margin-top: 1.4cqmin; padding-left: 3cqmin; list-style: none; }
 /* Child combinator (not descendant): a dot decorates only DIRECT <ul> children, so a
@@ -149,8 +158,8 @@
 /* ── Layout presets ─────────────────────────────────────────────────────────── */
 /* title (0 slots) — the head + body are the whole slide, centred. */
 .sl-l-title { justify-content: center; align-items: center; text-align: center; }
-.sl-l-title .sl-title { font-size: clamp(20px, 10cqmin, 132px); }
-.sl-l-title .sl-body { font-size: clamp(12px, 3.6cqmin, 48px); max-width: 78%; }
+.sl-l-title .sl-title { font-size: calc(clamp(20px, 10cqmin, 132px) * var(--fit, 1)); }
+.sl-l-title .sl-body { font-size: calc(clamp(12px, 3.6cqmin, 48px) * var(--fit, 1)); max-width: 78%; }
 .sl-l-title .sl-ul { display: inline-block; text-align: left; }
 
 /* full (1) — media covers the frame, title overlaid on a scrim at the foot. */
@@ -189,6 +198,35 @@
 /* grid4 (4) — 2 × 2. */
 .sl-l-grid4 .sl-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
 
+/* ── Text fit + vertical position (LAYOUT slides) ────────────────────────────── */
+/* data-fit="slide": take flex-shrink OFF the text bands, so the column OVERRUNS the slide
+   when the copy is too long instead of quietly absorbing it. That overrun is the whole
+   signal — the fit pass compares the column's natural height against the slide's content
+   box and shrinks --fit until it fits (see measure() in template.html).
+   Do NOT be tempted to let the bands shrink-and-clip and measure the clip instead: a band
+   is auto-height, so its box tracks its own text and it can never overflow itself. That
+   reads as a permanent sub-pixel overflow, and the search shrinks every slide to nothing. */
+.sl-slide[data-fit] .sl-head,
+.sl-slide[data-fit] .sl-body { flex: 0 0 auto; min-height: 0; }
+/* …and the slot grid keeps a floor of the slide, so long copy shrinks itself rather than
+   squeezing the images to nothing. It's the part of the column that does NOT scale with
+   --fit, which is why measure() accounts for it separately. Only layouts with slots have
+   this element. */
+.sl-slide[data-fit] .sl-grid { flex-shrink: 0; min-height: 40cqh; }
+/* full-bleed is the exception: its caption band is absolutely positioned, so it sits
+   outside the flex flow entirely and can't overrun a column that doesn't hold it. Give it
+   an explicit ceiling — there, a clip IS the overflow signal. */
+.sl-slide[data-fit].sl-l-full .sl-head { max-height: 40cqh; overflow: hidden; }
+
+/* data-valign — where the text sits in the slide. Emitted ONLY for the `title` layout
+   (see slideValign in hooks.js): it's the one layout with free space to move the text
+   into. Everywhere else the slot grid grows to fill whatever the text doesn't take, so
+   there IS no free space and this would be a control that visibly does nothing. Beats
+   .sl-l-title's own `justify-content: center` on specificity; that stays the default. */
+.sl-slide[data-valign="t"] { justify-content: flex-start; }
+.sl-slide[data-valign="m"] { justify-content: center; }
+.sl-slide[data-valign="b"] { justify-content: flex-end; }
+
 /* ── Freeform canvas — hand-positioned boxes ─────────────────────────────────── */
 /* mode:"freeform" replaces the flex layout with a full-frame canvas: boxes are
    absolutely placed as a % of the slide (the hook divides px on the 1920² native
@@ -213,16 +251,29 @@
 .sl-box-shape { width: 100%; height: 100%; box-sizing: border-box; }
 /* Text box: markdown rendered by mdBox() in the hook (plain h1-3/p/ul/li/strong/em,
    no slide classes). Sized in `em` off the box's own font-size so headings/bullets
-   scale WITH the box, not the slide. */
+   scale WITH the box, not the slide.
+   The box is a FLEX COLUMN so `valign` can place the text within the rectangle the user
+   drew — a text box is almost never exactly as tall as its text, and without this the
+   text always hugged the top. Nothing in .sl-box-fit sets margin-bottom, so no margin
+   collapsing is lost by making these flex items; spacing is unchanged. */
 .sl-box-text {
   width: 100%;
   height: 100%;
-  font-size: 3cqw;                   /* default; the hook overrides inline per box */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;       /* data-valign="t" / absent — the historical default */
+  font-size: calc(var(--fs, 3cqw) * var(--fit, 1));   /* --fs: the hook's per-box authored size */
   line-height: 1.22;
   overflow-wrap: anywhere;
   overflow: hidden;
 }
-.sl-box-text > :first-child { margin-top: 0; }
+.sl-box-text[data-valign="m"] { justify-content: center; }
+.sl-box-text[data-valign="b"] { justify-content: flex-end; }
+/* The measured child (see template.html): `flex: 0 0 auto` keeps it sized to its CONTENT
+   even when that content is taller than the box, which is the only way to ask "did the
+   text overflow?" — the box itself is always exactly as tall as it was drawn. */
+.sl-box-fit { flex: 0 0 auto; width: 100%; min-height: 0; }
+.sl-box-fit > :first-child { margin-top: 0; }
 .sl-box-text h1 { font-size: 1.7em; font-weight: 700; line-height: 1.05; letter-spacing: -0.015em; }
 .sl-box-text h2 { font-size: 1.32em; font-weight: 700; line-height: 1.12; margin-top: 0.5em; }
 .sl-box-text h3 { font-size: 1.12em; font-weight: 700; line-height: 1.14; margin-top: 0.45em; opacity: 0.92; }
@@ -281,8 +332,8 @@
      scope it as if it were a selector, producing `#tool-canvas @container (…)`,
      which matches nothing and leaves every rule inside it unscoped and leaking into
      the app. Verified against shells/web/src/lib/scope-css.ts.) */
-  .sl-title { font-size: clamp(16px, 8cqmin, 76px); }
-  .sl-l-title .sl-title { font-size: clamp(18px, 11cqmin, 96px); }
+  .sl-title { font-size: calc(clamp(16px, 8cqmin, 76px) * var(--fit, 1)); }
+  .sl-l-title .sl-title { font-size: calc(clamp(18px, 11cqmin, 96px) * var(--fit, 1)); }
   .sl-l-split .sl-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
   .sl-l-golden .sl-grid { grid-template-columns: 1fr; grid-template-rows: 1.618fr 1fr; }
   .sl-l-cols3 .sl-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); }
@@ -301,11 +352,17 @@
 }
 
 /* Editor freeze: hold one slide still so it can be edited. animCss re-shows the
-   focused one. */
+   focused one — and re-arms its pointer-events.
+   pointer-events matters as much as opacity here: every slide is a full-frame layer at
+   `z-index: idx`, so the LAST slide sits over all the others and hit-tests first — an
+   opacity:0 element still catches clicks. Without this, a click meant for the visible
+   slide lands on whichever slide happens to be topmost, and on-canvas editing picks the
+   wrong slide's text. Frozen is the editing state, so this is where it's needed. */
 .slides.sl-frozen .sl-slide {
   opacity: 0 !important;
   animation: none !important;
   transform: none !important;
+  pointer-events: none;
 }
 
 /* Restart helper: animation:none → reflow → back re-arms every named animation from

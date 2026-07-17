@@ -8,6 +8,11 @@
   "category": "designer",
   "tags": ["photo", "filter", "voronoi", "cells", "mesh", "mosaic", "low-poly", "vector", "camera", "live", "on-device"],
   "a11yLabel": "Voronoi cell mosaic of the photo",
+  "examples": [
+    { "label": "Stained glass", "values": { "cells": 40, "edgeWidth": 1.5, "edgeColor": "#1a1a2e" } },
+    { "label": "Fine mosaic", "values": { "cells": 400, "jitter": 100, "edgeWidth": 0 } },
+    { "label": "Warm shatter", "values": { "cells": 120, "treatmentColor": "#f2a65a", "treatmentIntensity": 60, "edgeWidth": 0.6, "edgeColor": "#ffffff" } }
+  ],
   "render": {
     "width": 1080,
     "height": 1080,

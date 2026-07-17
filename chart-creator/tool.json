@@ -11,6 +11,55 @@
     "order": 5,
     "blurb": "On-brand charts from your data, any shape"
   },
+  "examples": [
+    {
+      "label": "Donut with legend",
+      "values": {
+        "chartType": "donut", "heading": "Where the budget goes", "showLegend": true, "background": "#ffffff", "color": "#1a1a2e",
+        "data": [
+          { "label": "Cloud", "value": "38", "color": "#0f766e" },
+          { "label": "Hardware", "value": "24", "color": "#f2a65a" },
+          { "label": "Services", "value": "22", "color": "#334155" },
+          { "label": "Support", "value": "16", "color": "#93c5fd" }
+        ]
+      }
+    },
+    {
+      "label": "Ranked bars",
+      "values": {
+        "chartType": "horizontal-bar", "heading": "Top regions", "cornerRadius": 6, "background": "#faf7f2", "color": "#1a1a2e", "width": 1280, "height": 800,
+        "data": [
+          { "label": "EMEA", "value": "44", "color": "#134e4a" },
+          { "label": "Americas", "value": "37", "color": "#0f766e" },
+          { "label": "APAC", "value": "29", "color": "#14b8a6" },
+          { "label": "LATAM", "value": "18", "color": "#5eead4" }
+        ]
+      }
+    },
+    {
+      "label": "Dark pie, percent labels",
+      "values": {
+        "chartType": "pie", "valueFormat": "percent", "background": "#1a1a2e", "color": "#f5efe6", "strokeWidth": 4, "strokeColor": "#1a1a2e",
+        "data": [
+          { "label": "Organic", "value": "52", "color": "#f2a65a" },
+          { "label": "Referral", "value": "31", "color": "#ffd3bd" },
+          { "label": "Paid", "value": "17", "color": "#7c2d12" }
+        ]
+      }
+    },
+    {
+      "label": "Minimal columns",
+      "values": {
+        "chartType": "vertical-bar", "dataLabels": false, "cornerRadius": 8, "background": "#ffffff", "color": "#334155",
+        "data": [
+          { "label": "Q1", "value": "42", "color": "#cbd5e1" },
+          { "label": "Q2", "value": "49", "color": "#94a3b8" },
+          { "label": "Q3", "value": "55", "color": "#64748b" },
+          { "label": "Q4", "value": "61", "color": "#334155" }
+        ]
+      }
+    }
+  ],
   "render": {
     "width": 1080,
     "height": 1080,

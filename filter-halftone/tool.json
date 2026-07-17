@@ -8,6 +8,12 @@
   "status": "official",
   "category": "designer",
   "tags": ["halftone", "dots", "photo", "filter", "effect", "newspaper", "comic", "vector", "image"],
+  "examples": [
+    { "label": "Newsprint", "values": { "colorSource": "solid", "fgColor": "#1a1a2e", "bgColor": "#f5efe6", "gridSize": 34, "dither": "floyd" } },
+    { "label": "Comic dots", "values": { "colorSource": "solid", "fgColor": "#7c2d12", "bgColor": "#ffd3bd", "gridSize": 18, "dotScale": 1.3 } },
+    { "label": "Diamond weave", "values": { "shape": "diamond", "gridSize": 28, "dotScale": 1.15 } },
+    { "label": "Coarse squares", "values": { "shape": "square", "colorSource": "solid", "fgColor": "#f5efe6", "bgColor": "#0b1021", "gridSize": 10, "invert": true } }
+  ],
   "render": {
     "width": 1000,
     "height": 1000,

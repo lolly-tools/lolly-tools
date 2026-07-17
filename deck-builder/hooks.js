@@ -22,10 +22,13 @@
  * still for the whole capture, and a gif/Lottie in an <img> exports as a still, so
  * a composed child NEVER animates inside the deck's clip.
  *
- * The template ships no client-side JS — the animation is pure CSS, identical
- * across the live preview and frame-by-frame capture. The one script-ish thing is
- * the export frame clock, which is registered ONLY for the duration of a motion
- * export (see armFrameClock).
+ * NO MOTION is client-side JS — the animation is pure CSS, identical across the live
+ * preview and frame-by-frame capture. Only two things are imperative, and neither
+ * touches the timeline: the export frame clock (registered ONLY for the duration of a
+ * motion export — see armFrameClock), and the template's TEXT-FIT pass, which is the
+ * one job CSS genuinely cannot do (it has to measure laid-out text to know whether it
+ * overflowed). The fit pass writes ONE unitless --fit multiplier per fit root, so what
+ * it produces is still a scale-invariant ratio the CSS applies — see template.html.
  */
 
 var MAX_SLIDES = 40;   // soft cap — each slide is a layer + a keyframe block
@@ -186,8 +189,18 @@ function inlineMd(s) {
 
 // ── table + list block helpers (shared by both modes) ──────────────────────────
 // Split a pipe row into trimmed cells, stripping the optional outer pipes.
+// `\|` is a literal pipe, not a delimiter (the pptx importer writes cell pipes
+// escaped): a segment ending in a single backslash re-joins with the next one.
+// Every other backslash passes through untouched.
 function splitRow(line) {
-  return str(line).trim().replace(/^\|/, '').replace(/\|$/, '').split('|').map(function (c) { return c.trim(); });
+  var parts = str(line).trim().replace(/^\|/, '').replace(/\|$/, '').split('|');
+  var cells = [];
+  for (var i = 0; i < parts.length; i++) {
+    var p = parts[i];
+    while (i + 1 < parts.length && /(^|[^\\])\\$/.test(p)) p = p.slice(0, -1) + '|' + parts[++i];
+    cells.push(p.trim());
+  }
+  return cells;
 }
 // A separator row: `| :--- | ---: |`. Must contain a pipe (so a bare `---` HR/slide
 // rule is never mistaken for one) and every cell is dashes with optional `:` ends.
@@ -346,21 +359,43 @@ function pctW(v) { return f4(num(v, 0) / NATIVE_W * 100) + '%'; }
 function pctH(v) { return f4(num(v, 0) / NATIVE_H * 100) + '%'; }
 var BOX_ALIGN = { l: 'left', left: 'left', c: 'center', center: 'center', centre: 'center', r: 'right', right: 'right' };
 function boxAlign(v) { return BOX_ALIGN[str(v).toLowerCase()] || 'left'; }
+// Where the text sits VERTICALLY inside the box it was given — the counterpart to align.
+// Compact codes are what the overlay stores; the full words are what hand-written JSON and
+// layout-studio-shaped boxes use, so both are read. Absent → top (the flow default, which
+// is what every box authored before this field rendered as).
+var BOX_VALIGN = { t: 't', top: 't', m: 'm', middle: 'm', center: 'm', centre: 'm', b: 'b', bottom: 'b' };
+function boxValign(v) { return BOX_VALIGN[str(v).toLowerCase()] || 't'; }
 // A kind:"box" is a plain filled shape (no text/image of its own). Its corner
 // rounding and border MUST scale with the slide (the box is sized in % of the frame),
 // so we express both in slide-relative units — cqw against the deck query container,
 // exactly like box.fontSize — NOT fixed px. `radius` is authored in NATIVE px.
 var BOX_SHAPES = { rect: 1, round: 1, pill: 1, ellipse: 1 };
 function boxShape(v) { var s = str(v).toLowerCase(); return BOX_SHAPES[s] ? s : 'rect'; }
+// `radius` is authored in NATIVE px, as EITHER one number (all four corners) or a
+// [topLeft, topRight, bottomRight, bottomLeft] array — CSS corner order, so the four
+// values pass straight through to border-radius. Anything malformed reads as 0.
+function radiusList(b) {
+  var r = b.radius;
+  if (Array.isArray(r)) {
+    var out = [];
+    for (var i = 0; i < 4; i++) out.push(Math.max(0, num(r[i], 0)));
+    return out;
+  }
+  var one = Math.max(0, num(r, 0));
+  return [one, one, one, one];
+}
 function boxRadiusCss(b) {
   var shape = boxShape(b.shape);
   if (shape === 'pill') return '9999px';               // stadium ends, size-independent
   if (shape === 'ellipse') return '50%';               // border-radius:50% draws an ellipse
-  if (shape === 'round') {
-    var r = Math.max(0, num(b.radius, 0));             // native px → slide-relative cqw
-    return 'calc(' + f4(r / NATIVE_W * 100) + 'cqw)';
-  }
-  return '0';                                          // rect / absent → square corners
+  // rect and round BOTH honour the authored corners — `shape` only names the two geometries
+  // (pill/ellipse) that radius can't express, so there is no redundant shape⇄radius switch
+  // to keep in sync. No radius at all → square corners, which is what `rect` has always been.
+  var rs = radiusList(b);
+  if (!rs[0] && !rs[1] && !rs[2] && !rs[3]) return '0';
+  var css = [];
+  for (var k = 0; k < 4; k++) css.push('calc(' + f4(rs[k] / NATIVE_W * 100) + 'cqw)');  // native px → slide-relative
+  return css.join(' ');
 }
 function boxBorderCss(b) {
   var lw = num(b.lineWidth, 0);
@@ -401,9 +436,14 @@ function renderBoxes(raw) {
       box.html = mdBox(str(b.text));
       box.color = safeColor(b.color, '');
       var fs = num(b.fontSize, 0);
-      // font-size in cqw so it scales with the canvas exactly like the box geometry.
+      // The authored size in cqw so it scales with the canvas exactly like the box geometry.
+      // It rides the --fs CUSTOM PROPERTY rather than font-size directly: styles.css reads it
+      // back as `calc(var(--fs) * var(--fit))`, so the fit pass can scale the box by writing
+      // one unitless number without destroying the authored size it has to scale FROM.
       box.fontSize = (fs > 0) ? f4(fs / NATIVE_W * 100) + 'cqw' : '';
       box.align = boxAlign(b.align);
+      box.valign = boxValign(b.valign);
+      box.fit = !!b.fit;
     }
     out.push(box);
   }
@@ -485,6 +525,26 @@ function bgIsDark(bg) {
 }
 var LOGO_MODES = { auto: 1, mono: 1, off: 1 };
 function normLogo(v) { v = str(v); return LOGO_MODES[v] ? v : 'auto'; }
+
+// ── text fit + vertical position (LAYOUT slides) ──────────────────────────────
+// Both are per-slide with a deck-level default, the same shape as theme/logo: the slide
+// says "auto" and inherits, or overrides outright.
+function slideFit(v, deckOn) {
+  var s = str(v);
+  if (s === 'on') return true;
+  if (s === 'off') return false;
+  return !!deckOn;                     // 'auto' / absent / unknown → the deck's setting
+}
+// Only the `title` layout has free space to move the text into — every other layout pins the
+// text band above a slot grid that grows to fill whatever's left, so a valign there would be
+// a control that does nothing. The manifest gates the field to `title` (showFor); this
+// returns '' for the rest so the template omits the attribute entirely rather than emitting
+// an inert one.
+var SLIDE_VALIGN = { top: 't', middle: 'm', bottom: 'b' };
+function slideValign(v, layout) {
+  if (layout !== 'title') return '';
+  return SLIDE_VALIGN[str(v)] || 'm';   // absent → middle, which is what .sl-l-title has always been
+}
 async function svgAspect(url) {
   try {
     var svg = '';
@@ -580,9 +640,12 @@ function buildAnimCss(n, startS, inS, R, T, motion, loop, focusIdx) {
     bindings.push('.slides.sl-anim .sl-slide--' + k + '{animation:' + anim + '}');
   }
 
-  // Editor freeze — hold the slide being edited (styles.css hides the rest).
+  // Editor freeze — hold the slide being edited (styles.css hides the rest, and takes
+  // pointer-events off ALL of them: every slide is a full-frame layer, so the topmost one
+  // would otherwise swallow clicks meant for the visible one). Re-arm both on the focused
+  // slide, so on-canvas editing can hit-test its real text.
   var freeze = (focusIdx >= 0)
-    ? '.slides.sl-frozen .sl-slide--' + focusIdx + '{opacity:1!important}'
+    ? '.slides.sl-frozen .sl-slide--' + focusIdx + '{opacity:1!important;pointer-events:auto}'
     : '';
 
   return keyframes.join('') + bindings.join('') + freeze;
@@ -625,6 +688,7 @@ function compute(model, theme, logos) {
   var deckTheme = normScheme(inputs.theme, 'auto');
   var pageNumbers = inputs.pageNumbers !== false;   // default on
   var brandLogo = inputs.brandLogo !== false;       // default on
+  var deckFit = inputs.fitText !== false;           // default ON — long text shrinks to fit its slide
   var T = theme || THEME_FALLBACK;
 
   var all = Array.isArray(inputs.deck) ? inputs.deck : [];
@@ -683,10 +747,13 @@ function compute(model, theme, logos) {
 
     if (isFreeform) {
       page.boxes = renderBoxes(row.boxes);
-      // Layout-only keys stay falsy so the template's {{#if}} chrome collapses.
+      // Layout-only keys stay falsy so the template's {{#if}} chrome collapses. Fit is a
+      // PER-BOX field on a freeform slide (each box owns the space it was drawn at), so the
+      // slide-level flags stay off and the fit pass only sees the boxes that opted in.
       page.titleHtml = ''; page.bodyHtml = '';
       page.hasHead = false; page.hasBody = false;
       page.slots = []; page.slotCount = 0;
+      page.fit = false; page.valign = '';
     } else {
       var parts = mdToParts(row.content);
       var slots = [];
@@ -701,6 +768,8 @@ function compute(model, theme, logos) {
       page.hasBody = !!parts.bodyHtml;
       page.slots = slots;
       page.slotCount = slots.length;
+      page.fit = slideFit(row.fit, deckFit);
+      page.valign = slideValign(row.valign, layout);
     }
     pages.push(page);
   }

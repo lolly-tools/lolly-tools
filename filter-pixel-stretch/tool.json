@@ -8,6 +8,11 @@
   "status": "official",
   "category": "designer",
   "tags": ["photo", "filter", "pixel", "stretch", "smear", "glitch", "distort", "effect"],
+  "examples": [
+    { "label": "Right smear", "values": { "direction": "right", "threshold": 42, "spread": 100 } },
+    { "label": "Falling glitch", "values": { "direction": "down", "threshold": 60, "feather": 40 } },
+    { "label": "Soft echo", "values": { "direction": "left", "threshold": 30, "spread": 70, "feather": 100 } }
+  ],
   "render": {
     "width": 1080,
     "height": 1080,

@@ -8,6 +8,11 @@
   "status": "official",
   "category": "designer",
   "tags": ["scanline", "crt", "pixel", "retro", "posterize", "halftone", "image", "filter", "effect"],
+  "examples": [
+    { "label": "CRT phosphor", "values": { "highlight": "#eaffea", "light": "#a7f3d0", "mid": "#10b981", "shade": "#065f46", "shadow": "#02100a" } },
+    { "label": "Amber terminal", "values": { "highlight": "#fff7e6", "light": "#fcd9a0", "mid": "#f2a65a", "shade": "#8a4b12", "shadow": "#1c0f02", "lineSize": 18, "gapSize": 14 } },
+    { "label": "Cold cathode", "values": { "highlight": "#f0f9ff", "light": "#bae6fd", "mid": "#38bdf8", "shade": "#075985", "shadow": "#020617", "everyLine": true } }
+  ],
   "render": {
     "width": 1000,
     "height": 1000,

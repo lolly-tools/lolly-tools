@@ -2,6 +2,8 @@
   {{#each pages}}
   <section class="sl-slide sl-slide--{{idx}} sl-l-{{layout}}"
            data-pdf-page
+           {{#if fit}}data-fit="slide"{{/if}}
+           {{#if valign}}data-valign="{{valign}}"{{/if}}
            style="--bg: {{bg}}; --ink: {{ink}}; --accent: {{accent}}; z-index: {{idx}};">
 
     {{#if isFreeform}}
@@ -22,7 +24,13 @@
         {{#if isImage}}
         {{#if url}}<img class="sl-box-img" src="{{url}}" alt="">{{/if}}
         {{else}}
-        <div class="sl-box-text" style="text-align: {{align}};{{#if color}} color: {{color}};{{/if}}{{#if fontSize}} font-size: {{fontSize}};{{/if}}">{{{html}}}</div>
+        {{!-- A text box. `--fs` (not font-size) carries the authored size so the fit pass can
+              scale it via --fit without losing the size it scales from. The inner .sl-box-fit
+              is the MEASURED element: it is content-sized even when it overflows, which is
+              what lets the pass compare "text height" against "box height" — the box itself
+              can't tell you, it is always exactly as tall as it was drawn. --}}
+        <div class="sl-box-text" data-valign="{{valign}}"{{#if fit}} data-fit="box"{{/if}}
+             style="text-align: {{align}};{{#if color}} color: {{color}};{{/if}}{{#if fontSize}} --fs: {{fontSize}};{{/if}}"><div class="sl-box-fit">{{{html}}}</div></div>
         {{/if}}
         {{/if}}
       </div>
@@ -77,4 +85,138 @@
   {{!-- The per-slide @keyframes + play bindings: the timeline depends on the slide
         count, so it can't be static CSS. Never move these into styles.css. --}}
   <style>{{{animCss}}}</style>
+
+  {{!-- ── the text-fit pass ────────────────────────────────────────────────────────
+        The ONE job CSS cannot do: shrink text until it fits the box it was given. It
+        needs the LAID-OUT height of the text, and only the DOM knows that. Everything
+        else in this deck stays declarative — the animation is pure CSS (see hooks.js).
+
+        Two properties make this safe to run in a tool that exports:
+
+        1. SCALE-INVARIANT. Every fittable size is authored as
+           `calc(<authored size> * var(--fit, 1))`, so this pass writes exactly ONE
+           unitless number per fit root. A ratio holds at any canvas size — which
+           matters because the stage previews the canvas at up to the native size and
+           the export bridge then scales that same DOM up. A px size measured here
+           would be wrong at export; a ratio is right at both.
+        2. SHRINK-ONLY. --fit starts at 1 and the search only looks below it. The
+           authored size is the intent; fit is the safety net when the copy outgrows
+           it — PowerPoint's "shrink text on overflow", not "fill the box".
+
+        It re-runs on every paint because the shell rebuilds the canvas and re-executes
+        this script each time (so there is no stale state to clear), and again once the
+        webfonts land, since the first pass may have measured fallback metrics.
+
+        IIFE + `var` throughout: template scripts share the page's global scope and run
+        again on every paint and every soft revisit — a top-level const/let throws
+        "already declared" on the second run and silently kills the whole script. --}}
+  <script>
+  (function () {
+    var script = document.currentScript;
+    // Scope to THIS deck, never document-wide: /multi mounts several tool canvases in one
+    // document and each runs its own copy of this script.
+    var root = (script && script.closest) ? script.closest('.slides') : null;
+    if (!root) return;
+
+    var MAX_STEPS = 9;      // bisection steps after the guess — ~0.2% of the authored size
+    var MIN_FIT = 0.08;     // the floor; below this the copy is hopeless and gets clipped
+    function f3(x) { return Math.round(x * 1000) / 1000; }
+
+    // A fit root's measurement, as { have, need, scales } in px:
+    //   have   — the room there is.
+    //   need   — what the content wants at the current --fit.
+    //   scales — the part of `need` that shrinks WITH --fit (text). The rest (a slot grid's
+    //            floor) doesn't, so the guess has to solve around it.
+    //
+    // A text BOX measures its inner .sl-box-fit — content-sized even when it overflows —
+    // against the box, which is fixed at the size the user drew.
+    //
+    // A layout SLIDE measures the NATURAL height of its in-flow column against the slide's
+    // content box. It has to be done this way round: a band is auto-height, so it is always
+    // exactly as tall as its own text and can never report an overflow against ITSELF. (It
+    // can't be squeezed into reporting one either — flex shrink makes clientHeight track the
+    // squeeze, leaving only sub-pixel rounding, which reads as a permanent ~1px overflow
+    // that shrinking never cures. That drove the search to the floor and shrank every slide
+    // to nothing.) styles.css therefore takes flex-shrink OFF the bands under [data-fit]:
+    // the column simply overruns the slide, and the overrun is the honest signal.
+    function measure(el) {
+      if (el.getAttribute('data-fit') === 'box') {
+        var inner = el.firstElementChild;
+        if (!inner || !el.clientHeight) return null;
+        // Width counts too: an unbreakable run can overflow sideways with height to spare.
+        var overW = inner.scrollWidth - el.clientWidth;
+        var need = inner.scrollHeight + (overW > 0.5 ? el.clientHeight : 0);
+        return { have: el.clientHeight, need: need, scales: need };
+      }
+      var cs = getComputedStyle(el);
+      var have = el.clientHeight - (parseFloat(cs.paddingTop) || 0) - (parseFloat(cs.paddingBottom) || 0);
+      if (have <= 0) return null;
+      var gap = parseFloat(cs.rowGap) || 0;
+      var text = 0, other = 0, n = 0, kids = el.children;
+      for (var i = 0; i < kids.length; i++) {
+        var k = kids[i], ks = getComputedStyle(k);
+        if (ks.display === 'none') continue;
+        var isText = k.classList.contains('sl-head') || k.classList.contains('sl-body');
+        if (ks.position === 'absolute') {
+          // Out of the column — the full-bleed caption band, and the logo / page number.
+          // The caption is capped by its own max-height under [data-fit], so THERE a clip is
+          // the signal; the furniture is never a fit target.
+          if (isText && k.scrollHeight > k.clientHeight + 0.5) return { have: have, need: have + 1, scales: k.scrollHeight };
+          continue;
+        }
+        if (isText) text += k.offsetHeight; else other += k.offsetHeight;
+        n++;
+      }
+      if (n > 1) other += gap * (n - 1);
+      return { have: have, need: text + other, scales: text };
+    }
+    function fits(el) {
+      var m = measure(el);
+      return !m || m.need <= m.have + 0.5;
+    }
+    // Text height grows roughly with the SQUARE of the size (taller lines, and more of them
+    // once it wraps), so solving `scales · f² + fixed = have` lands close. Worth doing:
+    // every probe forces a synchronous reflow, and this pass re-runs on every keystroke.
+    function guess(el) {
+      var m = measure(el);
+      if (!m || m.scales <= 0) return 1;
+      var room = m.have - (m.need - m.scales);    // what's left for the text once the rest has its share
+      if (room <= 0) return MIN_FIT;
+      return Math.sqrt(room / m.scales);
+    }
+    function fitOne(el) {
+      el.style.removeProperty('--fit');
+      if (fits(el)) return;                 // fits as authored — shrink-only, so leave it alone
+      var lo = MIN_FIT, hi = 1;             // hi is known not to fit; lo is the floor we'd settle for
+      var g = guess(el);
+      if (g > lo && g < hi) {
+        el.style.setProperty('--fit', String(f3(g)));
+        if (fits(el)) lo = g; else hi = g;
+      }
+      for (var i = 0; i < MAX_STEPS && hi - lo > 0.004; i++) {
+        var m = (lo + hi) / 2;
+        el.style.setProperty('--fit', String(f3(m)));
+        if (fits(el)) lo = m; else hi = m;
+      }
+      el.style.setProperty('--fit', String(f3(lo)));
+    }
+    function runAll() {
+      // No layout at all (the CLI's pure-jsdom svg/html path) → every measurement would read
+      // 0 and every box would "fit". Leave the authored sizes standing instead.
+      if (!root.isConnected || !root.clientWidth) return;
+      var els = root.querySelectorAll('[data-fit]');
+      for (var i = 0; i < els.length; i++) fitOne(els[i]);
+    }
+
+    runAll();
+    try {
+      if (document.fonts && document.fonts.status !== 'loaded') {
+        // The first pass may have measured FALLBACK metrics — the wrong widths. The export
+        // path awaits document.fonts.ready and then mutation-silence, so this re-fit lands
+        // inside the capture's wait rather than after the frame is taken.
+        document.fonts.ready.then(runAll);
+      }
+    } catch (e) { /* no font-loading API — the first pass stands */ }
+  })();
+  </script>
 </div>

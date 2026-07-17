@@ -12,6 +12,12 @@
     "order": 10,
     "blurb": "QR codes in any brand colour"
   },
+  "examples": [
+    { "label": "Ink on paper", "values": { "url": "https://lolly.tools", "color": "#1a1a2e", "background": "#faf7f2" } },
+    { "label": "Brand primary, joined modules", "values": { "url": "https://lolly.tools", "color": "{color.semantic.primary}", "background": "{color.semantic.surface}", "join": true } },
+    { "label": "Night mode", "values": { "url": "https://lolly.tools/gallery", "color": "#93c5fd", "background": "#0b1021", "padding": 6 } },
+    { "label": "High-redundancy seal", "values": { "url": "https://lolly.tools/#/valid", "ecl": "H", "padding": 2, "join": true, "color": "#0f766e", "background": "#ecfdf5" } }
+  ],
   "render": {
     "width": 600,
     "height": 600,

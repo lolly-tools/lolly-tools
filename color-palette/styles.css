@@ -1,52 +1,81 @@
-.palette-tool {
+/* Palette Lab — the sheet itself is a native <svg> coloured entirely from the
+   seed, so the only styled DOM is the wrap and the data-export-hide DTCG
+   panel. Brand-agnostic: --brand-* semantic vars with neutral fallbacks. */
+
+.pl-wrap {
+  position: relative;
   width: 100%;
   height: 100%;
-  
-  background: white;
-  font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
-.palette-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
+.pl-svg {
+  display: block;
+  width: 100%;
   height: 100%;
 }
 
-.swatch {
-  display: grid;
-  flex-direction: column;
- 
-  padding: 12px;
- 
-  cursor: pointer;
-  color: white;
-  transition: transform 0.1s;
+.pl-tokens {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  max-width: min(420px, calc(100% - 32px));
+  border: 1px solid var(--brand-edge, rgba(0, 0, 0, 0.14));
+  border-radius: 12px;
+  background: var(--brand-surface, #fff);
+  color: var(--brand-text, #17232b);
+  font-family: var(--brand-font-body, system-ui, sans-serif);
+  font-size: 13px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
 }
 
-.swatch:hover {
-  transform: scale(1.02);
-}
-
-.swatch-name {
-  display: block;
-  font-size: 12px;
+.pl-tokens-summary {
+  padding: 9px 14px;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  cursor: pointer;
 }
 
-.swatch-value {
-  display: block;
-  font-size: 14px;
-  font-family: ui-monospace, monospace;
-  margin-top: 2px;
-}
-
-.palette-empty {
+.pl-tokens-body {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  color: #888;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 14px 14px;
+}
+
+.pl-tokens-hint {
+  margin: 0;
+  color: var(--brand-muted, #5b6470);
+  line-height: 1.45;
+}
+
+.pl-copy {
+  align-self: flex-start;
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--brand-primary, #2d6bd8);
+  color: var(--brand-on-primary, #fff);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pl-copy:hover {
+  filter: brightness(1.08);
+}
+
+.pl-copy.is-copied {
+  filter: none;
+  opacity: 0.85;
+}
+
+.pl-pre {
+  margin: 0;
+  max-height: 220px;
+  overflow: auto;
+  padding: 10px;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--brand-text, #17232b) 6%, transparent);
+  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-size: 11px;
+  line-height: 1.5;
 }

@@ -1,0 +1,88 @@
+{
+  "id": "audiogram",
+  "name": "Audiogram",
+  "description": "Turn a voice clip or song into a branded waveform video — animated bars, wave or ring, ready for social.",
+  "a11yLabel": "Audiogram card for {{default title \"an audio clip\"}} with an animated waveform",
+  "version": "1.0.2",
+  "engineVersion": "^1.0.0",
+  "status": "community",
+  "category": "everyone",
+  "tags": ["audio", "audiogram", "waveform", "podcast", "music", "voice", "video", "social", "quote"],
+  "examples": [
+    { "label": "Podcast quote — bars", "values": { "title": "Slow is smooth, smooth is fast", "subtitle": "The Build Notes podcast · Ep. 41", "style": "bars" } },
+    { "label": "Broadcast — wave", "values": { "title": "Morning briefing", "subtitle": "Live weekdays · 06:00", "style": "wave" } },
+    { "label": "Release — ring", "values": { "title": "New episode out now", "subtitle": "Listen anywhere", "style": "ring" } }
+  ],
+  "render": {
+    "width": 1080,
+    "height": 1080,
+    "formats": ["png", "webm", "mp4", "gif", "html"],
+    "actions": ["copy", "download", "save"],
+    "video": { "wait": 0, "duration": 8 },
+    "convertPaths": false
+  },
+  "inputs": [
+    {
+      "id": "audio",
+      "label": "Audio",
+      "type": "asset",
+      "assetType": "audio",
+      "allowUpload": true,
+      "help": "Pick a track from your library or upload a clip. It's decoded on your device to draw the waveform — the audio never leaves the browser. Leave empty for a placeholder waveform. To hear it in the export, choose \"This tool's audio\" as the Audio track in the download options."
+    },
+    {
+      "id": "title",
+      "label": "Title",
+      "type": "text",
+      "default": "Now playing",
+      "help": "The headline on the card — an episode name or a pull-quote."
+    },
+    {
+      "id": "subtitle",
+      "label": "Subtitle",
+      "type": "text",
+      "default": "",
+      "help": "A smaller line under the title — show name, guest, or where to listen."
+    },
+    {
+      "id": "style",
+      "label": "Waveform style",
+      "type": "select",
+      "default": "bars",
+      "options": [
+        { "value": "bars", "label": "Bars" },
+        { "value": "wave", "label": "Wave" },
+        { "value": "ring", "label": "Ring" }
+      ]
+    },
+    {
+      "id": "size",
+      "label": "Size",
+      "type": "select",
+      "default": "square",
+      "options": [
+        { "value": "square", "label": "Square (1:1)", "width": 1080, "height": 1080, "unit": "px" },
+        { "value": "wide", "label": "Wide (16:9)", "width": 1920, "height": 1080, "unit": "px" },
+        { "value": "story", "label": "Story (9:16)", "width": 1080, "height": 1920, "unit": "px" }
+      ]
+    },
+    {
+      "id": "accent",
+      "label": "Waveform colour",
+      "type": "color",
+      "default": "{color.semantic.secondary}"
+    },
+    {
+      "id": "ink",
+      "label": "Text colour",
+      "type": "color",
+      "default": "{color.semantic.on-primary}"
+    },
+    {
+      "id": "bg",
+      "label": "Background",
+      "type": "color",
+      "default": "{color.semantic.primary}"
+    }
+  ]
+}

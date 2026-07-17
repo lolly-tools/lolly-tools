@@ -7,6 +7,12 @@
   "status": "official",
   "category": "designer",
   "tags": ["photo", "filter", "duotone", "color", "effect"],
+  "examples": [
+    { "label": "Midnight duo", "values": { "colorFg": "#1a1a2e", "colorBg": "#93c5fd" } },
+    { "label": "Forest print", "values": { "colorFg": "#0f3d2e", "colorBg": "#e7f4ec" } },
+    { "label": "Coral pop", "values": { "colorFg": "#7c2d12", "colorBg": "#ffd3bd", "saturation": 130 } },
+    { "label": "Screen glow", "values": { "colorFg": "#f5efe6", "colorBg": "#0b1021", "blendMode": "screen" } }
+  ],
   "render": {
     "width": 1080,
     "height": 1080,

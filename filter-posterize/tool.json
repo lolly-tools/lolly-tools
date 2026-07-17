@@ -8,6 +8,11 @@
   "category": "designer",
   "tags": ["photo", "filter", "posterize", "posterise", "vector", "trace", "screenprint", "separations", "halftone", "portrait", "headshot", "on-device"],
   "a11yLabel": "{{steps}}-colour posterized vector of the photo",
+  "examples": [
+    { "label": "Tri-tone poster", "values": { "steps": 3, "smoothing": 80 } },
+    { "label": "Ink threshold", "values": { "threshold": true, "thresholdLevel": 55 } },
+    { "label": "Soft ten-step", "values": { "steps": 10, "smoothing": 100, "saturation": 120 } }
+  ],
   "render": {
     "width": 1080,
     "height": 1080,

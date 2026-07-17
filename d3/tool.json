@@ -32,6 +32,13 @@
     "order": 4,
     "blurb": "Paste a table — D3 charts it, on-brand and vector-clean"
   },
+  "examples": [
+    { "label": "Trend line", "values": { "chartType": "line", "heading": "Signups are compounding", "data": "Month,Signups,Churned\nJan,120,30\nFeb,150,32\nMar,210,28\nApr,260,35\nMay,330,31\nJun,410,29", "showPoints": true, "palette": "cool" } },
+    { "label": "Donut of segments", "values": { "chartType": "donut", "data": "Segment,Share\nEnterprise,38\nSMB,27\nPartner,20\nSelf-serve,15", "palette": "warm", "showValues": true, "legendPosition": "right" } },
+    { "label": "Stacked bars", "values": { "chartType": "bar", "stackMode": "stacked", "data": "Quarter,North,South,East\nQ1,42,28,12\nQ2,49,35,18\nQ3,55,41,24\nQ4,61,48,31", "palette": "mono", "cornerRadius": 4 } },
+    { "label": "Radar profile", "values": { "chartType": "radar", "data": "Axis,Design,Engineering\nStrategy,7,5\nCraft,8,9\nSpeed,6,8\nRigour,7,9\nStory,9,6", "fillOpacity": 40, "palette": "diverging" } },
+    { "label": "Waffle share", "values": { "chartType": "waffle", "data": "Status,Count\nDone,68\nIn progress,22\nBlocked,10", "palette": "warm" } }
+  ],
   "render": {
     "width": 1280,
     "height": 800,

@@ -8,6 +8,12 @@
   "status": "official",
   "category": "designer",
   "tags": ["map", "street", "city", "location", "vector", "offline", "osm"],
+  "examples": [
+    { "label": "Paris in ink", "values": { "city": "paris", "roadColor": "#1a1a2e", "waterColor": "#93c5fd", "background": "#faf7f2" } },
+    { "label": "Tokyo neon", "values": { "city": "tokyo", "theme": "dark", "roadColor": "#22d3ee", "waterColor": "#0e7490", "background": "#0b1021" } },
+    { "label": "Amsterdam canals", "values": { "city": "amsterdam", "roadColor": "#94a3b8", "waterColor": "#0ea5e9", "waterWeight": 10, "background": "#ffffff" } },
+    { "label": "Brand-primary Berlin", "values": { "city": "berlin", "roadColor": "{color.semantic.primary}", "waterColor": "{color.semantic.secondary}", "background": "{color.semantic.surface}" } }
+  ],
   "render": {
     "width": 900,
     "height": 900,

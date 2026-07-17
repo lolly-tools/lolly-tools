@@ -211,6 +211,14 @@
       "help": "Place your brand logo in the bottom-left of every slide, picking the light or dark variant to suit each background."
     },
     {
+      "id": "fitText",
+      "label": "Shrink text to fit",
+      "type": "boolean",
+      "default": true,
+      "section": "Text",
+      "help": "On by default: when a slide's text outgrows the room it has, scale the whole text block down until it fits instead of letting it spill or crowd out the images. Never grows text past its authored size. Any slide can override it."
+    },
+    {
       "id": "deck",
       "label": "Slides",
       "type": "blocks",
@@ -313,6 +321,57 @@
             {
               "value": "accent",
               "label": "Accent"
+            }
+          ]
+        },
+        {
+          "id": "fit",
+          "label": "Fit text",
+          "type": "select",
+          "default": "auto",
+          "showIf": {
+            "mode": "layout"
+          },
+          "help": "Shrink this slide's text until it fits. Deck default follows the deck-level setting. On a freeform slide each text box carries its own fit switch instead.",
+          "options": [
+            {
+              "value": "auto",
+              "label": "Deck default"
+            },
+            {
+              "value": "on",
+              "label": "Shrink to fit"
+            },
+            {
+              "value": "off",
+              "label": "Off"
+            }
+          ]
+        },
+        {
+          "id": "valign",
+          "label": "Text position",
+          "type": "select",
+          "default": "middle",
+          "showFor": [
+            "title"
+          ],
+          "showIf": {
+            "mode": "layout"
+          },
+          "help": "Where the text sits on the slide. Only the Title-only layout has free space to move it into — every other layout pins the text above its images.",
+          "options": [
+            {
+              "value": "top",
+              "label": "Top"
+            },
+            {
+              "value": "middle",
+              "label": "Middle"
+            },
+            {
+              "value": "bottom",
+              "label": "Bottom"
             }
           ]
         },
