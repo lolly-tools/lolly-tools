@@ -211,8 +211,14 @@
 /* …and the slot grid keeps a floor of the slide, so long copy shrinks itself rather than
    squeezing the images to nothing. It's the part of the column that does NOT scale with
    --fit, which is why measure() accounts for it separately. Only layouts with slots have
-   this element. */
-.sl-slide[data-fit] .sl-grid { flex-shrink: 0; min-height: 40cqh; }
+   this element.
+   The floor is `flex-basis: 40cqh` — a DEFINITE main size — NOT `flex-shrink: 0`: with
+   shrink off the grid falls back to its content height, and `1fr` grid rows then have no
+   definite track to resolve against, so each row blows out to its image's INTRINSIC height
+   and the grid overruns the slide off the bottom. A definite basis lets the rows resolve, so
+   images stay `object-fit: contain` within their cells (scaled down to fit) and long copy
+   still shrinks the grid to its 40cqh floor rather than squeezing the images away. */
+.sl-slide[data-fit] .sl-grid { flex: 1 1 40cqh; min-height: 40cqh; }
 /* full-bleed is the exception: its caption band is absolutely positioned, so it sits
    outside the flex flow entirely and can't overrun a column that doesn't hold it. Give it
    an explicit ceiling — there, a clip IS the overflow signal. */
