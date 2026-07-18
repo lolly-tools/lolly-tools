@@ -69,6 +69,7 @@
   font-size: calc(clamp(18px, 7cqmin, 96px) * var(--fit, 1) * var(--ds-h1-scale, 1));
   line-height: 1.04;
   font-weight: var(--ds-h1-weight, 700);
+  font-family: var(--ds-h1-family, inherit);
   letter-spacing: -0.015em;
   overflow-wrap: anywhere;
 }
@@ -87,14 +88,14 @@
 .sl-h { line-height: 1.12; font-weight: 700; overflow-wrap: anywhere; }
 /* A body #-heading (the 2nd+ heading; the first is lifted out as the title) — weight only,
    its size stays the UA default it always had. */
-.sl-h1 { font-weight: var(--ds-h1-weight, 700); }
-.sl-h2 { font-size: calc(clamp(14px, 4.2cqmin, 56px) * var(--fit, 1) * var(--ds-h2-scale, 1)); font-weight: var(--ds-h2-weight, 700); margin-top: 2cqmin; }
-.sl-h3 { font-size: calc(clamp(13px, 3.4cqmin, 44px) * var(--fit, 1) * var(--ds-h3-scale, 1)); font-weight: var(--ds-h3-weight, 700); margin-top: 1.6cqmin; opacity: 0.92; }
+.sl-h1 { font-weight: var(--ds-h1-weight, 700); font-family: var(--ds-h1-family, inherit); }
+.sl-h2 { font-size: calc(clamp(14px, 4.2cqmin, 56px) * var(--fit, 1) * var(--ds-h2-scale, 1)); font-weight: var(--ds-h2-weight, 700); font-family: var(--ds-h2-family, inherit); margin-top: 2cqmin; }
+.sl-h3 { font-size: calc(clamp(13px, 3.4cqmin, 44px) * var(--fit, 1) * var(--ds-h3-scale, 1)); font-weight: var(--ds-h3-weight, 700); font-family: var(--ds-h3-family, inherit); margin-top: 1.6cqmin; opacity: 0.92; }
 .sl-p { margin-top: 1.4cqmin; opacity: 0.9; }
 /* Lists carry no size of their own — they inherit the body scale — so a per-list size
    override is `calc(1em * scale)` (1em = the inherited size), and the weight cascades to
    the items and their markers. */
-.sl-ul { margin-top: 1.4cqmin; padding-left: 3cqmin; list-style: none; font-size: calc(1em * var(--ds-ul-scale, 1)); font-weight: var(--ds-ul-weight, 400); }
+.sl-ul { margin-top: 1.4cqmin; padding-left: 3cqmin; list-style: none; font-size: calc(1em * var(--ds-ul-scale, 1)); font-weight: var(--ds-ul-weight, 400); font-family: var(--ds-ul-family, inherit); }
 /* Child combinator (not descendant): a dot decorates only DIRECT <ul> children, so a
    nested <ol> keeps its numbers and a nested <ul> keeps getting dots. */
 .sl-ul > li { position: relative; margin-top: 0.9cqmin; padding-left: 2.6cqmin; opacity: 0.9; }
@@ -109,7 +110,7 @@
   background: var(--accent, currentColor);
 }
 /* Ordered lists — native decimal markers (no dot). */
-.sl-ol { margin-top: 1.4cqmin; padding-left: 4cqmin; font-size: calc(1em * var(--ds-ol-scale, 1)); font-weight: var(--ds-ol-weight, 400); }
+.sl-ol { margin-top: 1.4cqmin; padding-left: 4cqmin; font-size: calc(1em * var(--ds-ol-scale, 1)); font-weight: var(--ds-ol-weight, 400); font-family: var(--ds-ol-family, inherit); }
 .sl-ol > li { margin-top: 0.9cqmin; opacity: 0.9; }
 .sl-ol > li::marker { color: var(--accent, currentColor); font-weight: 700; }
 /* Nested lists tighten and drop the leading gap. */
@@ -125,6 +126,7 @@
   opacity: 0.9;
   font-size: calc(1em * var(--ds-quote-scale, 1));
   font-weight: var(--ds-quote-weight, 400);
+  font-family: var(--ds-quote-family, inherit);
 }
 .sl-quote > :first-child { margin-top: 0; }
 
@@ -142,7 +144,7 @@
    and the inline code pill isn't drawn a second time inside the panel. */
 .sl-body .sl-pre code {
   display: block;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--ds-code-family, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
   font-weight: var(--ds-code-weight, 400);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
@@ -163,6 +165,7 @@
   table-layout: fixed;
   font-size: calc(0.92em * var(--ds-table-scale, 1));
   font-weight: var(--ds-table-weight, 400);
+  font-family: var(--ds-table-family, inherit);
 }
 .sl-table th, .sl-table td {
   padding: 0.35em 0.6em;
@@ -180,7 +183,7 @@
 /* Links + inline code in the body. */
 .sl-body a { color: var(--accent, currentColor); text-decoration: underline; text-underline-offset: 0.14em; }
 .sl-body code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--ds-code-family, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
   font-size: calc(0.88em * var(--ds-code-scale, 1));
   font-weight: var(--ds-code-weight, 400);
   padding: 0.06em 0.34em;
@@ -332,11 +335,11 @@
 /* Freeform boxes take the SAME --ds-<el>-* overrides as the layout slides (the vars are
    set on the shared deck root, so they cascade into both). Sizes here are em off the
    box's own font-size, so a scale rides straight onto that em. */
-.sl-box-text h1 { font-size: calc(1.7em * var(--ds-h1-scale, 1)); font-weight: var(--ds-h1-weight, 700); line-height: 1.05; letter-spacing: -0.015em; }
-.sl-box-text h2 { font-size: calc(1.32em * var(--ds-h2-scale, 1)); font-weight: var(--ds-h2-weight, 700); line-height: 1.12; margin-top: 0.5em; }
-.sl-box-text h3 { font-size: calc(1.12em * var(--ds-h3-scale, 1)); font-weight: var(--ds-h3-weight, 700); line-height: 1.14; margin-top: 0.45em; opacity: 0.92; }
+.sl-box-text h1 { font-size: calc(1.7em * var(--ds-h1-scale, 1)); font-weight: var(--ds-h1-weight, 700); font-family: var(--ds-h1-family, inherit); line-height: 1.05; letter-spacing: -0.015em; }
+.sl-box-text h2 { font-size: calc(1.32em * var(--ds-h2-scale, 1)); font-weight: var(--ds-h2-weight, 700); font-family: var(--ds-h2-family, inherit); line-height: 1.12; margin-top: 0.5em; }
+.sl-box-text h3 { font-size: calc(1.12em * var(--ds-h3-scale, 1)); font-weight: var(--ds-h3-weight, 700); font-family: var(--ds-h3-family, inherit); line-height: 1.14; margin-top: 0.45em; opacity: 0.92; }
 .sl-box-text p { margin-top: 0.5em; opacity: 0.92; }
-.sl-box-text ul { margin-top: 0.5em; padding-left: 1.2em; list-style: none; font-size: calc(1em * var(--ds-ul-scale, 1)); font-weight: var(--ds-ul-weight, 400); }
+.sl-box-text ul { margin-top: 0.5em; padding-left: 1.2em; list-style: none; font-size: calc(1em * var(--ds-ul-scale, 1)); font-weight: var(--ds-ul-weight, 400); font-family: var(--ds-ul-family, inherit); }
 /* Child combinator so a nested <ol> in a box keeps its numbers (see the layout note). */
 .sl-box-text ul > li { position: relative; margin-top: 0.32em; padding-left: 0.9em; opacity: 0.92; }
 .sl-box-text ul > li::before {
@@ -349,7 +352,7 @@
   border-radius: 50%;
   background: var(--accent, currentColor);
 }
-.sl-box-text ol { margin-top: 0.5em; padding-left: 1.4em; font-size: calc(1em * var(--ds-ol-scale, 1)); font-weight: var(--ds-ol-weight, 400); }
+.sl-box-text ol { margin-top: 0.5em; padding-left: 1.4em; font-size: calc(1em * var(--ds-ol-scale, 1)); font-weight: var(--ds-ol-weight, 400); font-family: var(--ds-ol-family, inherit); }
 .sl-box-text ol > li { margin-top: 0.32em; opacity: 0.92; }
 .sl-box-text ol > li::marker { color: var(--accent, currentColor); font-weight: 700; }
 .sl-box-text ul ul, .sl-box-text ul ol, .sl-box-text ol ol, .sl-box-text ol ul { margin-top: 0.25em; }
@@ -362,6 +365,7 @@
   table-layout: fixed;
   font-size: calc(0.9em * var(--ds-table-scale, 1));
   font-weight: var(--ds-table-weight, 400);
+  font-family: var(--ds-table-family, inherit);
 }
 .sl-box-text th, .sl-box-text td {
   padding: 0.2em 0.4em;
@@ -373,7 +377,7 @@
 .sl-box-text thead th { font-weight: 700; border-bottom: 0.12em solid color-mix(in oklab, currentColor 42%, transparent); }
 .sl-box-text a { color: var(--accent, currentColor); text-decoration: underline; text-underline-offset: 0.12em; }
 .sl-box-text code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-family: var(--ds-code-family, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
   font-size: calc(0.88em * var(--ds-code-scale, 1));
   font-weight: var(--ds-code-weight, 400);
   padding: 0.05em 0.28em;
@@ -390,6 +394,7 @@
   opacity: 0.92;
   font-size: calc(1em * var(--ds-quote-scale, 1));
   font-weight: var(--ds-quote-weight, 400);
+  font-family: var(--ds-quote-family, inherit);
 }
 .sl-box-text pre {
   margin-top: 0.5em;

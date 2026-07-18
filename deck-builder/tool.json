@@ -220,11 +220,107 @@
     },
     {
       "id": "typeControls",
-      "label": "Custom type sizes & weights",
+      "label": "Custom typography",
       "type": "boolean",
       "default": false,
       "section": "Style",
-      "help": "Reveal per-element size and weight controls. Each one restyles that element across every slide (layout and freeform), on top of the automatic shrink-to-fit."
+      "help": "Turn on per-element type controls. Pick an element chip to set its size, weight and brand font — applied across every slide (layout and freeform), on top of the automatic shrink-to-fit."
+    },
+    {
+      "id": "h1On",
+      "label": "H1",
+      "type": "boolean",
+      "display": "pill",
+      "default": false,
+      "section": "Style",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Customise the slide title and any # heading."
+    },
+    {
+      "id": "h2On",
+      "label": "H2",
+      "type": "boolean",
+      "display": "pill",
+      "default": false,
+      "section": "Style",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Customise ## subheadings."
+    },
+    {
+      "id": "h3On",
+      "label": "H3",
+      "type": "boolean",
+      "display": "pill",
+      "default": false,
+      "section": "Style",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Customise ### subheadings."
+    },
+    {
+      "id": "ulOn",
+      "label": "Bullets",
+      "type": "boolean",
+      "display": "pill",
+      "default": false,
+      "section": "Style",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Customise - bullet lists."
+    },
+    {
+      "id": "olOn",
+      "label": "Numbered",
+      "type": "boolean",
+      "display": "pill",
+      "default": false,
+      "section": "Style",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Customise 1. numbered lists."
+    },
+    {
+      "id": "quoteOn",
+      "label": "Quote",
+      "type": "boolean",
+      "display": "pill",
+      "default": false,
+      "section": "Style",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Customise > quoted blocks."
+    },
+    {
+      "id": "codeOn",
+      "label": "Code",
+      "type": "boolean",
+      "display": "pill",
+      "default": false,
+      "section": "Style",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Customise fenced ``` code blocks and inline `code`."
+    },
+    {
+      "id": "tableOn",
+      "label": "Table",
+      "type": "boolean",
+      "display": "pill",
+      "default": false,
+      "section": "Style",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Customise | pipe | tables |."
     },
     {
       "id": "h1Size",
@@ -237,7 +333,8 @@
       "step": 5,
       "default": 100,
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "h1On": true
       },
       "help": "Percent of the built-in size (100 = as authored). Applies to the slide title and any # heading."
     },
@@ -248,7 +345,8 @@
       "section": "Style",
       "default": "",
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "h1On": true
       },
       "help": "Font weight for the slide title and any # heading. Default keeps the built-in weight.",
       "options": [
@@ -295,6 +393,25 @@
       ]
     },
     {
+      "id": "h1Font",
+      "label": "Title / H1 font",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "brandFonts": true,
+      "showIf": {
+        "typeControls": true,
+        "h1On": true
+      },
+      "help": "Brand font for the slide title and any # heading. Brand default keeps the deck's font. The list fills with the fonts in your brand's type kit.",
+      "options": [
+        {
+          "value": "",
+          "label": "Brand default"
+        }
+      ]
+    },
+    {
       "id": "h2Size",
       "label": "Heading 2 size",
       "type": "number",
@@ -305,7 +422,8 @@
       "step": 5,
       "default": 100,
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "h2On": true
       },
       "help": "Percent of the built-in size (100 = as authored). Applies to ## subheadings."
     },
@@ -316,7 +434,8 @@
       "section": "Style",
       "default": "",
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "h2On": true
       },
       "help": "Font weight for ## subheadings. Default keeps the built-in weight.",
       "options": [
@@ -363,6 +482,25 @@
       ]
     },
     {
+      "id": "h2Font",
+      "label": "Heading 2 font",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "brandFonts": true,
+      "showIf": {
+        "typeControls": true,
+        "h2On": true
+      },
+      "help": "Brand font for ## subheadings. Brand default keeps the deck's font. The list fills with the fonts in your brand's type kit.",
+      "options": [
+        {
+          "value": "",
+          "label": "Brand default"
+        }
+      ]
+    },
+    {
       "id": "h3Size",
       "label": "Heading 3 size",
       "type": "number",
@@ -373,7 +511,8 @@
       "step": 5,
       "default": 100,
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "h3On": true
       },
       "help": "Percent of the built-in size (100 = as authored). Applies to ### subheadings."
     },
@@ -384,7 +523,8 @@
       "section": "Style",
       "default": "",
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "h3On": true
       },
       "help": "Font weight for ### subheadings. Default keeps the built-in weight.",
       "options": [
@@ -431,6 +571,25 @@
       ]
     },
     {
+      "id": "h3Font",
+      "label": "Heading 3 font",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "brandFonts": true,
+      "showIf": {
+        "typeControls": true,
+        "h3On": true
+      },
+      "help": "Brand font for ### subheadings. Brand default keeps the deck's font. The list fills with the fonts in your brand's type kit.",
+      "options": [
+        {
+          "value": "",
+          "label": "Brand default"
+        }
+      ]
+    },
+    {
       "id": "ulSize",
       "label": "Bulleted list size",
       "type": "number",
@@ -441,7 +600,8 @@
       "step": 5,
       "default": 100,
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "ulOn": true
       },
       "help": "Percent of the built-in size (100 = as authored). Applies to - bullet lists."
     },
@@ -452,7 +612,8 @@
       "section": "Style",
       "default": "",
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "ulOn": true
       },
       "help": "Font weight for - bullet lists. Default keeps the built-in weight.",
       "options": [
@@ -499,6 +660,25 @@
       ]
     },
     {
+      "id": "ulFont",
+      "label": "Bulleted list font",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "brandFonts": true,
+      "showIf": {
+        "typeControls": true,
+        "ulOn": true
+      },
+      "help": "Brand font for - bullet lists. Brand default keeps the deck's font. The list fills with the fonts in your brand's type kit.",
+      "options": [
+        {
+          "value": "",
+          "label": "Brand default"
+        }
+      ]
+    },
+    {
       "id": "olSize",
       "label": "Numbered list size",
       "type": "number",
@@ -509,7 +689,8 @@
       "step": 5,
       "default": 100,
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "olOn": true
       },
       "help": "Percent of the built-in size (100 = as authored). Applies to 1. numbered lists."
     },
@@ -520,7 +701,8 @@
       "section": "Style",
       "default": "",
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "olOn": true
       },
       "help": "Font weight for 1. numbered lists. Default keeps the built-in weight.",
       "options": [
@@ -567,6 +749,25 @@
       ]
     },
     {
+      "id": "olFont",
+      "label": "Numbered list font",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "brandFonts": true,
+      "showIf": {
+        "typeControls": true,
+        "olOn": true
+      },
+      "help": "Brand font for 1. numbered lists. Brand default keeps the deck's font. The list fills with the fonts in your brand's type kit.",
+      "options": [
+        {
+          "value": "",
+          "label": "Brand default"
+        }
+      ]
+    },
+    {
       "id": "quoteSize",
       "label": "Blockquote size",
       "type": "number",
@@ -577,7 +778,8 @@
       "step": 5,
       "default": 100,
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "quoteOn": true
       },
       "help": "Percent of the built-in size (100 = as authored). Applies to > quoted blocks."
     },
@@ -588,7 +790,8 @@
       "section": "Style",
       "default": "",
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "quoteOn": true
       },
       "help": "Font weight for > quoted blocks. Default keeps the built-in weight.",
       "options": [
@@ -635,6 +838,25 @@
       ]
     },
     {
+      "id": "quoteFont",
+      "label": "Blockquote font",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "brandFonts": true,
+      "showIf": {
+        "typeControls": true,
+        "quoteOn": true
+      },
+      "help": "Brand font for > quoted blocks. Brand default keeps the deck's font. The list fills with the fonts in your brand's type kit.",
+      "options": [
+        {
+          "value": "",
+          "label": "Brand default"
+        }
+      ]
+    },
+    {
       "id": "codeSize",
       "label": "Code size",
       "type": "number",
@@ -645,7 +867,8 @@
       "step": 5,
       "default": 100,
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "codeOn": true
       },
       "help": "Percent of the built-in size (100 = as authored). Applies to fenced ``` code blocks and inline `code`."
     },
@@ -656,7 +879,8 @@
       "section": "Style",
       "default": "",
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "codeOn": true
       },
       "help": "Font weight for fenced ``` code blocks and inline `code`. Default keeps the built-in weight.",
       "options": [
@@ -703,6 +927,25 @@
       ]
     },
     {
+      "id": "codeFont",
+      "label": "Code font",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "brandFonts": true,
+      "showIf": {
+        "typeControls": true,
+        "codeOn": true
+      },
+      "help": "Brand font for fenced ``` code blocks and inline `code`. Brand default keeps the deck's font. The list fills with the fonts in your brand's type kit.",
+      "options": [
+        {
+          "value": "",
+          "label": "Brand default"
+        }
+      ]
+    },
+    {
       "id": "tableSize",
       "label": "Table size",
       "type": "number",
@@ -713,7 +956,8 @@
       "step": 5,
       "default": 100,
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "tableOn": true
       },
       "help": "Percent of the built-in size (100 = as authored). Applies to | pipe | tables |."
     },
@@ -724,7 +968,8 @@
       "section": "Style",
       "default": "",
       "showIf": {
-        "typeControls": true
+        "typeControls": true,
+        "tableOn": true
       },
       "help": "Font weight for | pipe | tables |. Default keeps the built-in weight.",
       "options": [
@@ -771,12 +1016,34 @@
       ]
     },
     {
+      "id": "tableFont",
+      "label": "Table font",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "brandFonts": true,
+      "showIf": {
+        "typeControls": true,
+        "tableOn": true
+      },
+      "help": "Brand font for | pipe | tables |. Brand default keeps the deck's font. The list fills with the fonts in your brand's type kit.",
+      "options": [
+        {
+          "value": "",
+          "label": "Brand default"
+        }
+      ]
+    },
+    {
       "id": "customCss",
       "label": "Custom CSS",
       "type": "longtext",
       "rows": 6,
       "section": "Style",
       "default": "",
+      "showIf": {
+        "typeControls": true
+      },
       "placeholder": "h1 { letter-spacing: -0.02em; }\ntable td { border-color: #999; }\nblockquote { color: #30ba78; }",
       "help": "Your own CSS, applied to the whole deck (both slide modes). Selectors are scoped to this deck and take precedence over the built-in styles, so a plain `h1 { … }` rule works. Target the markdown elements directly: h1, h2, h3, ul, ol, li, blockquote, pre, code, table, th, td, a, strong, em."
     },

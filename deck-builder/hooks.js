@@ -654,14 +654,35 @@ function scaleVal(v) {
   var n = clamp(num(s, 100), 25, 300);
   return (Math.abs(n - 100) < 0.01) ? '' : String(f4(n / 100));
 }
+// A brand-font family name from the Font select. Stripped of anything that could break
+// out of the inline style / font-family value, then wrapped in single quotes by the
+// caller. '' = "Brand default" → no var → the element keeps inheriting the deck font.
+function fontVal(v) {
+  return str(v).replace(/["'`;{}<>\\\r\n]/g, '').trim();
+}
+// Per-element overrides → CSS custom properties on the deck root. An element is only
+// emitted when its CHIP is on (inputs[<el>On]); toggling the chip off keeps the values
+// in state but stops applying them — like a layer's visibility. Within an on element,
+// each of size / weight / font is emitted only when it departs from the default.
 function buildStyleVars(inputs) {
   var out = '';
   for (var i = 0; i < STYLE_ELS.length; i++) {
     var e = STYLE_ELS[i];
+    if (!inputs[e + 'On']) continue;
     var sc = scaleVal(inputs[e + 'Size']);
     if (sc) out += '--ds-' + e + '-scale:' + sc + ';';
     var w = weightVal(inputs[e + 'Weight']);
     if (w) out += '--ds-' + e + '-weight:' + w + ';';
+    var fam = fontVal(inputs[e + 'Font']);
+    if (fam) {
+      // Bake an element-appropriate fallback INTO the var value so a failed/absent
+      // font degrades sensibly: code → the mono stack, everything else → the brand
+      // font. The CSS-side `var(--ds-*-family, …)` fallback only fires when UNSET.
+      var fb = (e === 'code')
+        ? 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace'
+        : "var(--font-brand, ui-sans-serif, system-ui, sans-serif)";
+      out += '--ds-' + e + "-family:'" + fam + "', " + fb + ';';
+    }
   }
   return out;
 }
