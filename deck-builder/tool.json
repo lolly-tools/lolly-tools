@@ -219,6 +219,568 @@
       "help": "On by default: when a slide's text outgrows the room it has, scale the whole text block down until it fits instead of letting it spill or crowd out the images. Never grows text past its authored size. Any slide can override it."
     },
     {
+      "id": "typeControls",
+      "label": "Custom type sizes & weights",
+      "type": "boolean",
+      "default": false,
+      "section": "Style",
+      "help": "Reveal per-element size and weight controls. Each one restyles that element across every slide (layout and freeform), on top of the automatic shrink-to-fit."
+    },
+    {
+      "id": "h1Size",
+      "label": "Title / H1 size",
+      "type": "number",
+      "display": "slider",
+      "section": "Style",
+      "min": 25,
+      "max": 300,
+      "step": 5,
+      "default": 100,
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Percent of the built-in size (100 = as authored). Applies to the slide title and any # heading."
+    },
+    {
+      "id": "h1Weight",
+      "label": "Title / H1 weight",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Font weight for the slide title and any # heading. Default keeps the built-in weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "100",
+          "label": "Thin"
+        },
+        {
+          "value": "200",
+          "label": "Extra Light"
+        },
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        },
+        {
+          "value": "900",
+          "label": "Black"
+        }
+      ]
+    },
+    {
+      "id": "h2Size",
+      "label": "Heading 2 size",
+      "type": "number",
+      "display": "slider",
+      "section": "Style",
+      "min": 25,
+      "max": 300,
+      "step": 5,
+      "default": 100,
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Percent of the built-in size (100 = as authored). Applies to ## subheadings."
+    },
+    {
+      "id": "h2Weight",
+      "label": "Heading 2 weight",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Font weight for ## subheadings. Default keeps the built-in weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "100",
+          "label": "Thin"
+        },
+        {
+          "value": "200",
+          "label": "Extra Light"
+        },
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        },
+        {
+          "value": "900",
+          "label": "Black"
+        }
+      ]
+    },
+    {
+      "id": "h3Size",
+      "label": "Heading 3 size",
+      "type": "number",
+      "display": "slider",
+      "section": "Style",
+      "min": 25,
+      "max": 300,
+      "step": 5,
+      "default": 100,
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Percent of the built-in size (100 = as authored). Applies to ### subheadings."
+    },
+    {
+      "id": "h3Weight",
+      "label": "Heading 3 weight",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Font weight for ### subheadings. Default keeps the built-in weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "100",
+          "label": "Thin"
+        },
+        {
+          "value": "200",
+          "label": "Extra Light"
+        },
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        },
+        {
+          "value": "900",
+          "label": "Black"
+        }
+      ]
+    },
+    {
+      "id": "ulSize",
+      "label": "Bulleted list size",
+      "type": "number",
+      "display": "slider",
+      "section": "Style",
+      "min": 25,
+      "max": 300,
+      "step": 5,
+      "default": 100,
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Percent of the built-in size (100 = as authored). Applies to - bullet lists."
+    },
+    {
+      "id": "ulWeight",
+      "label": "Bulleted list weight",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Font weight for - bullet lists. Default keeps the built-in weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "100",
+          "label": "Thin"
+        },
+        {
+          "value": "200",
+          "label": "Extra Light"
+        },
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        },
+        {
+          "value": "900",
+          "label": "Black"
+        }
+      ]
+    },
+    {
+      "id": "olSize",
+      "label": "Numbered list size",
+      "type": "number",
+      "display": "slider",
+      "section": "Style",
+      "min": 25,
+      "max": 300,
+      "step": 5,
+      "default": 100,
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Percent of the built-in size (100 = as authored). Applies to 1. numbered lists."
+    },
+    {
+      "id": "olWeight",
+      "label": "Numbered list weight",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Font weight for 1. numbered lists. Default keeps the built-in weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "100",
+          "label": "Thin"
+        },
+        {
+          "value": "200",
+          "label": "Extra Light"
+        },
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        },
+        {
+          "value": "900",
+          "label": "Black"
+        }
+      ]
+    },
+    {
+      "id": "quoteSize",
+      "label": "Blockquote size",
+      "type": "number",
+      "display": "slider",
+      "section": "Style",
+      "min": 25,
+      "max": 300,
+      "step": 5,
+      "default": 100,
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Percent of the built-in size (100 = as authored). Applies to > quoted blocks."
+    },
+    {
+      "id": "quoteWeight",
+      "label": "Blockquote weight",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Font weight for > quoted blocks. Default keeps the built-in weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "100",
+          "label": "Thin"
+        },
+        {
+          "value": "200",
+          "label": "Extra Light"
+        },
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        },
+        {
+          "value": "900",
+          "label": "Black"
+        }
+      ]
+    },
+    {
+      "id": "codeSize",
+      "label": "Code size",
+      "type": "number",
+      "display": "slider",
+      "section": "Style",
+      "min": 25,
+      "max": 300,
+      "step": 5,
+      "default": 100,
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Percent of the built-in size (100 = as authored). Applies to fenced ``` code blocks and inline `code`."
+    },
+    {
+      "id": "codeWeight",
+      "label": "Code weight",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Font weight for fenced ``` code blocks and inline `code`. Default keeps the built-in weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "100",
+          "label": "Thin"
+        },
+        {
+          "value": "200",
+          "label": "Extra Light"
+        },
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        },
+        {
+          "value": "900",
+          "label": "Black"
+        }
+      ]
+    },
+    {
+      "id": "tableSize",
+      "label": "Table size",
+      "type": "number",
+      "display": "slider",
+      "section": "Style",
+      "min": 25,
+      "max": 300,
+      "step": 5,
+      "default": 100,
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Percent of the built-in size (100 = as authored). Applies to | pipe | tables |."
+    },
+    {
+      "id": "tableWeight",
+      "label": "Table weight",
+      "type": "select",
+      "section": "Style",
+      "default": "",
+      "showIf": {
+        "typeControls": true
+      },
+      "help": "Font weight for | pipe | tables |. Default keeps the built-in weight.",
+      "options": [
+        {
+          "value": "",
+          "label": "Default"
+        },
+        {
+          "value": "100",
+          "label": "Thin"
+        },
+        {
+          "value": "200",
+          "label": "Extra Light"
+        },
+        {
+          "value": "300",
+          "label": "Light"
+        },
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Extra Bold"
+        },
+        {
+          "value": "900",
+          "label": "Black"
+        }
+      ]
+    },
+    {
+      "id": "customCss",
+      "label": "Custom CSS",
+      "type": "longtext",
+      "rows": 6,
+      "section": "Style",
+      "default": "",
+      "placeholder": "h1 { letter-spacing: -0.02em; }\ntable td { border-color: #999; }\nblockquote { color: #30ba78; }",
+      "help": "Your own CSS, applied to the whole deck (both slide modes). Selectors are scoped to this deck and take precedence over the built-in styles, so a plain `h1 { … }` rule works. Target the markdown elements directly: h1, h2, h3, ul, ol, li, blockquote, pre, code, table, th, td, a, strong, em."
+    },
+    {
       "id": "deck",
       "label": "Slides",
       "type": "blocks",

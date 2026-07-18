@@ -242,6 +242,14 @@ function readTable(lines, start, cls) {
   }
   return { html: html + '</tbody></table>', next: j - 1 };
 }
+// A closing code fence: a line that trims to nothing but the fence char (` or ~),
+// repeated at least as many times as the opening fence.
+function onlyFence(line, ch, minLen) {
+  var s = str(line).trim();
+  if (s.length < minLen) return false;
+  for (var k = 0; k < s.length; k++) if (s.charAt(k) !== ch) return false;
+  return true;
+}
 // A list-item line (indentation preserved for nesting). A tab counts as one level
 // (== 2 spaces). Returns null for a non-item line.
 function listItem(raw) {
@@ -279,16 +287,35 @@ function renderList(items, cls) {
 // pipe tables, headings, ordered/unordered (nested) lists, and paragraphs.
 function renderBlocks(md, cls, extractTitle) {
   var lines = str(md).replace(/\r/g, '').split('\n');
-  var out = '', title = '', paraBuf = [], listBuf = [];
+  var out = '', title = '', paraBuf = [], listBuf = [], quoteBuf = [];
   function flushPara() {
     if (paraBuf.length) { out += '<p' + cls.p + '>' + paraBuf.map(inlineMd).join('<br>') + '</p>'; paraBuf = []; }
   }
   function flushList() { if (listBuf.length) { out += renderList(listBuf, cls); listBuf = []; } }
-  function flush() { flushPara(); flushList(); }
+  function flushQuote() {
+    if (quoteBuf.length) { out += '<blockquote' + cls.quote + '>' + quoteBuf.map(inlineMd).join('<br>') + '</blockquote>'; quoteBuf = []; }
+  }
+  function flush() { flushPara(); flushList(); flushQuote(); }
   for (var i = 0; i < lines.length; i++) {
     var raw = lines[i], t = raw.trim();
     if (!t) { flush(); continue; }
 
+    // Fenced code block (``` or ~~~). Its content is LITERAL — esc()'d, with NO inline
+    // markdown and no block parsing — and it runs to the matching closing fence (a line
+    // of the same fence char, at least as long) or to EOF. Checked before every other
+    // block so ` # `, ` | ` or ` - ` INSIDE a code fence stay literal text.
+    var fence = /^(`{3,}|~{3,})/.exec(t);
+    if (fence) {
+      flush();
+      var fchar = fence[1].charAt(0), flen = fence[1].length, code = [], j = i + 1, closed = false;
+      for (; j < lines.length; j++) {
+        if (onlyFence(lines[j], fchar, flen)) { closed = true; break; }
+        code.push(lines[j]);
+      }
+      out += '<pre' + cls.pre + '><code>' + esc(code.join('\n')) + '</code></pre>';
+      i = closed ? j : lines.length;   // consume through the closing fence (or to EOF)
+      continue;
+    }
     // Table: a pipe header immediately followed by a separator row.
     if (t.indexOf('|') >= 0 && i + 1 < lines.length && isSepRow(lines[i + 1])) {
       flush();
@@ -304,11 +331,19 @@ function renderBlocks(md, cls, extractTitle) {
       out += '<h' + lvl + cls.h(lvl) + '>' + txt + '</h' + lvl + '>';
       continue;
     }
+    // Blockquote: one or more leading-`>` lines, buffered so a run renders as ONE
+    // <blockquote>. The `>` (and one optional space) is stripped; the rest is inline
+    // markdown. A blank line (handled above) ends the quote.
+    if (t.charAt(0) === '>') {
+      flushPara(); flushList();
+      quoteBuf.push(t.replace(/^>\s?/, ''));
+      continue;
+    }
     // List item (indentation preserved — buffered so a whole run nests together).
     var li = listItem(raw);
-    if (li) { flushPara(); listBuf.push(li); continue; }
+    if (li) { flushPara(); flushQuote(); listBuf.push(li); continue; }
     // Anything else is paragraph text.
-    flushList();
+    flushList(); flushQuote();
     paraBuf.push(t);
   }
   flush();
@@ -320,9 +355,10 @@ function renderBlocks(md, cls, extractTitle) {
 // heading kept inline. Both run the identical parser above.
 var CLS_LAYOUT = {
   p: ' class="sl-p"', ul: ' class="sl-ul"', ol: ' class="sl-ol"', table: ' class="sl-table"',
+  quote: ' class="sl-quote"', pre: ' class="sl-pre"',
   h: function (lvl) { return ' class="sl-h sl-h' + lvl + '"'; }
 };
-var CLS_BOX = { p: '', ul: '', ol: '', table: '', h: function () { return ''; } };
+var CLS_BOX = { p: '', ul: '', ol: '', table: '', quote: '', pre: '', h: function () { return ''; } };
 function mdToParts(md) {
   var r = renderBlocks(md, CLS_LAYOUT, true);
   return { titleHtml: r.title, bodyHtml: r.body };
@@ -596,6 +632,53 @@ function pickLogo(logos, darkBg, mono) {
   return mono ? (g.mono || g.color) : (g.color || g.mono);
 }
 
+// ── custom typography + CSS (the "Style" section) ─────────────────────────────
+// Two ways to restyle the whole deck, both scoped to it and applied to BOTH slide
+// modes (layout + freeform):
+//   1. Per-element size + weight overrides → CSS custom properties on the deck root.
+//      styles.css reads each back as `calc(<authored size> * var(--ds-*-scale, 1))`
+//      and `font-weight: var(--ds-*-weight, <default>)`, so a size stays a scale-
+//      invariant RATIO (survives the preview→export upscale, and composes with the
+//      text-fit multiplier) rather than a fixed px that would be wrong at export.
+//   2. A raw CSS escape hatch → a <style> the template emits, wrapped in `.slides{…}`.
+// Only NON-DEFAULT values are emitted, so an untouched deck computes exactly what it
+// always did.
+var STYLE_ELS = ['h1', 'h2', 'h3', 'ul', 'ol', 'quote', 'code', 'table'];
+var STYLE_WEIGHTS = { '100': 1, '200': 1, '300': 1, '400': 1, '500': 1, '600': 1, '700': 1, '800': 1, '900': 1 };
+function weightVal(v) { v = str(v).trim(); return STYLE_WEIGHTS[v] ? v : ''; }
+// A size input is a PERCENT (100 = as authored). '' means "leave the default" so the
+// var stays unset and the calc is inert.
+function scaleVal(v) {
+  var s = str(v).trim();
+  if (!s) return '';
+  var n = clamp(num(s, 100), 25, 300);
+  return (Math.abs(n - 100) < 0.01) ? '' : String(f4(n / 100));
+}
+function buildStyleVars(inputs) {
+  var out = '';
+  for (var i = 0; i < STYLE_ELS.length; i++) {
+    var e = STYLE_ELS[i];
+    var sc = scaleVal(inputs[e + 'Size']);
+    if (sc) out += '--ds-' + e + '-scale:' + sc + ';';
+    var w = weightVal(inputs[e + 'Weight']);
+    if (w) out += '--ds-' + e + '-weight:' + w + ';';
+  }
+  return out;
+}
+// The raw CSS box. The shell scopes every template <style> to the tool canvas, but we
+// ALSO wrap the user's CSS in `.slides { … }`: with native CSS nesting that both keeps
+// it scoped in shells that don't (defence in depth) and lifts its specificity over the
+// tool's own class rules, so a plain `h1 { font-size: … }` actually takes. Two things
+// are neutralised: `</style` (the one HTML-level breakout out of the <style> element)
+// and `@import` (an external fetch — this deck is offline-first). Everything else is
+// the user's own CSS in their own canvas.
+function buildUserCss(v) {
+  var css = str(v);
+  if (!css.trim()) return '';
+  css = css.replace(/<\/(style)/gi, '<\\/$1').replace(/@import[^;]*;?/gi, '');
+  return '.slides {\n' + css + '\n}';
+}
+
 // ── the work ─────────────────────────────────────────────────────────────────
 
 /**
@@ -699,7 +782,10 @@ function compute(model, theme, logos) {
   var n = rows.length;
   if (!n) {
     _totalDuration = 1;
-    return { pages: [], animCss: '', rootClass: 'sl-anim', durSec: 1, slideCount: 0 };
+    return {
+      pages: [], animCss: '', rootClass: 'sl-anim', durSec: 1, slideCount: 0,
+      styleVars: buildStyleVars(inputs), userCss: buildUserCss(inputs.customCss)
+    };
   }
 
   // Timeline: slide i arrives at startS[i] over inS[i], then holds. Cover model —
@@ -791,7 +877,13 @@ function compute(model, theme, logos) {
     // sl-anim in beforeExport regardless, so exports still animate when a transition is set.
     rootClass: (animOff || focusIdx >= 0) ? 'sl-frozen' : 'sl-anim',
     durSec: TT,
-    slideCount: n
+    slideCount: n,
+    // The "Style" section: per-element size/weight custom properties on the root, and
+    // the raw-CSS <style> the template emits (wrapped + scoped). Keys chosen NOT to
+    // collide with any input id (the CSS box is the `customCss` input), so both land in
+    // template extras rather than overwriting an input.
+    styleVars: buildStyleVars(inputs),
+    userCss: buildUserCss(inputs.customCss)
   };
 }
 

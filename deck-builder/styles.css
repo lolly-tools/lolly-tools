@@ -60,10 +60,15 @@
 
 /* ── Title band ─────────────────────────────────────────────────────────────── */
 .sl-head { flex: 0 0 auto; }
+/* Every fittable size below also carries `* var(--ds-<el>-scale, 1)` and the matching
+   `font-weight: var(--ds-<el>-weight, …)`. Those custom properties are set on the deck
+   root by the hook from the "Style" section (buildStyleVars); unset, the scale defaults
+   to 1 and the weight to the authored value, so an untouched deck is byte-for-byte what
+   it always was. A scale multiplies THROUGH --fit, so a bumped size still shrinks-to-fit. */
 .sl-title {
-  font-size: calc(clamp(18px, 7cqmin, 96px) * var(--fit, 1));
+  font-size: calc(clamp(18px, 7cqmin, 96px) * var(--fit, 1) * var(--ds-h1-scale, 1));
   line-height: 1.04;
-  font-weight: 700;
+  font-weight: var(--ds-h1-weight, 700);
   letter-spacing: -0.015em;
   overflow-wrap: anywhere;
 }
@@ -80,10 +85,16 @@
 }
 .sl-body > :first-child { margin-top: 0; }
 .sl-h { line-height: 1.12; font-weight: 700; overflow-wrap: anywhere; }
-.sl-h2 { font-size: calc(clamp(14px, 4.2cqmin, 56px) * var(--fit, 1)); margin-top: 2cqmin; }
-.sl-h3 { font-size: calc(clamp(13px, 3.4cqmin, 44px) * var(--fit, 1)); margin-top: 1.6cqmin; opacity: 0.92; }
+/* A body #-heading (the 2nd+ heading; the first is lifted out as the title) — weight only,
+   its size stays the UA default it always had. */
+.sl-h1 { font-weight: var(--ds-h1-weight, 700); }
+.sl-h2 { font-size: calc(clamp(14px, 4.2cqmin, 56px) * var(--fit, 1) * var(--ds-h2-scale, 1)); font-weight: var(--ds-h2-weight, 700); margin-top: 2cqmin; }
+.sl-h3 { font-size: calc(clamp(13px, 3.4cqmin, 44px) * var(--fit, 1) * var(--ds-h3-scale, 1)); font-weight: var(--ds-h3-weight, 700); margin-top: 1.6cqmin; opacity: 0.92; }
 .sl-p { margin-top: 1.4cqmin; opacity: 0.9; }
-.sl-ul { margin-top: 1.4cqmin; padding-left: 3cqmin; list-style: none; }
+/* Lists carry no size of their own — they inherit the body scale — so a per-list size
+   override is `calc(1em * scale)` (1em = the inherited size), and the weight cascades to
+   the items and their markers. */
+.sl-ul { margin-top: 1.4cqmin; padding-left: 3cqmin; list-style: none; font-size: calc(1em * var(--ds-ul-scale, 1)); font-weight: var(--ds-ul-weight, 400); }
 /* Child combinator (not descendant): a dot decorates only DIRECT <ul> children, so a
    nested <ol> keeps its numbers and a nested <ul> keeps getting dots. */
 .sl-ul > li { position: relative; margin-top: 0.9cqmin; padding-left: 2.6cqmin; opacity: 0.9; }
@@ -98,11 +109,47 @@
   background: var(--accent, currentColor);
 }
 /* Ordered lists — native decimal markers (no dot). */
-.sl-ol { margin-top: 1.4cqmin; padding-left: 4cqmin; }
+.sl-ol { margin-top: 1.4cqmin; padding-left: 4cqmin; font-size: calc(1em * var(--ds-ol-scale, 1)); font-weight: var(--ds-ol-weight, 400); }
 .sl-ol > li { margin-top: 0.9cqmin; opacity: 0.9; }
 .sl-ol > li::marker { color: var(--accent, currentColor); font-weight: 700; }
 /* Nested lists tighten and drop the leading gap. */
 .sl-ul .sl-ul, .sl-ul .sl-ol, .sl-ol .sl-ol, .sl-ol .sl-ul { margin-top: 0.5cqmin; }
+
+/* Blockquote — an accent rule down the side, sized off the inherited body size so a
+   per-quote scale/weight override applies exactly like the lists. */
+.sl-quote {
+  margin-top: 1.4cqmin;
+  padding-left: 2.4cqmin;
+  border-left: 0.6cqmin solid var(--accent, currentColor);
+  font-style: italic;
+  opacity: 0.9;
+  font-size: calc(1em * var(--ds-quote-scale, 1));
+  font-weight: var(--ds-quote-weight, 400);
+}
+.sl-quote > :first-child { margin-top: 0; }
+
+/* Fenced code block — a monospace panel that wraps (never scrolls the slide). Shares the
+   --ds-code-* overrides with the inline code below; the inner <code> resets the inline
+   pill styling so it isn't drawn twice. */
+.sl-pre {
+  margin-top: 1.4cqmin;
+  padding: 1.2cqmin 1.6cqmin;
+  border-radius: 1cqmin;
+  background: color-mix(in oklab, currentColor 8%, transparent);
+  font-size: calc(0.86em * var(--ds-code-scale, 1));
+}
+/* `.sl-body` ancestor so this beats `.sl-body code` (defined later, same specificity)
+   and the inline code pill isn't drawn a second time inside the panel. */
+.sl-body .sl-pre code {
+  display: block;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-weight: var(--ds-code-weight, 400);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: none;
+  padding: 0;
+  border-radius: 0;
+}
 
 /* Pipe tables — capped to the slide, long cells wrap, so a wide table never makes
    the slide scroll. Cell borders + header rule are derived from the slide ink
@@ -114,7 +161,8 @@
   max-width: 100%;
   margin-top: 1.6cqmin;
   table-layout: fixed;
-  font-size: 0.92em;
+  font-size: calc(0.92em * var(--ds-table-scale, 1));
+  font-weight: var(--ds-table-weight, 400);
 }
 .sl-table th, .sl-table td {
   padding: 0.35em 0.6em;
@@ -133,7 +181,8 @@
 .sl-body a { color: var(--accent, currentColor); text-decoration: underline; text-underline-offset: 0.14em; }
 .sl-body code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.88em;
+  font-size: calc(0.88em * var(--ds-code-scale, 1));
+  font-weight: var(--ds-code-weight, 400);
   padding: 0.06em 0.34em;
   border-radius: 0.5cqmin;
   background: color-mix(in oklab, currentColor 10%, transparent);
@@ -158,7 +207,7 @@
 /* ── Layout presets ─────────────────────────────────────────────────────────── */
 /* title (0 slots) — the head + body are the whole slide, centred. */
 .sl-l-title { justify-content: center; align-items: center; text-align: center; }
-.sl-l-title .sl-title { font-size: calc(clamp(20px, 10cqmin, 132px) * var(--fit, 1)); }
+.sl-l-title .sl-title { font-size: calc(clamp(20px, 10cqmin, 132px) * var(--fit, 1) * var(--ds-h1-scale, 1)); }
 .sl-l-title .sl-body { font-size: calc(clamp(12px, 3.6cqmin, 48px) * var(--fit, 1)); max-width: 78%; }
 .sl-l-title .sl-ul { display: inline-block; text-align: left; }
 
@@ -280,11 +329,14 @@
    text overflow?" — the box itself is always exactly as tall as it was drawn. */
 .sl-box-fit { flex: 0 0 auto; width: 100%; min-height: 0; }
 .sl-box-fit > :first-child { margin-top: 0; }
-.sl-box-text h1 { font-size: 1.7em; font-weight: 700; line-height: 1.05; letter-spacing: -0.015em; }
-.sl-box-text h2 { font-size: 1.32em; font-weight: 700; line-height: 1.12; margin-top: 0.5em; }
-.sl-box-text h3 { font-size: 1.12em; font-weight: 700; line-height: 1.14; margin-top: 0.45em; opacity: 0.92; }
+/* Freeform boxes take the SAME --ds-<el>-* overrides as the layout slides (the vars are
+   set on the shared deck root, so they cascade into both). Sizes here are em off the
+   box's own font-size, so a scale rides straight onto that em. */
+.sl-box-text h1 { font-size: calc(1.7em * var(--ds-h1-scale, 1)); font-weight: var(--ds-h1-weight, 700); line-height: 1.05; letter-spacing: -0.015em; }
+.sl-box-text h2 { font-size: calc(1.32em * var(--ds-h2-scale, 1)); font-weight: var(--ds-h2-weight, 700); line-height: 1.12; margin-top: 0.5em; }
+.sl-box-text h3 { font-size: calc(1.12em * var(--ds-h3-scale, 1)); font-weight: var(--ds-h3-weight, 700); line-height: 1.14; margin-top: 0.45em; opacity: 0.92; }
 .sl-box-text p { margin-top: 0.5em; opacity: 0.92; }
-.sl-box-text ul { margin-top: 0.5em; padding-left: 1.2em; list-style: none; }
+.sl-box-text ul { margin-top: 0.5em; padding-left: 1.2em; list-style: none; font-size: calc(1em * var(--ds-ul-scale, 1)); font-weight: var(--ds-ul-weight, 400); }
 /* Child combinator so a nested <ol> in a box keeps its numbers (see the layout note). */
 .sl-box-text ul > li { position: relative; margin-top: 0.32em; padding-left: 0.9em; opacity: 0.92; }
 .sl-box-text ul > li::before {
@@ -297,7 +349,7 @@
   border-radius: 50%;
   background: var(--accent, currentColor);
 }
-.sl-box-text ol { margin-top: 0.5em; padding-left: 1.4em; }
+.sl-box-text ol { margin-top: 0.5em; padding-left: 1.4em; font-size: calc(1em * var(--ds-ol-scale, 1)); font-weight: var(--ds-ol-weight, 400); }
 .sl-box-text ol > li { margin-top: 0.32em; opacity: 0.92; }
 .sl-box-text ol > li::marker { color: var(--accent, currentColor); font-weight: 700; }
 .sl-box-text ul ul, .sl-box-text ul ol, .sl-box-text ol ol, .sl-box-text ol ul { margin-top: 0.25em; }
@@ -308,7 +360,8 @@
   max-width: 100%;
   margin-top: 0.5em;
   table-layout: fixed;
-  font-size: 0.9em;
+  font-size: calc(0.9em * var(--ds-table-scale, 1));
+  font-weight: var(--ds-table-weight, 400);
 }
 .sl-box-text th, .sl-box-text td {
   padding: 0.2em 0.4em;
@@ -321,10 +374,38 @@
 .sl-box-text a { color: var(--accent, currentColor); text-decoration: underline; text-underline-offset: 0.12em; }
 .sl-box-text code {
   font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  font-size: 0.88em;
+  font-size: calc(0.88em * var(--ds-code-scale, 1));
+  font-weight: var(--ds-code-weight, 400);
   padding: 0.05em 0.28em;
   border-radius: 0.3em;
   background: color-mix(in oklab, currentColor 10%, transparent);
+}
+/* Blockquote + fenced code inside a freeform box — em-scaled counterparts of .sl-quote
+   and .sl-pre, sharing the same --ds-* overrides. */
+.sl-box-text blockquote {
+  margin-top: 0.5em;
+  padding-left: 0.7em;
+  border-left: 0.16em solid var(--accent, currentColor);
+  font-style: italic;
+  opacity: 0.92;
+  font-size: calc(1em * var(--ds-quote-scale, 1));
+  font-weight: var(--ds-quote-weight, 400);
+}
+.sl-box-text pre {
+  margin-top: 0.5em;
+  padding: 0.5em 0.7em;
+  border-radius: 0.3em;
+  background: color-mix(in oklab, currentColor 8%, transparent);
+  font-size: calc(0.86em * var(--ds-code-scale, 1));
+}
+.sl-box-text pre code {
+  display: block;
+  font-weight: var(--ds-code-weight, 400);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  background: none;
+  padding: 0;
+  border-radius: 0;
 }
 .sl-box-text strong { font-weight: 700; }
 .sl-box-text em { font-style: italic; }
@@ -338,8 +419,8 @@
      scope it as if it were a selector, producing `#tool-canvas @container (…)`,
      which matches nothing and leaves every rule inside it unscoped and leaking into
      the app. Verified against shells/web/src/lib/scope-css.ts.) */
-  .sl-title { font-size: calc(clamp(16px, 8cqmin, 76px) * var(--fit, 1)); }
-  .sl-l-title .sl-title { font-size: calc(clamp(18px, 11cqmin, 96px) * var(--fit, 1)); }
+  .sl-title { font-size: calc(clamp(16px, 8cqmin, 76px) * var(--fit, 1) * var(--ds-h1-scale, 1)); }
+  .sl-l-title .sl-title { font-size: calc(clamp(18px, 11cqmin, 96px) * var(--fit, 1) * var(--ds-h1-scale, 1)); }
   .sl-l-split .sl-grid { grid-template-columns: 1fr; grid-template-rows: 1fr 1fr; }
   .sl-l-golden .sl-grid { grid-template-columns: 1fr; grid-template-rows: 1.618fr 1fr; }
   .sl-l-cols3 .sl-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); }

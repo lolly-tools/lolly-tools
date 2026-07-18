@@ -1,4 +1,4 @@
-<div class="slides {{rootClass}}" style="--dur: {{durSec}}s;">
+<div class="slides {{rootClass}}" style="--dur: {{durSec}}s;{{{styleVars}}}">
   {{#each pages}}
   <section class="sl-slide sl-slide--{{idx}} sl-l-{{layout}}"
            data-pdf-page
@@ -85,6 +85,12 @@
   {{!-- The per-slide @keyframes + play bindings: the timeline depends on the slide
         count, so it can't be static CSS. Never move these into styles.css. --}}
   <style>{{{animCss}}}</style>
+
+  {{!-- The "Style" section's raw-CSS box. The hook already wrapped it in `.slides { … }`
+        (scoped to THIS deck + specificity over the tool's own rules via CSS nesting) and
+        neutralised the only <style> breakout; the web shell then scopes this whole block
+        to the tool canvas. Emitted only when the box is non-empty. --}}
+  {{#if userCss}}<style>{{{userCss}}}</style>{{/if}}
 
   {{!-- ── the text-fit pass ────────────────────────────────────────────────────────
         The ONE job CSS cannot do: shrink text until it fits the box it was given. It
