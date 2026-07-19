@@ -10,7 +10,11 @@
 // manual size the user typed isn't snapped back. On any failure the manifest
 // default (1080²) stands and the picture simply fits with transparent letterboxing.
 
-var MAX_EDGE = 8000;   // matches the width/height input ceiling
+// Default to the upload's OWN pixels — never downscale the artwork. The only cap is
+// the browser's hard canvas-dimension limit (~16384), applied proportionally so the
+// aspect stays exact; virtually every real photo is well under it. Matches the
+// width/height input ceiling.
+var MAX_EDGE = 16384;
 var _sizedUrl = null;  // the source URL we've already sized to (respect later manual edits)
 
 function inputsOf(model) {

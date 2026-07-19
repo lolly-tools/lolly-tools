@@ -26,7 +26,8 @@
       "type": "asset",
       "assetType": "raster",
       "allowUpload": true,
-      "help": "Drop or pick the image you want to mark. It's re-saved with your credentials embedded — nothing is uploaded to a server. The canvas resizes to your image's own pixels."
+      "matchExportFormat": true,
+      "help": "Drop or pick the image you want to mark. It's re-saved with your credentials embedded — nothing is uploaded to a server. The canvas and export format default to your image's own pixels and type."
     },
     {
       "id": "creator",
@@ -80,7 +81,7 @@
       "bindToMeta": "description",
       "help": "Optional — a short title or description of the work."
     },
-    { "id": "width",  "label": "Width",  "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" },
-    { "id": "height", "label": "Height", "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" }
+    { "id": "width",  "label": "Width",  "type": "number", "default": 1080, "min": 1, "max": 16384, "group": "export" },
+    { "id": "height", "label": "Height", "type": "number", "default": 1080, "min": 1, "max": 16384, "group": "export" }
   ]
 }

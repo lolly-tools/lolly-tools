@@ -156,3 +156,54 @@
 .url-shot .shot-refresh.is-busy { cursor: progress; pointer-events: none; opacity: 1; transform: none; }
 .url-shot .shot-refresh.is-busy svg { animation: url-shot-spin 0.7s linear infinite; }
 .url-shot .shot-refresh.is-error { background: #b32d2d; opacity: 1; transform: none; }
+
+/* ── Visual composer entry points (same-origin targets only; wired in the
+   template script). The overlay itself is body-level and styles itself via an
+   injected <style> — this tool CSS is auto-scoped to the canvas and can't reach
+   it. ── */
+.url-shot .ph-actions {
+  display: flex;
+  gap: 0.6rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 0.9rem 0;
+}
+.url-shot .compose-btn {
+  font: inherit;
+  font-weight: 600;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--brand-primary, #30ba78);
+  background: var(--brand-surface, #efefef);
+  border: 1px solid var(--brand-primary, #30ba78);
+}
+.url-shot .compose-btn:hover { background: color-mix(in oklab, var(--brand-primary, #30ba78), transparent 88%); }
+.url-shot .compose-btn:active { transform: translateY(1px); }
+/* Floating compose button — sits just left of the re-capture button, same reveal. */
+.url-shot .shot-compose {
+  position: absolute;
+  top: 0.6rem;
+  right: 3.2rem;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  width: 2.2rem;
+  height: 2.2rem;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  cursor: pointer;
+  color: var(--brand-on-primary, #fff);
+  background: color-mix(in oklab, var(--brand-primary, #30ba78), black 6%);
+  box-shadow: 0 2px 8px rgba(12, 50, 44, 0.3);
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+  transition: opacity 0.15s ease, transform 0.15s ease, background 0.15s ease;
+}
+.url-shot[data-captured]:hover .shot-compose,
+.url-shot .shot-compose:focus-visible { opacity: 1; transform: none; pointer-events: auto; }
+.url-shot .shot-compose:hover { background: var(--brand-primary, #30ba78); }
+.url-shot .shot-compose:active { transform: scale(0.94); }
+.url-shot .shot-compose svg { width: 1.15rem; height: 1.15rem; display: block; }

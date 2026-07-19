@@ -39,6 +39,7 @@ var _memoKey = null;
 var _memoResult = null;
 var _lastOutSrc = null; // previous composed bitmap, sent as prevSrc for seamless swaps
 var _srcCache = { key: null, canvas: null }; // colour-adjusted base, reused when only the smear changes
+var _lastOv = null, _lastW = null, _lastH = null; // most recent overlay params — read by beforeExport
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -521,6 +522,62 @@ function ovRRect(x, y, w, h, r, fill, op) {
     + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="' + fill + '"'
     + (op != null && op < 1 ? ' fill-opacity="' + ovF2(op) + '"' : '') + '/>';
 }
+
+// ── Export frame clock (motion formats only) ─────────────────────────────────
+// A still export always renders the overlay at rest (mode:'still' → fully faded
+// in, no offset) — correct for png/svg/pdf/etc. But a gif/webm/mp4 export of a
+// STILL photo previously held that same resting pose for the whole clip: the
+// intro ease-in buildOverlaySvg already does for 'live' (camera) mode never
+// played, because nothing called it with mode:'live' + an advancing elapsed.
+// armOverlayClock wires that up: register __lollyFrameRender on the tool's
+// inert clock-anchor canvas (see docs on <canvas data-ov-clock> in template.html
+// — the same anchor-element convention as the slides tool, required because the
+// capture loop only drives a t through a <canvas> carrying that property), and
+// on each captured frame rebuild JUST the overlay markup (via the untouched
+// buildOverlaySvg) at that frame's elapsed ms, splicing it into a stable slot
+// (`<g id="lolly-ov-slot">`, wrapped once around every buildOverlaySvg() call
+// site in the tool's buildSvg()). The expensive filtered-image content is never
+// touched — only the overlay's own small SVG fragment is rebuilt per frame.
+// getOv(t) returns a full overlay-input object (mode:'live', elapsed: t*clipMs) —
+// callers build it from their own cached _lastOv (see armFilterOverlayExport).
+// W/H are the SAME viewBox-units box the tool's own buildOverlaySvg(W, H, …) call
+// used for the still render — a fixed VIEW constant for the square-canvas tools,
+// or the tool's own current width/height for the ones with dynamic W/H inputs.
+function armOverlayClock(root, W, H, getOv) {
+  var canvas = root && root.querySelector && root.querySelector('[data-ov-clock]');
+  var slot = root && root.querySelector && root.querySelector('#lolly-ov-slot');
+  if (!canvas || !slot) return null;
+  canvas.__lollyFrameRender = function (t) {
+    try {
+      var ov = getOv(t);
+      slot.innerHTML = ov ? buildOverlaySvg(W, H, ov) : '';
+    } catch (e) { /* leave the last good frame in place */ }
+  };
+  return canvas;
+}
+function disarmOverlayClock(canvas) {
+  if (!canvas) return;
+  try { delete canvas.__lollyFrameRender; } catch (e) { canvas.__lollyFrameRender = undefined; }
+}
+// Formats the clock should arm for — every other export (png/svg/pdf/jpg/webp/…)
+// captures the still, at-rest overlay exactly as before.
+var OV_MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
+// Shared beforeExport/afterExport glue: arms the clock for a motion export using
+// the tool's own _lastOv/_lastW/_lastH (module state set at the end of compute())
+// and disarms it afterwards. Tools with their own beforeExport logic (e.g. alpha
+// background) call this from inside it rather than using it as their whole hook.
+var _ovClock = null;
+function armFilterOverlayExport(ctx, W, H, lastOv) {
+  if (!lastOv || !overlayActive(lastOv) || !OV_MOTION_FORMATS[ctx.format]) return;
+  var clipMs = ((ctx.opts && ctx.opts.duration) || 5) * 1000;
+  _ovClock = armOverlayClock(ctx.node, W, H, function (t) {
+    return Object.assign({}, lastOv, { mode: 'live', elapsed: t * clipMs });
+  });
+}
+function disarmFilterOverlayExport() {
+  disarmOverlayClock(_ovClock);
+  _ovClock = null;
+}
 // === /lolly:shared overlay ===
 
 // ── lifecycle ────────────────────────────────────────────────────────────────
@@ -557,6 +614,7 @@ async function compute(model) {
   var headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || '';
   if (ovi.lowerThird && !headUrl) headUrl = (await resolveProfileHeadshot()) || '';
   var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: 'still' });
+  _lastOv = ov; _lastW = p.W; _lastH = p.H; // read by beforeExport to arm the motion-export overlay clock
 
   var memoKey = JSON.stringify({ url: url, p: p, d: dims, ov: ov });
   if (memoKey === _memoKey) return _memoResult;
@@ -603,6 +661,11 @@ async function compute(model) {
 
 function onInit(ctx) { return compute(ctx.model); }
 function onInput(ctx) { return compute(ctx.model); }
+
+// gif/apng/webm/mp4 only: replay the overlay's live-mode intro deterministically
+// across the clip instead of holding it at its settled resting pose throughout.
+function beforeExport(ctx) { armFilterOverlayExport(ctx, _lastW, _lastH, _lastOv); }
+function afterExport() { disarmFilterOverlayExport(); }
 
 // Live camera (engine v1.4): the runtime calls this once per frame with raw RGBA
 // pixels. Run the SAME compose pipeline so the smear, feather and colour shift track

@@ -1,1 +1,8 @@
 {{{voronoiSvg}}}
+{{!-- Export frame clock anchor: hooks.js (armFilterOverlayExport/armOverlayClock,
+      shared from community/_shared/overlay.js) registers __lollyFrameRender on this
+      for gif/apng/webm/mp4 exports, replaying the brand-overlay intro deterministically
+      instead of holding it at rest for the whole clip. Needed because the capture loop
+      only drives a frame-accurate t through a <canvas> carrying that property (see the
+      slides tool for the same convention). 0×0 + aria-hidden: never painted, never seen. --}}
+<canvas data-ov-clock width="0" height="0" aria-hidden="true"></canvas>
