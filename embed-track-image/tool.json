@@ -1,0 +1,86 @@
+{
+  "id": "embed-track-image",
+  "name": "Embed & Track Image",
+  "description": "Stamp your author, copyright and licence into any image — plus an invisible Lolly Imprint and Content Credentials — before you share it.",
+  "a11yLabel": "Embed credentials into your image",
+  "version": "1.0.0",
+  "engineVersion": "^1.0.0",
+  "status": "official",
+  "category": "utility",
+  "tags": ["provenance", "copyright", "licence", "license", "watermark", "imprint", "c2pa", "content credentials", "metadata", "exif", "creative commons", "image", "photo", "artist", "ip", "rights"],
+  "render": {
+    "width": 1080,
+    "height": 1080,
+    "formats": ["png", "jpg", "webp", "svg"],
+    "actions": ["download", "save", "copy"],
+    "transparentBg": true
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true
+  },
+  "inputs": [
+    {
+      "id": "source",
+      "label": "Your image",
+      "type": "asset",
+      "assetType": "raster",
+      "allowUpload": true,
+      "help": "Drop or pick the image you want to mark. It's re-saved with your credentials embedded — nothing is uploaded to a server. The canvas resizes to your image's own pixels."
+    },
+    {
+      "id": "creator",
+      "label": "Artist / author",
+      "type": "text",
+      "section": "Credentials",
+      "bindToMeta": "author",
+      "help": "Your name — embedded as the image's author/creator (EXIF Artist, XMP dc:creator, and the Content Credential)."
+    },
+    {
+      "id": "copyright",
+      "label": "Copyright notice",
+      "type": "text",
+      "section": "Credentials",
+      "bindToMeta": "copyright",
+      "help": "The © line written into the file, e.g. © 2026 Your Name. Left blank, no copyright is asserted."
+    },
+    {
+      "id": "license",
+      "label": "Rights / licence",
+      "type": "select",
+      "section": "Credentials",
+      "bindToMeta": "license",
+      "default": "All rights reserved",
+      "help": "How others may use your work. Proprietary keeps every right; the Creative Commons options grant specific permissions and embed a link to the licence deed.",
+      "options": [
+        { "value": "All rights reserved", "label": "Proprietary — All rights reserved" },
+        { "value": "CC0 1.0 (Public Domain) · https://creativecommons.org/publicdomain/zero/1.0/", "label": "CC0 1.0 — Public Domain (no rights reserved)" },
+        { "value": "CC BY 4.0 · https://creativecommons.org/licenses/by/4.0/", "label": "CC BY 4.0 — Attribution" },
+        { "value": "CC BY-SA 4.0 · https://creativecommons.org/licenses/by-sa/4.0/", "label": "CC BY-SA 4.0 — Attribution-ShareAlike" },
+        { "value": "CC BY-ND 4.0 · https://creativecommons.org/licenses/by-nd/4.0/", "label": "CC BY-ND 4.0 — Attribution-NoDerivatives" },
+        { "value": "CC BY-NC 4.0 · https://creativecommons.org/licenses/by-nc/4.0/", "label": "CC BY-NC 4.0 — Attribution-NonCommercial" },
+        { "value": "CC BY-NC-SA 4.0 · https://creativecommons.org/licenses/by-nc-sa/4.0/", "label": "CC BY-NC-SA 4.0 — NonCommercial-ShareAlike" },
+        { "value": "CC BY-NC-ND 4.0 · https://creativecommons.org/licenses/by-nc-nd/4.0/", "label": "CC BY-NC-ND 4.0 — NonCommercial-NoDerivatives" },
+        { "value": "Public Domain Mark 1.0 · https://creativecommons.org/publicdomain/mark/1.0/", "label": "Public Domain Mark — already in the public domain" }
+      ]
+    },
+    {
+      "id": "contact",
+      "label": "Contact",
+      "type": "text",
+      "section": "Credentials",
+      "bindToMeta": "contact",
+      "help": "Optional — how to reach you for licensing (email or site), embedded alongside the author."
+    },
+    {
+      "id": "title",
+      "label": "Title / description",
+      "type": "text",
+      "section": "Credentials",
+      "bindToMeta": "description",
+      "help": "Optional — a short title or description of the work."
+    },
+    { "id": "width",  "label": "Width",  "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" },
+    { "id": "height", "label": "Height", "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" }
+  ]
+}

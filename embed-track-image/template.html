@@ -1,0 +1,19 @@
+<!-- Embed & Track Image — the whole point is to leave the artwork UNTOUCHED and let
+     the engine embed the invisible marks (Lolly Imprint) + provenance/copyright/
+     licence metadata + Content Credentials on export. So the template is just the
+     image, full-frame, on a canvas the hook sizes to the image's own pixels
+     (preserveAspectRatio="meet" letterboxes into transparency only if sizing ever
+     falls back). No visible watermark is drawn — the marks ride in the bytes. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{width}} {{height}}"
+     width="{{width}}" height="{{height}}" style="width:100%;height:auto;display:block;">
+  {{#if source}}
+  <image href="{{asset source}}" x="0" y="0" width="{{width}}" height="{{height}}"
+         preserveAspectRatio="xMidYMid meet"/>
+  {{else}}
+  <rect width="{{width}}" height="{{height}}" rx="10" fill="#0b1120"/>
+  <text x="50%" y="46%" text-anchor="middle" dominant-baseline="middle" fill="#e2e8f0"
+        font-family="ui-sans-serif,system-ui,-apple-system,sans-serif" font-size="38" font-weight="600">Drop an image to mark</text>
+  <text x="50%" y="54%" text-anchor="middle" dominant-baseline="middle" fill="#64748b"
+        font-family="ui-sans-serif,system-ui,-apple-system,sans-serif" font-size="26">then set your author, copyright &amp; licence</text>
+  {{/if}}
+</svg>
