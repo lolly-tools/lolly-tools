@@ -1,4 +1,19 @@
 {
-  "name": "Палітра кольорів",
-  "description": "Перегляньте кольори вашого бренду — клацніть зразок, щоб скопіювати його."
+  "name": "Лабораторія палітри",
+  "description": "Виростіть палітру з одного вихідного кольору - акценти гармонії, перцептивні OKLab градієнти та значки читабельності WCAG/APCA, з токенами DTCG та експортом у CSV.",
+  "inputs.seed.label": "Вихідний колір",
+  "inputs.seed.help": "Колір, з якого виростає вся палітра - за умовчанням основний колір вашого бренду.",
+  "inputs.harmony.label": "Гармонія",
+  "inputs.harmony.help": "Як акцентні відтінки обертаються навколо базового кольору.",
+  "inputs.harmony.options.complement": "Компліментарна",
+  "inputs.harmony.options.adjacent-3": "Суміжні",
+  "inputs.harmony.options.triad-3": "Тріада",
+  "inputs.harmony.options.tetrad-4": "Тетрада",
+  "inputs.harmony.options.free-2": "Довільна (2)",
+  "inputs.harmony.options.free-3": "Довільна (3)",
+  "inputs.harmony.options.free-4": "Довільна (4)",
+  "inputs.steps.label": "Кроки градієнта",
+  "inputs.steps.help": "Тонів у градієнті, від темного до світлого.",
+  "inputs.neutrals.label": "Включити нейтральні кольори",
+  "inputs.neutrals.help": "Додає сіру шкалу з відтінком seed для тексту та поверхонь."
 }

@@ -32,5 +32,6 @@
   "inputs.tintColor.help": "La couleur dans laquelle la page est teintée quand Recolorer est sur « Teinter ».",
   "inputs.scrollTo.label": "Défiler jusqu'à (vidéo)",
   "inputs.scrollTo.help": "Export vidéo uniquement : effectue un panoramique VERS LE BAS jusqu'à cette profondeur pendant le clip — un défilement de la page de « Profondeur de défilement » jusqu'ici. Mets la même valeur que « Profondeur de défilement » pour une image fixe. Ignoré pour les formats image.",
-  "inputs.zoom.help": "Niveau de zoom du navigateur — agrandit la page avant la capture (comme Ctrl/Cmd +), afin que même une capture bitmap soit agrandie et nette plutôt que suréchantillonnée. 1 = 100 %."
+  "inputs.zoom.help": "Niveau de zoom du navigateur — agrandit la page avant la capture (comme Ctrl/Cmd +), afin que même une capture bitmap soit agrandie et nette plutôt que suréchantillonnée. 1 = 100 %.",
+  "inputs.zoom.label": "Zoom"
 }

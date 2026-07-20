@@ -1,4 +1,19 @@
 {
-  "name": "Palette de couleurs",
-  "description": "Parcours les couleurs de la marque SUSE — clique sur une nuance pour la copier."
+  "name": "Labo Palette",
+  "description": "Fais pousser une palette à partir d'une couleur germe - accents harmoniques, rampes OKLab perceptuelles et badges de lisibilité WCAG/APCA, avec tokens DTCG et export CSV.",
+  "inputs.seed.label": "Couleur de départ",
+  "inputs.seed.help": "La couleur dont part toute la palette - par défaut, ta couleur de marque principale.",
+  "inputs.harmony.label": "Harmonie",
+  "inputs.harmony.help": "Comment les teintes d'accent tournent autour de la graine.",
+  "inputs.harmony.options.complement": "Complémentaire",
+  "inputs.harmony.options.adjacent-3": "Adjacent",
+  "inputs.harmony.options.triad-3": "Triade",
+  "inputs.harmony.options.tetrad-4": "Tétrade",
+  "inputs.harmony.options.free-2": "Libre (2)",
+  "inputs.harmony.options.free-3": "Libre (3)",
+  "inputs.harmony.options.free-4": "Libre (4)",
+  "inputs.steps.label": "Étapes du dégradé",
+  "inputs.steps.help": "Tons par rampe, du foncé au clair.",
+  "inputs.neutrals.label": "Inclure les neutres",
+  "inputs.neutrals.help": "Ajoute une rampe de gris teintée par la couleur de base, pour le texte et les surfaces."
 }

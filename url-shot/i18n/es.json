@@ -32,5 +32,6 @@
   "inputs.tintColor.help": "El color con el que se baña la página cuando Recolorear es «Tinte».",
   "inputs.scrollTo.label": "Desplazar hasta (video)",
   "inputs.scrollTo.help": "Solo en exportación de video: desplaza la página HACIA ABAJO hasta esta profundidad durante el clip, un desplazamiento desde 'Profundidad de desplazamiento' hasta aquí. Iguálalo a 'Profundidad de desplazamiento' para mantener una toma fija. Se ignora en los formatos de imagen.",
-  "inputs.zoom.help": "Nivel de zoom del navegador: amplía la página antes de la captura (como Ctrl/Cmd +), de modo que incluso una captura en mapa de bits queda ampliada y nítida en lugar de reescalada. 1 = 100%."
+  "inputs.zoom.help": "Nivel de zoom del navegador: amplía la página antes de la captura (como Ctrl/Cmd +), de modo que incluso una captura en mapa de bits queda ampliada y nítida en lugar de reescalada. 1 = 100%.",
+  "inputs.zoom.label": "Zoom"
 }

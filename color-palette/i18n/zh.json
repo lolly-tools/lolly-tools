@@ -1,4 +1,19 @@
 {
-  "name": "调色板",
-  "description": "浏览 SUSE 品牌色——点击色块即可复制。"
+  "name": "调色实验室",
+  "description": "从一个种子颜色生成调色板 - 和谐强调色、感知性 OKLab 渐变和 WCAG/APCA 可读性徽章，配备 DTCG 令牌和 CSV 导出。",
+  "inputs.seed.label": "种子颜色",
+  "inputs.seed.help": "整个色板由此颜色衍生而来 - 默认使用你的品牌主色。",
+  "inputs.harmony.label": "和谐",
+  "inputs.harmony.help": "强调色色相如何围绕种子色旋转。",
+  "inputs.harmony.options.complement": "互补色",
+  "inputs.harmony.options.adjacent-3": "相邻",
+  "inputs.harmony.options.triad-3": "三角配色",
+  "inputs.harmony.options.tetrad-4": "四色组",
+  "inputs.harmony.options.free-2": "自由 (2)",
+  "inputs.harmony.options.free-3": "自由 (3)",
+  "inputs.harmony.options.free-4": "自由 (4)",
+  "inputs.steps.label": "渐变步数",
+  "inputs.steps.help": "每个色阶渐变中的色调数量，从深到浅。",
+  "inputs.neutrals.label": "包含中性色",
+  "inputs.neutrals.help": "为文本和表面添加带种子色调的灰阶渐变。"
 }

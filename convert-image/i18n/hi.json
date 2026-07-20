@@ -1,0 +1,16 @@
+{
+  "name": "इमेज कन्वर्ट करें",
+  "description": "HEIC, TIFF या किसी भी फ़ोटो को WebP, JPEG या PNG में बदलें - आपकी डिवाइस पर।",
+  "a11yLabel": "{{fileName}} के लिए छवि रूपांतरण",
+  "inputs.source.label": "इमेज",
+  "inputs.source.help": "एक HEIC, HEIF, JPEG, PNG, WebP, AVIF या TIFF इमेज। यह आपके ब्राउज़र में पढ़ी जाती है और कभी आपकी डिवाइस से बाहर नहीं जाती।",
+  "inputs.format.label": "में कन्वर्ट करें",
+  "inputs.format.help": "आउटपुट फ़ॉर्मेट। WebP आमतौर पर सबसे छोटा होता है; PNG लॉसलेस है।",
+  "inputs.format.options.webp": "WebP - सबसे छोटा, पारदर्शिता बनाए रखता है",
+  "inputs.format.options.jpeg": "JPEG - सार्वभौमिक, फ़ोटो के लिए",
+  "inputs.format.options.png": "PNG - लॉसलेस, पारदर्शिता बनाए रखता है",
+  "inputs.quality.label": "गुणवत्ता",
+  "inputs.quality.help": "लॉसी फ़ॉर्मेट के लिए क्वालिटी। कम मतलब छोटी फ़ाइल और नरम डिटेल। PNG इसे नज़रअंदाज़ करता है।",
+  "inputs.maxEdge.label": "सबसे लंबा किनारा (px)",
+  "inputs.maxEdge.help": "डाउनस्केल करें ताकि सबसे लंबा किनारा अधिकतम इतने पिक्सल का हो। 0 मूल आकार बनाए रखता है। कभी अपस्केल नहीं करता।"
+}

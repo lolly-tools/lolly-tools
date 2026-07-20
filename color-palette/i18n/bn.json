@@ -1,4 +1,19 @@
 {
-  "name": "কালার প্যালেট",
-  "description": "SUSE ব্র্যান্ডের রংগুলো দেখুন — কপি করতে সোয়াচে ক্লিক করুন।"
+  "name": "প্যালেট ল্যাব",
+  "description": "একটি বীজ রং থেকে প্যালেট বানান - হারমনি অ্যাকসেন্ট, পারসেপচুয়াল OKLab র‍্যাম্প এবং WCAG/APCA রিডেবিলিটি ব্যাজ, সাথে DTCG টোকেন ও CSV এক্সপোর্ট।",
+  "inputs.seed.label": "সিড রং",
+  "inputs.seed.help": "যে রং থেকে পুরো প্যালেট তৈরি হয় - ডিফল্টরূপে আপনার ব্র্যান্ড প্রাইমারি।",
+  "inputs.harmony.label": "হারমনি",
+  "inputs.harmony.help": "অ্যাকসেন্ট হিউগুলো সিড ঘিরে কীভাবে ঘোরে।",
+  "inputs.harmony.options.complement": "পরিপূরক",
+  "inputs.harmony.options.adjacent-3": "সংলগ্ন",
+  "inputs.harmony.options.triad-3": "ট্রায়াড",
+  "inputs.harmony.options.tetrad-4": "টেট্র্যাড",
+  "inputs.harmony.options.free-2": "ফ্রি (2)",
+  "inputs.harmony.options.free-3": "ফ্রি (3)",
+  "inputs.harmony.options.free-4": "ফ্রি (4)",
+  "inputs.steps.label": "র‌্যাম্প ধাপ",
+  "inputs.steps.help": "প্রতি র‍্যাম্পে টোন, গাঢ় থেকে হালকা।",
+  "inputs.neutrals.label": "নিউট্রাল অন্তর্ভুক্ত করুন",
+  "inputs.neutrals.help": "টেক্সট ও সারফেসের জন্য সিড-টিন্টেড ধূসর র‍্যাম্প যোগ করে।"
 }

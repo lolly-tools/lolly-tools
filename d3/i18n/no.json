@@ -75,7 +75,7 @@
   "inputs.curve.options.step": "Trinn (midt)",
   "inputs.curve.options.stepBefore": "Trinn (før)",
   "inputs.curve.options.stepAfter": "Trinn (etter)",
-  "inputs.curve.options.bumpX": "Bump",
+  "inputs.curve.options.bumpX": "Støt",
   "inputs.showPoints.label": "Vis punktmarkører",
   "inputs.showPoints.section": "Diagram",
   "inputs.pointSize.label": "Punktstørrelse",

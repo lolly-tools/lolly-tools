@@ -1,0 +1,16 @@
+{
+  "name": "이미지 변환",
+  "description": "HEIC, TIFF, 어떤 사진이든 WebP, JPEG, PNG로 바꿔요 - 내 기기에서.",
+  "a11yLabel": "{{fileName}} 이미지 변환",
+  "inputs.source.label": "이미지",
+  "inputs.source.help": "HEIC, HEIF, JPEG, PNG, WebP, AVIF 또는 TIFF 이미지예요. 브라우저에서 읽히며 기기 밖으로 나가지 않아요.",
+  "inputs.format.label": "변환 대상",
+  "inputs.format.help": "출력 형식이에요. WebP가 보통 가장 작고, PNG는 무손실이에요.",
+  "inputs.format.options.webp": "WebP - 가장 작고 투명도 유지",
+  "inputs.format.options.jpeg": "JPEG - 범용, 사진용",
+  "inputs.format.options.png": "PNG - 무손실, 투명도 유지",
+  "inputs.quality.label": "품질",
+  "inputs.quality.help": "손실 포맷의 품질이에요. 낮을수록 파일이 작아지고 디테일이 부드러워져요. PNG에는 적용되지 않아요.",
+  "inputs.maxEdge.label": "긴 변 (px)",
+  "inputs.maxEdge.help": "긴 쪽 변이 최대 이 픽셀 수를 넘지 않도록 축소해요. 0이면 원본 크기를 유지해요. 확대는 하지 않아요."
+}

@@ -32,5 +32,6 @@
   "inputs.tintColor.help": "Il colore in cui viene immersa la pagina quando \"Ricolora\" è impostato su \"Tinta\".",
   "inputs.scrollTo.label": "Scorri a (video)",
   "inputs.scrollTo.help": "Solo per l'esportazione video: scorre VERSO IL BASSO fino a questa profondità durante la clip — uno scorrimento della pagina da 'Profondità di scorrimento' a qui. Imposta uguale a 'Profondità di scorrimento' per un fermo immagine. Ignorato per i formati immagine.",
-  "inputs.zoom.help": "Livello di zoom del browser — ingrandisce la pagina prima dello scatto (come Ctrl/Cmd +), così anche una cattura bitmap risulta ingrandita e nitida invece che ridimensionata. 1 = 100%."
+  "inputs.zoom.help": "Livello di zoom del browser — ingrandisce la pagina prima dello scatto (come Ctrl/Cmd +), così anche una cattura bitmap risulta ingrandita e nitida invece che ridimensionata. 1 = 100%.",
+  "inputs.zoom.label": "Zoom"
 }

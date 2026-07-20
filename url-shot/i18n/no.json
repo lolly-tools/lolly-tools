@@ -32,5 +32,6 @@
   "inputs.tintColor.help": "Fargen siden fargelegges med når Omfarging er satt til «Toning».",
   "inputs.scrollTo.label": "Rull til (video)",
   "inputs.scrollTo.help": "Bare for videoeksport: panorer NED til denne dybden over klippet — en rulling av siden fra «Rulledybde» til her. Sett lik «Rulledybde» for et stillbilde. Ignoreres for bildeformater.",
-  "inputs.zoom.help": "Nettleserens zoomnivå — forstørrer siden før opptaket (som Ctrl/Cmd +), slik at selv en bitmap-fangst blir forstørret og skarp i stedet for oppskalert. 1 = 100%."
+  "inputs.zoom.help": "Nettleserens zoomnivå — forstørrer siden før opptaket (som Ctrl/Cmd +), slik at selv en bitmap-fangst blir forstørret og skarp i stedet for oppskalert. 1 = 100%.",
+  "inputs.zoom.label": "Zoom"
 }

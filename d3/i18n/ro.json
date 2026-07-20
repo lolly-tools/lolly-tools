@@ -172,5 +172,16 @@
   "inputs.legendPosition.options.right": "Dreapta",
   "inputs.legendPosition.options.left": "Stânga",
   "inputs.width.label": "Lățime",
-  "inputs.height.label": "Înălțime"
+  "inputs.height.label": "Înălțime",
+  "inputs.chartType.options.radar": "Radar",
+  "inputs.chartType.options.treemap": "Treemap",
+  "inputs.chartType.options.lollipop": "Acadea",
+  "inputs.chartType.options.stream": "Streamgraph",
+  "inputs.chartType.options.marimekko": "Marimekko / mekko",
+  "inputs.chartType.options.sunburst": "Sunburst",
+  "inputs.chartType.options.icicle": "Icicle",
+  "inputs.chartType.options.chord": "Chord",
+  "inputs.delimiter.options.tab": "Tab",
+  "inputs.curve.options.bumpX": "Bump",
+  "inputs.numberFormat.options.si": "SI (1.2k, 3.4M)"
 }

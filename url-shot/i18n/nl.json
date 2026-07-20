@@ -32,5 +32,6 @@
   "inputs.tintColor.help": "De kleur waarin de pagina wordt gewassen wanneer Herkleuren op 'Tint' staat.",
   "inputs.scrollTo.label": "Scrollen naar (video)",
   "inputs.scrollTo.help": "Alleen bij video-export: pan omlaag naar deze diepte over de duur van de clip — een scroll van de pagina van 'Scroldiepte' naar hier. Stel gelijk aan 'Scroldiepte' in voor een stilstaand beeld. Wordt genegeerd bij afbeeldingsformaten.",
-  "inputs.zoom.help": "Zoomniveau van de browser — vergroot de pagina vóór de opname (zoals Ctrl/Cmd +), zodat ook een bitmap-opname vergroot en scherp is in plaats van opgeschaald. 1 = 100%."
+  "inputs.zoom.help": "Zoomniveau van de browser — vergroot de pagina vóór de opname (zoals Ctrl/Cmd +), zodat ook een bitmap-opname vergroot en scherp is in plaats van opgeschaald. 1 = 100%.",
+  "inputs.zoom.label": "Zoom"
 }

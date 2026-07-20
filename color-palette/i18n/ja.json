@@ -1,4 +1,19 @@
 {
-  "name": "カラーパレット",
-  "description": "SUSEのブランドカラーを一覧表示します。スウォッチをクリックしてコピーできます。"
+  "name": "パレットラボ",
+  "description": "1つのシード色からパレットを育てます - ハーモニーアクセント、知覚的なOKLabランプ、WCAG/APCA可読性バッジ、DTCGトークンとCSVエクスポートに対応。",
+  "inputs.seed.label": "シードカラー",
+  "inputs.seed.help": "パレット全体の起点となる色です - 既定ではブランドのプライマリカラーになります。",
+  "inputs.harmony.label": "ハーモニー",
+  "inputs.harmony.help": "アクセントの色相がシードを中心にどのように回転するかです。",
+  "inputs.harmony.options.complement": "補色",
+  "inputs.harmony.options.adjacent-3": "隣接",
+  "inputs.harmony.options.triad-3": "トライアド",
+  "inputs.harmony.options.tetrad-4": "テトラード",
+  "inputs.harmony.options.free-2": "フリー (2)",
+  "inputs.harmony.options.free-3": "フリー (3)",
+  "inputs.harmony.options.free-4": "フリー (4)",
+  "inputs.steps.label": "ランプのステップ数",
+  "inputs.steps.help": "ランプごとのトーン数、暗から明。",
+  "inputs.neutrals.label": "ニュートラルを含める",
+  "inputs.neutrals.help": "テキストと表面のためにシード色を帯びたグレーの階調を追加します。"
 }

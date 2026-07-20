@@ -1,0 +1,16 @@
+{
+  "name": "Převést obrázek",
+  "description": "Změň HEIC, TIFF nebo jakoukoli fotku na WebP, JPEG nebo PNG - přímo v zařízení.",
+  "a11yLabel": "Převod obrázku pro {{fileName}}",
+  "inputs.source.label": "Obrázek",
+  "inputs.source.help": "Obrázek HEIC, HEIF, JPEG, PNG, WebP, AVIF nebo TIFF. Čte se v tvém prohlížeči a nikdy neopustí tvé zařízení.",
+  "inputs.format.label": "Převést na",
+  "inputs.format.help": "Výstupní formát. WebP bývá nejmenší; PNG je bezztrátový.",
+  "inputs.format.options.webp": "WebP - nejmenší, zachovává průhlednost",
+  "inputs.format.options.jpeg": "JPEG - univerzální, pro fotografie",
+  "inputs.format.options.png": "PNG - bezztrátový, zachovává průhlednost",
+  "inputs.quality.label": "Kvalita",
+  "inputs.quality.help": "Kvalita pro ztrátové formáty. Nižší hodnota znamená menší soubor a měkčí detaily. PNG ji ignoruje.",
+  "inputs.maxEdge.label": "Nejdelší hrana (px)",
+  "inputs.maxEdge.help": "Zmenši tak, aby nejdelší hrana měla nejvýše tolik pixelů. 0 zachová původní velikost. Nikdy nezvětšuje."
+}

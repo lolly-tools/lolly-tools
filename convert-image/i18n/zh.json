@@ -1,0 +1,16 @@
+{
+  "name": "转换图像",
+  "description": "将HEIC、TIFF或任何照片转换为WebP、JPEG或PNG - 在你的设备上完成。",
+  "a11yLabel": "{{fileName}} 的图像转换",
+  "inputs.source.label": "图片",
+  "inputs.source.help": "一个 HEIC、HEIF、JPEG、PNG、WebP、AVIF 或 TIFF 图片。它在你的浏览器中读取,绝不会离开你的设备。",
+  "inputs.format.label": "转换为",
+  "inputs.format.help": "输出格式。WebP 通常体积最小；PNG 为无损格式。",
+  "inputs.format.options.webp": "WebP - 体积最小，保留透明度",
+  "inputs.format.options.jpeg": "JPEG - 通用,适用于照片",
+  "inputs.format.options.png": "PNG - 无损，保留透明度",
+  "inputs.quality.label": "质量",
+  "inputs.quality.help": "有损格式的质量。数值越低，文件越小，细节越柔和。PNG 会忽略此设置。",
+  "inputs.maxEdge.label": "最长边(px)",
+  "inputs.maxEdge.help": "缩小图像，使最长边不超过此像素值。0 表示保留原始尺寸。绝不放大。"
+}

@@ -1,4 +1,19 @@
 {
-  "name": "Palet Warna",
-  "description": "Semak imbas warna jenama SUSE — klik petak warna untuk menyalinnya."
+  "name": "Makmal Palet",
+  "description": "Tumbuhkan palet daripada satu warna benih - aksen harmoni, gradasi OKLab persepsi dan lencana kebolehbacaan WCAG/APCA, dengan token DTCG dan eksport CSV.",
+  "inputs.seed.label": "Warna benih",
+  "inputs.seed.help": "Warna asas keseluruhan palet berkembang - lalai kepada warna utama jenama anda.",
+  "inputs.harmony.label": "Harmoni",
+  "inputs.harmony.help": "Cara rona aksen berputar mengelilingi benih.",
+  "inputs.harmony.options.complement": "Pelengkap",
+  "inputs.harmony.options.adjacent-3": "Bersebelahan",
+  "inputs.harmony.options.triad-3": "Triad",
+  "inputs.harmony.options.tetrad-4": "Tetrad",
+  "inputs.harmony.options.free-2": "Bebas (2)",
+  "inputs.harmony.options.free-3": "Bebas (3)",
+  "inputs.harmony.options.free-4": "Bebas (4)",
+  "inputs.steps.label": "Langkah ramp",
+  "inputs.steps.help": "Ton bagi setiap ramp, gelap ke terang.",
+  "inputs.neutrals.label": "Sertakan neutral",
+  "inputs.neutrals.help": "Menambah julat kelabu bertona benih untuk teks dan permukaan."
 }

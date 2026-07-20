@@ -32,5 +32,6 @@
   "inputs.tintColor.help": "Färgen sidan tvättas i när Omfärgning är satt till 'Tona'.",
   "inputs.scrollTo.label": "Skrolla till (video)",
   "inputs.scrollTo.help": "Endast videoexport: panorera NER till detta djup under klippet — en skrollning av sidan från 'Scrolldjup' till hit. Ange samma värde som 'Scrolldjup' för en stillbild. Ignoreras för bildformat.",
-  "inputs.zoom.help": "Webbläsarens zoomnivå — förstorar sidan innan bilden tas (som Ctrl/Cmd +), så att även en bitmapbild blir förstorad och skarp istället för uppskalad. 1 = 100%."
+  "inputs.zoom.help": "Webbläsarens zoomnivå — förstorar sidan innan bilden tas (som Ctrl/Cmd +), så att även en bitmapbild blir förstorad och skarp istället för uppskalad. 1 = 100%.",
+  "inputs.zoom.label": "Zooma"
 }

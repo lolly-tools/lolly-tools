@@ -1,4 +1,19 @@
 {
-  "name": "Kleurenpalet",
-  "description": "Blader door SUSE-merkkleuren — klik op een kleurstaal om die te kopiëren."
+  "name": "Paletlab",
+  "description": "Laat een palet groeien uit één basiskleur - harmonieaccenten, perceptuele OKLab-verlopen en WCAG/APCA-leesbaarheidsbadges, met DTCG-tokens en CSV-export.",
+  "inputs.seed.label": "Basiskleur",
+  "inputs.seed.help": "De kleur waaruit het hele palet groeit - standaard je primaire merkkleur.",
+  "inputs.harmony.label": "Harmonie",
+  "inputs.harmony.help": "Hoe de accenttinten rond de basiskleur draaien.",
+  "inputs.harmony.options.complement": "Complementair",
+  "inputs.harmony.options.adjacent-3": "Aangrenzend",
+  "inputs.harmony.options.triad-3": "Triade",
+  "inputs.harmony.options.tetrad-4": "Tetrad",
+  "inputs.harmony.options.free-2": "Vrij (2)",
+  "inputs.harmony.options.free-3": "Vrij (3)",
+  "inputs.harmony.options.free-4": "Vrij (4)",
+  "inputs.steps.label": "Verloopstappen",
+  "inputs.steps.help": "Tinten per verloop, donker naar licht.",
+  "inputs.neutrals.label": "Neutralen opnemen",
+  "inputs.neutrals.help": "Voegt een seed-getint grijsverloop toe voor tekst en oppervlakken."
 }

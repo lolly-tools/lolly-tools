@@ -2,62 +2,43 @@
   "name": "Filter: Scanline",
   "description": "Horizontal na 'infinity lines' na scanline vector effect mula sa kahit anong larawan",
   "a11yLabel": "Scanline na rendering ng napiling larawan gamit ang mga tono ng brand",
-
   "inputs.image.label": "Larawan",
   "inputs.image.help": "Pumili ng larawan o mag-upload ng sarili mong larawan. Pinoproseso ito sa iyong device — hindi umaalis ang mga pixel sa browser.",
-
   "inputs.lineSize.label": "Taas ng linya",
   "inputs.lineSize.help": "Taas ng bawat scanline at ang laki ng bawat cell — mas maliit na value, mas manipis ang mga linya at mas pino ang detalye.",
-
   "inputs.gapSize.label": "Taas ng gap",
   "inputs.gapSize.help": "Laki ng blankong gap sa ibaba ng bawat scanline, batay sa linya. Mas malaki = mas manipis na linya na may mas malawak na espasyo sa pagitan; 0 ang gagawa ng solid na larawan na walang gap. Hindi nito binabago ang detalye o posisyon ng larawan.",
-
   "inputs.separatePixels.label": "Paghiwalayin ang mga pixel",
   "inputs.separatePixels.help": "Magdagdag din ng gap sa pagitan ng mga cell, para maging hiwalay na parisukat ang bawat isa — isang LED/pixel-matrix na hitsura sa halip na solid na scanline bars.",
-
   "inputs.everyLine.label": "Punuin ang bawat linya",
   "inputs.everyLine.help": "Iguhit ang bawat linya nang walang gap — pareho lang ng pag-set ng taas ng gap sa zero. Naka-off = klasikong scanlines; naka-on = solid na posterized na larawan.",
-
   "inputs.fit.label": "Fit ng larawan",
   "inputs.fit.options.contain": "Contain (buong larawan)",
   "inputs.fit.options.cover": "Cover (punuin, i-crop ang gilid)",
-
   "inputs.highlight.label": "Highlight",
   "inputs.highlight.help": "Ang pinakamaliwanag na tono.",
-
   "inputs.light.label": "Light",
-
-  "inputs.mid.label": "Mid",
-
+  "inputs.mid.label": "Gitna",
   "inputs.shade.label": "Shade",
-
   "inputs.shadow.label": "Shadow",
   "inputs.shadow.help": "Ang pinakamadilim na tono.",
-
   "inputs.background.label": "Background",
   "inputs.background.help": "Pupunuin ang mga blangkong linya at gap. Iwanang blangko para sa transparent na background (mapapanatili ng PNG/WebP/AVIF/SVG ang transparency).",
-
   "inputs.brightness.label": "Brightness",
-
   "inputs.contrast.label": "Contrast",
   "inputs.contrast.section": "Kulay",
-
   "inputs.hue.label": "Hue",
   "inputs.hue.section": "Kulay",
   "inputs.hue.help": "I-rotate ang bawat kulay sa paligid ng color wheel.",
-
   "inputs.saturation.label": "Saturation",
   "inputs.saturation.section": "Kulay",
   "inputs.saturation.help": "0 = greyscale · 100 = orihinal · 200 = matingkad.",
-
   "inputs.lightness.label": "Lightness",
   "inputs.lightness.section": "Kulay",
   "inputs.lightness.help": "Iangat papuntang puti o ilubog papuntang itim.",
-
   "inputs.treatmentColor.label": "Treatment ng kulay",
   "inputs.treatmentColor.section": "Kulay",
   "inputs.treatmentColor.help": "Maghalo ng kulay sa ibabaw ng resulta. Iwanang blangko kung wala.",
-
   "inputs.blendMode.label": "Blend mode",
   "inputs.blendMode.section": "Kulay",
   "inputs.blendMode.help": "Kung paano naghahalo ang treatment na kulay sa larawan.",
@@ -77,19 +58,15 @@
   "inputs.blendMode.options.saturation": "Saturation",
   "inputs.blendMode.options.color": "Colour",
   "inputs.blendMode.options.luminosity": "Luminosity",
-
   "inputs.treatmentIntensity.label": "Lakas",
   "inputs.treatmentIntensity.section": "Kulay",
   "inputs.treatmentIntensity.help": "Opacity ng overlay ng kulay.",
-
   "inputs.noFilter.label": "Walang filter (raw na view)",
   "inputs.noFilter.section": "Overlay",
   "inputs.noFilter.help": "Ipakita ang orihinal na larawan o live camera feed nang hindi ginagalaw — magandang gamitin kung gusto mo lang maglagay ng logo / lower-third sa ibabaw ng raw na footage.",
-
   "inputs.showLogo.label": "Overlay ng SUSE logo",
   "inputs.showLogo.section": "Overlay",
   "inputs.showLogo.help": "I-overlay ang SUSE logo sa resulta. Naka-off bilang default.",
-
   "inputs.logoPosition.label": "Posisyon ng logo",
   "inputs.logoPosition.section": "Overlay",
   "inputs.logoPosition.options.top-left": "Kaliwang itaas",
@@ -100,52 +77,41 @@
   "inputs.logoPosition.options.bottom": "Gitna sa ibaba",
   "inputs.logoPosition.options.center": "Gitna",
   "inputs.logoPosition.options.full": "Full (watermark)",
-
   "inputs.logoStyle.label": "Kulay ng logo",
   "inputs.logoStyle.section": "Overlay",
   "inputs.logoStyle.help": "Mas kitang-kita ang puti at berde sa madilim o busy na footage; mas bagay ang itim sa maliliwanag na background.",
   "inputs.logoStyle.options.white": "Puti",
   "inputs.logoStyle.options.green": "Berde",
   "inputs.logoStyle.options.black": "Itim",
-
   "inputs.logoScale.label": "Laki ng logo",
   "inputs.logoScale.section": "Overlay",
   "inputs.logoScale.help": "Palakihin o paliitin ang logo.",
-
   "inputs.lowerThird.label": "Lower-third na name card",
   "inputs.lowerThird.section": "Overlay",
   "inputs.lowerThird.help": "Isang banayad na naka-animate na name card na lalabas sa ibabaw ng footage. Gumagamit ng pangalan at headshot mula sa iyong profile.",
-
   "inputs.ltTheme.label": "Style ng card",
   "inputs.ltTheme.section": "Overlay",
   "inputs.ltTheme.options.bar": "SUSE brand bar",
   "inputs.ltTheme.options.minimal": "Minimal",
   "inputs.ltTheme.options.glass": "Glass",
-
   "inputs.ltPosition.label": "Posisyon ng card",
   "inputs.ltPosition.section": "Overlay",
   "inputs.ltPosition.options.left": "Kaliwang ibaba",
   "inputs.ltPosition.options.center": "Gitna sa ibaba",
   "inputs.ltPosition.options.right": "Kanang ibaba",
-
   "inputs.firstname.label": "Unang pangalan",
   "inputs.firstname.section": "Overlay",
-
   "inputs.lastname.label": "Apelyido",
   "inputs.lastname.section": "Overlay",
-
   "inputs.title.label": "Posisyon / subtitle",
   "inputs.title.section": "Overlay",
   "inputs.title.help": "Opsyonal na linya sa ibaba ng pangalan — hal. isang posisyon o event.",
-
   "inputs.nameWeight.label": "Font weight ng pangalan",
   "inputs.nameWeight.section": "Overlay",
   "inputs.nameWeight.help": "Font weight ng linya ng pangalan (100 Thin → 900 Black).",
-
   "inputs.subtitleWeight.label": "Font weight ng subtitle",
   "inputs.subtitleWeight.section": "Overlay",
   "inputs.subtitleWeight.help": "Font weight ng linya ng role / subtitle (100 Thin → 900 Black).",
-
   "inputs.ltHeadshot.label": "Headshot (opsyonal)",
   "inputs.ltHeadshot.section": "Overlay",
   "inputs.ltHeadshot.help": "Default na gagamitin ang headshot mula sa iyong profile. Pumili o mag-upload ng iba para palitan ito."

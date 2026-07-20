@@ -1,0 +1,16 @@
+{
+  "name": "Bild konvertieren",
+  "description": "Wandeln Sie HEIC, TIFF oder jedes Foto in WebP, JPEG oder PNG um - auf Ihrem Gerät.",
+  "a11yLabel": "Bildkonvertierung für {{fileName}}",
+  "inputs.source.label": "Bild",
+  "inputs.source.help": "Ein HEIC-, HEIF-, JPEG-, PNG-, WebP-, AVIF- oder TIFF-Bild. Es wird in Ihrem Browser gelesen und verlässt Ihr Gerät nie.",
+  "inputs.format.label": "Konvertieren zu",
+  "inputs.format.help": "Das Ausgabeformat. WebP ist meist am kleinsten; PNG ist verlustfrei.",
+  "inputs.format.options.webp": "WebP - am kleinsten, behält Transparenz bei",
+  "inputs.format.options.jpeg": "JPEG - universell, für Fotos",
+  "inputs.format.options.png": "PNG - verlustfrei, erhält Transparenz",
+  "inputs.quality.label": "Qualität",
+  "inputs.quality.help": "Qualität für die verlustbehafteten Formate. Niedriger bedeutet eine kleinere Datei und weichere Details. PNG ignoriert dies.",
+  "inputs.maxEdge.label": "Längste Kante (px)",
+  "inputs.maxEdge.help": "Verkleinert so, dass die längste Kante höchstens so viele Pixel misst. 0 behält die Originalgröße bei. Vergrößert nie."
+}

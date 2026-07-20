@@ -1,0 +1,16 @@
+{
+  "name": "Tukar Imej",
+  "description": "Tukar HEIC, TIFF atau sebarang foto kepada WebP, JPEG atau PNG - di peranti anda.",
+  "a11yLabel": "Penukaran imej untuk {{fileName}}",
+  "inputs.source.label": "Imej",
+  "inputs.source.help": "Imej HEIC, HEIF, JPEG, PNG, WebP, AVIF atau TIFF. Ia dibaca dalam pelayar anda dan tidak sekali-kali meninggalkan peranti anda.",
+  "inputs.format.label": "Tukar kepada",
+  "inputs.format.help": "Format output. WebP biasanya yang paling kecil; PNG tanpa kehilangan kualiti.",
+  "inputs.format.options.webp": "WebP - paling kecil, mengekalkan ketelusan",
+  "inputs.format.options.jpeg": "JPEG - sejagat, untuk foto",
+  "inputs.format.options.png": "PNG - tanpa kehilangan kualiti, mengekalkan ketelusan",
+  "inputs.quality.label": "Kualiti",
+  "inputs.quality.help": "Kualiti untuk format lossy. Lebih rendah bermakna fail lebih kecil dan perincian lebih lembut. PNG mengabaikannya.",
+  "inputs.maxEdge.label": "Tepi terpanjang (px)",
+  "inputs.maxEdge.help": "Turunkan skala supaya tepi terpanjang paling banyak seberapa piksel ini. 0 mengekalkan saiz asal. Tidak pernah menaikkan skala."
+}

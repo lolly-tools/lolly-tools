@@ -1,0 +1,16 @@
+{
+  "name": "ছবি কনভার্ট করুন",
+  "description": "HEIC, TIFF বা যেকোনো ছবিকে WebP, JPEG বা PNG-তে রূপান্তর করুন - আপনার ডিভাইসেই।",
+  "a11yLabel": "{{fileName}}-এর জন্য ইমেজ কনভার্সন",
+  "inputs.source.label": "ছবি",
+  "inputs.source.help": "একটি HEIC, HEIF, JPEG, PNG, WebP, AVIF বা TIFF ছবি। এটি আপনার ব্রাউজারে পড়া হয় এবং কখনও আপনার ডিভাইস ছেড়ে যায় না।",
+  "inputs.format.label": "রূপান্তর করুন",
+  "inputs.format.help": "আউটপুট ফরম্যাট। WebP সাধারণত সবচেয়ে ছোট; PNG লসলেস।",
+  "inputs.format.options.webp": "WebP - সবচেয়ে ছোট, স্বচ্ছতা বজায় রাখে",
+  "inputs.format.options.jpeg": "JPEG - সর্বজনীন, ছবির জন্য",
+  "inputs.format.options.png": "PNG - লসলেস, স্বচ্ছতা বজায় রাখে",
+  "inputs.quality.label": "কোয়ালিটি",
+  "inputs.quality.help": "লসি ফরম্যাটের জন্য কোয়ালিটি। কম মানে ছোট ফাইল ও নরম বিবরণ। PNG এটি উপেক্ষা করে।",
+  "inputs.maxEdge.label": "সবচেয়ে লম্বা প্রান্ত (px)",
+  "inputs.maxEdge.help": "দীর্ঘতম প্রান্ত সর্বোচ্চ এই সংখ্যক পিক্সেলে রাখতে ডাউনস্কেল করুন। 0 রাখলে মূল সাইজ বজায় থাকে। কখনো আপস্কেল করে না।"
+}

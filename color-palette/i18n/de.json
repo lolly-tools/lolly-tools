@@ -1,4 +1,19 @@
 {
-  "name": "Farbpalette",
-  "description": "Durchsuchen Sie die SUSE-Markenfarben — klicken Sie auf ein Farbfeld, um es zu kopieren."
+  "name": "Paletten-Labor",
+  "description": "Erstellen Sie eine Palette aus einer Startfarbe - Harmonie-Akzente, perzeptuelle OKLab-Verläufe und WCAG/APCA-Lesbarkeits-Badges, mit DTCG-Tokens und CSV-Export.",
+  "inputs.seed.label": "Startfarbe",
+  "inputs.seed.help": "Die Farbe, aus der die gesamte Palette entsteht - standardmäßig Ihre primäre Markenfarbe.",
+  "inputs.harmony.label": "Harmonie",
+  "inputs.harmony.help": "Wie sich die Akzentfarbtöne um die Startfarbe drehen.",
+  "inputs.harmony.options.complement": "Komplementär",
+  "inputs.harmony.options.adjacent-3": "Angrenzend",
+  "inputs.harmony.options.triad-3": "Triade",
+  "inputs.harmony.options.tetrad-4": "Tetrade",
+  "inputs.harmony.options.free-2": "Frei (2)",
+  "inputs.harmony.options.free-3": "Frei (3)",
+  "inputs.harmony.options.free-4": "Frei (4)",
+  "inputs.steps.label": "Rampenstufen",
+  "inputs.steps.help": "Töne pro Verlauf, dunkel bis hell.",
+  "inputs.neutrals.label": "Neutrale Farben einschließen",
+  "inputs.neutrals.help": "Fügt einen vom Seed eingefärbten Grauverlauf für Text und Flächen hinzu."
 }

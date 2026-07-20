@@ -75,7 +75,7 @@
   "inputs.curve.options.step": "Basamak (orta)",
   "inputs.curve.options.stepBefore": "Basamak (önce)",
   "inputs.curve.options.stepAfter": "Basamak (sonra)",
-  "inputs.curve.options.bumpX": "Bump",
+  "inputs.curve.options.bumpX": "Sıçrama",
   "inputs.showPoints.label": "Nokta işaretleyicilerini göster",
   "inputs.showPoints.section": "Grafik",
   "inputs.pointSize.label": "Nokta boyutu",

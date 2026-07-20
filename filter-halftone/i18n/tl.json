@@ -38,7 +38,7 @@
   "inputs.gamma.help": "Timbang ng mid-tone. Sa ibaba ng 1, pinapadilim ang mga mid-tone (mas siksik na tuldok); sa itaas ng 1, pinapaliwanag ang mga ito.",
   "inputs.smoothing.label": "Pagpapakinis",
   "inputs.smoothing.help": "Pinapakinis ang grid ng mga tuldok sa pamamagitan ng pag-blur sa mga kalapit na cell. Kinokontrol ang mga larawang maraming ingay.",
-  "inputs.dither.label": "Texture",
+  "inputs.dither.label": "Tekstura",
   "inputs.dither.options.none": "Makinis (wala)",
   "inputs.dither.options.floyd": "Kumalat (Floyd–Steinberg)",
   "inputs.dither.options.ordered": "May pattern (ordered)",

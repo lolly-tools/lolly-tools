@@ -107,5 +107,6 @@
   "inputs.data.fields.value.placeholder": "0",
   "inputs.data.fields.color.label": "色",
   "inputs.width.label": "幅",
-  "inputs.height.label": "高さ"
+  "inputs.height.label": "高さ",
+  "inputs.data.fields.color.placeholder": "#30ba78"
 }

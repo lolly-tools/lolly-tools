@@ -1,5 +1,19 @@
 {
-  "name": "Bảng Màu",
-  "description": "Duyệt các màu thương hiệu SUSE — nhấp vào một mẫu màu để sao chép."
+  "name": "Lab Bảng Màu",
+  "description": "Phát triển bảng màu từ một màu gốc - điểm nhấn hài hòa, dải màu OKLab theo cảm nhận và nhãn độ dễ đọc WCAG/APCA, cùng token DTCG và xuất CSV.",
+  "inputs.seed.label": "Màu gốc",
+  "inputs.seed.help": "Màu mà toàn bộ bảng màu phát triển từ đó - mặc định là màu chính của thương hiệu bạn.",
+  "inputs.harmony.label": "Hòa sắc",
+  "inputs.harmony.help": "Cách các tông màu nhấn xoay quanh màu gốc.",
+  "inputs.harmony.options.complement": "Bổ sung",
+  "inputs.harmony.options.adjacent-3": "Liền kề",
+  "inputs.harmony.options.triad-3": "Bộ ba",
+  "inputs.harmony.options.tetrad-4": "Tetrad",
+  "inputs.harmony.options.free-2": "Tự do (2)",
+  "inputs.harmony.options.free-3": "Tự do (3)",
+  "inputs.harmony.options.free-4": "Tự do (4)",
+  "inputs.steps.label": "Bước ramp",
+  "inputs.steps.help": "Số sắc độ mỗi dải, từ tối đến sáng.",
+  "inputs.neutrals.label": "Bao gồm màu trung tính",
+  "inputs.neutrals.help": "Thêm dải xám nhuốm màu seed cho văn bản và bề mặt."
 }
-

@@ -32,5 +32,6 @@
   "inputs.tintColor.help": "Die Farbe, in die die Seite getaucht wird, wenn „Neu einfärben“ auf „Tönung“ steht.",
   "inputs.scrollTo.label": "Scrollen bis (Video)",
   "inputs.scrollTo.help": "Nur bei Video-Export: Schwenkt im Verlauf des Clips nach UNTEN bis zu dieser Tiefe – ein Scrollen der Seite von „Scroll-Tiefe“ bis hierher. Für einen ruhigen Stand gleich „Scroll-Tiefe“ setzen. Wird bei Bildformaten ignoriert.",
-  "inputs.zoom.help": "Browser-Zoomstufe – vergrößert die Seite vor der Aufnahme (wie Strg/Cmd +), sodass selbst eine Bitmap-Aufnahme vergrößert und scharf statt hochskaliert ist. 1 = 100 %."
+  "inputs.zoom.help": "Browser-Zoomstufe – vergrößert die Seite vor der Aufnahme (wie Strg/Cmd +), sodass selbst eine Bitmap-Aufnahme vergrößert und scharf statt hochskaliert ist. 1 = 100 %.",
+  "inputs.zoom.label": "Zoom"
 }

@@ -1,4 +1,19 @@
 {
-  "name": "رنگ پیلیٹ",
-  "description": "SUSE برانڈ کے رنگ دیکھیں — کاپی کرنے کے لیے کسی سواچ پر کلک کریں۔"
+  "name": "پیلیٹ لیب",
+  "description": "ایک بیج رنگ سے پیلیٹ اگائیں - ہارمونی ایکسنٹس، ادراکی OKLab ریمپس اور WCAG/APCA پڑھنے کی اہلیت کے بیجز، DTCG ٹوکنز اور CSV ایکسپورٹ کے ساتھ۔",
+  "inputs.seed.label": "سیڈ کلر",
+  "inputs.seed.help": "وہ رنگ جس سے پورا پیلٹ نکلتا ہے - ڈیفالٹ آپ کے برانڈ کے پرائمری رنگ پر ہے۔",
+  "inputs.harmony.label": "ہارمنی",
+  "inputs.harmony.help": "ایکسنٹ ہیوز سیڈ کے گرد کیسے گھومتے ہیں۔",
+  "inputs.harmony.options.complement": "تکمیلی",
+  "inputs.harmony.options.adjacent-3": "ملحقہ",
+  "inputs.harmony.options.triad-3": "ٹرائیڈ",
+  "inputs.harmony.options.tetrad-4": "ٹیٹراڈ",
+  "inputs.harmony.options.free-2": "فری (2)",
+  "inputs.harmony.options.free-3": "فری (3)",
+  "inputs.harmony.options.free-4": "فری (4)",
+  "inputs.steps.label": "ریمپ سٹیپس",
+  "inputs.steps.help": "فی ریمپ ٹونز، گہرے سے ہلکے تک۔",
+  "inputs.neutrals.label": "نیوٹرلز شامل کریں",
+  "inputs.neutrals.help": "متن اور سطحوں کے لیے سیڈ رنگ کی جھلک والا گرے ریمپ شامل کرتا ہے۔"
 }

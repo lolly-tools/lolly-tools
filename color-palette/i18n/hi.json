@@ -1,4 +1,19 @@
 {
-  "name": "कलर पैलेट",
-  "description": "SUSE ब्रांड के रंग ब्राउज़ करें — कॉपी करने के लिए किसी स्वैच पर क्लिक करें।"
+  "name": "पैलेट लैब",
+  "description": "एक बीज रंग से पैलेट विकसित करें - हार्मनी एक्सेंट, परसेप्चुअल OKLab रैंप और WCAG/APCA पठनीयता बैज, DTCG टोकन और CSV एक्सपोर्ट के साथ।",
+  "inputs.seed.label": "सीड रंग",
+  "inputs.seed.help": "वह रंग जिससे पूरी पैलेट बनती है - डिफ़ॉल्ट रूप से आपका ब्रांड प्राइमरी।",
+  "inputs.harmony.label": "हार्मनी",
+  "inputs.harmony.help": "एक्सेंट रंग-छटाएँ सीड के चारों ओर कैसे घूमती हैं।",
+  "inputs.harmony.options.complement": "पूरक",
+  "inputs.harmony.options.adjacent-3": "आसन्न",
+  "inputs.harmony.options.triad-3": "ट्रायड",
+  "inputs.harmony.options.tetrad-4": "टेट्राड",
+  "inputs.harmony.options.free-2": "मुक्त (2)",
+  "inputs.harmony.options.free-3": "मुक्त (3)",
+  "inputs.harmony.options.free-4": "मुक्त (4)",
+  "inputs.steps.label": "रैंप स्टेप्स",
+  "inputs.steps.help": "हर रैंप में टोन, गहरे से हल्के तक।",
+  "inputs.neutrals.label": "न्यूट्रल शामिल करें",
+  "inputs.neutrals.help": "टेक्स्ट और सतहों के लिए सीड-टिंटेड ग्रे रैंप जोड़ता है।"
 }

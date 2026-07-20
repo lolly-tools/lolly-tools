@@ -1,4 +1,19 @@
 {
-  "name": "Palet Warna",
-  "description": "Jelajahi warna brand SUSE — klik swatch untuk menyalinnya."
+  "name": "Lab Palet",
+  "description": "Kembangkan palet dari satu warna benih - aksen harmoni, gradasi OKLab persepsual, dan lencana keterbacaan WCAG/APCA, dengan token DTCG dan ekspor CSV.",
+  "inputs.seed.label": "Warna seed",
+  "inputs.seed.help": "Warna yang menjadi dasar seluruh palet - default ke primary brand Anda.",
+  "inputs.harmony.label": "Harmoni",
+  "inputs.harmony.help": "Cara rona aksen berputar mengelilingi seed.",
+  "inputs.harmony.options.complement": "Komplementer",
+  "inputs.harmony.options.adjacent-3": "Berdekatan",
+  "inputs.harmony.options.triad-3": "Triad",
+  "inputs.harmony.options.tetrad-4": "Tetrad",
+  "inputs.harmony.options.free-2": "Bebas (2)",
+  "inputs.harmony.options.free-3": "Bebas (3)",
+  "inputs.harmony.options.free-4": "Bebas (4)",
+  "inputs.steps.label": "Langkah gradasi",
+  "inputs.steps.help": "Ton per ramp, gelap ke terang.",
+  "inputs.neutrals.label": "Sertakan warna netral",
+  "inputs.neutrals.help": "Menambahkan gradasi abu-abu bernuansa seed untuk teks dan permukaan."
 }

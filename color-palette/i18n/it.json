@@ -1,4 +1,19 @@
 {
-  "name": "Palette colori",
-  "description": "Sfoglia i colori del brand SUSE — clicca su uno swatch per copiarlo."
+  "name": "Laboratorio Palette",
+  "description": "Genera una palette da un colore di partenza - accenti armonici, rampe percettive OKLab e badge di leggibilità WCAG/APCA, con token DTCG ed export CSV.",
+  "inputs.seed.label": "Colore seme",
+  "inputs.seed.help": "Il colore da cui nasce l'intera palette - di default il colore primario del tuo brand.",
+  "inputs.harmony.label": "Armonia",
+  "inputs.harmony.help": "Come le tonalità d'accento ruotano intorno al seed.",
+  "inputs.harmony.options.complement": "Complementare",
+  "inputs.harmony.options.adjacent-3": "Adiacente",
+  "inputs.harmony.options.triad-3": "Triade",
+  "inputs.harmony.options.tetrad-4": "Tetrade",
+  "inputs.harmony.options.free-2": "Libero (2)",
+  "inputs.harmony.options.free-3": "Libero (3)",
+  "inputs.harmony.options.free-4": "Libero (4)",
+  "inputs.steps.label": "Passi della rampa",
+  "inputs.steps.help": "Toni per rampa, dallo scuro al chiaro.",
+  "inputs.neutrals.label": "Includi neutri",
+  "inputs.neutrals.help": "Aggiunge una rampa di grigi con tinta seed per testo e superfici."
 }

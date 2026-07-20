@@ -75,7 +75,7 @@
   "inputs.curve.options.step": "En escalier (milieu)",
   "inputs.curve.options.stepBefore": "En escalier (avant)",
   "inputs.curve.options.stepAfter": "En escalier (après)",
-  "inputs.curve.options.bumpX": "Bump",
+  "inputs.curve.options.bumpX": "Rebond",
   "inputs.showPoints.label": "Afficher les repères de points",
   "inputs.showPoints.section": "Graphique",
   "inputs.pointSize.label": "Taille des points",

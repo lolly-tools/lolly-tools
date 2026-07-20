@@ -102,5 +102,11 @@
   "inputs.data.fields.value.label": "Valoare",
   "inputs.data.fields.color.label": "Culoare",
   "inputs.width.label": "Lățime",
-  "inputs.height.label": "Înălțime"
+  "inputs.height.label": "Înălțime",
+  "inputs.labelOffset.fields.x.label": "X",
+  "inputs.labelOffset.fields.y.label": "Y",
+  "inputs.valueOffset.fields.x.label": "X",
+  "inputs.valueOffset.fields.y.label": "Y",
+  "inputs.data.fields.value.placeholder": "0",
+  "inputs.data.fields.color.placeholder": "#30ba78"
 }

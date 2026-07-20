@@ -1,0 +1,16 @@
+{
+  "name": "Конвертувати зображення",
+  "description": "Перетворюйте HEIC, TIFF або будь-яке фото на WebP, JPEG чи PNG - на вашому пристрої.",
+  "a11yLabel": "Перетворення зображення для {{fileName}}",
+  "inputs.source.label": "Зображення",
+  "inputs.source.help": "Зображення HEIC, HEIF, JPEG, PNG, WebP, AVIF або TIFF. Воно зчитується у вашому браузері і ніколи не залишає ваш пристрій.",
+  "inputs.format.label": "Конвертувати в",
+  "inputs.format.help": "Формат виведення. WebP зазвичай найменший; PNG без втрат.",
+  "inputs.format.options.webp": "WebP - найменший розмір, зберігає прозорість",
+  "inputs.format.options.jpeg": "JPEG - універсальний, для фото",
+  "inputs.format.options.png": "PNG - без втрат, зберігає прозорість",
+  "inputs.quality.label": "Якість",
+  "inputs.quality.help": "Якість для форматів із втратами. Менше значення означає менший файл і менш чіткі деталі. PNG це ігнорує.",
+  "inputs.maxEdge.label": "Найдовша сторона (px)",
+  "inputs.maxEdge.help": "Зменшуйте масштаб так, щоб найдовша сторона не перевищувала цю кількість пікселів. 0 зберігає початковий розмір. Ніколи не збільшує масштаб."
+}

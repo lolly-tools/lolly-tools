@@ -1,4 +1,19 @@
 {
-  "name": "컬러 팔레트",
-  "description": "SUSE 브랜드 컬러를 살펴보세요 — 색상 견본을 클릭하면 복사돼요."
+  "name": "팔레트 랩",
+  "description": "하나의 시드 컬러에서 팔레트를 키워보세요 - 조화 강조색, 지각적 OKLab 램프, WCAG/APCA 가독성 배지를 DTCG 토큰과 CSV 내보내기로 함께 제공해요.",
+  "inputs.seed.label": "시드 색상",
+  "inputs.seed.help": "전체 팔레트가 자라나는 색상이에요 - 기본값은 브랜드 기본색이에요.",
+  "inputs.harmony.label": "조화",
+  "inputs.harmony.help": "강조 색상이 시드를 중심으로 회전하는 방식이에요.",
+  "inputs.harmony.options.complement": "보색",
+  "inputs.harmony.options.adjacent-3": "인접",
+  "inputs.harmony.options.triad-3": "트라이어드",
+  "inputs.harmony.options.tetrad-4": "테트라드",
+  "inputs.harmony.options.free-2": "자유 (2)",
+  "inputs.harmony.options.free-3": "자유 (3)",
+  "inputs.harmony.options.free-4": "자유 (4)",
+  "inputs.steps.label": "램프 단계",
+  "inputs.steps.help": "램프당 톤 수, 어두운 색부터 밝은 색까지.",
+  "inputs.neutrals.label": "중립색 포함",
+  "inputs.neutrals.help": "텍스트와 표면에 시드 색조가 들어간 회색 램프를 추가해요."
 }

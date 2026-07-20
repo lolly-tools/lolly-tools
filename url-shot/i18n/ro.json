@@ -30,5 +30,8 @@
   "inputs.hue.label": "Unghi nuanță",
   "inputs.hue.help": "Gradele cu care se rotește fiecare culoare când Recolorare este „Rotire nuanță”.",
   "inputs.tintColor.label": "Culoare de nuanțare",
-  "inputs.tintColor.help": "Culoarea în care este spălată pagina când Recolorare este „Nuanțare”."
+  "inputs.tintColor.help": "Culoarea în care este spălată pagina când Recolorare este „Nuanțare”.",
+  "inputs.url.label": "URL",
+  "inputs.zoom.label": "Zoom",
+  "inputs.recolor.options.sepia": "Sepia"
 }

@@ -1,0 +1,16 @@
+{
+  "name": "Afbeelding converteren",
+  "description": "Zet HEIC, TIFF of elke foto om naar WebP, JPEG of PNG - op je apparaat.",
+  "a11yLabel": "Afbeeldingsconversie voor {{fileName}}",
+  "inputs.source.label": "Afbeelding",
+  "inputs.source.help": "Een HEIC-, HEIF-, JPEG-, PNG-, WebP-, AVIF- of TIFF-afbeelding. Deze wordt in je browser gelezen en verlaat nooit je apparaat.",
+  "inputs.format.label": "Converteren naar",
+  "inputs.format.help": "Het uitvoerformaat. WebP is meestal het kleinst; PNG is verliesvrij.",
+  "inputs.format.options.webp": "WebP - kleinste, behoudt transparantie",
+  "inputs.format.options.jpeg": "JPEG - universeel, voor foto's",
+  "inputs.format.options.png": "PNG - verliesvrij, behoudt transparantie",
+  "inputs.quality.label": "Kwaliteit",
+  "inputs.quality.help": "Kwaliteit voor formaten met kwaliteitsverlies. Lager betekent een kleiner bestand en zachtere details. PNG negeert dit.",
+  "inputs.maxEdge.label": "Langste zijde (px)",
+  "inputs.maxEdge.help": "Verklein zodat de langste zijde maximaal dit aantal pixels is. 0 behoudt de originele grootte. Vergroot nooit."
+}

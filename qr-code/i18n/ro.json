@@ -13,5 +13,6 @@
   "inputs.padding.label": "Zonă de liniște",
   "inputs.padding.help": "Module de spațiu alb în jurul codului. Se recomandă minimum 4.",
   "inputs.join.label": "Module unite",
-  "inputs.join.help": "Unește toate modulele într-un singur traseu SVG. Mai clar la dimensiuni mici."
+  "inputs.join.help": "Unește toate modulele într-un singur traseu SVG. Mai clar la dimensiuni mici.",
+  "inputs.url.label": "URL"
 }

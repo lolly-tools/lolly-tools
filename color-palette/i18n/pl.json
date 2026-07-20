@@ -1,4 +1,19 @@
 {
-  "name": "Paleta kolorów",
-  "description": "Przeglądaj kolory swojej marki — kliknij próbkę, aby ją skopiować."
+  "name": "Laboratorium palet",
+  "description": "Zbuduj paletę z jednego koloru bazowego - akcenty harmoniczne, percepcyjne rampy OKLab i odznaki czytelności WCAG/APCA, z tokenami DTCG i eksportem CSV.",
+  "inputs.seed.label": "Kolor bazowy",
+  "inputs.seed.help": "Kolor, z którego wyrasta cała paleta - domyślnie podstawowy kolor twojej marki.",
+  "inputs.harmony.label": "Harmonia",
+  "inputs.harmony.help": "Jak barwy akcentu obracają się wokół koloru bazowego.",
+  "inputs.harmony.options.complement": "Dopełniający",
+  "inputs.harmony.options.adjacent-3": "Sąsiadujące",
+  "inputs.harmony.options.triad-3": "Triada",
+  "inputs.harmony.options.tetrad-4": "Tetrada",
+  "inputs.harmony.options.free-2": "Swobodny (2)",
+  "inputs.harmony.options.free-3": "Swobodny (3)",
+  "inputs.harmony.options.free-4": "Swobodny (4)",
+  "inputs.steps.label": "Kroki rampy",
+  "inputs.steps.help": "Odcienie na rampę, od ciemnego do jasnego.",
+  "inputs.neutrals.label": "Uwzględnij kolory neutralne",
+  "inputs.neutrals.help": "Dodaje szarą skalę zabarwioną kolorem bazowym, dla tekstu i powierzchni."
 }

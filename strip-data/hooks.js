@@ -564,6 +564,43 @@ function cleanBytes(bytes, info) {
   return bytes; // unrecognised — leave untouched rather than risk corruption
 }
 
+// Verify-after-strip: re-scan a *cleaned* buffer for anything the strip is meant
+// to have removed. Returns a short reason, or null when it's verifiably clean.
+// This is what lets exportFile fail loud instead of silently handing back an
+// un-stripped original under a "-clean" name — the cardinal sin for a privacy
+// tool. Narrow by design: only the segments/chunks/nodes cleanBytes drops.
+function residualMetadata(bytes, kind) {
+  if (kind === 'JPEG') {
+    for (const s of scanJpeg(bytes) || []) {
+      if (s.sos) break; // scan/entropy data begins — no metadata beyond here
+      if (s.marker === 0xFE) return 'a JPEG comment';
+      if (s.marker >= 0xE1 && s.marker <= 0xEF) return `a JPEG APP${s.marker - 0xE0} metadata segment`;
+    }
+    return null;
+  }
+  if (kind === 'PNG') {
+    for (const c of scanPng(bytes)) {
+      if (PNG_STRIP.has(c.type)) return `a PNG ${c.type} chunk`;
+    }
+    return null;
+  }
+  if (kind === 'SVG') {
+    let text;
+    try { text = decodeText(bytes); } catch (e) { return null; }
+    for (const tk of tokenize(text)) {
+      if (tk.t === 'comment') return 'an XML comment';
+      if (tk.t === 'doctype') return 'a DOCTYPE declaration';
+      if (tk.t === 'pi' && !tk.isXmlDecl) return 'a processing instruction';
+      if (tk.t === 'open' || tk.t === 'self') {
+        if (shouldDropElement(tk.name)) return `an editor-private <${tk.name}> element`;
+        for (const a of tk.attrs) if (shouldDropAttr(a.name)) return `an editor-private ${a.name} attribute`;
+      }
+    }
+    return null;
+  }
+  return null;
+}
+
 // ─── lifecycle ───────────────────────────────────────────────────────────────
 
 async function patch({ model, host }) {
@@ -654,8 +691,18 @@ async function exportFile({ model, host }) {
     return { bytes, mime: 'application/pdf', filename: cleanName(f.name) };
   }
 
-  // JPEG / PNG / SVG: lossless in-hook surgery (unrecognised input passes through).
-  let bytes = f.bytes;
-  try { bytes = cleanBytes(f.bytes); } catch (e) { bytes = f.bytes; }
+  // JPEG / PNG / SVG: lossless in-hook surgery (an unrecognised file has no
+  // metadata we claim to remove, so it passes through untouched — the report
+  // already tells the user it isn't a supported image). For the supported kinds
+  // a privacy tool must NEVER hand back the original under a "-clean" name, so we
+  // do NOT swallow errors: if the surgery throws, or the result still carries
+  // metadata we claim to remove, we fail loud and download nothing (the shell
+  // surfaces the thrown message on the button).
+  const info = classify(f.bytes);
+  const bytes = cleanBytes(f.bytes, info); // may throw — deliberately not caught
+  const residual = residualMetadata(bytes, info.kind);
+  if (residual) {
+    throw new Error(`Couldn't fully remove ${residual} from this ${info.kind} — nothing was downloaded.`);
+  }
   return { bytes, mime: f.mime || 'application/octet-stream', filename: cleanName(f.name) };
 }

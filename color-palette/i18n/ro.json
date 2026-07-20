@@ -1,4 +1,19 @@
 {
-  "name": "Paletă de culori",
-  "description": "Răsfoiește culorile de brand SUSE — dă clic pe o mostră pentru a o copia."
+  "name": "Laborator de palete",
+  "description": "Creează o paletă dintr-o culoare de bază - accente de armonie, gradații OKLab perceptuale și insigne de lizibilitate WCAG/APCA, cu tokenuri DTCG și export CSV.",
+  "inputs.seed.label": "Culoare sursă",
+  "inputs.seed.help": "Culoarea din care pornește întreaga paletă - implicit culoarea primară a brandului tău.",
+  "inputs.harmony.label": "Armonie",
+  "inputs.harmony.help": "Cum se rotesc nuanțele de accent în jurul seed-ului.",
+  "inputs.harmony.options.complement": "Complementară",
+  "inputs.harmony.options.adjacent-3": "Adiacent",
+  "inputs.harmony.options.triad-3": "Triadă",
+  "inputs.harmony.options.tetrad-4": "Tetradă",
+  "inputs.harmony.options.free-2": "Liber (2)",
+  "inputs.harmony.options.free-3": "Liber (3)",
+  "inputs.harmony.options.free-4": "Liber (4)",
+  "inputs.steps.label": "Pași rampă",
+  "inputs.steps.help": "Tonuri per rampă, de la închis la deschis.",
+  "inputs.neutrals.label": "Include neutrele",
+  "inputs.neutrals.help": "Adaugă o rampă de gri nuanțată în funcție de seed pentru text și suprafețe."
 }

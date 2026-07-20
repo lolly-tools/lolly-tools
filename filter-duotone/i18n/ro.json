@@ -94,5 +94,10 @@
   "inputs.subtitleWeight.section": "Suprapunere",
   "inputs.ltHeadshot.label": "Poză de profil (opțional)",
   "inputs.ltHeadshot.help": "Implicit, poza ta de profil. Alege sau încarcă alta pentru a o înlocui.",
-  "inputs.ltHeadshot.section": "Suprapunere"
+  "inputs.ltHeadshot.section": "Suprapunere",
+  "inputs.imageFraming.fields.zoom.label": "Zoom",
+  "inputs.imageFraming.fields.x.label": "X",
+  "inputs.imageFraming.fields.y.label": "Y",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.ltTheme.options.minimal": "Minimalist"
 }

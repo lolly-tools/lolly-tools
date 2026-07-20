@@ -1,4 +1,19 @@
 {
-  "name": "Paleta barev",
-  "description": "Procházej barvy značky SUSE — klikni na vzorek a zkopíruješ ho."
+  "name": "Laboratoř palet",
+  "description": "Vytvoř paletu z jedné výchozí barvy - harmonické akcenty, percepční OKLab přechody a odznaky čitelnosti WCAG/APCA, s tokeny DTCG a exportem CSV.",
+  "inputs.seed.label": "Základní barva",
+  "inputs.seed.help": "Barva, ze které vychází celá paleta - výchozí je primární barva tvé značky.",
+  "inputs.harmony.label": "Harmonie",
+  "inputs.harmony.help": "Jak akcentové odstíny rotují kolem výchozí barvy.",
+  "inputs.harmony.options.complement": "Komplementární",
+  "inputs.harmony.options.adjacent-3": "Sousední",
+  "inputs.harmony.options.triad-3": "Triáda",
+  "inputs.harmony.options.tetrad-4": "Tetráda",
+  "inputs.harmony.options.free-2": "Volné (2)",
+  "inputs.harmony.options.free-3": "Volné (3)",
+  "inputs.harmony.options.free-4": "Volné (4)",
+  "inputs.steps.label": "Kroky přechodu",
+  "inputs.steps.help": "Odstíny na rampu, od tmavé po světlou.",
+  "inputs.neutrals.label": "Zahrnout neutrální barvy",
+  "inputs.neutrals.help": "Přidá šedou škálu tónovanou seed barvou pro text a plochy."
 }

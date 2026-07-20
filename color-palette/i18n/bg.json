@@ -1,4 +1,19 @@
 {
-  "name": "Цветова палитра",
-  "description": "Разгледай брандовите цветове на SUSE — щракни върху мостра, за да я копираш."
+  "name": "Лаборатория за палитри",
+  "description": "Изгради палитра от един начален цвят - хармонични акценти, перцептивни OKLab преливки и значки за четимост WCAG/APCA, с DTCG токени и CSV експорт.",
+  "inputs.seed.label": "Начален цвят",
+  "inputs.seed.help": "Цветът, от който произлиза цялата палитра - по подразбиране основният цвят на бранда ти.",
+  "inputs.harmony.label": "Хармония",
+  "inputs.harmony.help": "Как акцентните нюанси се въртят около базовия цвят.",
+  "inputs.harmony.options.complement": "Допълващ",
+  "inputs.harmony.options.adjacent-3": "Съседен",
+  "inputs.harmony.options.triad-3": "Триада",
+  "inputs.harmony.options.tetrad-4": "Тетрада",
+  "inputs.harmony.options.free-2": "Свободно (2)",
+  "inputs.harmony.options.free-3": "Свободно (3)",
+  "inputs.harmony.options.free-4": "Свободно (4)",
+  "inputs.steps.label": "Стъпки на градиента",
+  "inputs.steps.help": "Тонове на градиент, от тъмно към светло.",
+  "inputs.neutrals.label": "Включи неутрални",
+  "inputs.neutrals.help": "Добавя гама от сиви тонове, оцветена от базовия цвят, за текст и повърхности."
 }

@@ -1,4 +1,19 @@
 {
-  "name": "Palette ng Kulay",
-  "description": "Tingnan ang mga kulay ng brand ng SUSE — i-click ang swatch para kopyahin ito."
+  "name": "Palette Lab",
+  "description": "Magpalago ng palette mula sa isang seed na kulay - mga harmony accent, perceptual OKLab ramp, at WCAG/APCA readability badge, kasama ang DTCG tokens at CSV export.",
+  "inputs.seed.label": "Seed na kulay",
+  "inputs.seed.help": "Ang kulay na pinagmulan ng buong palette - default sa iyong brand primary.",
+  "inputs.harmony.label": "Harmony",
+  "inputs.harmony.help": "Kung paano umiikot ang mga accent hue sa paligid ng seed.",
+  "inputs.harmony.options.complement": "Komplementaryo",
+  "inputs.harmony.options.adjacent-3": "Katabi",
+  "inputs.harmony.options.triad-3": "Triad",
+  "inputs.harmony.options.tetrad-4": "Tetrad",
+  "inputs.harmony.options.free-2": "Malaya (2)",
+  "inputs.harmony.options.free-3": "Malaya (3)",
+  "inputs.harmony.options.free-4": "Malaya (4)",
+  "inputs.steps.label": "Ramp steps",
+  "inputs.steps.help": "Mga tono kada ramp, mula madilim hanggang maliwanag.",
+  "inputs.neutrals.label": "Isama ang mga neutral",
+  "inputs.neutrals.help": "Nagdaragdag ng grey ramp na naka-tint ng seed para sa text at mga surface."
 }

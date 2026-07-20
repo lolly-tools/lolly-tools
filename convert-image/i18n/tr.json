@@ -1,0 +1,16 @@
+{
+  "name": "Görseli Dönüştür",
+  "description": "HEIC, TIFF veya herhangi bir fotoğrafı cihazında WebP, JPEG veya PNG'ye dönüştür.",
+  "a11yLabel": "{{fileName}} için görsel dönüştürme",
+  "inputs.source.label": "Görsel",
+  "inputs.source.help": "Bir HEIC, HEIF, JPEG, PNG, WebP, AVIF veya TIFF görüntüsü. Tarayıcında okunur ve cihazından asla çıkmaz.",
+  "inputs.format.label": "Şuna dönüştür",
+  "inputs.format.help": "Çıktı formatı. WebP genellikle en küçüğüdür; PNG kayıpsızdır.",
+  "inputs.format.options.webp": "WebP - en küçük, şeffaflığı korur",
+  "inputs.format.options.jpeg": "JPEG - evrensel, fotoğraflar için",
+  "inputs.format.options.png": "PNG - kayıpsız, saydamlığı korur",
+  "inputs.quality.label": "Kalite",
+  "inputs.quality.help": "Kayıplı biçimler için kalite. Düşük değer daha küçük dosya ve daha yumuşak ayrıntı anlamına gelir. PNG bunu yok sayar.",
+  "inputs.maxEdge.label": "En uzun kenar (px)",
+  "inputs.maxEdge.help": "En uzun kenarı en fazla bu kadar piksel olacak şekilde küçült. 0 orijinal boyutu korur. Asla büyütmez."
+}

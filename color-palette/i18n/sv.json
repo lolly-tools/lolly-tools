@@ -1,4 +1,19 @@
 {
-  "name": "Färgpalett",
-  "description": "Bläddra bland SUSE:s varumärkesfärger – klicka på ett färgprov för att kopiera det."
+  "name": "Palettlabb",
+  "description": "Odla en palett från en fröfärg - harmoniaccenter, perceptuella OKLab-ramper och WCAG/APCA-läsbarhetsmärken, med DTCG-tokens och CSV-export.",
+  "inputs.seed.label": "Startfärg",
+  "inputs.seed.help": "Färgen som hela paletten växer fram från - standard är ditt varumärkes primärfärg.",
+  "inputs.harmony.label": "Harmoni",
+  "inputs.harmony.help": "Hur accentnyanserna roterar kring startfärgen.",
+  "inputs.harmony.options.complement": "Komplementär",
+  "inputs.harmony.options.adjacent-3": "Angränsande",
+  "inputs.harmony.options.triad-3": "Triad",
+  "inputs.harmony.options.tetrad-4": "Tetrad",
+  "inputs.harmony.options.free-2": "Fri (2)",
+  "inputs.harmony.options.free-3": "Fri (3)",
+  "inputs.harmony.options.free-4": "Fri (4)",
+  "inputs.steps.label": "Rampsteg",
+  "inputs.steps.help": "Nyanser per ramp, mörkt till ljust.",
+  "inputs.neutrals.label": "Inkludera neutrala",
+  "inputs.neutrals.help": "Lägger till en frötonad gråtonsskala för text och ytor."
 }

@@ -1,0 +1,16 @@
+{
+  "name": "تحويل الصورة",
+  "description": "حول HEIC أو TIFF أو أي صورة إلى WebP أو JPEG أو PNG - على جهازك.",
+  "a11yLabel": "تحويل الصورة لـ {{fileName}}",
+  "inputs.source.label": "صورة",
+  "inputs.source.help": "صورة بصيغة HEIC أو HEIF أو JPEG أو PNG أو WebP أو AVIF أو TIFF. تتم قراءتها في متصفحك ولا تغادر جهازك أبدا.",
+  "inputs.format.label": "تحويل إلى",
+  "inputs.format.help": "صيغة الإخراج. عادة ما تكون WebP الأصغر حجما؛ أما PNG فهي بلا فقدان.",
+  "inputs.format.options.webp": "WebP - الأصغر حجما، يحافظ على الشفافية",
+  "inputs.format.options.jpeg": "JPEG - عام، للصور",
+  "inputs.format.options.png": "PNG - بلا فقدان، يحافظ على الشفافية",
+  "inputs.quality.label": "الجودة",
+  "inputs.quality.help": "الجودة للصيغ ذات الفقدان. كلما قلت، صغر حجم الملف ونعمت التفاصيل. PNG يتجاهلها.",
+  "inputs.maxEdge.label": "أطول حافة (px)",
+  "inputs.maxEdge.help": "قلل الحجم بحيث لا تتجاوز الحافة الأطول هذا العدد من البكسلات. 0 يحافظ على الحجم الأصلي. لا يكبر الصورة أبدا."
+}

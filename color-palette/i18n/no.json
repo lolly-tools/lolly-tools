@@ -1,4 +1,19 @@
 {
-  "name": "Fargepalett",
-  "description": "Bla gjennom SUSE-merkevarens farger — klikk en fargerute for å kopiere den."
+  "name": "Palettlab",
+  "description": "Dyrk en palett fra én frøfarge - harmoniaksenter, perseptuelle OKLab-fargeoverganger og WCAG/APCA-lesbarhetsmerker, med DTCG-tokens og CSV-eksport.",
+  "inputs.seed.label": "Frøfarge",
+  "inputs.seed.help": "Fargen hele paletten vokser fra - standard er merkevarens primærfarge.",
+  "inputs.harmony.label": "Harmoni",
+  "inputs.harmony.help": "Hvordan aksentnyansene roterer rundt frøet.",
+  "inputs.harmony.options.complement": "Komplementær",
+  "inputs.harmony.options.adjacent-3": "Tilstøtende",
+  "inputs.harmony.options.triad-3": "Triade",
+  "inputs.harmony.options.tetrad-4": "Tetrade",
+  "inputs.harmony.options.free-2": "Fri (2)",
+  "inputs.harmony.options.free-3": "Fri (3)",
+  "inputs.harmony.options.free-4": "Fri (4)",
+  "inputs.steps.label": "Rampetrinn",
+  "inputs.steps.help": "Toner per rampe, mørk til lys.",
+  "inputs.neutrals.label": "Inkluder nøytrale",
+  "inputs.neutrals.help": "Legger til en frøtonet grå skala for tekst og flater."
 }

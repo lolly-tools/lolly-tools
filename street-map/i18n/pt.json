@@ -6,7 +6,7 @@
   "inputs.city.help": "Adicione mais cidades offline com scripts/build-street-clips.ts — sem API no momento da renderização.",
   "inputs.city.options.amsterdam": "Amsterdã",
   "inputs.city.options.athens": "Atenas",
-  "inputs.city.options.bangkok": "Bangkok",
+  "inputs.city.options.bangkok": "Bangcoc",
   "inputs.city.options.barcelona": "Barcelona",
   "inputs.city.options.beijing": "Pequim",
   "inputs.city.options.berlin": "Berlim",

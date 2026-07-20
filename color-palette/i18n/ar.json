@@ -1,4 +1,19 @@
 {
-  "name": "لوحة الألوان",
-  "description": "تصفح ألوان علامة SUSE — انقر على أي لون لنسخه."
+  "name": "مختبر الألوان",
+  "description": "أنشئ لوحة ألوان من لون بذرة واحد - لمسات التناسق، وتدرجات OKLab الإدراكية، وشارات قابلية القراءة WCAG/APCA، مع رموز DTCG وتصدير CSV.",
+  "inputs.seed.label": "لون البذرة",
+  "inputs.seed.help": "اللون الذي تنمو منه اللوحة بأكملها - يكون افتراضيا اللون الأساسي لعلامتك التجارية.",
+  "inputs.harmony.label": "التناغم",
+  "inputs.harmony.help": "كيفية دوران ألوان التمييز حول لون البذرة.",
+  "inputs.harmony.options.complement": "تكميلي",
+  "inputs.harmony.options.adjacent-3": "متجاور",
+  "inputs.harmony.options.triad-3": "ثلاثي",
+  "inputs.harmony.options.tetrad-4": "رباعي",
+  "inputs.harmony.options.free-2": "حر (2)",
+  "inputs.harmony.options.free-3": "حر (3)",
+  "inputs.harmony.options.free-4": "حر (4)",
+  "inputs.steps.label": "خطوات التدرج",
+  "inputs.steps.help": "درجات لكل تدرج، من الداكن إلى الفاتح.",
+  "inputs.neutrals.label": "تضمين الألوان المحايدة",
+  "inputs.neutrals.help": "يضيف تدرجا رماديا ملونا بلون البذرة للنص والأسطح."
 }

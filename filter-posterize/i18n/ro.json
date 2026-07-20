@@ -114,5 +114,8 @@
   "inputs.subtitleWeight.section": "Suprapunere",
   "inputs.ltHeadshot.label": "Fotografie (opțional)",
   "inputs.ltHeadshot.help": "Implicit se folosește fotografia din profilul tău. Alege sau încarcă alta pentru a o înlocui.",
-  "inputs.ltHeadshot.section": "Suprapunere"
+  "inputs.ltHeadshot.section": "Suprapunere",
+  "inputs.contrast.label": "Contrast",
+  "inputs.blendMode.options.normal": "Normal",
+  "inputs.ltTheme.options.minimal": "Minimalist"
 }
