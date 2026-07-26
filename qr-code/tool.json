@@ -72,8 +72,8 @@
       "id": "join",
       "label": "Joined modules",
       "type": "boolean",
-      "default": false,
-      "help": "Merge all modules into a single SVG path. Crisper at small sizes."
+      "default": true,
+      "help": "Merge all modules into a single SVG path instead of one rect per module. Crisper at small sizes, and it removes the faint grid that independent antialiased edges produce between neighbouring modules."
     }
   ],
   "hooks": {
