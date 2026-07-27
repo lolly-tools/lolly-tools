@@ -697,8 +697,117 @@ function compute(model) {
   };
 }
 
-function onInit(ctx) { return compute(ctx.model); }
-function onInput(ctx) { return compute(ctx.model); }
+// ─── Brand colours inside blocks ─────────────────────────────────────────────
+//
+// A top-level colour input may default to a `{color.semantic.*}` alias and the ENGINE
+// resolves it (runtime.ts resolveTokenRefs) — that is how `background` above picks up
+// the active brand. It resolves TOP-LEVEL colour inputs only: a `blocks` input is
+// type 'blocks', so the colour fields inside each row are never visited, and an alias
+// left in one reaches safeColor() as the literal string "{color.semantic.secondary}",
+// gets rejected as a colour, and silently becomes the fallback.
+//
+// So the tool resolves its own. This is what lets ONE default seed be on-brand
+// everywhere: the shipped composition names semantic slots rather than hexes, so it
+// renders in SUSE's jungle/pine under the SUSE pack and in the starter brand's own
+// neutrals under lolly-start, with no per-brand copy of the tool.
+//
+// Resolution happens once, in onInit (async is allowed there, 5s budget), and the
+// answers are cached — onInput must stay synchronous and runs on every keystroke, so
+// it resolves newly added rows from the cache and never awaits. A miss leaves the
+// alias exactly as it was: safeColor's fallback still applies, which is the same
+// degrade as before this existed.
+var COLOR_FIELDS = ['bg', 'fg', 'stroke', 'shadowColor'];
+var ALIAS_RE = /^\{[A-Za-z0-9_.-]+\}$/;
+var tokenHex = {};   // alias string → resolved hex ('' once known-unresolvable)
+
+function aliasesIn(boxes) {
+  var out = [];
+  (boxes || []).forEach(function (b) {
+    if (!b) return;
+    COLOR_FIELDS.forEach(function (f) {
+      var v = b[f];
+      if (typeof v === 'string' && ALIAS_RE.test(v.trim()) && out.indexOf(v.trim()) < 0) out.push(v.trim());
+    });
+  });
+  return out;
+}
+
+/** Rewrite cached aliases to hex. Returns null when nothing changed, so the patch
+ *  omits `boxes` entirely rather than overwriting the user's own array every keystroke. */
+function applyTokenHex(boxes) {
+  var changed = false;
+  var next = (boxes || []).map(function (b) {
+    if (!b) return b;
+    var copy = null;
+    COLOR_FIELDS.forEach(function (f) {
+      var v = typeof b[f] === 'string' ? b[f].trim() : '';
+      if (!v || !ALIAS_RE.test(v)) return;
+      var hex = tokenHex[v];
+      if (!hex) return;                       // unknown or known-unresolvable → leave it
+      if (!copy) copy = Object.assign({}, b);
+      copy[f] = hex;
+      changed = true;
+    });
+    return copy || b;
+  });
+  return changed ? next : null;
+}
+
+function onInit(ctx) {
+  var inp = inputsFrom(ctx.model);
+  var boxes = Array.isArray(inp.boxes) ? inp.boxes : [];
+  var want = aliasesIn(boxes).filter(function (a) { return !Object.prototype.hasOwnProperty.call(tokenHex, a); });
+  if (!want.length || typeof host === 'undefined' || !host || !host.tokens || !host.tokens.resolve) {
+    return withResolvedBoxes(ctx.model, boxes);
+  }
+  // One resolve per distinct alias, in parallel. A shell without tokens, a brand
+  // missing the slot, or a non-colour value all land on '' — cached, so the next
+  // keystroke doesn't retry it.
+  return Promise.all(want.map(function (a) {
+    return Promise.resolve(host.tokens.resolve(a)).then(function (v) {
+      return typeof v === 'string' ? v : (v && typeof v.hex === 'string' ? v.hex : '');
+    }, function () { return ''; });
+  })).then(function (values) {
+    want.forEach(function (a, i) { tokenHex[a] = toHex(values[i]); });
+    return withResolvedBoxes(ctx.model, boxes);
+  });
+}
+
+// A token's value is whatever the brand authored, and a brand pack authored from
+// DTCG/Tokens-Studio ingest holds OKLCH strings — `oklch(62% 0.035 250)`, not hex. That
+// is a colour safeColor() rejects (its allow-list is hex/rgb/hsl/named, since these land
+// inside a style="" attribute), and it is the value a colour FIELD would be handed, where
+// the sidebar's picker wants hex. So normalise through host.color.mix — mixing a colour
+// with itself at t=0 is the API's identity, and it returns hex — rather than doing colour
+// maths here. No host.color (or an unreadable value) → '' → the alias is left alone and
+// safeColor's fallback applies, which is the pre-existing degrade.
+function toHex(v) {
+  var s = String(v == null ? '' : v).trim();
+  if (!s) return '';
+  if (/^#[0-9a-fA-F]{3,8}$/.test(s)) return s;
+  try {
+    if (typeof host !== 'undefined' && host && host.color && host.color.mix) {
+      var hex = host.color.mix(s, s, 0);
+      if (typeof hex === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(hex)) return hex;
+    }
+  } catch (e) { /* a host without the optional API is still a host */ }
+  return safeColor(s, '');
+}
+
+/** compute() over the resolved array, plus the `boxes` patch itself when one is due. */
+function withResolvedBoxes(model, boxes) {
+  var resolved = applyTokenHex(boxes);
+  if (!resolved) return compute(model);
+  var patched = (model || []).map(function (i) {
+    return i && i.id === 'boxes' ? Object.assign({}, i, { value: resolved }) : i;
+  });
+  return Object.assign({ boxes: resolved }, compute(patched));
+}
+
+function onInput(ctx) {
+  var inp = inputsFrom(ctx.model);
+  return withResolvedBoxes(ctx.model, Array.isArray(inp.boxes) ? inp.boxes : []);
+}
 
 // The export bar's "No BG" toggle (render.transparentBg) makes the raster export
 // alpha; the live artboard already reflects it via compute() above.
