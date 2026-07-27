@@ -617,7 +617,10 @@ var DEFAULT_SEQ_S = 5; // no box has an authored duration, but something is time
 var MOTION_FORMAT = { mp4: 1, webm: 1, gif: 1, apng: 1 };
 var GIF_FPS = 15;      // the gif encoder's own fixed rate — it ignores opts.fps
 var DEFAULT_FPS = 24;  // apng follows the export bar's fps; this is its fallback
-var MAX_FRAMES = 595;  // the bridge truncates past 600 buffered frames with only a warning
+// Margin under the bridge's buffered-frame ceiling (maxVideoFrames(): 600 on a
+// full-memory device, scaled down on a small one, where the bridge's own warning
+// is the accurate one — it knows the device, this hook does not).
+var MAX_FRAMES = 595;
 
 // The sequence's total derived length in ms — single source of truth, reused
 // verbatim by the phase-2 timeline panel. `dur` is TIMELINE seconds (the author's
@@ -694,30 +697,54 @@ function onInput(ctx) { return compute(ctx.model); }
 // just photographs that state. So stills are left completely alone here.
 //
 // A MOTION export is the whole sequence: start recording immediately (wait 0) and
-// run for exactly the derived sequence length, which is seqDurationMs() — the same
-// single source of truth the artboard's data-seq-ms carries and the timeline panel
-// reads. gif/apng buffer every frame in memory, so those two are additionally
-// clamped to the exporter's frame ceiling with a warning that names the trade.
+// run for the derived sequence length — read back off the rendered artboard's
+// data-seq-ms, which compute() stamped from seqDurationMs(), so it is the same single
+// source of truth the timeline panel and the exporter's compositor read. (The engine
+// hands beforeExport { node, format, opts, host } and NOT the input model, so the DOM
+// is where the number lives at this point.) That derived length is the DEFAULT, not a
+// lock: it follows the timeline unless the user directly edits the export bar's
+// duration field, which the shell flags with opts.durationUserSet and which is then
+// honoured verbatim. gif/apng buffer every frame in memory, so those two are
+// additionally clamped to the exporter's frame ceiling — whichever length was chosen
+// — with a warning that names the trade.
+function seqSecondsOf(node) {
+  var el = null;
+  if (node) {
+    if (node.getAttribute && node.getAttribute('data-seq-ms') != null) el = node;
+    else if (node.querySelector) el = node.querySelector('[data-seq-ms]');
+  }
+  var ms = el ? num(el.getAttribute('data-seq-ms'), 0) : 0;
+  return ms > 0 ? ms / 1000 : 0;
+}
+
 function beforeExport(ctx) {
   var inp = inputsFrom(ctx.model);
   if (inp.transparentBg === true) ctx.opts.background = 'transparent';
   if (!Object.prototype.hasOwnProperty.call(MOTION_FORMAT, ctx.format)) return;
 
-  var boxes = Array.isArray(inp.boxes) ? inp.boxes : [];
-  var seqS = seqDurationMs(boxes) / 1000;
+  var seqS = seqSecondsOf(ctx.node);
   if (!(seqS > 0)) seqS = DEFAULT_SEQ_S;
 
   ctx.opts.wait = 0;
-  var clip = seqS;
+  // The derived sequence length is the DEFAULT, so the clip tracks the timeline
+  // automatically as the author edits it. A direct edit of the export bar's duration
+  // field wins and is used verbatim: the shell sets opts.durationUserSet only when
+  // the user actually changed that field for this export.
+  var typed = num(ctx.opts && ctx.opts.duration, 0);
+  var want = (ctx.opts.durationUserSet === true && typed > 0) ? typed : seqS;
+
+  var clip = want;
   if (ctx.format === 'gif' || ctx.format === 'apng') {
     var fps = (ctx.format === 'gif') ? GIF_FPS : (num(ctx.opts && ctx.opts.fps, 0) > 0 ? num(ctx.opts.fps, 0) : DEFAULT_FPS);
     var cap = Math.floor(MAX_FRAMES / fps);
-    if (cap < seqS) {
+    if (cap < want) {
       clip = cap;
       if (host.log) {
-        host.log('warn', 'sequence-studio: clip clamped to ' + cap + 's of a ' + Math.round(seqS * 10) / 10 +
-          's sequence (the exporter\'s ' + MAX_FRAMES + '-frame ceiling for ' + ctx.format +
-          ') — shorten the sequence, or export mp4/webm, to fit it all in.');
+        host.log('warn', 'sequence-studio: ' + ctx.format + ' clipped to ' + cap + 's of a ' +
+          Math.round(want * 10) / 10 + 's clip (' + Math.round(cap * fps) + ' frames at ' + fps +
+          'fps — ' + ctx.format + ' buffers every frame, and the exporter caps that near ' +
+          MAX_FRAMES + ' on a full-memory device and lower on a small one) — shorten the ' +
+          'sequence, or export mp4/webm, to fit it all in.');
       }
     }
   }
