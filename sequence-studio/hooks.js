@@ -287,7 +287,18 @@ function mediaHtmlFor(b) {
   // Lottie marker above. Checked BEFORE the lottie/video branches so an asset
   // typed 'audio' can never fall through to an <img>.
   if (isAudio) {
-    return '<div class="lolly-box-audio" data-audio-src="' + esc(url) + '" aria-hidden="true"></div>';
+    // The source's own LENGTH, in ms, when the asset knows it (uploads probe it at
+    // ingest; a catalog entry authors it on the format and assets.ts lifts it onto
+    // meta). Without this the panel has no media duration for an audio box — a
+    // <video> can be asked for .duration but a marker div cannot — so trimming had
+    // nothing to clamp against: you could drag the out-edge past the end of the
+    // sound into silence, "fit to media" could not work, and promoting an audio box
+    // fell back to a flat default length instead of the track's own. Omitted when
+    // unknown (a procedural zzfxm bed has no fixed length by design), which reads
+    // back as null and keeps the old unclamped behaviour.
+    var adur = img && img.meta && Number(img.meta.durationMs);
+    var adurAttr = (isFinite(adur) && adur > 0) ? ' data-audio-dur="' + Math.round(adur) + '"' : '';
+    return '<div class="lolly-box-audio" data-audio-src="' + esc(url) + '"' + adurAttr + ' aria-hidden="true"></div>';
   }
   if (isLottie) {
     var fit = String(b.fit) === 'cover' ? 'cover' : 'contain';
