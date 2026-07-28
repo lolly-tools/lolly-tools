@@ -3,12 +3,23 @@
   "name": "Screen Capture",
   "description": "Screenshot or record your whole screen, a window, or a browser tab. Drag on the canvas to crop — the export stays the exact pixels you captured.",
   "a11yLabel": "Screen capture, ready to crop and export",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engineVersion": ">=1.54.0 <2.0.0",
   "status": "community",
   "category": "utility",
-  "tags": ["screenshot", "screen", "recording", "capture", "crop", "developer", "qa"],
-  "capabilities": ["screen", "microphone"],
+  "tags": [
+    "screenshot",
+    "screen",
+    "recording",
+    "capture",
+    "crop",
+    "developer",
+    "qa"
+  ],
+  "capabilities": [
+    "screen",
+    "microphone"
+  ],
   "hooks": {
     "onInit": true,
     "onInput": true
@@ -16,8 +27,16 @@
   "render": {
     "width": 7680,
     "height": 4320,
-    "formats": ["png", "jpg", "webp"],
-    "actions": ["copy", "download", "save"],
+    "formats": [
+      "png",
+      "jpg",
+      "webp"
+    ],
+    "actions": [
+      "copy",
+      "download",
+      "save"
+    ],
     "capture": "screen",
     "dims": true,
     "transparentBg": false
@@ -39,10 +58,42 @@
       "type": "vector",
       "help": "Region of the shot to export, as a percentage. Drag on the canvas to set it.",
       "fields": [
-        { "id": "x", "label": "X",      "symbol": "X", "min": 0,    "max": 100, "step": 0.01, "default": 0   },
-        { "id": "y", "label": "Y",      "symbol": "Y", "min": 0,    "max": 100, "step": 0.01, "default": 0   },
-        { "id": "w", "label": "Width",  "symbol": "W", "min": 0.01, "max": 100, "step": 0.01, "default": 100 },
-        { "id": "h", "label": "Height", "symbol": "H", "min": 0.01, "max": 100, "step": 0.01, "default": 100 }
+        {
+          "id": "x",
+          "label": "X",
+          "symbol": "X",
+          "min": 0,
+          "max": 100,
+          "step": 0.01,
+          "default": 0
+        },
+        {
+          "id": "y",
+          "label": "Y",
+          "symbol": "Y",
+          "min": 0,
+          "max": 100,
+          "step": 0.01,
+          "default": 0
+        },
+        {
+          "id": "w",
+          "label": "Width",
+          "symbol": "W",
+          "min": 0.01,
+          "max": 100,
+          "step": 0.01,
+          "default": 100
+        },
+        {
+          "id": "h",
+          "label": "Height",
+          "symbol": "H",
+          "min": 0.01,
+          "max": 100,
+          "step": 0.01,
+          "default": 100
+        }
       ]
     },
     {

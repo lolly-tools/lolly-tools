@@ -13,7 +13,9 @@
   justify-content: center;
   padding: 24px;
   box-sizing: border-box;
-  font-family: var(--brand-font-body, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif);
+  /* `--font-brand` (the brand's primary face), NOT `--brand-font-body` — that name is
+     defined nowhere, so this rendered in the system fallback regardless of brand. */
+  font-family: var(--font-brand, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
   color: var(--brand-text, #17232b);
   background: var(--brand-surface, #f7f8f8);
 }

@@ -2,17 +2,32 @@
   "id": "rebrand-deck",
   "name": "Rebrand a Deck",
   "description": "Upload a PowerPoint deck and snap its colours and fonts to your brand — rebuilt on your device, nothing uploaded.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engineVersion": "^1.58.0",
   "status": "official",
   "category": "utility",
   "privacy": "on-device",
-  "tags": ["pptx", "powerpoint", "presentation", "deck", "slides", "rebrand", "brand", "theme", "colors", "fonts", "convert", "privacy"],
+  "tags": [
+    "pptx",
+    "powerpoint",
+    "presentation",
+    "deck",
+    "slides",
+    "rebrand",
+    "brand",
+    "theme",
+    "colors",
+    "fonts",
+    "convert",
+    "privacy"
+  ],
   "a11yLabel": "Deck rebrander for {{fileName}}",
   "render": {
     "width": 760,
     "height": 620,
-    "formats": ["pptx"],
+    "formats": [
+      "pptx"
+    ],
     "export": false,
     "layout": "canvas",
     "actions": []
@@ -27,7 +42,10 @@
       "id": "source",
       "label": "PowerPoint file",
       "type": "file",
-      "accept": [".pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation"],
+      "accept": [
+        ".pptx",
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+      ],
       "maxSize": 104857600,
       "help": "A .pptx file. It's read on your device and never uploaded."
     },
@@ -45,8 +63,16 @@
       "labelledFields": true,
       "help": "Hardcoded colours found on the slides, each with its suggested brand colour. Remove a row to leave that colour alone.",
       "fields": [
-        { "id": "from", "type": "color", "label": "Original" },
-        { "id": "to", "type": "color", "label": "Brand" }
+        {
+          "id": "from",
+          "type": "color",
+          "label": "Original"
+        },
+        {
+          "id": "to",
+          "type": "color",
+          "label": "Brand"
+        }
       ],
       "default": []
     },
@@ -57,8 +83,14 @@
       "labelledFields": true,
       "help": "Typefaces named in the deck, each with its brand replacement. Remove a row to keep that font.",
       "fields": [
-        { "id": "from", "label": "Original" },
-        { "id": "to", "label": "Brand" }
+        {
+          "id": "from",
+          "label": "Original"
+        },
+        {
+          "id": "to",
+          "label": "Brand"
+        }
       ],
       "default": []
     },

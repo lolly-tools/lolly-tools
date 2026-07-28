@@ -2,16 +2,32 @@
   "id": "color-palette",
   "name": "Palette Lab",
   "description": "Grow a palette from one seed colour — harmony accents, perceptual OKLab ramps and WCAG/APCA readability badges, with DTCG tokens and CSV export.",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "utility",
-  "tags": ["color", "palette", "tokens", "contrast", "brand"],
+  "tags": [
+    "color",
+    "palette",
+    "tokens",
+    "contrast",
+    "brand"
+  ],
   "render": {
     "width": 1600,
     "height": 1000,
-    "formats": ["svg", "png", "jpg", "webp", "csv"],
-    "actions": ["copy", "download", "save"]
+    "formats": [
+      "svg",
+      "png",
+      "jpg",
+      "webp",
+      "csv"
+    ],
+    "actions": [
+      "copy",
+      "download",
+      "save"
+    ]
   },
   "hooks": {
     "onInit": true,
@@ -32,13 +48,34 @@
       "default": "triad-3",
       "help": "How the accent hues rotate around the seed.",
       "options": [
-        { "value": "complement", "label": "Complementary" },
-        { "value": "adjacent-3", "label": "Adjacent" },
-        { "value": "triad-3", "label": "Triad" },
-        { "value": "tetrad-4", "label": "Tetrad" },
-        { "value": "free-2", "label": "Free (2)" },
-        { "value": "free-3", "label": "Free (3)" },
-        { "value": "free-4", "label": "Free (4)" }
+        {
+          "value": "complement",
+          "label": "Complementary"
+        },
+        {
+          "value": "adjacent-3",
+          "label": "Adjacent"
+        },
+        {
+          "value": "triad-3",
+          "label": "Triad"
+        },
+        {
+          "value": "tetrad-4",
+          "label": "Tetrad"
+        },
+        {
+          "value": "free-2",
+          "label": "Free (2)"
+        },
+        {
+          "value": "free-3",
+          "label": "Free (3)"
+        },
+        {
+          "value": "free-4",
+          "label": "Free (4)"
+        }
       ]
     },
     {
@@ -61,10 +98,50 @@
     }
   ],
   "examples": [
-    { "label": "Ocean triad", "values": { "seed": "#2563eb", "harmony": "triad-3", "steps": 7, "neutrals": true } },
-    { "label": "Terracotta complement", "values": { "seed": "#c2410c", "harmony": "complement", "steps": 9, "neutrals": true } },
-    { "label": "Forest tetrad", "values": { "seed": "#166534", "harmony": "tetrad-4", "steps": 7, "neutrals": false } },
-    { "label": "Violet adjacents", "values": { "seed": "#7c3aed", "harmony": "adjacent-3", "steps": 5, "neutrals": true } },
-    { "label": "Coral free four", "values": { "seed": "#ff6b6b", "harmony": "free-4", "steps": 11, "neutrals": true } }
+    {
+      "label": "Ocean triad",
+      "values": {
+        "seed": "#2563eb",
+        "harmony": "triad-3",
+        "steps": 7,
+        "neutrals": true
+      }
+    },
+    {
+      "label": "Terracotta complement",
+      "values": {
+        "seed": "#c2410c",
+        "harmony": "complement",
+        "steps": 9,
+        "neutrals": true
+      }
+    },
+    {
+      "label": "Forest tetrad",
+      "values": {
+        "seed": "#166534",
+        "harmony": "tetrad-4",
+        "steps": 7,
+        "neutrals": false
+      }
+    },
+    {
+      "label": "Violet adjacents",
+      "values": {
+        "seed": "#7c3aed",
+        "harmony": "adjacent-3",
+        "steps": 5,
+        "neutrals": true
+      }
+    },
+    {
+      "label": "Coral free four",
+      "values": {
+        "seed": "#ff6b6b",
+        "harmony": "free-4",
+        "steps": 11,
+        "neutrals": true
+      }
+    }
   ]
 }

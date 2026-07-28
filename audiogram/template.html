@@ -10,7 +10,12 @@
   padding: 7%;
   background: var(--ag-bg, #101828);
   color: var(--ag-ink, #eef1f4);
-  font-family: var(--brand-font-body, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
+  /* `--font-brand` is the brand's primary face — the shell sets it from the active
+     brand pack, and it carries headings, body copy and UI alike. NOT
+     `--brand-font-body`, which is defined nowhere: this card silently rendered in
+     the system fallback for its whole life. Fallbacks stay generic because a
+     community tool has to look right under ANY brand. */
+  font-family: var(--font-brand, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif);
   overflow: hidden;
 }
 
@@ -72,6 +77,10 @@
 }
 .ag-root.is-overlay .ag-credit { margin: 0 7% 7%; position: relative; text-shadow: 0 2px 18px rgb(0 0 0 / 45%); }
 .ag-title {
+  /* The heading face where the brand declares a separate one, otherwise the primary
+     face the root already set — the same `var(--font-display, var(--font-brand))`
+     pairing the brand editor's type-role samples use. */
+  font-family: var(--font-display, var(--font-brand, inherit));
   font-size: 56px;
   line-height: 1.12;
   font-weight: 650;

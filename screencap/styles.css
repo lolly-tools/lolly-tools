@@ -25,7 +25,9 @@
   text-align: center;
   padding: 1rem;
   color: var(--brand-muted, #6b7280);
-  font-family: var(--brand-font-body, system-ui, sans-serif);
+  /* `--font-brand` (the brand's primary face), NOT `--brand-font-body` — that name is
+     defined nowhere, so this rendered in the system fallback regardless of brand. */
+  font-family: var(--font-brand, ui-sans-serif, system-ui, sans-serif);
 }
 
 .sc-empty-title {

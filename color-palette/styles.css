@@ -23,7 +23,9 @@
   border-radius: 12px;
   background: var(--brand-surface, #fff);
   color: var(--brand-text, #17232b);
-  font-family: var(--brand-font-body, system-ui, sans-serif);
+  /* `--font-brand` (the brand's primary face), NOT `--brand-font-body` — that name is
+     defined nowhere, so this rendered in the system fallback regardless of brand. */
+  font-family: var(--font-brand, ui-sans-serif, system-ui, sans-serif);
   font-size: 13px;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
 }
