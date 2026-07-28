@@ -1,0 +1,3 @@
+step,hex,oklch_l,oklch_c,oklch_h,gamut
+{{#each csvRows}}{{csvCell this.[0]}},{{csvCell this.[1]}},{{csvCell this.[2]}},{{csvCell this.[3]}},{{csvCell this.[4]}},{{csvCell this.[5]}}
+{{/each}}

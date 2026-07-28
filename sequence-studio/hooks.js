@@ -243,6 +243,12 @@ function boxCss(b) {
     (op !== 1 ? 'opacity:' + op + ';' : '') +
     (blend ? 'mix-blend-mode:' + blend + ';' : '') +
     'background:' + fill + ';' +
+    // .lolly-box clips its children, which is right for an image or text but wrong for a
+    // path box: the frame is the curve's tight bbox, so a stroke legitimately paints half
+    // its width outside it (see pathHtmlFor's stroke pad) and the div would cut it off
+    // again. Inline rather than in styles.css so the CLI and the export walkers, which read
+    // this string, agree with the browser.
+    (kind === 'path' ? 'overflow:visible;' : '') +
     'border-radius:' + radiusFor(b.shape, b.radius) + ';' +
     'justify-content:' + (H_JUSTIFY[b.align] || 'center') + ';' +
     'align-items:' + (V_ALIGN[b.valign] || 'center') + ';';
@@ -432,11 +438,29 @@ function pathHtmlFor(b) {
   var stroke = b.stroke == null || String(b.stroke).trim() === '' ? '' : safeColor(b.stroke, '');
   var sw = clamp(num(b.strokeW, 0), 0, 400);
   var rule = FILL_RULES[String(b.fillRule)] ? String(b.fillRule) : 'nonzero';
+
+  // The STROKE PAD. The frame is the curve's tight bounding box (the pen tool refits it to
+  // exactly that), so a stroke straddles the frame edge and half of it falls outside — and
+  // an outer <svg> clips to its viewport, so without a pad every stroked pen shape loses
+  // half its outline all the way round. `overflow: visible` is NOT the fix: this markup is
+  // read by three renderers (the browser, the SVG export walker, the PDF walker) and a
+  // nested <svg> clips by default in SVG output too, so the geometry is made explicit
+  // instead — the element is grown by `pad` on every side and offset by −pad, and the
+  // viewBox is shifted to match, which leaves path coordinates mapping to 0..w / 0..h
+  // exactly as before. Cap and join are both hard-coded `round` here, and each reaches
+  // exactly half the stroke width, so sw / 2 is the whole reach.
+  //
+  // The inline geometry also has to override styles.css's `inset: 0; width/height: 100%`,
+  // which would otherwise pull the element back to the frame — hence `inset:auto` first.
+  var pad = stroke && sw > 0 ? sw / 2 : 0;
+  var vw = f2(w + pad * 2), vh = f2(h + pad * 2), o = f2(-pad);
   // Everything interpolated is esc()'d even though each value is already reduced to a
   // validated colour, a whitelisted keyword or a number: the extra is emitted through
   // {{{ }}}, which bypasses Handlebars' escaping, so the escape has to happen here.
-  return '<svg class="lolly-box-path" width="' + w + '" height="' + h +
-    '" viewBox="0 0 ' + w + ' ' + h + '" preserveAspectRatio="none">' +
+  return '<svg class="lolly-box-path" width="' + esc(vw) + '" height="' + esc(vh) +
+    '" viewBox="' + esc(o) + ' ' + esc(o) + ' ' + esc(vw) + ' ' + esc(vh) + '" preserveAspectRatio="none"' +
+    (pad ? ' style="inset:auto;left:' + esc(o) + 'px;top:' + esc(o) + 'px;width:' + esc(vw) + 'px;height:' + esc(vh) + 'px"' : '') +
+    '>' +
     '<path d="' + esc(d) + '" fill="' + esc(fill) + '" fill-rule="' + esc(rule) + '"' +
     (stroke && sw > 0
       ? ' stroke="' + esc(stroke) + '" stroke-width="' + esc(f2(sw)) +

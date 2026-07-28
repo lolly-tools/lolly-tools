@@ -1,0 +1,91 @@
+<div class="cl-wrap">
+  <svg class="cl-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-label="Colour Lab gamut sheet">
+    <defs>
+      {{#each chart.strips}}
+      <linearGradient id="{{id}}" x1="0" y1="0" x2="1" y2="0">
+        {{#each stops}}<stop offset="{{o}}" stop-color="{{c}}"/>{{/each}}
+      </linearGradient>
+      {{/each}}
+      <clipPath id="cl-gamut"><path d="{{chart.clip}}"/></clipPath>
+    </defs>
+
+    <rect x="0" y="0" width="1600" height="1000" fill="{{paper}}"/>
+    <text x="56" y="84" fill="{{ink}}" font-family="system-ui, sans-serif" font-size="42" font-weight="700">Colour Lab</text>
+    <text x="56" y="118" fill="{{ink}}" fill-opacity="0.66" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="19">{{subtitle}}</text>
+    <line x1="56" y1="134" x2="1544" y2="134" stroke="{{hairline}}" stroke-width="1.5"/>
+
+    <!-- The colour itself, and everything it measures out to. -->
+    <rect x="56" y="190" width="290" height="200" rx="16" fill="{{swatchHex}}"/>
+    <text x="80" y="252" fill="{{swatchOn}}" font-family="system-ui, sans-serif" font-size="30" font-weight="700">{{swatchHex}}</text>
+    <text x="80" y="286" fill="{{swatchOn}}" fill-opacity="0.9" font-family="system-ui, sans-serif" font-size="19">{{gamutShort}}</text>
+
+    <!-- Readouts. Emitted as pre-positioned rows so the template stays
+         logic-less; hooks.js owns every coordinate on this sheet. -->
+    {{#each rows}}
+    <g transform="translate(376, 0)">
+      <text x="0" y="0" fill="{{../ink}}" fill-opacity="0.55" font-family="system-ui, sans-serif" font-size="14" font-weight="600" letter-spacing="0.06em" transform="translate(0, {{labelY}})">{{upper label}}</text>
+      <text x="0" y="0" fill="{{../ink}}" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="19" transform="translate(0, {{valueY}})">{{value}}</text>
+    </g>
+    {{/each}}
+
+    <!-- Readability, both the compliance number and the advisory one. -->
+    {{#each badges}}
+    <g transform="translate(56, {{y}})">
+      <rect x="0" y="0" width="580" height="86" rx="12" fill="{{bg}}" stroke="{{../hairline}}" stroke-width="1"/>
+      <text x="20" y="34" fill="{{fg}}" font-family="system-ui, sans-serif" font-size="20" font-weight="600">{{label}}</text>
+      <text x="20" y="64" fill="{{fg}}" fill-opacity="0.92" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="17">{{ratio}} · {{apca}} · {{verdict}}</text>
+    </g>
+    {{/each}}
+
+    <!-- ── The gamut chart ───────────────────────────────────────────────── -->
+    <g clip-path="url(#cl-gamut)">
+      {{#each chart.strips}}
+      <rect x="{{../chart.x}}" y="{{y}}" width="{{../chart.w}}" height="{{h}}" fill="url(#{{id}})"/>
+      {{/each}}
+    </g>
+    <!-- Everything past sRGB, washed back: a wider display could show it, this
+         sheet cannot. Even-odd cuts the in-gamut area back out of the ring. -->
+    <path d="{{chart.washOuter}}" fill="{{paper}}" fill-opacity="0.5" fill-rule="evenodd"/>
+    <path d="{{chart.washP3}}" fill="{{paper}}" fill-opacity="0.4" fill-rule="evenodd"/>
+
+    {{#each chart.edges}}
+    <path d="{{d}}" fill="none" stroke="#ffffff" stroke-width="{{strokeW}}" stroke-dasharray="{{dash}}" stroke-linejoin="round" stroke-linecap="round" opacity="{{opacity}}"/>
+    <path d="{{d}}" fill="none" stroke="#000000" stroke-width="1" stroke-opacity="0.35" stroke-dasharray="{{dash}}" stroke-linejoin="round" stroke-linecap="round"/>
+    {{/each}}
+
+    <rect x="{{chart.x}}" y="{{chart.y}}" width="{{chart.w}}" height="{{chart.h}}" fill="none" stroke="{{hairline}}" stroke-width="1"/>
+
+    <!-- Where the subject colour lands on this plane. -->
+    <circle cx="{{chart.dotX}}" cy="{{chart.dotY}}" r="11" fill="{{swatchHex}}" stroke="#ffffff" stroke-width="3"/>
+    <circle cx="{{chart.dotX}}" cy="{{chart.dotY}}" r="13.5" fill="none" stroke="#000000" stroke-opacity="0.45" stroke-width="1"/>
+
+    {{#each chart.xTicks}}
+    <text x="{{x}}" y="{{../chart.tickY}}" fill="{{../ink}}" fill-opacity="0.6" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" text-anchor="middle">{{label}}</text>
+    {{/each}}
+    {{#each chart.yTicks}}
+    <text x="{{../chart.x}}" y="{{y}}" fill="{{../ink}}" fill-opacity="0.6" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="14" text-anchor="end" dx="-10" dy="5">{{label}}</text>
+    {{/each}}
+    <text x="{{chart.xNameX}}" y="{{chart.xNameY}}" fill="{{ink}}" fill-opacity="0.75" font-family="system-ui, sans-serif" font-size="15" font-weight="600" letter-spacing="0.08em" text-anchor="middle">{{upper chart.xName}}</text>
+    <text x="{{chart.yNameX}}" y="{{chart.yNameY}}" fill="{{ink}}" fill-opacity="0.75" font-family="system-ui, sans-serif" font-size="15" font-weight="600" letter-spacing="0.08em" text-anchor="middle" transform="rotate(-90 {{chart.yNameX}} {{chart.yNameY}})">{{upper chart.yName}}</text>
+
+    <!-- ── Tone ramp, with each step's gamut called out ──────────────────── -->
+    {{#each ramp}}
+    <g>
+      <rect x="{{x}}" y="{{../rampY}}" width="{{w}}" height="{{../rampH}}" rx="10" fill="{{hex}}"/>
+      <text x="{{x}}" y="{{../rampY}}" fill="{{on}}" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="16" dx="16" dy="34">{{hex}}</text>
+      <text x="{{x}}" y="{{../rampY}}" fill="{{on}}" fill-opacity="0.85" font-family="system-ui, sans-serif" font-size="14" dx="16" dy="60">{{gamut}} {{flag}}</text>
+    </g>
+    {{/each}}
+  </svg>
+
+  <!-- Reading notes, on canvas only — data-export-hide keeps them out of every
+       export, the way Palette Lab's tokens panel does. -->
+  <details class="cl-notes" data-export-hide>
+    <summary class="cl-notes-summary">How to read this chart</summary>
+    <div class="cl-notes-body">
+      <p>The filled area is every colour that exists at this slice through OKLCH space. The <strong>solid white line</strong> is where sRGB ends — the gamut every screen, print pipeline and older browser can be trusted with. The <strong>dashed line</strong> is Display-P3. Anything past a line is washed back because this sheet is sRGB and physically cannot show it to you; the line is the information, not the colour beyond it.</p>
+      <p>The boundary moves with hue, and that is the whole point: a yellow reaches roughly twice the chroma of a blue. It is why an evenly-stepped ramp goes lopsided across hues, and why a colour can look duller once exported than it did in the picker.</p>
+      <p><strong>Chroma headroom</strong> is the actionable number — how much more chroma this hue and lightness could take before sRGB runs out. A negative value means the colour is already outside and is being mapped down every time it renders.</p>
+    </div>
+  </details>
+</div>
