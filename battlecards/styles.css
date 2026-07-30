@@ -1,0 +1,114 @@
+/* Battlecards — one card per table row (engine render.paginate).
+   The card is the page box: a locked page size the paged canvas/PDF read
+   ([data-pdf-page] pages export at their own CSS box), and the ONE query
+   container every cq unit + @container rule below resolves against. Layout
+   adapts to the box's actual aspect (landscape grid / portrait stack) via
+   container queries, so the same markup serves both orientations. */
+
+.bc-card {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  position: relative;
+  container-type: size;
+  background: var(--bc-bg, #ffffff);
+  color: var(--bc-ink, #111827);
+  font-family: var(--font-brand, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+.bc-card.is-portrait {
+  aspect-ratio: 3 / 4;
+}
+
+.bc-card * { box-sizing: border-box; margin: 0; }
+
+.bc-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 5cqmin 5.5cqmin;
+  gap: 2.4cqmin;
+  border-top: 2.2cqmin solid var(--bc-accent, #4f46e5);
+}
+
+.bc-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 2cqmin;
+}
+.bc-deck {
+  font-size: 2.6cqmin;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--bc-accent, #4f46e5);
+}
+.bc-pageno {
+  font-size: 2.4cqmin;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  opacity: 0.55;
+}
+
+.bc-title {
+  font-size: 7.5cqmin;
+  line-height: 1.04;
+  font-weight: 750;
+  letter-spacing: -0.015em;
+  max-width: 86%;
+  overflow-wrap: break-word;
+}
+.bc-title--empty { opacity: 0.35; font-weight: 500; }
+
+/* The field panels fill the whole card body: rows are sized by their content,
+   then align-content: stretch hands every panel a share of the leftover
+   height, so a four-field card reads as a designed 2×2 spread rather than a
+   list floating over whitespace. Cell copy is often a full paragraph — the
+   values are body text (comfortable line-height, pre-line so authored line
+   breaks survive), not labels. Layout switches on the orientation class, NOT
+   a container query: the class is deterministic across every export walker. */
+.bc-fields {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-content: stretch;
+  gap: 2cqmin;
+}
+.is-portrait .bc-fields { grid-template-columns: 1fr; }
+/* An odd last field spans the row so the grid never ends on a hole. */
+.bc-field:last-child:nth-child(odd) { grid-column: 1 / -1; }
+.is-portrait .bc-field:last-child:nth-child(odd) { grid-column: auto; }
+
+.bc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1cqmin;
+  padding: 2.2cqmin 2.6cqmin;
+  border-radius: 1.6cqmin;
+  background: color-mix(in oklab, var(--bc-accent, #4f46e5) 6%, transparent);
+  overflow: hidden;
+}
+.bc-field-label {
+  font-size: 1.9cqmin;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: color-mix(in oklab, var(--bc-accent, #4f46e5) 70%, var(--bc-ink, #111827));
+}
+.bc-field-value {
+  font-size: 2.6cqmin;
+  line-height: 1.42;
+  font-weight: 480;
+  overflow-wrap: break-word;
+  white-space: pre-line;
+}
+.is-portrait .bc-title { font-size: 7cqmin; }
+
+.bc-foot {
+  font-size: 2.1cqmin;
+  letter-spacing: 0.04em;
+  opacity: 0.5;
+}

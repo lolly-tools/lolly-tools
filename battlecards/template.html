@@ -1,0 +1,26 @@
+<div class="bc-card {{#if (eq orientation "portrait")}}is-portrait{{/if}}"
+     style="--bc-accent: {{default accent "#4f46e5"}}; --bc-bg: {{default bg "#ffffff"}}; --bc-ink: {{default ink "#111827"}};">
+  <div class="bc-inner">
+    <header class="bc-head">
+      <span class="bc-deck">{{default title "Battlecards"}}</span>
+      <span class="bc-pageno">{{page.number}} / {{page.count}}</span>
+    </header>
+
+    {{#if page.first}}
+      <h1 class="bc-title">{{page.first}}</h1>
+    {{else}}
+      <h1 class="bc-title bc-title--empty">Paste a table to start</h1>
+    {{/if}}
+
+    <div class="bc-fields">
+      {{#each page.fields}}
+      <div class="bc-field">
+        <div class="bc-field-label">{{column}}</div>
+        <div class="bc-field-value">{{default value "—"}}</div>
+      </div>
+      {{/each}}
+    </div>
+
+    {{#if footer}}<footer class="bc-foot">{{footer}}</footer>{{/if}}
+  </div>
+</div>
