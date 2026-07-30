@@ -1,6 +1,6 @@
 {
-  "name": "调色实验室",
-  "description": "从一个种子颜色生成调色板 - 和谐强调色、感知性 OKLab 渐变和 WCAG/APCA 可读性徽章，配备 DTCG 令牌和 CSV 导出。",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "种子颜色",
   "inputs.seed.help": "整个色板由此颜色衍生而来 - 默认使用你的品牌主色。",
   "inputs.harmony.label": "和谐",

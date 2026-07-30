@@ -1,6 +1,6 @@
 {
-  "name": "Lab Palet",
-  "description": "Kembangkan palet dari satu warna benih - aksen harmoni, gradasi OKLab persepsual, dan lencana keterbacaan WCAG/APCA, dengan token DTCG dan ekspor CSV.",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "Warna seed",
   "inputs.seed.help": "Warna yang menjadi dasar seluruh palet - default ke primary brand Anda.",
   "inputs.harmony.label": "Harmoni",

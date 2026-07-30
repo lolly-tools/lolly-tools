@@ -2,7 +2,6 @@
   "name": "街道地圖",
   "description": "任何城市的簡潔向量街廓地圖，離線也能使用。",
   "a11yLabel": "以 {{city}} 為中心的街道地圖",
-
   "inputs.city.label": "城市",
   "inputs.city.help": "如需離線新增更多城市，請使用 scripts/build-street-clips.ts — 算繪時不會呼叫任何 API。",
   "inputs.city.options.amsterdam": "阿姆斯特丹",
@@ -58,31 +57,22 @@
   "inputs.city.options.warsaw": "華沙",
   "inputs.city.options.washington": "華盛頓特區",
   "inputs.city.options.zurich": "蘇黎世",
-
   "inputs.theme.label": "主題",
   "inputs.theme.options.light": "淺色",
   "inputs.theme.options.dark": "深色",
-
   "inputs.minorRoadWeight.label": "次要道路粗細",
   "inputs.minorRoadWeight.help": "次要街道（服務道路、住宅區道路、三級道路）的線條粗細。",
-
   "inputs.majorRoadWeight.label": "主要道路粗細",
   "inputs.majorRoadWeight.help": "主要道路（次幹道、主幹道、高速公路）的線條粗細。",
-
   "inputs.showWater.label": "顯示水域",
-
   "inputs.waterWeight.label": "水道粗細",
   "inputs.waterWeight.help": "河流與溪流的線條粗細。調高數值可讓水道更加顯眼。",
-
   "inputs.roadColor.label": "道路顏色",
   "inputs.roadColor.help": "留空以使用主題預設值。",
-
   "inputs.waterColor.label": "水域顏色",
   "inputs.waterColor.help": "留空以使用主題預設值。",
-
   "inputs.background.label": "背景",
   "inputs.background.help": "留空以使用主題預設值。",
-
   "inputs.view.label": "地圖視窗",
   "inputs.view.placeholder": "平移並縮放以設定",
   "inputs.view.help": "平移或縮放時會自動儲存。清除以重設為預設取景。"

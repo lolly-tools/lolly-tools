@@ -1,6 +1,6 @@
 {
-  "name": "Paletlab",
-  "description": "Laat een palet groeien uit één basiskleur - harmonieaccenten, perceptuele OKLab-verlopen en WCAG/APCA-leesbaarheidsbadges, met DTCG-tokens en CSV-export.",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "Basiskleur",
   "inputs.seed.help": "De kleur waaruit het hele palet groeit - standaard je primaire merkkleur.",
   "inputs.harmony.label": "Harmonie",

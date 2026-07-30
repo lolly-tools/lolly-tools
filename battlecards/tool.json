@@ -3,8 +3,8 @@
   "name": "Battlecards",
   "description": "Turn any table into a deck of cards — one card per row, ready as a multi-page PDF. Paste straight from your spreadsheet, doc, or chat.",
   "a11yLabel": "Battlecards: {{default title \"Battlecards\"}} — one card per table row",
-  "version": "1.1.0",
-  "engineVersion": "^1.80.0",
+  "version": "1.2.0",
+  "engineVersion": "^1.82.0",
   "status": "community",
   "category": "everyone",
   "tags": ["battlecard", "sales", "competitive", "table", "cards", "pdf", "pages", "batch"],
@@ -23,7 +23,7 @@
       "label": "Table",
       "type": "table",
       "urlKey": "t",
-      "help": "One card per row. The first column is each card's title; the other column headings become its field labels. Cells take markdown — **bold**, *italic*, # headings, - bullet and 1. numbered lists, [links](url) and ![images](url). Paste a table copied from a spreadsheet, Notion, Slack, or Markdown.",
+      "help": "One card per row. The first column is each card's title; the other column headings become its field labels. Cells take markdown — **bold**, *italic*, # headings, - bullet and 1. numbered lists, [links](url) and ![images](url). Paste a table copied from a spreadsheet, Notion, Slack, or Markdown — or click any text on the card to edit it in place (it bakes back to markdown here). An optional Icon column puts a small image on each card: click the top-right corner of a card to pick one from the catalog. The Copy button hands the finished table back to your spreadsheet.",
       "default": {
         "columns": ["Pain", "Summary", "SolutionName", "CompetitorName", "Strategy"],
         "rows": [

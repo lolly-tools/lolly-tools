@@ -1,6 +1,6 @@
 {
-  "name": "पैलेट लैब",
-  "description": "एक बीज रंग से पैलेट विकसित करें - हार्मनी एक्सेंट, परसेप्चुअल OKLab रैंप और WCAG/APCA पठनीयता बैज, DTCG टोकन और CSV एक्सपोर्ट के साथ।",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "सीड रंग",
   "inputs.seed.help": "वह रंग जिससे पूरी पैलेट बनती है - डिफ़ॉल्ट रूप से आपका ब्रांड प्राइमरी।",
   "inputs.harmony.label": "हार्मनी",

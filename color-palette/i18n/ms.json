@@ -1,6 +1,6 @@
 {
-  "name": "Makmal Palet",
-  "description": "Tumbuhkan palet daripada satu warna benih - aksen harmoni, gradasi OKLab persepsi dan lencana kebolehbacaan WCAG/APCA, dengan token DTCG dan eksport CSV.",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "Warna benih",
   "inputs.seed.help": "Warna asas keseluruhan palet berkembang - lalai kepada warna utama jenama anda.",
   "inputs.harmony.label": "Harmoni",

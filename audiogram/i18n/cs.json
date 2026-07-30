@@ -1,6 +1,6 @@
 {
   "name": "Audiogram",
-  "description": "Změň hlasový klip nebo píseň na značkové video se zvukovou vlnou - animované sloupce, vlna nebo prstenec, připravené pro sociální sítě.",
+  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
   "a11yLabel": "Audiogram karta pro {{default title \"an audio clip\"}} s animovanou zvukovou vlnou",
   "inputs.audio.label": "Zvuk",
   "inputs.audio.help": "Vyber skladbu ze své knihovny nebo nahraj klip. Dekóduje se na tvém zařízení a vykreslí zvukovou křivku - zvuk nikdy neopustí prohlížeč. Nech prázdné pro zástupnou křivku. Aby bylo v exportu slyšet, zvol v možnostech stahování jako zvukovou stopu \"Zvuk tohoto nástroje\".",

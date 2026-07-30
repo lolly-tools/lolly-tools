@@ -2,7 +2,6 @@
   "name": "스트리트 맵",
   "description": "어떤 도시든 깔끔한 벡터 스트리트 맵으로 표현해요. 오프라인에서도 작동해요.",
   "a11yLabel": "{{city}} 중심의 스트리트 맵",
-
   "inputs.city.label": "도시",
   "inputs.city.help": "scripts/build-street-clips.ts로 오프라인에서 도시를 추가할 수 있어요 — 렌더링 시 API가 필요하지 않아요.",
   "inputs.city.options.amsterdam": "암스테르담",
@@ -58,31 +57,22 @@
   "inputs.city.options.warsaw": "바르샤바",
   "inputs.city.options.washington": "워싱턴 D.C.",
   "inputs.city.options.zurich": "취리히",
-
   "inputs.theme.label": "테마",
   "inputs.theme.options.light": "라이트",
   "inputs.theme.options.dark": "다크",
-
   "inputs.minorRoadWeight.label": "이면도로 선 굵기",
   "inputs.minorRoadWeight.help": "이면도로(서비스 도로, 주거지 도로, 지선도로)의 선 굵기예요.",
-
   "inputs.majorRoadWeight.label": "주요도로 선 굵기",
   "inputs.majorRoadWeight.help": "주요도로(2차로, 간선도로, 고속도로)의 선 굵기예요.",
-
   "inputs.showWater.label": "수역 표시",
-
   "inputs.waterWeight.label": "수로 선 굵기",
   "inputs.waterWeight.help": "강과 하천의 선 굵기예요. 값을 높이면 수로가 더 두드러져요.",
-
   "inputs.roadColor.label": "도로 색상",
   "inputs.roadColor.help": "비워두면 테마의 기본 색상을 사용해요.",
-
   "inputs.waterColor.label": "수역 색상",
   "inputs.waterColor.help": "비워두면 테마의 기본 색상을 사용해요.",
-
   "inputs.background.label": "배경",
   "inputs.background.help": "비워두면 테마의 기본 색상을 사용해요.",
-
   "inputs.view.label": "지도 화면",
   "inputs.view.placeholder": "이동 및 확대/축소로 설정",
   "inputs.view.help": "이동하거나 확대/축소하면 자동으로 저장돼요. 비워두면 기본 화면으로 돌아가요."

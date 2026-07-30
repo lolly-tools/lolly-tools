@@ -1,6 +1,6 @@
 {
-  "name": "調色盤實驗室",
-  "description": "從一個種子顏色長出色票 - 和諧強調色、感知式 OKLab 漸層，以及 WCAG/APCA 可讀性徽章，並支援 DTCG tokens 與 CSV 匯出。",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "種子色",
   "inputs.seed.help": "整組色盤衍生自的顏色 - 預設為你的品牌主色。",
   "inputs.harmony.label": "調和",

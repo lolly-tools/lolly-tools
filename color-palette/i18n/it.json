@@ -1,6 +1,6 @@
 {
-  "name": "Laboratorio Palette",
-  "description": "Genera una palette da un colore di partenza - accenti armonici, rampe percettive OKLab e badge di leggibilità WCAG/APCA, con token DTCG ed export CSV.",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "Colore seme",
   "inputs.seed.help": "Il colore da cui nasce l'intera palette - di default il colore primario del tuo brand.",
   "inputs.harmony.label": "Armonia",

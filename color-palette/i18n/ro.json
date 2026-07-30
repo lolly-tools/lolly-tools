@@ -1,6 +1,6 @@
 {
-  "name": "Laborator de palete",
-  "description": "Creează o paletă dintr-o culoare de bază - accente de armonie, gradații OKLab perceptuale și insigne de lizibilitate WCAG/APCA, cu tokenuri DTCG și export CSV.",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "Culoare sursă",
   "inputs.seed.help": "Culoarea din care pornește întreaga paletă - implicit culoarea primară a brandului tău.",
   "inputs.harmony.label": "Armonie",

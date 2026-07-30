@@ -1,6 +1,6 @@
 {
   "name": "Audiogram",
-  "description": "Ubah klip suara atau lagu menjadi video waveform sesuai brand - bar animasi, gelombang, atau cincin, siap untuk media sosial.",
+  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
   "a11yLabel": "Kartu Audiogram untuk {{default title \"an audio clip\"}} dengan waveform beranimasi",
   "inputs.audio.label": "Audio",
   "inputs.audio.help": "Pilih trek dari pustaka Anda atau unggah klip. Ini didekode di perangkat Anda untuk menggambar bentuk gelombang - audio tidak pernah meninggalkan browser. Biarkan kosong untuk bentuk gelombang placeholder. Untuk mendengarkannya di hasil ekspor, pilih \"Audio alat ini\" sebagai Trek Audio di opsi unduhan.",

@@ -2,7 +2,6 @@
   "name": "Mappa stradale",
   "description": "Mappe vettoriali essenziali delle strade di qualsiasi città. Funziona offline.",
   "a11yLabel": "Mappa stradale centrata su {{city}}",
-
   "inputs.city.label": "Città",
   "inputs.city.help": "Aggiungi altre città offline con scripts/build-street-clips.ts — nessuna API necessaria in fase di rendering.",
   "inputs.city.options.amsterdam": "Amsterdam",
@@ -58,31 +57,22 @@
   "inputs.city.options.warsaw": "Varsavia",
   "inputs.city.options.washington": "Washington, D.C.",
   "inputs.city.options.zurich": "Zurigo",
-
   "inputs.theme.label": "Tema",
   "inputs.theme.options.light": "Chiaro",
   "inputs.theme.options.dark": "Scuro",
-
   "inputs.minorRoadWeight.label": "Spessore strade secondarie",
   "inputs.minorRoadWeight.help": "Spessore del tratto per le strade minori (di servizio, residenziali e secondarie).",
-
   "inputs.majorRoadWeight.label": "Spessore strade principali",
   "inputs.majorRoadWeight.help": "Spessore del tratto per le strade principali (secondarie, primarie, autostrade).",
-
   "inputs.showWater.label": "Mostra corsi d'acqua",
-
   "inputs.waterWeight.label": "Spessore corsi d'acqua",
   "inputs.waterWeight.help": "Spessore del tratto per fiumi e torrenti. Aumenta il valore per mettere in risalto i corsi d'acqua.",
-
   "inputs.roadColor.label": "Colore strade",
   "inputs.roadColor.help": "Lascia vuoto per usare il colore predefinito del tema.",
-
   "inputs.waterColor.label": "Colore acqua",
   "inputs.waterColor.help": "Lascia vuoto per usare il colore predefinito del tema.",
-
   "inputs.background.label": "Sfondo",
   "inputs.background.help": "Lascia vuoto per usare il colore predefinito del tema.",
-
   "inputs.view.label": "Inquadratura mappa",
   "inputs.view.placeholder": "Imposta trascinando e zoomando",
   "inputs.view.help": "Salvata automaticamente quando trascini o zoomi. Svuota per ripristinare l'inquadratura predefinita."

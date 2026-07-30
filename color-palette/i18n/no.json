@@ -1,6 +1,6 @@
 {
-  "name": "Palettlab",
-  "description": "Dyrk en palett fra én frøfarge - harmoniaksenter, perseptuelle OKLab-fargeoverganger og WCAG/APCA-lesbarhetsmerker, med DTCG-tokens og CSV-eksport.",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "Frøfarge",
   "inputs.seed.help": "Fargen hele paletten vokser fra - standard er merkevarens primærfarge.",
   "inputs.harmony.label": "Harmoni",

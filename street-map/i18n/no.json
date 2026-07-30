@@ -2,7 +2,6 @@
   "name": "Gatekart",
   "description": "Rene vektor-gatekart for enhver by. Fungerer offline.",
   "a11yLabel": "Gatekart sentrert på {{city}}",
-
   "inputs.city.label": "By",
   "inputs.city.help": "Legg til flere byer offline med scripts/build-street-clips.ts – ingen API nødvendig ved rendering.",
   "inputs.city.options.amsterdam": "Amsterdam",
@@ -58,31 +57,22 @@
   "inputs.city.options.warsaw": "Warszawa",
   "inputs.city.options.washington": "Washington, D.C.",
   "inputs.city.options.zurich": "Zürich",
-
   "inputs.theme.label": "Tema",
   "inputs.theme.options.light": "Lys",
   "inputs.theme.options.dark": "Mørk",
-
   "inputs.minorRoadWeight.label": "Linjetykkelse, mindre veier",
   "inputs.minorRoadWeight.help": "Linjetykkelse for mindre gater (tjenestevei, boliggater, tertiærveier).",
-
   "inputs.majorRoadWeight.label": "Linjetykkelse, større veier",
   "inputs.majorRoadWeight.help": "Linjetykkelse for større veier (sekundærvei, primærvei, motorvei).",
-
   "inputs.showWater.label": "Vis vann",
-
   "inputs.waterWeight.label": "Linjetykkelse, vannveier",
   "inputs.waterWeight.help": "Linjetykkelse for elver og bekker. Øk verdien for å fremheve vannveier tydeligere.",
-
   "inputs.roadColor.label": "Veifarge",
   "inputs.roadColor.help": "La stå tomt for å bruke temaets standardfarge.",
-
   "inputs.waterColor.label": "Vannfarge",
   "inputs.waterColor.help": "La stå tomt for å bruke temaets standardfarge.",
-
   "inputs.background.label": "Bakgrunn",
   "inputs.background.help": "La stå tomt for å bruke temaets standardfarge.",
-
   "inputs.view.label": "Kartvisning",
   "inputs.view.placeholder": "panorer og zoom for å angi",
   "inputs.view.help": "Lagres automatisk når du panorerer eller zoomer. Tøm for å tilbakestille til standardvisningen."

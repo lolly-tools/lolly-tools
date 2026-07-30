@@ -2,7 +2,6 @@
   "name": "Straßenkarte",
   "description": "Übersichtliche Vektor-Straßenkarten jeder Stadt. Funktioniert offline.",
   "a11yLabel": "Straßenkarte zentriert auf {{city}}",
-
   "inputs.city.label": "Stadt",
   "inputs.city.help": "Weitere Städte offline mit scripts/build-street-clips.ts hinzufügen — keine API beim Rendern nötig.",
   "inputs.city.options.amsterdam": "Amsterdam",
@@ -58,31 +57,22 @@
   "inputs.city.options.warsaw": "Warschau",
   "inputs.city.options.washington": "Washington, D.C.",
   "inputs.city.options.zurich": "Zürich",
-
   "inputs.theme.label": "Design",
   "inputs.theme.options.light": "Hell",
   "inputs.theme.options.dark": "Dunkel",
-
   "inputs.minorRoadWeight.label": "Linienstärke Nebenstraßen",
   "inputs.minorRoadWeight.help": "Strichstärke kleinerer Straßen (Erschließungs-, Wohn- und Nebenstraßen).",
-
   "inputs.majorRoadWeight.label": "Linienstärke Hauptstraßen",
   "inputs.majorRoadWeight.help": "Strichstärke der Hauptstraßen (Landesstraßen, Bundesstraßen, Autobahnen).",
-
   "inputs.showWater.label": "Gewässer anzeigen",
-
   "inputs.waterWeight.label": "Linienstärke Gewässer",
   "inputs.waterWeight.help": "Strichstärke von Flüssen und Bächen. Erhöhen Sie den Wert, um Gewässer stärker hervorzuheben.",
-
   "inputs.roadColor.label": "Straßenfarbe",
   "inputs.roadColor.help": "Leer lassen, um die Standardfarbe des Designs zu verwenden.",
-
   "inputs.waterColor.label": "Wasserfarbe",
   "inputs.waterColor.help": "Leer lassen, um die Standardfarbe des Designs zu verwenden.",
-
   "inputs.background.label": "Hintergrund",
   "inputs.background.help": "Leer lassen, um die Standardfarbe des Designs zu verwenden.",
-
   "inputs.view.label": "Kartenausschnitt",
   "inputs.view.placeholder": "Durch Verschieben & Zoomen festlegen",
   "inputs.view.help": "Wird beim Verschieben oder Zoomen automatisch gespeichert. Leeren, um die Standardansicht wiederherzustellen."

@@ -1,6 +1,6 @@
 {
   "name": "Audiogramm",
-  "description": "Verwandeln Sie einen Sprachclip oder Song in ein gebrandetes Wellenform-Video - animierte Balken, Welle oder Ring, bereit für Social Media.",
+  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
   "a11yLabel": "Audiogramm-Karte für {{default title \"an audio clip\"}} mit animierter Wellenform",
   "inputs.audio.label": "Audio",
   "inputs.audio.help": "Wählen Sie einen Titel aus Ihrer Bibliothek oder laden Sie einen Clip hoch. Er wird auf Ihrem Gerät dekodiert, um die Wellenform zu zeichnen - das Audio verlässt den Browser nie. Leer lassen für eine Platzhalter-Wellenform. Um es im Export zu hören, wählen Sie \"Audio dieses Tools\" als Audiospur in den Download-Optionen.",

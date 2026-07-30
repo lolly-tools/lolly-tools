@@ -1,6 +1,6 @@
 {
-  "name": "Лабораторія палітри",
-  "description": "Виростіть палітру з одного вихідного кольору - акценти гармонії, перцептивні OKLab градієнти та значки читабельності WCAG/APCA, з токенами DTCG та експортом у CSV.",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "Вихідний колір",
   "inputs.seed.help": "Колір, з якого виростає вся палітра - за умовчанням основний колір вашого бренду.",
   "inputs.harmony.label": "Гармонія",

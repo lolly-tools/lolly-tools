@@ -1,6 +1,6 @@
 {
   "name": "Audiograma",
-  "description": "Convierte un clip de voz o una canción en un vídeo de forma de onda con tu marca - barras animadas, onda o anillo, listo para redes sociales.",
+  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
   "a11yLabel": "Tarjeta de audiograma para {{default title \"an audio clip\"}} con una forma de onda animada",
   "inputs.audio.label": "Audio",
   "inputs.audio.help": "Elige una pista de tu biblioteca o sube un clip. Se decodifica en tu dispositivo para dibujar la forma de onda - el audio nunca sale del navegador. Déjalo vacío para una forma de onda de marcador de posición. Para escucharlo en la exportación, elige \"El audio de esta herramienta\" como pista de audio en las opciones de descarga.",

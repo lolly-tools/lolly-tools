@@ -1,6 +1,6 @@
 {
-  "name": "প্যালেট ল্যাব",
-  "description": "একটি বীজ রং থেকে প্যালেট বানান - হারমনি অ্যাকসেন্ট, পারসেপচুয়াল OKLab র‍্যাম্প এবং WCAG/APCA রিডেবিলিটি ব্যাজ, সাথে DTCG টোকেন ও CSV এক্সপোর্ট।",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "সিড রং",
   "inputs.seed.help": "যে রং থেকে পুরো প্যালেট তৈরি হয় - ডিফল্টরূপে আপনার ব্র্যান্ড প্রাইমারি।",
   "inputs.harmony.label": "হারমনি",

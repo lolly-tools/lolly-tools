@@ -6,8 +6,22 @@
       <span class="bc-pageno">{{page.number}} / {{page.count}}</span>
     </header>
 
+    {{!-- Per-card icon: an "Icon" column, looked up by name so the table can
+          keep it anywhere (the canvas pick creates it if absent). Absolutely
+          positioned so an empty slot never moves exported geometry; the web
+          shell's cell editor arms it as a click-to-pick target (data-pick-armed).
+          No whitespace inside the span — the :empty styling depends on it. --}}
+    <span class="bc-icon" data-cell-pick="{{page.index}}" data-pick-column="Icon" data-pick-tag="icon">{{#if (lookup page.byColumn "icon")}}{{{markdown (lookup page.byColumn "icon")}}}{{/if}}</span>
+
+    {{!-- data-cell stamps each rendered cell with its source address
+          (row = page.index, col = original column index) so the web shell's
+          on-canvas editor can bake edits straight back into the table input.
+          data-cell-md marks markdown cells; data-cell-empty marks the em-dash
+          placeholder (cleared on focus, restored on an empty commit). --}}
     {{#if page.first}}
-      <h1 class="bc-title">{{page.first}}</h1>
+      <h1 class="bc-title" data-cell="{{page.index}}:0">{{page.first}}</h1>
+    {{else if page.cells.length}}
+      <h1 class="bc-title bc-title--empty" data-cell="{{page.index}}:0" data-cell-empty>—</h1>
     {{else}}
       <h1 class="bc-title bc-title--empty">Paste a table to start</h1>
     {{/if}}
@@ -15,17 +29,20 @@
     {{!-- Cell copy is markdown: the engine's {{markdown}} helper turns it into a
           fixed, escape-first tag set (headings, lists, bold/italic, links, images),
           so a pasted spreadsheet cell can carry structure without the tool needing
-          a hook. An empty cell keeps the em-dash placeholder rather than a hole. --}}
+          a hook. An empty cell keeps the em-dash placeholder rather than a hole.
+          The Icon column renders in the header slot above, never as a field. --}}
     <div class="bc-fields">
       {{#each page.fields}}
+      {{#unless (eq (lower column) "icon")}}
       <div class="bc-field">
         <div class="bc-field-label">{{column}}</div>
         {{#if value}}
-        <div class="bc-field-value">{{{markdown value}}}</div>
+        <div class="bc-field-value" data-cell="{{../page.index}}:{{col}}" data-cell-md>{{{markdown value}}}</div>
         {{else}}
-        <div class="bc-field-value bc-field-value--empty">—</div>
+        <div class="bc-field-value bc-field-value--empty" data-cell="{{../page.index}}:{{col}}" data-cell-md data-cell-empty>—</div>
         {{/if}}
       </div>
+      {{/unless}}
       {{/each}}
     </div>
 

@@ -185,3 +185,68 @@
   letter-spacing: 0.04em;
   opacity: 0.5;
 }
+
+/* ── Per-card icon ───────────────────────────────────────────────────────────
+   The "Icon" column renders here, absolutely positioned in the free zone right
+   of the title (.bc-title reserves 86% width), so the slot NEVER participates
+   in flow: an empty slot cannot move a pixel of exported geometry. */
+.bc-icon {
+  position: absolute;
+  top: 8.4cqmin;
+  right: 5.5cqmin;
+  width: 9cqmin;
+  height: 9cqmin;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.bc-icon:empty { display: none; }
+.bc-icon p { width: 100%; height: 100%; }
+.bc-icon .md-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  border-radius: 0;
+}
+
+/* ── On-canvas editing affordances ───────────────────────────────────────────
+   Everything below keys off attributes only the web shell's cell editor sets
+   ([contenteditable], [data-pick-armed]) — offscreen/CLI renders never mount it,
+   so these rules are inert in every export path. Outlines, not borders/insets:
+   zero layout impact. */
+.bc-card [data-cell][contenteditable] {
+  caret-color: var(--bc-accent, #4f46e5);
+  border-radius: 0.8cqmin;
+}
+.bc-card [data-cell][contenteditable]:hover {
+  outline: 0.35cqmin solid color-mix(in oklab, var(--bc-accent, #4f46e5) 30%, transparent);
+  outline-offset: 0.5cqmin;
+}
+.bc-card [data-cell][contenteditable]:focus {
+  outline: 0.35cqmin solid color-mix(in oklab, var(--bc-accent, #4f46e5) 60%, transparent);
+  outline-offset: 0.5cqmin;
+}
+
+/* An EMPTY armed icon slot: a quiet "+" that only exists while editing is live,
+   revealed on card hover / its own focus. Opacity-only — no flow, no export. */
+.bc-icon[data-pick-armed] { cursor: pointer; }
+.bc-icon[data-pick-armed]:empty {
+  display: flex;
+  opacity: 0;
+  border-radius: 1.2cqmin;
+  background: color-mix(in oklab, var(--bc-accent, #4f46e5) 8%, transparent);
+  color: var(--bc-accent, #4f46e5);
+  font-size: 4.5cqmin;
+  font-weight: 500;
+  line-height: 1;
+  transition: opacity 120ms ease;
+}
+.bc-icon[data-pick-armed]:empty::after { content: '+'; }
+.bc-card:hover .bc-icon[data-pick-armed]:empty { opacity: 0.55; }
+.bc-icon[data-pick-armed]:empty:hover,
+.bc-icon[data-pick-armed]:empty:focus-visible { opacity: 1; }
+.bc-icon[data-pick-armed]:focus-visible {
+  outline: 0.35cqmin solid color-mix(in oklab, var(--bc-accent, #4f46e5) 60%, transparent);
+  outline-offset: 0.5cqmin;
+}

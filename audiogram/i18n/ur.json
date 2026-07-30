@@ -1,6 +1,6 @@
 {
   "name": "آڈیوگرام",
-  "description": "آواز کی کلپ یا گانے کو ایک برانڈڈ ویو فارم ویڈیو میں تبدیل کریں - اینیمیٹڈ بارز، ویو یا رنگ، سوشل کے لیے تیار۔",
+  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
   "a11yLabel": "{{default title \"an audio clip\"}} کے لیے آڈیوگرام کارڈ، ایک اینیمیٹڈ ویو فارم کے ساتھ",
   "inputs.audio.label": "آڈیو",
   "inputs.audio.help": "اپنی لائبریری سے کوئی ٹریک منتخب کریں یا کوئی کلپ اپ لوڈ کریں۔ ویو فارم بنانے کے لیے یہ آپ کے ڈیوائس پر ڈی کوڈ ہوتا ہے - آڈیو کبھی براؤزر سے باہر نہیں جاتا۔ پلیس ہولڈر ویو فارم کے لیے خالی چھوڑ دیں۔ ایکسپورٹ میں اسے سننے کے لیے، ڈاؤن لوڈ آپشنز میں آڈیو ٹریک کے طور پر \"اس ٹول کا آڈیو\" منتخب کریں۔",
