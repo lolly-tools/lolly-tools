@@ -7,6 +7,7 @@
       <h2>Rebrand a deck</h2>
       <p>Drag a PowerPoint file anywhere onto this area, or choose one below. We read its theme, colours and typefaces, snap them to your brand, and rebuild the file.</p>
       <button type="button" class="rbd-pick" data-file-pick>Choose a .pptx…</button>
+      <p class="rbd-empty-note">Bring the editable deck, not an export: a PDF — or slides that are just flat pictures — has its colours baked into the image, and comes back unchanged.</p>
       <p class="rbd-empty-note">Everything happens on your device. Your deck is never uploaded.</p>
     </div>
   {{/unless}}
@@ -20,10 +21,17 @@
       </div>
 
       {{#if unsupported}}
-        <div class="rbd-state">
-          <p class="rbd-lead">Could not read this file as a PowerPoint deck.</p>
-          <p class="rbd-note">Choose a <code>.pptx</code> file — the older binary <code>.ppt</code> format isn't supported.</p>
-        </div>
+        {{#if isPdfFile}}
+          <div class="rbd-state rbd-state-warn">
+            <p class="rbd-lead">A PDF can't be rebranded.</p>
+            <p class="rbd-note">Exporting to PDF flattens the deck: its colours and typefaces stop being editable values and become part of the printed page, and where the pages are plain bitmap images there is nothing left to edit at all. Re-saving it would not change a single pixel. Open the original <code>.pptx</code> and rebrand that instead.</p>
+          </div>
+        {{else}}
+          <div class="rbd-state">
+            <p class="rbd-lead">Could not read this file as a PowerPoint deck.</p>
+            <p class="rbd-note">Choose a <code>.pptx</code> file — the older binary <code>.ppt</code> format isn't supported.</p>
+          </div>
+        {{/if}}
       {{/if}}
 
       {{#if pptxUnavailable}}
@@ -43,6 +51,13 @@
 
         {{#if done}}
           <p class="rbd-summary">{{summaryText}}</p>
+
+          {{#if flattened}}
+            <div class="rbd-state rbd-state-warn">
+              <p class="rbd-lead">This deck won't change.</p>
+              <p class="rbd-note">{{flattenedText}}</p>
+            </div>
+          {{/if}}
 
           {{#if hasTheme}}
             <div class="rbd-theme">
@@ -74,11 +89,13 @@
               <span class="rbd-result-note">{{reviewText}}</span>
             </div>
           {{/if}}
-          <p class="rbd-note">The hardcoded colours and typefaces found on the slides are prefilled as mapping rows in the sidebar — adjust any row, or remove it to leave that colour or font alone.</p>
+          {{#unless flattened}}
+            <p class="rbd-note">The hardcoded colours and typefaces found on the slides are prefilled as mapping rows in the sidebar — adjust any row, or remove it to leave that colour or font alone.</p>
+          {{/unless}}
         {{/if}}
 
-        <button type="button" class="rbd-download" data-export-file data-busy-label="Rebranding…">Download rebranded deck</button>
-        <p class="rbd-note rbd-tail">The rebuild is surgical: only the theme slots and mapped values are rewritten — every untouched part of the file is preserved byte-for-byte, including images, animations and speaker notes.</p>
+        <button type="button" class="rbd-download{{#if flattened}} is-noop{{/if}}" data-export-file data-busy-label="Rebranding…">{{#if flattened}}Download anyway{{else}}Download rebranded deck{{/if}}</button>
+        <p class="rbd-note rbd-tail">The rebuild is surgical: only the theme slots and mapped values are rewritten — every untouched part of the file is preserved byte-for-byte, including images, animations and speaker notes. That preservation cuts both ways: a colour or typeface baked into a picture is part of that picture, so a slide made of images comes back unchanged.</p>
       {{/if}}
     </div>
   {{/if}}

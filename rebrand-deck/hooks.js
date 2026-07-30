@@ -48,6 +48,16 @@ function isPptx(bytes) {
     bytes[0] === 0x50 && bytes[1] === 0x4B && bytes[2] === 0x03 && bytes[3] === 0x04);
 }
 
+// "%PDF" magic. A PDF is the single most likely wrong pick here — it's what a
+// deck gets exported AS — and it earns its own message, because "not a deck"
+// doesn't explain why a PDF can never be rebranded: the export flattened the
+// colours and typefaces into page content, and re-saving it would not change a
+// pixel. Same for the deck-shaped case below.
+function isPdf(bytes) {
+  return Boolean(bytes && bytes.length > 3 &&
+    bytes[0] === 0x25 && bytes[1] === 0x50 && bytes[2] === 0x44 && bytes[3] === 0x46);
+}
+
 function fmtBytes(n) {
   if (!isFinite(n) || n <= 0) return '0 B';
   if (n < 1024) return n + ' B';
@@ -153,6 +163,50 @@ function themeRows(res) {
 
 function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
 
+// Is anything on the slides actually rebrandable? Returns the sentence to show
+// when the answer is no, or '' when the deck has live content to work on.
+//
+// `content` (engine 1.79) is the direct signal — a node-kind tally per deck. An
+// older shell omits it, so there is a fallback: no literal colour anywhere AND
+// no typeface beyond the two the theme itself declares means the slides carry
+// nothing a colour/font map could reach. The fallback is deliberately weaker
+// (a fully theme-linked deck rebrands beautifully and looks the same from
+// here), so it only warns about mapped values, not about the whole render.
+function flattenedNote(res) {
+  var c = res.content;
+  if (c) {
+    var live = (c.texts || 0) + (c.shapes || 0) + (c.tables || 0) + (c.unknown || 0);
+    if ((c.pictures || 0) > 0 && live === 0) {
+      return 'Every slide in this deck is a flat picture — there is no live text, ' +
+        'shape or table on them. Rebranding cannot change a pixel of it: colours ' +
+        'and typefaces baked into an image are part of the image. This is what a ' +
+        'deck exported to PDF, or rebuilt from page images, looks like. Go back to ' +
+        'the editable original and rebrand that.';
+    }
+    if (live === 0 && (c.pictures || 0) === 0) {
+      return 'These slides are empty — there is nothing on them to rebrand. Only the ' +
+        'deck\'s theme would be rewritten, and the download would look identical.';
+    }
+    return '';
+  }
+  // Older shell: no tally. Fall back to "nothing for the maps to bite on".
+  var themeFaces = {};
+  if (res.theme) {
+    if (res.theme.majorFont) themeFaces[res.theme.majorFont.toLowerCase()] = true;
+    if (res.theme.minorFont) themeFaces[res.theme.minorFont.toLowerCase()] = true;
+  }
+  var slideFonts = 0;
+  res.fonts.forEach(function (f) { if (!themeFaces[String(f.family).toLowerCase()]) slideFonts++; });
+  if (res.colors.length === 0 && slideFonts === 0) {
+    return 'No hardcoded colour or typeface was found on these slides. If they are flat ' +
+      'pictures — a deck exported to PDF, or rebuilt from page images — the download ' +
+      'will look identical to what you uploaded, because colours baked into an image ' +
+      'cannot be swapped. If the deck is theme-linked instead, the brand theme below ' +
+      'still does the whole job.';
+  }
+  return '';
+}
+
 async function compute(ctx) {
   var inputs = inputsFrom(ctx.model);
   var host = ctx.host;
@@ -163,12 +217,13 @@ async function compute(ctx) {
   // two mapping inputs are the deliberate exception: compute patches them by
   // id exactly once per file (the seed below), never after.
   var base = {
-    hasFile: false, unsupported: false, pptxUnavailable: false,
+    hasFile: false, unsupported: false, isPdfFile: false, pptxUnavailable: false,
     fileName: '', fileSize: '',
     pending: false, ready: false, done: false,
     slideCount: 0, colorCount: 0, fontCount: 0, reviewCount: 0,
     summaryText: '', reviewText: '',
     themeRows: [], hasTheme: false,
+    flattened: false, flattenedText: '',
   };
 
   if (!f || !f.bytes) return base;
@@ -176,7 +231,11 @@ async function compute(ctx) {
   base.fileName = f.name || 'deck.pptx';
   base.fileSize = fmtBytes(f.size);
 
-  if (!isPptx(f.bytes)) { base.unsupported = true; return base; }
+  if (!isPptx(f.bytes)) {
+    base.unsupported = true;
+    base.isPdfFile = isPdf(f.bytes);
+    return base;
+  }
 
   if (!host || !host.pptx || typeof host.pptx.inspect !== 'function') {
     base.pptxUnavailable = true; // older shell: no pptx capability
@@ -216,6 +275,14 @@ async function compute(ctx) {
     : '';
   base.themeRows = themeRows(res);
   base.hasTheme = base.themeRows.length > 0;
+
+  // A deck the rebrand cannot visibly touch — slides that are nothing but
+  // pictures (a PDF or exported images dropped onto blank slides). The theme
+  // swap still rewrites the theme part, but no slide references it and there is
+  // no live text or shape fill to remap, so the download would come back
+  // looking exactly like the input. Say it before the click, not after.
+  var flat = flattenedNote(res);
+  if (flat) { base.flattened = true; base.flattenedText = flat; }
 
   // Seed the editable mapping rows from the FIRST result for this file — and
   // only then. A key already seeded means the rows are the user's (edits,

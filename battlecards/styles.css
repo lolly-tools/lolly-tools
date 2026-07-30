@@ -103,8 +103,81 @@
   line-height: 1.42;
   font-weight: 480;
   overflow-wrap: break-word;
-  white-space: pre-line;
+  min-width: 0;
 }
+.bc-field-value--empty { opacity: 0.4; }
+
+/* ── Markdown inside a cell ──────────────────────────────────────────────────
+   The value is rendered by the engine's {{markdown}} helper, so a cell can carry
+   headings, lists, emphasis, links and images. Everything here is sized in cqmin
+   against the card, like the rest of the layout, so a card scales as one piece at
+   any export size. Block margins are collapsed away and re-added as a single gap
+   between siblings — a cell is a small panel, not a document, and a leading or
+   trailing margin would push the copy off its own baseline. */
+.bc-field-value > * + * { margin-top: 0.9em; }
+.bc-field-value h1,
+.bc-field-value h2,
+.bc-field-value h3,
+.bc-field-value h4,
+.bc-field-value h5,
+.bc-field-value h6 {
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+.bc-field-value h1 { font-size: 1.5em; }
+.bc-field-value h2 { font-size: 1.28em; }
+.bc-field-value h3 { font-size: 1.12em; }
+.bc-field-value h4,
+.bc-field-value h5,
+.bc-field-value h6 { font-size: 1em; }
+/* A heading immediately above its own body text belongs to it — tighten that pair. */
+.bc-field-value :is(h1, h2, h3, h4, h5, h6) + * { margin-top: 0.35em; }
+
+.bc-field-value ul,
+.bc-field-value ol {
+  padding-left: 1.35em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3em;
+}
+/* The engine bakes ordered-list numbers as real .md-index nodes with
+   list-style:none (native markers and CSS counters are both dropped by the vector
+   export path), so the number is positioned by hand into the same hanging indent
+   the bullets use. */
+.bc-field-value ol { list-style: none; padding-left: 1.6em; }
+.bc-field-value li { margin: 0; }
+.bc-field-value ol > li { position: relative; }
+.bc-field-value .md-index {
+  position: absolute;
+  right: 100%;
+  padding-right: 0.4em;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.7;
+}
+
+.bc-field-value strong { font-weight: 700; }
+.bc-field-value em { font-style: italic; }
+.bc-field-value a {
+  color: var(--bc-accent, #4f46e5);
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+  overflow-wrap: anywhere;              /* a bare URL must not widen the panel */
+}
+/* An image is block-level and capped by the panel it sits in: a cell can carry a
+   logo or a screenshot without any one row of the grid blowing out. */
+.bc-field-value .md-image {
+  display: block;
+  max-width: 100%;
+  max-height: 22cqmin;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: left center;
+  border-radius: 0.8cqmin;
+}
+.is-portrait .bc-field-value .md-image { max-height: 16cqmin; }
+
 .is-portrait .bc-title { font-size: 7cqmin; }
 
 .bc-foot {

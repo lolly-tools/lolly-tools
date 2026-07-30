@@ -3,8 +3,8 @@
   "name": "Battlecards",
   "description": "Turn any table into a deck of cards — one card per row, ready as a multi-page PDF. Paste straight from your spreadsheet, doc, or chat.",
   "a11yLabel": "Battlecards: {{default title \"Battlecards\"}} — one card per table row",
-  "version": "1.0.0",
-  "engineVersion": "^1.78.0",
+  "version": "1.1.0",
+  "engineVersion": "^1.80.0",
   "status": "community",
   "category": "everyone",
   "tags": ["battlecard", "sales", "competitive", "table", "cards", "pdf", "pages", "batch"],
@@ -14,6 +14,7 @@
     "formats": ["pdf", "png", "webp", "jpeg"],
     "actions": ["copy", "download", "save"],
     "paged": true,
+    "filmstrip": "bottom",
     "paginate": { "source": "data" }
   },
   "inputs": [
@@ -22,14 +23,14 @@
       "label": "Table",
       "type": "table",
       "urlKey": "t",
-      "help": "One card per row. The first column is each card's title; the other column headings become its field labels. Paste a table copied from a spreadsheet, Notion, Slack, or Markdown.",
+      "help": "One card per row. The first column is each card's title; the other column headings become its field labels. Cells take markdown — **bold**, *italic*, # headings, - bullet and 1. numbered lists, [links](url) and ![images](url). Paste a table copied from a spreadsheet, Notion, Slack, or Markdown.",
       "default": {
         "columns": ["Pain", "Summary", "SolutionName", "CompetitorName", "Strategy"],
         "rows": [
-          ["Assurance", "Is it open?", "Yes", "Yes", "Table stakes, compete with why"],
+          ["Assurance", "Is it **open**?", "Yes", "Yes", "Table stakes — compete with *why*"],
           ["Provenance", "Where's it made?", "Europe", "North America", "Local advantage, global-qualify"],
-          ["Jurisdiction", "What laws impact it?", "Good laws", "Risky laws", "Readiness play, compliance framework"],
-          ["Reversibility", "Easy to leave?", "By design", "Walled garden", "Real choice means you can act"]
+          ["Jurisdiction", "What laws impact it?", "Good laws", "Risky laws", "1. Readiness play\n2. Compliance framework"],
+          ["Reversibility", "Easy to leave?", "By design", "Walled garden", "- Real choice means you can act\n- No exit fee, no rewrite"]
         ]
       }
     },

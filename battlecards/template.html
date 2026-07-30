@@ -12,11 +12,19 @@
       <h1 class="bc-title bc-title--empty">Paste a table to start</h1>
     {{/if}}
 
+    {{!-- Cell copy is markdown: the engine's {{markdown}} helper turns it into a
+          fixed, escape-first tag set (headings, lists, bold/italic, links, images),
+          so a pasted spreadsheet cell can carry structure without the tool needing
+          a hook. An empty cell keeps the em-dash placeholder rather than a hole. --}}
     <div class="bc-fields">
       {{#each page.fields}}
       <div class="bc-field">
         <div class="bc-field-label">{{column}}</div>
-        <div class="bc-field-value">{{default value "—"}}</div>
+        {{#if value}}
+        <div class="bc-field-value">{{{markdown value}}}</div>
+        {{else}}
+        <div class="bc-field-value bc-field-value--empty">—</div>
+        {{/if}}
       </div>
       {{/each}}
     </div>

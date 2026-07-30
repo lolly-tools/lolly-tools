@@ -151,6 +151,17 @@
 .rbd-state { margin-top: 16px; }
 .rbd-lead { font-size: 15px; font-weight: 600; margin: 0 0 4px; }
 
+/* "This won't do what you're expecting" — a flattened deck, or a PDF. A tinted
+   panel on all four sides (not a rule down one edge), tinted with a translucent
+   amber so it reads the same over a light or a dark brand surface. */
+.rbd-state-warn {
+  padding: 12px 16px;
+  border-radius: 12px;
+  background: color-mix(in oklab, #e8a33d 16%, transparent);
+  border: 1px solid color-mix(in oklab, #e8a33d 38%, transparent);
+}
+.rbd-state-warn .rbd-note { color: var(--brand-text, #17232b); margin-top: 6px; }
+
 .rbd-note { font-size: 12px; color: var(--brand-muted, #4a4a4a); line-height: 1.5; margin: 8px 0 0; }
 .rbd-note code { background: color-mix(in oklab, var(--brand-edge, #d6d6d6) 45%, transparent); padding: 1px 5px; border-radius: 4px; font-size: 11px; }
 
@@ -168,6 +179,14 @@
   cursor: pointer;
 }
 .rbd-download:hover { background: color-mix(in oklab, var(--brand-primary, #30ba78), black 12%); }
+/* Still offered (the theme part IS rewritten), but not the confident primary
+   call to action — the download can't change what the user can see. */
+.rbd-download.is-noop {
+  background: transparent;
+  color: var(--brand-muted, #4a4a4a);
+  border: 1px solid var(--brand-edge, #d6d6d6);
+}
+.rbd-download.is-noop:hover { background: color-mix(in oklab, var(--brand-edge, #d6d6d6) 30%, transparent); }
 .rbd-download.is-busy { opacity: .7; cursor: progress; }
 .rbd-download.is-error { background: #c22f2f; color: #fff; }
 .rbd-tail { margin-top: 12px; }
