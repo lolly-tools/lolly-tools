@@ -580,6 +580,16 @@
         "muteField": "mute",
         "laneField": "lane",
         "minSize": 8,
+        "import": {
+          "mode": "scenes",
+          "formats": [
+            "svg",
+            "penpot",
+            "pdf",
+            "ai",
+            "idml"
+          ]
+        },
         "addKinds": [
           {
             "id": "clip",
