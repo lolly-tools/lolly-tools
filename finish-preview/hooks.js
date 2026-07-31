@@ -40,6 +40,13 @@ var _defaultUrl = null;
 // One-entry memo of the last rendered SVG, keyed on every input that affects it.
 var _memoKey = null;
 var _memoResult = null;
+// Separate, narrower memo for the EXPENSIVE half: the per-pixel OKLab mask
+// rasterisation + its two PNG encodes, keyed only on the inputs computeMasks
+// actually reads. Everything else is string assembly.
+var _maskKey = null;
+var _maskVal = null;
+// Long-edge cap for the mask/plate raster grid (px). See the comment at its use.
+var MASK_LONG_EDGE = 2048;
 // Remembered for beforeExport (which only gets format/opts): the export-margin fill.
 var _bgColor = '#ffffff';
 
@@ -55,6 +62,20 @@ function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 function f2(v) { return Math.round(v * 100) / 100; }
+// FNV-1a → base36. Derives a CONTENT-DERIVED prefix for every SVG def id this
+// tool emits: two instances mounted in ONE document (the /multi view, a composed
+// board, "render everything") must not resolve url(#…) to whichever defs happen
+// to sit first in document order — here the mask IS the deliverable, so a
+// cross-wired mask means approving a plate that belongs to different artwork.
+// Content-derived rather than a counter: each mount gets its own hooks module
+// scope, so a per-module counter would restart at 1 and collide anyway. Equal
+// content ⇒ equal prefix ⇒ identical defs, which is harmless, and the SVG stays
+// byte-stable for identical inputs.
+function hash32(s) {
+  var h = 2166136261;
+  for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36);
+}
 // === lolly:shared esc — generated from community/_shared/text.js; edit there and run npm run sync:shared ===
 function esc(s) {
   return String(s == null ? '' : s)
@@ -121,6 +142,16 @@ function canRaster() {
 
 function srgbToLinear(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
 function linearToSrgb(c) { return c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055; }
+
+// 8-bit → linear lookup. The mask loop runs srgbToLinear three times per pixel
+// over a multi-megapixel grid; the byte values are exactly the 256 table entries,
+// so this is the same number, not an approximation. Only the alpha-composited
+// path (a < 1) produces off-table values and falls back to the real function.
+var SRGB_LUT = (function () {
+  var t = new Float64Array(256);
+  for (var i = 0; i < 256; i++) t[i] = srgbToLinear(i / 255);
+  return t;
+})();
 
 function hexToRgb(hex) {
   var h = String(hex == null ? '' : hex).trim().replace(/^#/, '');
@@ -280,11 +311,18 @@ function computeMasks(img, cw, ch, fit, source, thr, soft, maskLab) {
   var featherD = (soft / 100) * 0.25;
 
   for (var i = 0, p = 0; p < data.length; i++, p += 4) {
-    var a = data[p + 3] / 255;
-    var R = data[p] / 255, G = data[p + 1] / 255, B = data[p + 2] / 255;
-    // Composite transparency onto white so cut-out PNGs don't read as black.
-    if (a < 1) { R = R * a + (1 - a); G = G * a + (1 - a); B = B * a + (1 - a); }
-    var lab = linearSrgbToOklab(srgbToLinear(R), srgbToLinear(G), srgbToLinear(B));
+    var al = data[p + 3];
+    var lab;
+    if (al === 255) {
+      lab = linearSrgbToOklab(SRGB_LUT[data[p]], SRGB_LUT[data[p + 1]], SRGB_LUT[data[p + 2]]);
+    } else {
+      // Composite transparency onto white so cut-out PNGs don't read as black.
+      var a = al / 255;
+      var R = (data[p] / 255) * a + (1 - a);
+      var G = (data[p + 1] / 255) * a + (1 - a);
+      var B = (data[p + 2] / 255) * a + (1 - a);
+      lab = linearSrgbToOklab(srgbToLinear(R), srgbToLinear(G), srgbToLinear(B));
+    }
     var v;
     if (source === 'light') {
       v = sstep(tL - featherL, tL + featherL, lab[0] * 100);
@@ -356,12 +394,24 @@ function buildSvg(args) {
     if (args.wholeMask) {
       pl += '<rect x="' + rx + '" y="' + ry + '" width="' + rw + '" height="' + rh + '" fill="#000000"/>';
     } else {
+      // image-rendering:pixelated, NOT optimizeQuality: computeMasks hard-thresholds
+      // the plate to exactly 0 or 255 so it is 1-bit by construction. Smoothed
+      // resampling at any scale other than 1:1 would turn every plate edge into a
+      // grey ramp, which a RIP then re-thresholds at its own arbitrary cut-off —
+      // the foil die would no longer match the mask the user approved on screen.
       pl += '<image href="' + esc(args.plateUrl) + '" x="' + rx + '" y="' + ry + '" width="' + rw
-        + '" height="' + rh + '" preserveAspectRatio="none" image-rendering="optimizeQuality"/>';
+        + '" height="' + rh + '" preserveAspectRatio="none" image-rendering="crisp-edges" '
+        + 'style="image-rendering:crisp-edges;image-rendering:pixelated"/>';
     }
-    pl += '<text x="24" y="' + (VIEW - 20) + '" font-family="system-ui, sans-serif" font-size="22" fill="#111111" '
-      + 'style="paint-order:stroke;stroke:#ffffff;stroke-width:6px;stroke-linejoin:round">'
-      + esc(label + ' · prints as spot plate — overprint') + '</text>';
+    // The overprint label is an ANNOTATION, never plate ink. It used to be #111111
+    // (a second tone for the separator, not solid spot ink) with a 6px white
+    // paint-order stroke, which punched a white halo straight through the black
+    // plate underneath — physically cutting the foil/UV shape away along the
+    // label. Solid #000000, no knockout, in a documented strippable group: never
+    // paint white over plate geometry.
+    pl += '<g id="fp-plate-annotation">'
+      + '<text x="24" y="' + (VIEW - 20) + '" font-family="system-ui, sans-serif" font-size="22" fill="#000000">'
+      + esc(label + ' · prints as spot plate — overprint') + '</text></g>';
     pl += '</svg>';
     return pl;
   }
@@ -371,6 +421,21 @@ function buildSvg(args) {
   var kind = finishKind(args.finish);
   var angle = clamp(n(args.angle, 35), 0, 360);
   var animate = !!args.animate && (kind === 'foil' || kind === 'uv');
+  // Per-render def-id prefix (see hash32). args.maskHash stands in for the mask
+  // PNG itself — same finish settings over DIFFERENT artwork must not collide,
+  // because it is the mask that would get cross-wired.
+  var U = 'fp' + hash32(JSON.stringify([
+    args.finish, k, angle, animate, args.cover, args.wholeMask, args.bg, args.maskHash || '',
+    region.x, region.y, region.w, region.h,
+  ])) + '-';
+  // NB every filter below pins color-interpolation-filters="sRGB". The SVG
+  // default is linearRGB, and each of these curves is authored in sRGB terms:
+  // fp-matte's tone curve pivots at 0.5 (linear-light 0.5 is sRGB ~0.735, so in
+  // linearRGB the "gentle softening" pivots near white and lifts the whole
+  // image), its grain floods RGB to 0.5 expecting neutral mid-grey, and
+  // fp-gloss's negative intercept eats far more shadow in linear light. Same
+  // rule as every other filter in this repo (see community/filter-imperfections
+  // and engine/src/photo-treatment.ts, which documents why).
 
   var artHref = esc(args.url);
   var artImg = args.cover
@@ -384,26 +449,26 @@ function buildSvg(args) {
 
   var defs = '';
   // The finish mask (luminance × alpha of the white/alpha mask PNG).
-  defs += '<mask id="fp-m" maskUnits="userSpaceOnUse" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '">'
+  defs += '<mask id="' + U + 'm" maskUnits="userSpaceOnUse" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '">'
     + (args.wholeMask ? regionRect('#ffffff') : maskImg)
     + '</mask>';
 
   if (kind === 'matte') {
     // Inverse mask: everything in the region EXCEPT the finish areas. Built by
     // painting the mask black (fp-black keeps alpha, zeroes RGB) over white.
-    defs += '<filter id="fp-black"><feColorMatrix type="matrix" '
+    defs += '<filter id="' + U + 'black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" '
       + 'values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter>';
-    defs += '<mask id="fp-mi" maskUnits="userSpaceOnUse" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '">'
+    defs += '<mask id="' + U + 'mi" maskUnits="userSpaceOnUse" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '">'
       + regionRect('#ffffff')
       + (args.wholeMask ? regionRect('#000000')
-        : '<g filter="url(#fp-black)">' + maskImg + '</g>')
+        : '<g filter="url(#' + U + 'black)">' + maskImg + '</g>')
       + '</mask>';
     // Soft-touch look: gentle desaturate, softened tone with a slight lift, and
     // a fine deterministic grain (fixed feTurbulence seed) blended on top.
     var slope = 1 - 0.14 * k;
     var icpt = f2(0.5 - 0.5 * slope + 0.04 * k);
     slope = f2(slope);
-    defs += '<filter id="fp-matte" x="-2%" y="-2%" width="104%" height="104%">'
+    defs += '<filter id="' + U + 'matte" x="-2%" y="-2%" width="104%" height="104%" color-interpolation-filters="sRGB">'
       + '<feColorMatrix in="SourceGraphic" type="saturate" values="' + f2(1 - 0.4 * k) + '" result="des"/>'
       + '<feComponentTransfer in="des" result="tone">'
       + '<feFuncR type="linear" slope="' + slope + '" intercept="' + icpt + '"/>'
@@ -422,22 +487,22 @@ function buildSvg(args) {
     var stops = args.finish === 'foil-holographic'
       ? holoStops()
       : rampStops(FOIL_ANCHORS[args.finish] || FOIL_ANCHORS['foil-gold'], 4);
-    defs += '<linearGradient id="fp-metal" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="' + VIEW + '" y2="0" '
+    defs += '<linearGradient id="' + U + 'metal" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="' + VIEW + '" y2="0" '
       + 'gradientTransform="rotate(' + f2(angle) + ' ' + (VIEW / 2) + ' ' + (VIEW / 2) + ')">'
       + gradientStopsMarkup(stops) + '</linearGradient>';
-    defs += sheenGradient('fp-sheen', angle, 0.1 + 0.45 * k, false, animate);
+    defs += sheenGradient(U + 'sheen', angle, 0.1 + 0.45 * k, false, animate);
   }
 
   if (kind === 'uv') {
     // Spot UV: the masked artwork itself, gloss-boosted, plus a sharp specular band.
-    defs += '<filter id="fp-gloss">'
+    defs += '<filter id="' + U + 'gloss" color-interpolation-filters="sRGB">'
       + '<feColorMatrix type="saturate" values="' + f2(1 + 0.15 * k) + '"/>'
       + '<feComponentTransfer>'
       + '<feFuncR type="linear" slope="' + f2(1 + 0.1 * k) + '" intercept="' + f2(-0.04 * k) + '"/>'
       + '<feFuncG type="linear" slope="' + f2(1 + 0.1 * k) + '" intercept="' + f2(-0.04 * k) + '"/>'
       + '<feFuncB type="linear" slope="' + f2(1 + 0.1 * k) + '" intercept="' + f2(-0.04 * k) + '"/>'
       + '</feComponentTransfer></filter>';
-    defs += sheenGradient('fp-sheen', angle, 0.15 + 0.35 * k, true, animate);
+    defs += sheenGradient(U + 'sheen', angle, 0.15 + 0.35 * k, true, animate);
   }
 
   if (kind === 'bevel') {
@@ -448,7 +513,7 @@ function buildSvg(args) {
     var raised = args.finish === 'emboss';
     var liteD = raised ? -e : e;   // light from top-left when raised
     var darkD = raised ? e : -e;
-    defs += '<filter id="fp-bevel" x="-5%" y="-5%" width="110%" height="110%">'
+    defs += '<filter id="' + U + 'bevel" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">'
       + '<feOffset in="SourceAlpha" dx="' + liteD + '" dy="' + liteD + '" result="oL"/>'
       + '<feComposite in="oL" in2="SourceAlpha" operator="out" result="bandL"/>'
       + '<feFlood flood-color="#ffffff" flood-opacity="' + eo + '" result="fw"/>'
@@ -467,32 +532,35 @@ function buildSvg(args) {
   out += artImg;
 
   if (kind === 'matte') {
-    out += '<g mask="url(#fp-mi)"><g filter="url(#fp-matte)">' + artImg + '</g></g>';
+    out += '<g mask="url(#' + U + 'mi)"><g filter="url(#' + U + 'matte)">' + artImg + '</g></g>';
   } else if (kind === 'foil') {
-    out += '<g mask="url(#fp-m)" opacity="' + f2(0.25 + 0.7 * k) + '">'
-      + regionRect('url(#fp-metal)')
-      + regionRect('url(#fp-sheen)')
+    out += '<g mask="url(#' + U + 'm)" opacity="' + f2(0.25 + 0.7 * k) + '">'
+      + regionRect('url(#' + U + 'metal)')
+      + regionRect('url(#' + U + 'sheen)')
       + '</g>';
   } else if (kind === 'uv') {
-    out += '<g mask="url(#fp-m)"><g filter="url(#fp-gloss)">' + artImg + '</g>'
-      + regionRect('url(#fp-sheen)')
+    out += '<g mask="url(#' + U + 'm)"><g filter="url(#' + U + 'gloss)">' + artImg + '</g>'
+      + regionRect('url(#' + U + 'sheen)')
       + '</g>';
   } else if (kind === 'bevel') {
     out += args.wholeMask
-      ? '<g filter="url(#fp-bevel)">' + regionRect('#ffffff') + '</g>'
-      : '<g filter="url(#fp-bevel)">' + maskImg + '</g>';
+      ? '<g filter="url(#' + U + 'bevel)">' + regionRect('#ffffff') + '</g>'
+      : '<g filter="url(#' + U + 'bevel)">' + maskImg + '</g>';
   }
 
   out += '</svg>';
   return out;
 }
 
-// ── reduced-motion (chrome pref OR the OS media query, like the shell's own
-// prefersReducedMotion) — when it holds, the sheen rests instead of sweeping. ──
+// ── reduced-motion: the OS media query ONLY. Deliberately does NOT read the
+// shell's `data-a11y-motion` attribute — that is chrome-private state which is
+// documented as never reaching inside the tool canvas, and a tool is data, not
+// chrome. The OS query is a platform API any renderer may consult.
+// Exports are unaffected either way: beforeExport pins the sheen to its rest
+// pose (or drives it from the frame clock), so a rendered file is determined by
+// the URL alone regardless of who is looking at the preview. ──
 function prefersReducedMotion() {
   try {
-    if (typeof document !== 'undefined' && document.documentElement
-      && document.documentElement.getAttribute('data-a11y-motion') === 'reduce') return true;
     if (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches) return true;
   } catch (e) { /* ignore */ }
   return false;
@@ -559,21 +627,45 @@ async function compute(model) {
     var wholeMask = maskSource === 'whole';
     var masks = null;
     if (!wholeMask) {
-      var maskLab = hexToOklab(maskColorHex) || hexToOklab('#30ba78');
-      masks = computeMasks(
-        img,
-        Math.max(1, Math.round(region.w)), Math.max(1, Math.round(region.h)),
-        cover ? 'cover' : 'contain', maskSource,
-        clamp(n(inputs.threshold, 60), 0, 100), clamp(n(inputs.softness, 4), 0, 20),
-        maskLab
-      );
-      if (!masks) throw new Error('cannot read pixels');
+      var thrV = clamp(n(inputs.threshold, 60), 0, 100);
+      var softV = clamp(n(inputs.softness, 4), 0, 20);
+      // Second, NARROWER memo: only these six inputs reach computeMasks. Without
+      // it every strength / sweep-angle / sheen / background / plate-view change
+      // re-ran a multi-megapixel OKLab loop plus two PNG encodes — the sweep-angle
+      // slider alone has 73 stops, and past HOOK_BUDGET_MS.onInput (2s) the
+      // runtime abandons the patch, so the preview silently stops updating while
+      // the hook keeps burning CPU. Those inputs now only re-run buildSvg (string
+      // concatenation, sub-millisecond).
+      var maskKey = JSON.stringify([url, maskSource, maskColorHex, thrV, softV, cover]);
+      if (_maskKey === maskKey && _maskVal) {
+        masks = _maskVal;
+      } else {
+        // Plate resolution: the plate is a PRINT deliverable, so the mask grid is
+        // sized from the artwork, not from the 1000-unit viewBox — a 4000px logo
+        // used to be thrown away at ~85 dpi on a business card, exactly where edge
+        // fidelity matters most. Capped at MASK_LONG_EDGE: the per-pixel OKLab
+        // loop and the two PNG encodes have to stay inside the onInput budget on
+        // a mid-range phone, and 2048 is ~4× today's detail at ~4× the cost.
+        var ar = region.w / region.h;
+        var LONG = Math.max(VIEW, Math.min(MASK_LONG_EDGE, Math.round(Math.max(iw, ih))));
+        var cw = ar >= 1 ? LONG : Math.max(1, Math.round(LONG * ar));
+        var ch = ar >= 1 ? Math.max(1, Math.round(LONG / ar)) : LONG;
+        var maskLab = hexToOklab(maskColorHex) || hexToOklab('#30ba78');
+        masks = computeMasks(img, cw, ch, cover ? 'cover' : 'contain', maskSource, thrV, softV, maskLab);
+        if (!masks) throw new Error('cannot read pixels');
+        // Identifies this mask for the def-id prefix without re-hashing the
+        // multi-megabyte data URI on every re-render.
+        masks.hash = hash32(masks.plateUrl);
+        _maskKey = maskKey;
+        _maskVal = masks;
+      }
     }
 
     finishSvg = buildSvg({
       url: url, plate: plate, bg: bg, cover: cover, region: region,
       wholeMask: wholeMask,
       maskUrl: masks && masks.maskUrl, plateUrl: masks && masks.plateUrl,
+      maskHash: masks && masks.hash,
       finish: inputs.finish, strength: inputs.strength,
       animate: animate, angle: inputs.angle,
     });
@@ -590,6 +682,81 @@ async function compute(model) {
 function onInit(ctx) { return compute(ctx.model); }
 function onInput(ctx) { return compute(ctx.model); }
 
+// ── Export-time sheen determinism ────────────────────────────────────────────
+// The live preview sweeps the sheen with SMIL, and the export pipeline cannot
+// scrub SMIL: `scrubAnimations()` walks getAnimations({subtree:true}), which in
+// Blink returns CSSAnimation/CSSTransition/script animations and never SVG SMIL,
+// and `__lollyFrameRender` is a canvas hook this tool has no reason to own for
+// its still path. So a PNG exported at t=2.0s and the same URL at t=4.3s used to
+// differ — a determinism violation, and for gif/apng/webm/mp4 the sweep was
+// paced by capture jitter, the exact drift the frame clock exists to remove.
+//
+// beforeExport therefore takes the animation OUT of the DOM for the duration of
+// the export and pins gradientTransform itself:
+//   • stills (png/svg/pdf/…) get the documented centred REST pose — and the
+//     exported SVG file carries no infinite SMIL loop for downstream tools;
+//   • motion formats get one exact sweep per clip, driven by the export frame
+//     clock, so frame N is the same image every run.
+// Attribute-baked, not state-based: it survives the clone-and-serialise capture
+// path (which would restart a SMIL clock at t=0 in the cloned document) as well
+// as a real screenshot.
+var SHEEN_MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
+var _sheenPinned = null;   // [{ el, anim, base }] while an export is in flight
+var _clockEl = null;       // mounted frame-clock anchor (motion formats only)
+
+function pinSheen(node) {
+  _sheenPinned = [];
+  if (!node || !node.querySelectorAll) return;
+  // id is `<prefix>-sheen` for every instance (see the def-id prefix in buildSvg).
+  var els = node.querySelectorAll('linearGradient[id$="-sheen"]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    var anim = el.querySelector ? el.querySelector('animateTransform') : null;
+    var base = el.getAttribute('gradientTransform') || '';
+    if (anim && anim.parentNode === el) el.removeChild(anim);
+    el.setAttribute('gradientTransform', base);   // rest pose: rotate only
+    _sheenPinned.push({ el: el, anim: anim, base: base });
+  }
+}
+// t ∈ [0,1): normalised loop time from the export frame clock. Reproduces the
+// SMIL sweep exactly — additive translate from -VIEW to +VIEW along the axis.
+function setSheenPhase(t) {
+  if (!_sheenPinned) return;
+  var dx = -VIEW + 2 * VIEW * clamp(n(t, 0), 0, 1);
+  for (var i = 0; i < _sheenPinned.length; i++) {
+    var p = _sheenPinned[i];
+    p.el.setAttribute('gradientTransform', p.base + ' translate(' + f2(dx) + ' 0)');
+  }
+}
+function unpinSheen() {
+  if (!_sheenPinned) return;
+  for (var i = 0; i < _sheenPinned.length; i++) {
+    var p = _sheenPinned[i];
+    p.el.setAttribute('gradientTransform', p.base);
+    if (p.anim) p.el.appendChild(p.anim);   // live preview resumes sweeping
+  }
+  _sheenPinned = null;
+}
+// A 0×0 absolutely-positioned canvas is the only channel the capture loop drives
+// a frame time through (export.ts: frameClockCanvas scans ctx.node for a <canvas>
+// carrying __lollyFrameRender). Zero backing store + out of flow: it paints
+// nothing, shifts no layout, and the shell's static-chrome fast path skips it.
+function mountClock(node) {
+  if (!node || !node.ownerDocument || !node.appendChild) return null;
+  var el = node.ownerDocument.createElement('canvas');
+  el.setAttribute('aria-hidden', 'true');
+  el.setAttribute('data-fp-clock', '');
+  el.setAttribute('style', 'position:absolute;left:0;top:0;width:0;height:0;pointer-events:none');
+  el.width = 0; el.height = 0;
+  el.__lollyFrameRender = function (t) { setSheenPhase(t); };
+  node.appendChild(el);
+  return (_clockEl = el);
+}
+function unmountClock() {
+  if (_clockEl && _clockEl.parentNode) _clockEl.parentNode.removeChild(_clockEl);
+  _clockEl = null;
+}
+
 function beforeExport(ctx) {
   // Alpha-capable raster formats: fill the exported frame's margins with the
   // canvas background (white in plate view) so a non-square export has no
@@ -598,4 +765,11 @@ function beforeExport(ctx) {
   if (alpha.indexOf(ctx.format) !== -1) {
     ctx.opts.background = _bgColor;
   }
+  pinSheen(ctx.node);
+  if (SHEEN_MOTION_FORMATS[ctx.format]) mountClock(ctx.node);
+}
+
+function afterExport() {
+  unmountClock();
+  unpinSheen();
 }

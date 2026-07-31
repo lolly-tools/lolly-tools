@@ -158,6 +158,7 @@
   "hooks": {
     "onInit": true,
     "onInput": true,
-    "beforeExport": true
+    "beforeExport": true,
+    "afterExport": true
   }
 }

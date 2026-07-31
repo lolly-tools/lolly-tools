@@ -57,6 +57,20 @@ function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 function f2(v) { return Math.round(v * 100) / 100; }
 function f4(v) { return Math.round(v * 10000) / 10000; }
+// FNV-1a → base36. Used to derive a CONTENT-DERIVED prefix for every SVG def id
+// this tool emits, so two instances of the tool mounted in ONE document (the
+// /multi view, a composed board, "render everything") can't cross-wire their
+// url(#…) references to whichever defs happen to come first in document order.
+// Content-derived rather than a counter: a per-module counter restarts at 1 in
+// every runtime (each mount gets its own hooks module scope, so it would still
+// collide), and hashing the defs-affecting inputs keeps the SVG byte-stable for
+// identical inputs — two instances that hash the same emit identical defs, so
+// sharing them is a no-op.
+function hash32(s) {
+  var h = 2166136261;
+  for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return (h >>> 0).toString(36);
+}
 // === lolly:shared esc — generated from community/_shared/text.js; edit there and run npm run sync:shared ===
 function esc(s) {
   return String(s == null ? '' : s)
@@ -485,9 +499,9 @@ function plateMatrices(mode, ink1, ink2) {
 
 // The bleed/degrade filter chain — pure SVG filter primitives, applied to the
 // whole plate group so the composed print soaks as one.
-function fxFilter(e) {
+function fxFilter(e, U) {
   if (e.bleed <= 0.01 && e.degrade <= 0.01) return '';
-  var f = '<filter id="imp-fx" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">';
+  var f = '<filter id="' + U + 'fx" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">';
   // Noise sources first (feTurbulence takes no input, so it can't sit mid-chain).
   f += '<feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="' + e.seed + '" result="impN1"/>';
   if (e.degrade > 0.01) {
@@ -534,7 +548,7 @@ function fxFilter(e) {
 // passes — dark flecks multiply (ink sitting down into the tooth), light flecks
 // screen (ink missing off the tooth peaks). Fleck colours derive from the paper
 // in OKLab so the speckle always belongs to the stock.
-function grainDefs(e, paper) {
+function grainDefs(e, paper, U) {
   if (e.grain <= 0.005) return '';
   var dark = hexToRgb(lerpOklab(paper, '#221a10', 0.85)) || [34, 26, 16];
   var light = hexToRgb(lerpOklab(paper, '#ffffff', 0.7)) || [255, 255, 255];
@@ -548,18 +562,18 @@ function grainDefs(e, paper) {
       + '0.6 0.6 0.6 0 -0.55"/>'
       + '</filter>';
   }
-  return speckle('imp-grain-d', dark, e.seed + 13) + speckle('imp-grain-l', light, e.seed + 29);
+  return speckle(U + 'grain-d', dark, e.seed + 13) + speckle(U + 'grain-l', light, e.seed + 29);
 }
-function grainRects(e) {
+function grainRects(e, U) {
   if (e.grain <= 0.005) return '';
-  return '<rect width="' + VIEW + '" height="' + VIEW + '" filter="url(#imp-grain-d)" opacity="' + f4(0.55 * e.grain) + '" style="mix-blend-mode:multiply"/>'
-    + '<rect width="' + VIEW + '" height="' + VIEW + '" filter="url(#imp-grain-l)" opacity="' + f4(0.45 * e.grain) + '" style="mix-blend-mode:screen"/>';
+  return '<rect width="' + VIEW + '" height="' + VIEW + '" filter="url(#' + U + 'grain-d)" opacity="' + f4(0.55 * e.grain) + '" style="mix-blend-mode:multiply"/>'
+    + '<rect width="' + VIEW + '" height="' + VIEW + '" filter="url(#' + U + 'grain-l)" opacity="' + f4(0.45 * e.grain) + '" style="mix-blend-mode:screen"/>';
 }
 
 // Colour-section grade (hue/saturation/lightness) as a filter on the result group.
-function hslFilter(hueDeg, sat, light) {
+function hslFilter(hueDeg, sat, light, U) {
   if (hueDeg === 0 && sat === 1 && light === 0) return '';
-  var f = '<filter id="imp-hsl" color-interpolation-filters="sRGB">';
+  var f = '<filter id="' + U + 'hsl" color-interpolation-filters="sRGB">';
   var first = true;
   function inAttr() { var s = first ? ' in="SourceGraphic"' : ''; first = false; return s; }
   if (hueDeg !== 0) f += '<feColorMatrix' + inAttr() + ' type="hueRotate" values="' + f4(hueDeg) + '"/>';
@@ -584,39 +598,58 @@ var BLEND_MODES = {
 
 // ── the SVG ──────────────────────────────────────────────────────────────────
 
+// A per-render prefix for every def id, derived from exactly the inputs that
+// shape the defs (NOT the image URL, which can be a multi-megabyte live-camera
+// data URI — hashing it once a frame would cost more than the render). Two
+// instances whose defs would be byte-identical share a prefix, which is
+// harmless; any difference in separation matrices, bleed/degrade chain, grain
+// seed or colour grade gives a different prefix, so /multi, composed boards and
+// "render everything" never cross-wire url(#…) to the first instance's defs.
+function defsPrefix(args) {
+  var e = args.effect;
+  return 'imp' + hash32(JSON.stringify([
+    e.plates, e.misreg, e.bleed, e.degrade, e.grain, e.seed,
+    args.ink1, args.ink2, args.paper, args.hueDeg, args.sat, args.light,
+  ])) + '-';
+}
+
 function buildSvg(args) {
-  // No-filter bypass: raw source + overlay, no press simulation at all.
+  var par = args.fit === 'contain' ? 'xMidYMid meet' : 'xMidYMid slice';
+
+  // No-filter bypass: raw source + overlay, no press simulation at all. Honours
+  // the SAME fit as the filtered path — toggling "No filter" must change the
+  // effect only, never the framing, or it is useless as an A/B compare.
   if (args.noFilter) {
     var bgnf = args.transparent ? null : args.paper;
     var onf = svgOpen();
     if (bgnf) onf += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="' + esc(bgnf) + '"/>';
-    if (args.url) onf += '<image href="' + ovEsc(args.url) + '" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '" preserveAspectRatio="xMidYMid slice"/>';
+    if (args.url) onf += '<image href="' + ovEsc(args.url) + '" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '" preserveAspectRatio="' + par + '"/>';
     onf += '<g id="lolly-ov-slot">' + buildOverlaySvg(VIEW, VIEW, args._ov || {}) + '</g>';
     onf += '</svg>';
     return onf;
   }
 
   var e = args.effect;
-  var par = args.fit === 'contain' ? 'xMidYMid meet' : 'xMidYMid slice';
+  var U = defsPrefix(args);
   var matrices = plateMatrices(e.plates, args.ink1, args.ink2);
   var rng = mulberry32(e.seed);
 
   var defs = '<defs>';
   for (var i = 0; i < matrices.length; i++) {
-    defs += '<filter id="imp-p' + i + '" color-interpolation-filters="sRGB">'
+    defs += '<filter id="' + U + 'p' + i + '" color-interpolation-filters="sRGB">'
       + '<feColorMatrix type="matrix" values="' + matrices[i] + '"/></filter>';
   }
-  var fx = fxFilter(e);
+  var fx = fxFilter(e, U);
   defs += fx;
-  defs += grainDefs(e, args.paper);
-  var hsl = hslFilter(args.hueDeg, args.sat, args.light);
+  defs += grainDefs(e, args.paper, U);
+  var hsl = hslFilter(args.hueDeg, args.sat, args.light, U);
   defs += hsl;
   defs += '</defs>';
 
   var out = svgOpen() + defs;
 
   // Everything the Colour grade applies to (paper + print + grain).
-  out += '<g' + (hsl ? ' filter="url(#imp-hsl)"' : '') + '>';
+  out += '<g' + (hsl ? ' filter="url(#' + U + 'hsl)"' : '') + '>';
 
   // Paper.
   if (!args.transparent) {
@@ -625,14 +658,23 @@ function buildSvg(args) {
 
   // The print: one <image> per ink plate, separated by its matrix, multiplied
   // down onto the paper, each drifting out of register with seeded jitter.
-  out += '<g' + (fx ? ' filter="url(#imp-fx)"' : '') + '>';
+  //
+  // The GROUP carries mix-blend-mode:multiply, not just the plates. A filter on
+  // a group makes it an ISOLATED group (css-compositing-1 §5.1), so the plates'
+  // own multiply would blend against a transparent backdrop and the composed
+  // print would then land source-over on the paper rect — the paper tint was
+  // invisible in every setting that produced a filter (i.e. all of them but
+  // strength 0). Multiplying at the group level composites the finished print
+  // down onto the paper regardless of isolation, and multiplication is
+  // associative, so the unfiltered case renders exactly as before.
+  out += '<g style="mix-blend-mode:multiply"' + (fx ? ' filter="url(#' + U + 'fx)"' : '') + '>';
   for (var pI = 0; pI < matrices.length; pI++) {
     var dx = (rng() * 2 - 1) * e.misreg;
     var dy = (rng() * 2 - 1) * e.misreg;
     var density = 0.94 + rng() * 0.06; // uneven ink take-up, per plate
     out += '<image href="' + ovEsc(args.url) + '" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '"'
       + ' preserveAspectRatio="' + par + '"'
-      + ' filter="url(#imp-p' + pI + ')"'
+      + ' filter="url(#' + U + 'p' + pI + ')"'
       + (e.misreg > 0.01 ? ' transform="translate(' + f2(dx) + ' ' + f2(dy) + ')"' : '')
       + ' opacity="' + f4(density) + '"'
       + ' style="mix-blend-mode:multiply"/>';
@@ -640,7 +682,7 @@ function buildSvg(args) {
   out += '</g>';
 
   // Paper grain over the print (tooth shows through the ink).
-  out += grainRects(e);
+  out += grainRects(e, U);
 
   out += '</g>';
 
@@ -772,6 +814,31 @@ function onFrame(ctx) {
   return { svgContent: buildSvg(args) };
 }
 
+// ── Export frame-clock anchor, mounted on demand ─────────────────────────────
+// Not in template.html on purpose (see the comment there). armOverlayClock only
+// needs SOME [data-ov-clock] element inside ctx.node, and ctx.node is exactly the
+// node the capture loop later scans (engine runtime passes one node to both
+// beforeExport and host.export.render). Width/height MUST be forced to 0: a fresh
+// <canvas> defaults to 300x150, and a canvas with a backing store is treated as a
+// LIVE painting canvas by the web shell's static-chrome fast path, which would blit
+// a blank rectangle over every frame.
+var _ovClockEl = null;   // NB: _ovClock (no El) belongs to the shared region
+function mountOvClockAnchor(node) {
+  if (!node || !node.ownerDocument || !node.appendChild) return null;
+  var el = node.querySelector && node.querySelector('[data-ov-clock]');
+  if (el) return el;
+  el = node.ownerDocument.createElement('canvas');
+  el.setAttribute('data-ov-clock', '');
+  el.setAttribute('aria-hidden', 'true');
+  el.width = 0; el.height = 0;
+  node.appendChild(el);
+  return (_ovClockEl = el);
+}
+function unmountOvClockAnchor() {
+  if (_ovClockEl && _ovClockEl.parentNode) _ovClockEl.parentNode.removeChild(_ovClockEl);
+  _ovClockEl = null;
+}
+
 function beforeExport(ctx) {
   // Alpha-capable raster formats: "No BG" exports real transparency (the SVG
   // omits its paper rect); otherwise fill the whole exported frame with the
@@ -780,8 +847,14 @@ function beforeExport(ctx) {
   var alpha = ['png', 'webp', 'avif'];
   if (alpha.indexOf(ctx.format) !== -1) {
     ctx.opts.background = _transparent ? 'transparent' : _paperColor;
+  } else if (ctx.format === 'jpg' || ctx.format === 'jpeg') {
+    // JPEG carries no alpha: without this the transparent margins of a
+    // non-square export encode as BLACK bars, not paper. "No BG" cannot be
+    // honoured here, so paper is the only sane fill.
+    ctx.opts.background = _paperColor;
   }
   // gif/apng/webm/mp4 only: replay the overlay's intro deterministically.
+  if (_lastOv && overlayActive(_lastOv) && OV_MOTION_FORMATS[ctx.format]) mountOvClockAnchor(ctx.node);
   armFilterOverlayExport(ctx, VIEW, VIEW, _lastOv);
 }
-function afterExport() { disarmFilterOverlayExport(); }
+function afterExport() { disarmFilterOverlayExport(); unmountOvClockAnchor(); }
