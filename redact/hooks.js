@@ -1271,10 +1271,30 @@ function rectsFor(bars, W, H, quantise, page) {
 // natural CSS pixels for an SVG. Raster frames have no nodes at all, so neither
 // behaviour can fire there and the copy says so.
 
-// Touching counts as covered-adjacent: shared edges included. A node one unit
-// outside a bar is a node the bar was probably meant to take.
+// Do two boxes share any area at all, shared edges included? This is the
+// disjointness test the exact rectangle subtraction needs (subtractBox), and
+// nothing else: it is deliberately NOT the test for "did the user aim at this
+// node", because on body text line boxes and word runs abut, and a predicate
+// that counts a shared edge makes every neighbour of a neighbour reachable.
 function rectTouches(a, b) {
   return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
+}
+
+// A real, positive-area overlap of at least `eps` on BOTH axes — the test for
+// "this bar is actually over that node". Abutting boxes (a line box whose
+// bottom edge is the next line box's top edge, two word runs separated by a
+// hairline) share an edge and nothing else, and the old shared-edge-counts
+// predicate is what let a bar chain along a whole paragraph one neighbour at a
+// time. The epsilon also absorbs the sub-unit slop in measured glyph bounds, so
+// a bar that grazes the descender of the line above by a fifth of a point is
+// not treated as aimed at it.
+const OVERLAP_EPS = 0.25;
+
+function rectOverlaps(a, b, eps) {
+  const e = eps == null ? OVERLAP_EPS : eps;
+  const ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+  const oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+  return ox > e && oy > e;
 }
 
 function unionBox(a, b) {
@@ -1311,41 +1331,62 @@ function isBackdropNode(nb, W, H) {
   return nb.w >= W * BACKDROP_SPAN && nb.h >= H * BACKDROP_SPAN;
 }
 
-const SNAP_PASSES = 8;
+function usableNode(nb) {
+  return Boolean(nb) && isFinite(nb.x) && isFinite(nb.y) && nb.w >= 0 && nb.h >= 0;
+}
 
-// Grow a drawn bar to the union of every node box its PAINTED area touches.
-// A bar that half-covers a glyph is a leak, so this has no off switch: the
-// honest tool does not ship a leak mode. Repeated until nothing new is caught,
-// because growing can reach a node the original missed and the deletion set has
-// to be closed under that; bounded so a pathological document cannot spin.
+// Grow a drawn bar to the union of the nodes the USER'S OWN rectangle is over,
+// and stop there. Two properties, and they are in tension:
+//
+//   1. A bar that half-covers a glyph is a leak, so a node the user aimed at
+//      has to end up fully inside the bar. That is why growth exists at all —
+//      Andy drew strike-through-height bars that clipped the ascenders.
+//   2. A bar has to stay the size of the thing the user pointed at. Growth used
+//      to run to a FIXED POINT over the grown box, and on body text that is a
+//      flood fill: the bar reaches a word, grows, now overlaps the next word and
+//      the line above, grows again, and swallows the paragraph. Measured on a
+//      real six-page PDF, a 20x20pt bar became 455x286pt — 325x the area — and
+//      two different requested widths at the same point produced byte-identical
+//      output, because the request was discarded the moment text was touched.
+//      Word-level redaction was impossible, and headlessly nobody saw it happen.
+//
+// One pass resolves the tension. The nodes are chosen ONCE, from the box the
+// user drew (painted, so inflation and quantise count), and the bar becomes the
+// union of exactly those. Property 1 holds by construction: a union contains
+// every box it was built from. Property 2 holds because nothing the grown box
+// newly reaches can enlarge it further — the chain is cut at the first link.
+//
+// `hit` is a different question from growth and is answered against the FINAL
+// painted box: it is the set vector export DELETES, and anything the bar paints
+// over must be deleted or it stays extractable under an opaque rectangle. So
+// growth is bounded by intent, deletion is bounded by paint, and hit is a
+// superset of the grown-from set. A neighbour merely clipped by the final box is
+// therefore removed in vector mode and reported by the partial-coverage warning
+// — see partialNodes for why that is the honest rule rather than noise.
 //
 // `effOf` maps a raw box to the box that actually gets painted (inflation and
-// width quantisation), so a node the widened bar will cover is also a node the
-// vector export deletes. Omit it and the raw box is probed.
+// width quantisation). Omit it and the raw box is probed.
 //
 // Quantise ordering is a consequence, not a separate step: this returns the raw
 // grown bar and the export quantises THAT, so snap always happens first and the
 // grid only ever widens the already-snapped span.
 function snapBarToNodes(bar, nodes, effOf) {
-  let box = { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
-  const hit = [];
-  const taken = new Set();
-  for (let pass = 0; pass < SNAP_PASSES; pass++) {
-    const probe = effOf ? effOf(box) : box;
-    let grew = false;
-    for (let i = 0; i < nodes.length; i++) {
-      if (taken.has(i)) continue;
-      const nb = nodes[i];
-      if (!nb || !isFinite(nb.x) || !isFinite(nb.y) || !(nb.w >= 0) || !(nb.h >= 0)) continue;
-      if (!rectTouches(probe, nb)) continue;
-      taken.add(i);
-      hit.push(i);
-      box = unionBox(box, nb);
-      grew = true;
-    }
-    if (!grew) break;
+  const raw = { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
+  const probe = effOf ? effOf(raw) : raw;
+  let box = raw;
+  for (let i = 0; i < nodes.length; i++) {
+    const nb = nodes[i];
+    if (!usableNode(nb)) continue;
+    if (!rectOverlaps(probe, nb)) continue;
+    box = unionBox(box, nb);
   }
-  hit.sort((a, b) => a - b);
+  const final = effOf ? effOf(box) : box;
+  const hit = [];
+  for (let i = 0; i < nodes.length; i++) {
+    const nb = nodes[i];
+    if (!usableNode(nb)) continue;
+    if (rectOverlaps(final, nb)) hit.push(i);
+  }
   return { x: box.x, y: box.y, w: box.w, h: box.h, hit };
 }
 
@@ -1383,19 +1424,40 @@ function uncoveredParts(node, covers, eps) {
   return parts;
 }
 
-// Nodes that a bar reaches but does not finish. Impossible to detect on a
-// raster source (no nodes exist), and normally impossible right after a draw
-// (snap-to-cover just grew the bar past them) — it shows up after an undo, a
-// sidebar edit, or a bar deleted out from under a neighbour. Coverage is tested
-// against the UNION of every painted bar, so two bars that jointly finish a
-// word are not reported.
+// Nodes the painted bars are OVER but do not finish. Impossible to detect on a
+// raster source (no nodes exist). Coverage is tested against the UNION of every
+// painted bar, so two bars that jointly finish a word are not reported.
+//
+// THE RULE, and it is a choice worth stating. Since growth is bounded to one
+// pass, two different things can leave a node partly covered:
+//
+//   (a) a bar that is over a node it does not contain — a bar typed into the
+//       sidebar, shrunk after it was drawn, restored from a URL, or applied to
+//       a different file. Nobody grew it, and half a word is readable.
+//   (b) a neighbour merely clipped by the growth (or by the 2-unit inflation
+//       and the quantise grid) of a bar aimed at something else.
+//
+// They are geometrically indistinguishable at render time: a bar remembers its
+// current rectangle, not the rectangle it was drawn as, so "did the user aim at
+// this" cannot be recovered here. The alternative rule — report only nodes the
+// ORIGINAL rect was over and the final bar fails to contain — is vacuous, since
+// a correct single-pass grow makes that set empty by construction, and a warning
+// that can never fire is worse than none.
+//
+// So both are reported, because to a reader of the output they are the same
+// thing: a piece of text is half blacked out and the rest of it is legible. (b)
+// is not a leak of INTENDED content, but it is not noise either — in vector mode
+// the clipped neighbour is deleted outright, which is content the user did not
+// ask to lose. Either way the answer is the same: nudge the bar. The copy in
+// template.html says exactly what is computed — items partly covered — and
+// claims nothing about intent.
 function partialNodes(nodes, covers, eps) {
   const out = [];
   if (!covers.length) return out;
   for (let i = 0; i < nodes.length; i++) {
     const nb = nodes[i];
     if (!nb || !(nb.w > 0) || !(nb.h > 0)) continue;
-    if (!covers.some((c) => rectTouches(c, nb))) continue;
+    if (!covers.some((c) => rectOverlaps(c, nb))) continue;
     const parts = uncoveredParts(nb, covers, eps);
     if (parts.length) out.push({ index: i, parts });
   }

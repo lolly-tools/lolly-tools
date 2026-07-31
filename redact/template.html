@@ -508,8 +508,19 @@
        case by case — so the two cannot drift silently. Keep it pure: no DOM, no
        closure over anything above. */
     var RDGeom = (function () {
+      /* Shares any area at all, shared edges included. The disjointness test the
+         exact rectangle subtraction needs, and nothing else — see the hook. */
       function rectTouches(a, b) {
         return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
+      }
+      /* A real, positive-area overlap on BOTH axes: the test for "this bar is
+         actually over that node". Abutting line boxes share an edge and nothing
+         else, and counting that is what let a bar chain along a paragraph. */
+      function rectOverlaps(a, b, eps) {
+        var e = (eps == null) ? 0.25 : eps;
+        var ox = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x);
+        var oy = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y);
+        return ox > e && oy > e;
       }
       function unionBox(a, b) {
         var x = Math.min(a.x, b.x);
@@ -548,26 +559,36 @@
         if (!nb || !(W > 0) || !(H > 0)) return false;
         return nb.w >= W * 0.85 && nb.h >= H * 0.85;
       }
+      function usableNode(nb) {
+        return !!nb && isFinite(nb.x) && isFinite(nb.y) && nb.w >= 0 && nb.h >= 0;
+      }
+      /* ONE pass: grow to the union of the nodes the user's own rectangle is
+         over, and stop. Running this to a fixed point over the GROWN box is a
+         flood fill on body text — the bar reaches a word, grows, now overlaps
+         its neighbour and the line above, and swallows the paragraph. A union
+         contains every box it was built from, so a targeted node is still fully
+         covered; nothing the grown box newly reaches can enlarge it further.
+         `hit` (what vector export DELETES) is answered against the FINAL painted
+         box instead, because anything painted over must be deleted or it stays
+         extractable. See hooks.js for the full reasoning. */
       function snapBarToNodes(bar, nodes, effOf) {
-        var box = { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
-        var hit = [];
-        var taken = {};
-        for (var pass = 0; pass < 8; pass++) {
-          var probe = effOf ? effOf(box) : box;
-          var grew = false;
-          for (var i = 0; i < nodes.length; i++) {
-            if (taken[i]) continue;
-            var nb = nodes[i];
-            if (!nb || !isFinite(nb.x) || !isFinite(nb.y) || !(nb.w >= 0) || !(nb.h >= 0)) continue;
-            if (!rectTouches(probe, nb)) continue;
-            taken[i] = true;
-            hit.push(i);
-            box = unionBox(box, nb);
-            grew = true;
-          }
-          if (!grew) break;
+        var raw = { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
+        var probe = effOf ? effOf(raw) : raw;
+        var box = raw;
+        var i, nb;
+        for (i = 0; i < nodes.length; i++) {
+          nb = nodes[i];
+          if (!usableNode(nb)) continue;
+          if (!rectOverlaps(probe, nb)) continue;
+          box = unionBox(box, nb);
         }
-        hit.sort(function (a, b) { return a - b; });
+        var final = effOf ? effOf(box) : box;
+        var hit = [];
+        for (i = 0; i < nodes.length; i++) {
+          nb = nodes[i];
+          if (!usableNode(nb)) continue;
+          if (rectOverlaps(final, nb)) hit.push(i);
+        }
         return { x: box.x, y: box.y, w: box.w, h: box.h, hit: hit };
       }
       function subtractBox(r, c) {
@@ -608,7 +629,7 @@
           if (!nb || !(nb.w > 0) || !(nb.h > 0)) continue;
           var touched = false;
           for (var c = 0; c < covers.length; c++) {
-            if (rectTouches(covers[c], nb)) { touched = true; break; }
+            if (rectOverlaps(covers[c], nb)) { touched = true; break; }
           }
           if (!touched) continue;
           var parts = uncoveredParts(nb, covers, eps);
@@ -644,7 +665,8 @@
         };
       }
       return {
-        rectTouches: rectTouches, unionBox: unionBox, effBox: effBox,
+        rectTouches: rectTouches, rectOverlaps: rectOverlaps,
+        unionBox: unionBox, effBox: effBox,
         snapBarToNodes: snapBarToNodes, subtractBox: subtractBox,
         uncoveredParts: uncoveredParts, partialNodes: partialNodes,
         paintedShape: paintedShape, isBackdropNode: isBackdropNode
@@ -699,34 +721,26 @@
         for (var i = 0; i < nodes.length; i++) {
           var nb = nodes[i];
           if (!nb || !isFinite(nb.x) || !isFinite(nb.y) || !(nb.w >= 0) || !(nb.h >= 0)) continue;
-          if (G.rectTouches(cover, nb)) out.push(i);
+          if (G.rectOverlaps(cover, nb)) out.push(i);
         }
         return out;
       }
 
-      /* snapBarToNodes stops after a bounded number of growth passes, so over a
-         long chain of adjacent nodes it can return a box that still TOUCHES
-         something it does not contain. Left at that, the next render would find
-         the bar partial, grow it again, and the user would watch it creep
-         outward one commit at a time. Growth is monotone and every further
-         round absorbs at least one more node, so running it to a standstill
-         terminates — and it happens here, inside one correction, instead of
-         across renders. */
-      function snapToRest(bar, nodes, effOf) {
-        var s = G.snapBarToNodes(bar, nodes, effOf);
-        for (var i = 0; i < nodes.length; i++) {
-          var again = G.snapBarToNodes({ x: s.x, y: s.y, w: s.w, h: s.h }, nodes, effOf);
-          if (again.x === s.x && again.y === s.y && again.w === s.w && again.h === s.h) return again;
-          s = again;
-        }
-        return s;
-      }
-
       /* Returns { changed, next } over the WHOLE document array, correcting
-         only bars on `page`. A bar is re-snapped when it was never measured, or
-         when it genuinely leaves a node partly covered — a bar that already
-         contains everything it touches is left exactly where it is, which is
-         what stops this creeping outward a pixel per render.
+         only bars on `page`. A bar is re-snapped when it was never measured, and
+         only then — its geometry is otherwise the user's.
+
+         There used to be a second trigger: a bar that left any node partly
+         covered was re-grown. That was load bearing while growth ran to a fixed
+         point (a capped snap could come back still overlapping something it had
+         not swallowed, and the bar would creep outward one commit per render).
+         With growth bounded to a single pass it becomes the creep instead: a bar
+         whose inflation or quantise grid clips the word beside it is partial by
+         construction, would be re-grown to swallow that word, would then clip
+         the next one, and would walk across the line a render at a time — the
+         same flood fill, arriving slowly. A drawn bar is grown once, when it is
+         drawn, and after that partial coverage is REPORTED (RDGeom.partialNodes,
+         the .rd-partial overlay and the toast) rather than silently corrected.
 
          Its ADDRESSES are checked separately, and always. "Measured" was being
          read as "measured against THIS page", which it is not: the same bars
@@ -750,16 +764,6 @@
         if (!mine.length || !nodes.length) return { changed: false, next: bars };
 
         var covers = mine.map(function (m) { return effOf(m.b); });
-        /* A node left partly uncovered indicts every bar that reaches it. */
-        var leaky = {};
-        var partials = G.partialNodes(nodes, covers, null);
-        for (var p = 0; p < partials.length; p++) {
-          var nb = nodes[partials[p].index];
-          for (var c = 0; c < covers.length; c++) {
-            if (G.rectTouches(covers[c], nb)) leaky[mine[c].i] = 1;
-          }
-        }
-
         var next = bars.slice();
         var changed = false;
         function clone(bar) {
@@ -772,7 +776,7 @@
 
         for (var m = 0; m < mine.length; m++) {
           var idx = mine[m].i, bar = mine[m].b;
-          if (measured(bar) && !leaky[idx]) {
+          if (measured(bar)) {
             /* Settled: the geometry is the user's and is left alone, but the
                addresses must describe THIS page. */
             var cur = marksFor(nodes, touching(covers[m], nodes, G));
@@ -783,7 +787,7 @@
             changed = true;
             continue;
           }
-          var s = snapToRest({ x: bar.x, y: bar.y, w: bar.w, h: bar.h }, nodes, effOf);
+          var s = G.snapBarToNodes({ x: bar.x, y: bar.y, w: bar.w, h: bar.h }, nodes, effOf);
           var r = closeOut(s, W, H);
           if (!(r.w > 0) || !(r.h > 0)) continue;
           var n = marksFor(nodes, s.hit);
@@ -827,32 +831,51 @@
        ancestor transform and the painted stroke, which is the over-inclusive
        side to err on. Called ONCE per gesture (at pointerdown) and once per
        repaint for the coverage check, never per pointermove. */
-    function collectNodes(root, sp) {
+    function collectNodes(root, sp, fine) {
       var out = [];
       if (!root || String(root.tagName || '').toLowerCase() !== 'svg') return out;
       if (typeof root.querySelectorAll !== 'function') return out;
       var rr = root.getBoundingClientRect();
       if (!(rr.width > 0) || !(rr.height > 0)) return out;
       var sx = sp.w / rr.width, sy = sp.h / rr.height;
-      var all = root.querySelectorAll('*');
-      for (var i = 0; i < all.length; i++) {
-        var el = all[i];
-        if (!NODE_TAGS[String(el.tagName || '').toLowerCase()]) continue;
-        if (insideDefinition(el, root)) continue;
-        var r = el.getBoundingClientRect();
-        if (!(r.width > 0) && !(r.height > 0)) continue;
-        var idx = parseInt(el.getAttribute('data-rdn') || '', 10);
+      function push(el, rect, idx) {
+        if (!(rect.width > 0) && !(rect.height > 0)) return;
         var nb = {
           el: el,
           idx: isFinite(idx) ? idx : -1,
-          x: (r.left - rr.left) * sx,
-          y: (r.top - rr.top) * sy,
-          w: r.width * sx,
-          h: r.height * sy
+          x: (rect.left - rr.left) * sx,
+          y: (rect.top - rr.top) * sy,
+          w: rect.width * sx,
+          h: rect.height * sy
         };
         /* The page's own backdrop is not an element a bar was aimed at. */
-        if (RDGeom.isBackdropNode(nb, sp.w, sp.h)) continue;
+        if (RDGeom.isBackdropNode(nb, sp.w, sp.h)) return;
         out.push(nb);
+      }
+      var all = root.querySelectorAll('*');
+      for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        var tag = String(el.tagName || '').toLowerCase();
+        if (!NODE_TAGS[tag]) continue;
+        if (insideDefinition(el, root)) continue;
+        var idx = parseInt(el.getAttribute('data-rdn') || '', 10);
+        /* LINE granularity, page frames only. One interpreted PDF text run is
+           one <text> element carrying a <tspan> PER LINE (engine pdf-svg), so
+           its box is the whole paragraph — and a bar snapped to that covers the
+           paragraph however tightly it was drawn. On a page frame the tspans are
+           the honest unit: they are what a reader sees as separate things, and
+           the page path only ever RASTERISES, so nothing here decides what gets
+           deleted from a file. SVG frames keep whole-element boxes precisely
+           because there it does: vector mode deletes the addressed <text>, and
+           snapping to one line of it would paint one line and remove them all. */
+        if (fine && tag === 'text') {
+          var spans = el.getElementsByTagName('tspan');
+          if (spans && spans.length > 1) {
+            for (var s = 0; s < spans.length; s++) push(spans[s], spans[s].getBoundingClientRect(), idx);
+            continue;
+          }
+        }
+        push(el, el.getBoundingClientRect(), idx);
       }
       return out;
     }
@@ -1042,7 +1065,7 @@
          flat pixels have no elements, so neither snap-to-cover nor the
          partial-coverage warning can fire there, and the copy says so. */
       function nodesNow(sp) {
-        return isVectorFrame ? collectNodes(img, sp) : [];
+        return isVectorFrame ? collectNodes(img, sp, frame.classList.contains('rd-pageframe')) : [];
       }
 
       /* What the document-wide re-measure pass needs from THIS page: the
