@@ -1,0 +1,462 @@
+/* Colours follow the app's core theme switcher (light / dark / suse). Every hue
+   is sourced from the app design tokens on <html data-theme> (tokens.css) — they
+   inherit into the scoped tool canvas, so the tool restyles itself the instant
+   the theme changes. Fallbacks (light theme) keep the sheet valid in shells that
+   don't ship the tokens. The `--rd-*` aliases hold bare HSL triples so use-sites
+   can alpha-composite: hsl(var(--x) / .1). */
+.rd {
+  --rd-bg:      var(--background, 0 0% 98%);
+  --rd-fg:      var(--foreground, 224 71% 4%);
+  --rd-muted:   var(--muted-foreground, 215 20% 38%);
+  --rd-card:    var(--card, 0 0% 100%);
+  --rd-bd:      var(--border, 214 28% 84%);
+  --rd-fill:    var(--muted, 210 40% 96%);
+  --rd-brand:   var(--primary, 171 62% 12%);
+  --rd-brandfg: var(--primary-foreground, 0 0% 100%);
+  --rd-warn:    var(--destructive, 0 72% 51%);
+  --rd-warnfg:  var(--destructive-foreground, 0 0% 100%);
+
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 28px;
+  box-sizing: border-box;
+  font-family: var(--font-brand, "SUSE", system-ui, sans-serif);
+  color: hsl(var(--rd-fg));
+  background: hsl(var(--rd-bg));
+}
+
+/* ── Empty state — IS the click-to-pick drop zone ── */
+.rd-empty {
+  max-width: 460px;
+  margin: auto;
+  text-align: center;
+  cursor: pointer;
+}
+.rd-empty-icon {
+  display: inline-flex;
+  width: 56px;
+  height: 56px;
+  margin-bottom: 14px;
+  color: hsl(var(--rd-brand));
+}
+.rd-empty-icon svg { width: 100%; height: 100%; }
+.rd-empty h2 {
+  margin: 0 0 10px;
+  font-size: 22px;
+  font-weight: 700;
+}
+.rd-empty p {
+  margin: 0 0 8px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: hsl(var(--rd-muted));
+}
+.rd-empty-note {
+  font-weight: 600;
+  color: hsl(var(--rd-brand)) !important;
+}
+.rd-pick {
+  margin: 6px 0 14px;
+  padding: 10px 18px;
+  border: 1px solid hsl(var(--rd-brand));
+  border-radius: 10px;
+  background: hsl(var(--rd-card));
+  color: hsl(var(--rd-brand));
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.rd-pick:hover { background: hsl(var(--rd-brand)); color: hsl(var(--rd-brandfg)); }
+
+/* ── Working card ── */
+.rd-card {
+  width: 100%;
+  max-width: 640px;
+  background: hsl(var(--rd-card));
+  border: 1px solid hsl(var(--rd-bd));
+  border-radius: 14px;
+  padding: 22px;
+  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.06);
+}
+.rd-head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 6px 10px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid hsl(var(--rd-bd) / 0.6);
+  margin-bottom: 14px;
+}
+.rd-file {
+  font-weight: 700;
+  font-size: 15px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.rd-kind {
+  flex: none;
+  font-family: var(--font-mono, "SUSE Mono", monospace);
+  font-size: 11px;
+  color: hsl(var(--rd-muted));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.rd-replace {
+  flex: none;
+  padding: 4px 10px;
+  border: 1px solid hsl(var(--rd-bd));
+  border-radius: 7px;
+  background: hsl(var(--rd-card));
+  color: hsl(var(--rd-muted));
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s;
+}
+.rd-replace:hover { border-color: hsl(var(--rd-brand)); color: hsl(var(--rd-brand)); }
+
+/* ── Drawing stage ── */
+.rd-stage { margin-bottom: 16px; }
+.rd-frame {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  line-height: 0;
+  cursor: crosshair;
+  touch-action: none; /* pointer drawing, not scrolling, over the preview */
+  border: 1px solid hsl(var(--rd-bd));
+  border-radius: 8px;
+  overflow: hidden;
+  background:
+    repeating-conic-gradient(hsl(var(--rd-fill)) 0% 25%, hsl(var(--rd-card)) 0% 50%)
+    0 0 / 16px 16px; /* checkerboard so alpha regions read as such */
+}
+.rd-img {
+  display: block;
+  max-width: 100%;
+  max-height: 340px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.rd-marks {
+  position: absolute;
+  inset: 0;
+}
+.rd-bar {
+  position: absolute;
+  background: #000;
+  opacity: 1;
+}
+.rd-bar.rd-draft {
+  background: hsl(0 0% 0% / 0.65);
+  outline: 1px solid hsl(var(--rd-brand) / 0.9);
+}
+.rd-bar-del {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 1px solid hsl(var(--rd-bd));
+  border-radius: 50%;
+  background: hsl(var(--rd-card));
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.12s;
+}
+.rd-bar-del::before {
+  content: "×";
+  display: block;
+  font-size: 12px;
+  line-height: 13px;
+  color: hsl(var(--rd-warn));
+  font-weight: 700;
+}
+.rd-bar:hover .rd-bar-del,
+.rd-bar-del:focus-visible { opacity: 1; }
+.rd-stage-hint {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: hsl(var(--rd-muted) / 0.8);
+}
+
+/* ── PDF page stack (host.pdf.pages previews) ── */
+.rd-pagestack {
+  display: grid;
+  gap: 10px;
+  justify-items: start;
+}
+.rd-page-chip {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: hsl(var(--rd-card) / 0.9);
+  border: 1px solid hsl(var(--rd-bd) / 0.7);
+  font-family: var(--font-mono, "SUSE Mono", monospace);
+  font-size: 10px;
+  line-height: 1.4;
+  color: hsl(var(--rd-muted));
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  pointer-events: none;
+}
+.rd-pages {
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+.rd-page-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 12px;
+  background: hsl(var(--rd-fill));
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+
+/* ── Sections: one flat card, hairline separators (strip-data's register) ── */
+.rd-sect {
+  margin: 16px 0 0;
+  padding: 14px 0 0;
+  border-top: 1px solid hsl(var(--rd-bd) / 0.6);
+}
+.rd-sect-title {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+.rd-summary {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: hsl(var(--rd-fg) / 0.85);
+}
+
+/* Show-details toggle: visually hidden checkbox, keyboard reachable, values
+   stay hidden until asked (strip-data's pattern). */
+.rd-reveal-cb {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+.rd-reveal-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  margin: 0 0 12px;
+  padding: 5px 11px;
+  border-radius: 8px;
+  background: hsl(var(--rd-brand) / 0.1);
+  color: hsl(var(--rd-brand));
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.12s;
+}
+.rd-reveal-toggle:hover { background: hsl(var(--rd-brand) / 0.16); }
+.rd-reveal-cb:focus-visible ~ .rd-reveal-toggle {
+  outline: 2px solid hsl(var(--rd-brand));
+  outline-offset: 2px;
+}
+.rd-reveal-icon {
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid currentColor;
+  transform: rotate(-90deg);
+  transition: transform 0.12s;
+}
+.rd-reveal-cb:checked ~ .rd-reveal-toggle .rd-reveal-icon { transform: rotate(0deg); }
+.rd-reveal-hide { display: none; }
+.rd-reveal-cb:checked ~ .rd-reveal-toggle .rd-reveal-show { display: none; }
+.rd-reveal-cb:checked ~ .rd-reveal-toggle .rd-reveal-hide { display: inline; }
+
+.rd-findings {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+}
+.rd-finding {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 12px;
+  background: hsl(var(--rd-fill));
+  border-radius: 8px;
+  border: 1px solid hsl(var(--rd-bd) / 0.6);
+}
+.rd-finding.warn {
+  background: hsl(var(--rd-warn) / 0.1);
+  border-color: hsl(var(--rd-warn) / 0.45);
+}
+.rd-finding-label {
+  font-weight: 600;
+  font-size: 13px;
+}
+/* Mix the destructive red toward the theme foreground so the warning label
+   stays legible in dark/suse, where --destructive is a fill hue. */
+.rd-finding.warn .rd-finding-label { color: color-mix(in oklab, hsl(var(--rd-warn)), hsl(var(--rd-fg)) 30%); }
+.rd-finding-detail {
+  display: none;
+  font-family: var(--font-mono, "SUSE Mono", monospace);
+  font-size: 12px;
+  color: hsl(var(--rd-muted));
+  text-align: right;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 60%;
+}
+.rd-reveal-cb:checked ~ .rd-findings .rd-finding-detail { display: block; }
+
+/* ── Coverage meter ── */
+.rd-meter {
+  height: 8px;
+  margin: 2px 0 10px;
+  border-radius: 999px;
+  background: hsl(var(--rd-fill));
+  border: 1px solid hsl(var(--rd-bd) / 0.7);
+  overflow: hidden;
+}
+.rd-meter-fill {
+  display: block;
+  height: 100%;
+  background: hsl(var(--rd-brand));
+  border-radius: inherit;
+  transition: width 0.15s ease-out;
+}
+
+/* ── Option rows (in-canvas [data-input-id] toggles) ── */
+.rd-opt {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 8px 0 0;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: hsl(var(--rd-fg) / 0.85);
+  cursor: pointer;
+}
+.rd-opt input {
+  flex: none;
+  margin: 2px 0 0;
+  accent-color: hsl(var(--rd-brand));
+}
+
+/* ── "Will not be removed" prose list ── */
+.rd-limits {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+.rd-limits li {
+  position: relative;
+  padding-left: 14px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: hsl(var(--rd-muted));
+}
+.rd-limits li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 7px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: hsl(var(--rd-bd));
+}
+
+/* ── Gate line + download ── */
+.rd-gate {
+  margin: 0 0 10px;
+  font-size: 11.5px;
+  line-height: 1.45;
+  text-align: center;
+  color: hsl(var(--rd-muted) / 0.9);
+}
+.rd-download {
+  width: 100%;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background: hsl(var(--rd-brand));
+  color: hsl(var(--rd-brandfg));
+  font: inherit;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.12s, opacity 0.12s;
+}
+.rd-download:hover { background: hsl(var(--rd-brand) / 0.9); }
+.rd-download.is-busy { opacity: 0.7; cursor: progress; }
+.rd-download.is-error { background: hsl(var(--rd-warn)); color: hsl(var(--rd-warnfg)); }
+.rd-download:disabled {
+  background: hsl(var(--rd-fill));
+  color: hsl(var(--rd-muted));
+  cursor: default;
+}
+.rd-download:disabled:hover { background: hsl(var(--rd-fill)); }
+
+/* ── Info / degraded states ── */
+.rd-state { text-align: center; margin-bottom: 8px; }
+.rd-state-lead {
+  margin: 4px 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: hsl(var(--rd-brand));
+}
+.rd-note {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  line-height: 1.45;
+  color: hsl(var(--rd-muted) / 0.8);
+}
+.rd-note-strong {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+}
+.rd-warn-note {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: hsl(var(--rd-warn) / 0.08);
+  border: 1px solid hsl(var(--rd-warn) / 0.35);
+  color: color-mix(in oklab, hsl(var(--rd-warn)), hsl(var(--rd-fg)) 45%);
+}
+.rd-note code {
+  font-family: var(--font-mono, "SUSE Mono", monospace);
+  font-size: 11px;
+  background: hsl(var(--rd-fill));
+  padding: 1px 4px;
+  border-radius: 4px;
+  color: hsl(var(--rd-muted));
+}

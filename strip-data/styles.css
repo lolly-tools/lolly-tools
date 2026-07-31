@@ -203,11 +203,11 @@
   padding: 9px 12px;
   background: hsl(var(--ex-fill));
   border-radius: 8px;
-  border-left: 3px solid hsl(var(--ex-bd));
+  border: 1px solid hsl(var(--ex-bd) / 0.6);
 }
 .exif-finding.warn {
   background: hsl(var(--ex-warn) / 0.1);
-  border-left-color: hsl(var(--ex-warn));
+  border-color: hsl(var(--ex-warn) / 0.45);
 }
 .exif-finding-label {
   font-weight: 600;

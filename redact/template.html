@@ -1,0 +1,394 @@
+<div class="rd">
+  {{#unless hasFile}}
+    <div class="rd-empty" data-file-pick>
+      <div class="rd-empty-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13.5h8" stroke-width="3"/><path d="M8 18h5"/></svg>
+      </div>
+      <h2>Redact an image, SVG or PDF</h2>
+      <p>Drag a JPEG, PNG, WebP, SVG or PDF anywhere onto this area, or choose one below. Draw bars over what should go. The file is rebuilt from scratch so the covered content and the hidden data are removed, not hidden, and the output is verified before it downloads.</p>
+      <button type="button" class="rd-pick" data-file-pick>Choose a file…</button>
+      <p class="rd-empty-note">Everything happens in your browser. Your file is never uploaded.</p>
+    </div>
+  {{/unless}}
+
+  {{#if hasFile}}
+    <div class="rd-card">
+      <div class="rd-head">
+        <span class="rd-file" title="{{fileName}}">{{fileName}}</span>
+        <span class="rd-kind">{{kind}} · {{fileSize}}</span>
+        <button type="button" class="rd-replace" data-file-pick data-export-hide>Replace</button>
+      </div>
+
+      {{#unless supported}}
+        <div class="rd-state">
+          <p class="rd-state-lead">This doesn't look like a supported file.</p>
+          <p class="rd-note">Choose a <code>JPEG</code>, <code>PNG</code>, <code>WebP</code>, <code>SVG</code> or <code>PDF</code> file.</p>
+        </div>
+      {{/unless}}
+
+      {{#if supported}}
+        {{#if pdfUnavailable}}
+          <div class="rd-state">
+            <p class="rd-state-lead">PDF redaction isn't available here.</p>
+            <p class="rd-note">Open this tool in the Lolly web app to redact a PDF. Images and SVG work everywhere.</p>
+          </div>
+        {{else}}
+
+          <div class="rd-stage" data-bars="{{barsJson}}"{{#if pagesPending}} data-pages-pending="1"{{/if}}>
+            {{#unless isPdfKind}}
+              <div class="rd-frame">
+                <img class="rd-img" src="{{previewUrl}}" alt="Preview of {{fileName}}" draggable="false">
+                <div class="rd-marks" data-export-hide></div>
+              </div>
+              <p class="rd-stage-hint" data-export-hide>Drag on the preview to draw a redaction bar. Click a bar's dot to remove it.</p>
+            {{/unless}}
+
+            {{#if isPdfKind}}
+              {{#if hasPdfPages}}
+                <div class="rd-pagestack">
+                  {{#each pdfPages}}
+                    <div class="rd-frame rd-pageframe" data-page="{{page}}" data-ptw="{{w}}" data-pth="{{h}}">
+                      <img class="rd-img" src="{{url}}" alt="Page {{page}}" draggable="false">
+                      <span class="rd-page-chip" data-export-hide>Page {{page}}</span>
+                      <div class="rd-marks" data-export-hide></div>
+                    </div>
+                  {{/each}}
+                </div>
+                <p class="rd-stage-hint" data-export-hide>Drag on a page to draw a redaction bar. Click a bar's dot to remove it.</p>
+                {{#if pagesTruncated}}
+                  <p class="rd-note">Not every page is shown. Bars for later pages can still be set in the sidebar, in page points from the top left.</p>
+                {{/if}}
+              {{/if}}
+              {{#if pagesPending}}
+                <p class="rd-note">Rendering pages…</p>
+              {{/if}}
+              {{#if pagesError}}
+                <p class="rd-note">{{pagesError}}</p>
+              {{/if}}
+              {{#unless hasPdfPages}}{{#unless pagesPending}}
+                {{#unless pagesError}}
+                  <p class="rd-note">Page previews aren't available in this app. Bars are set in the sidebar, in page points from the top left of each page.</p>
+                {{/unless}}
+                {{#if hasPageBars}}
+                  <ul class="rd-pages">
+                    {{#each pageBars}}
+                      <li class="rd-page-row"><span>Page {{page}}</span><span>{{count}} bar{{#if plural}}s{{/if}}</span></li>
+                    {{/each}}
+                  </ul>
+                {{/if}}
+              {{/unless}}{{/unless}}
+            {{/if}}
+          </div>
+
+          <!-- What's inside this file, before any marks. -->
+          <section class="rd-sect">
+            <h3 class="rd-sect-title">What's inside this file</h3>
+            {{#if analysisPending}}
+              <p class="rd-note">Still reading the document structure…</p>
+            {{/if}}
+            {{#if nothingFound}}
+              <p class="rd-note">No hidden data was found by these checks. Absence of a finding is not proof there is nothing there.</p>
+            {{/if}}
+            {{#if foundSummary}}
+              <p class="rd-summary">{{foundSummary}}</p>
+              <input type="checkbox" id="rd-show-details" class="rd-reveal-cb">
+              <label for="rd-show-details" class="rd-reveal-toggle" data-export-hide>
+                <span class="rd-reveal-icon" aria-hidden="true"></span>
+                <span class="rd-reveal-show">Show details</span>
+                <span class="rd-reveal-hide">Hide details</span>
+              </label>
+              <ul class="rd-findings">
+                {{#each findings}}
+                  <li class="rd-finding {{tone}}">
+                    <span class="rd-finding-label">{{label}}</span>
+                    <span class="rd-finding-detail" title="{{detail}}">{{detail}}</span>
+                  </li>
+                {{/each}}
+              </ul>
+            {{/if}}
+          </section>
+
+          <!-- What the current marks remove, live. -->
+          <section class="rd-sect">
+            <h3 class="rd-sect-title">What your marks remove</h3>
+            {{#unless isPdfKind}}
+              {{#if hasCoverage}}
+                <div class="rd-meter" role="img" aria-label="{{coverageText}}">
+                  <span class="rd-meter-fill" style="width: {{coveragePct}}%"></span>
+                </div>
+                <p class="rd-summary">{{coverageText}} Under each bar the original pixels are replaced with solid black before the file is re-encoded, so they are not in the output.</p>
+                {{#if coverageHigh}}
+                  <p class="rd-note">Your marks cover nearly the whole frame. At full coverage almost no pixel of the original survives, including anything spread across the image.</p>
+                {{/if}}
+              {{else}}
+                <p class="rd-note">No marks yet. Rebuilding the file already removes all the hidden data listed above, bars additionally destroy the pixels they cover.</p>
+              {{/if}}
+            {{/unless}}
+            {{#if isPdfKind}}
+              {{#if hasBars}}
+                <p class="rd-summary">{{barCount}} bar{{#if barPlural}}s{{/if}} set. Each page is flattened to a picture and the bars are burned in, so covered text is destroyed, not hidden behind a box.</p>
+              {{else}}
+                <p class="rd-note">No bars yet. Rebuilding the PDF already removes metadata, attachments, scripts and earlier versions, bars additionally destroy what they cover.</p>
+              {{/if}}
+            {{/if}}
+            <label class="rd-opt" data-export-hide>
+              <input type="checkbox" data-input-id="quantise" {{#if quantise}}checked{{/if}}>
+              <span>Round bar widths up to a coarse grid</span>
+            </label>
+            <label class="rd-opt" data-export-hide>
+              <input type="checkbox" data-input-id="grayscale" {{#if grayscale}}checked{{/if}}>
+              <span>Scanned page: drop all colour</span>
+            </label>
+            {{#if isSvg}}
+              <label class="rd-opt" data-export-hide>
+                <input type="checkbox" data-input-id="svgVector" {{#if svgVector}}checked{{/if}}>
+                <span>Keep SVG as vector. I understand vector output covers text rather than deleting it</span>
+              </label>
+              {{#if svgVector}}
+                <p class="rd-note rd-warn-note">Vector mode removes metadata, comments, scripts, editor data, titles and descriptions, and embedded images and external references go entirely because each can carry its own hidden data. It cannot compute where glyphs sit, so positioned text under a bar is covered, not deleted. Raster export is the safe choice for text.</p>
+              {{/if}}
+            {{/if}}
+            {{#if isPdfKind}}
+              <label class="rd-opt" data-export-hide>
+                <input type="checkbox" data-input-id="resign" {{#if resign}}checked{{/if}}>
+                <span>Add a fresh Content Credential to the redacted copy</span>
+              </label>
+              {{#if resignUnavailable}}
+                <p class="rd-note">A fresh Content Credential isn't available in this app, the redacted file will be exported without one.</p>
+              {{/if}}
+            {{/if}}
+          </section>
+
+          <!-- Limits we cannot test, so they never get a green pip. -->
+          <section class="rd-sect">
+            <h3 class="rd-sect-title">What will not be removed</h3>
+            <ul class="rd-limits">
+              <li>A bar destroys only the pixels it covers. Invisible watermarks such as Google's SynthID span the whole image and this tool cannot detect or remove them.</li>
+              <li>A bar's width can still hint at the length of what it hides. Rounding widths up to a coarse grid softens this, it does not remove it.</li>
+              <li>Scans of printed pages can carry tracking dots from colour laser printers. The scanned page mode drops the yellow channel they live in, other print forensics remain.</li>
+              <li>There is no blur or pixelate option on purpose. Blurred text has been recovered in practice, a solid fill has no inverse.</li>
+            </ul>
+          </section>
+
+          {{#if pdfRedactUnavailable}}
+            <div class="rd-state">
+              <p class="rd-state-lead">PDF redaction isn't available in this app yet.</p>
+              <p class="rd-note">The analysis above still applies. Open this tool in the Lolly web app to produce the redacted copy.</p>
+            </div>
+          {{else}}
+            <div class="rd-sect rd-sect-dl">
+              {{#if isPdfKind}}
+                <p class="rd-gate">The rebuilt PDF is verified before download and nothing ships if a check fails.</p>
+                {{#if hasBars}}
+                  <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
+                {{else}}
+                  <button type="button" class="rd-download" data-export-file disabled>Draw a bar over what should go first</button>
+                {{/if}}
+              {{else}}
+                {{#if svgVector}}
+                  <p class="rd-gate">The cleaned SVG is verified before download and nothing ships if a check fails.</p>
+                {{else}}
+                  <p class="rd-gate">The rebuilt file is verified before download and nothing ships if a check fails.</p>
+                {{/if}}
+                <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
+              {{/if}}
+            </div>
+          {{/if}}
+        {{/if}}
+      {{/if}}
+    </div>
+  {{/if}}
+</div>
+<script>
+  (function () {
+    'use strict';
+    /* Rubber-band bar drawing over every frame in the stage. A frame is the
+       single image preview, or one PDF page (host.pdf.pages renders each page
+       as an SVG whose viewBox is the page in PDF points, origin top-left).
+       Coordinate space per frame: data-ptw/data-pth present = PDF points
+       (scale = ptw / rect.width, no dpi involved); absent = the image's
+       natural pixels. Live DOM feedback only during the gesture; ONE commit
+       of the whole bars array on release (a commit re-renders the tool and
+       would tear the DOM out from under an active drag). */
+    /* Own wrap = this script's previous sibling (offscreen compose/batch stages
+       can mount extra .rd copies, so a global last-match can grab the wrong
+       instance). currentScript is null when the shell executes detached — fall
+       back to newest-wrap then. */
+    var cs = document.currentScript;
+    var wrap = cs && cs.previousElementSibling && cs.previousElementSibling.classList
+      && cs.previousElementSibling.classList.contains('rd')
+      ? cs.previousElementSibling
+      : null;
+    if (!wrap) {
+      var wraps = document.querySelectorAll('.rd');
+      wrap = wraps[wraps.length - 1];
+    }
+    if (!wrap) return;
+    var stage = wrap.querySelector('.rd-stage');
+    if (!stage || stage.dataset.rdWired) return;
+    stage.dataset.rdWired = '1';
+
+    var bars;
+    try { bars = JSON.parse(stage.getAttribute('data-bars') || '[]'); } catch (e) { bars = []; }
+    if (!Array.isArray(bars)) bars = [];
+
+    /* Per-canvas commit channel (bound by the shell to THIS session's runtime).
+       Absent offscreen and in older shells — then fall back to poking the one
+       [data-input-id] control (mesh-gradient's legacy path). */
+    var canvasRoot = wrap.closest('[data-lolly-canvas]');
+    var commitFn = canvasRoot && canvasRoot.__lollyCommit;
+
+    function alive() { return document.contains(wrap); }
+
+    function commit(next) {
+      if (commitFn) { commitFn('bars', next); return; }
+      /* Legacy poke: only a field that can hold the whole JSON array may take
+         it. bars is a blocks input rendered as per-field number inputs — the
+         JSON string would corrupt the first row's page field, so do nothing
+         then rather than commit garbage. */
+      var box = document.querySelector('[data-input-id="bars"]');
+      if (!box) return;
+      var field = box.matches('textarea, input[type="text"], input[type="hidden"]')
+        ? box
+        : box.querySelector('textarea, input[type="text"], input[type="hidden"]');
+      if (!field) return;
+      field.value = JSON.stringify(next);
+      field.dispatchEvent(new Event('input', { bubbles: true }));
+      field.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+
+    /* While the shell renders the page previews, poll by re-committing a CLONE
+       of the current bars (same content, new identity). Each commit re-runs
+       onInput, which picks up the settled render job; until it settles the
+       hydrated output is byte-identical, so the shell skips the repaint. The
+       repaint that does land replaces this DOM, and alive() stops the timer. */
+    if (stage.hasAttribute('data-pages-pending') && commitFn) {
+      var polls = 0;
+      var pollTimer = setInterval(function () {
+        if (!alive() || !stage.hasAttribute('data-pages-pending') || ++polls > 40) {
+          clearInterval(pollTimer);
+          return;
+        }
+        commitFn('bars', bars.slice());
+      }, 700);
+    }
+
+    /* Frame space: PDF points when data-ptw/data-pth are present, else the
+       image's natural pixels (some browsers report 0 for an SVG with no
+       intrinsic size, then the displayed box is the drawing space, scale 1). */
+    function frameSpace(frame, img) {
+      var ptw = parseFloat(frame.getAttribute('data-ptw') || '');
+      var pth = parseFloat(frame.getAttribute('data-pth') || '');
+      if (isFinite(ptw) && ptw > 0 && isFinite(pth) && pth > 0) return { w: ptw, h: pth };
+      var r = img.getBoundingClientRect();
+      return { w: img.naturalWidth || r.width, h: img.naturalHeight || r.height };
+    }
+
+    function wireFrame(frame) {
+      var img = frame.querySelector('.rd-img');
+      var marks = frame.querySelector('.rd-marks');
+      if (!img || !marks) return;
+      var page = parseInt(frame.getAttribute('data-page') || '1', 10) || 1;
+
+      function renderBars() {
+        if (!alive()) return;
+        marks.textContent = '';
+        var sp = frameSpace(frame, img);
+        if (!sp.w || !sp.h) return;
+        bars.forEach(function (b, idx) {
+          if ((b.page || 1) !== page) return;
+          var el = document.createElement('div');
+          el.className = 'rd-bar';
+          el.style.left = (b.x / sp.w * 100) + '%';
+          el.style.top = (b.y / sp.h * 100) + '%';
+          el.style.width = (b.w / sp.w * 100) + '%';
+          el.style.height = (b.h / sp.h * 100) + '%';
+          var del = document.createElement('button');
+          del.type = 'button';
+          del.className = 'rd-bar-del';
+          del.setAttribute('data-idx', String(idx));
+          del.setAttribute('aria-label', 'Remove this redaction bar');
+          del.title = 'Remove bar';
+          el.appendChild(del);
+          marks.appendChild(el);
+        });
+      }
+      if (img.complete) renderBars();
+      else img.addEventListener('load', renderBars);
+
+      marks.addEventListener('click', function (e) {
+        var del = e.target && e.target.closest ? e.target.closest('.rd-bar-del') : null;
+        if (!del || !alive()) return;
+        e.preventDefault();
+        var idx = parseInt(del.getAttribute('data-idx') || '-1', 10);
+        if (idx < 0 || idx >= bars.length) return;
+        var next = bars.slice(0, idx).concat(bars.slice(idx + 1));
+        commit(next);
+      });
+
+      /* Draw a new bar: pointer capture on the frame, live rect during the
+         gesture, single commit on release. */
+      frame.addEventListener('pointerdown', function (e) {
+        if (!alive()) return;
+        if (e.target && e.target.closest && e.target.closest('.rd-bar-del')) return;
+        if (e.button !== undefined && e.button !== 0) return;
+        e.preventDefault();
+        frame.setPointerCapture(e.pointerId);
+        var rect = img.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+        var sp = frameSpace(frame, img);
+        var sx = sp.w / rect.width;
+        var sy = sp.h / rect.height;
+        var startX = e.clientX, startY = e.clientY;
+        var draft = document.createElement('div');
+        draft.className = 'rd-bar rd-draft';
+        marks.appendChild(draft);
+
+        function box(ev) {
+          var x0 = Math.max(rect.left, Math.min(startX, ev.clientX));
+          var y0 = Math.max(rect.top, Math.min(startY, ev.clientY));
+          var x1 = Math.min(rect.right, Math.max(startX, ev.clientX));
+          var y1 = Math.min(rect.bottom, Math.max(startY, ev.clientY));
+          return { x0: x0, y0: y0, x1: x1, y1: y1 };
+        }
+        function paint(ev) {
+          var b = box(ev);
+          draft.style.left = ((b.x0 - rect.left) / rect.width * 100) + '%';
+          draft.style.top = ((b.y0 - rect.top) / rect.height * 100) + '%';
+          draft.style.width = ((b.x1 - b.x0) / rect.width * 100) + '%';
+          draft.style.height = ((b.y1 - b.y0) / rect.height * 100) + '%';
+        }
+        function onMove(ev) {
+          if (!alive()) return;
+          paint(ev);
+        }
+        function onUp(ev) {
+          frame.removeEventListener('pointermove', onMove);
+          frame.removeEventListener('pointerup', onUp);
+          frame.removeEventListener('pointercancel', onUp);
+          if (draft.parentNode) draft.parentNode.removeChild(draft);
+          if (!alive()) return;
+          var b = box(ev);
+          /* A stray click is not a bar: the minimum is 4 CLIENT px, judged in
+             client space so a small page shown large (points-per-px well under
+             1) does not turn every real drag into a reject. */
+          if (b.x1 - b.x0 < 4 || b.y1 - b.y0 < 4) return;
+          var nx = Math.round((b.x0 - rect.left) * sx);
+          var ny = Math.round((b.y0 - rect.top) * sy);
+          var nw = Math.round((b.x1 - b.x0) * sx);
+          var nh = Math.round((b.y1 - b.y0) * sy);
+          if (!(nw > 0) || !(nh > 0)) return;
+          var next = bars.concat([{ page: page, x: nx, y: ny, w: nw, h: nh }]);
+          commit(next);
+        }
+        paint(e);
+        frame.addEventListener('pointermove', onMove);
+        frame.addEventListener('pointerup', onUp);
+        frame.addEventListener('pointercancel', onUp);
+      });
+    }
+
+    var frames = stage.querySelectorAll('.rd-frame');
+    Array.prototype.forEach.call(frames, wireFrame);
+  })();
+</script>
