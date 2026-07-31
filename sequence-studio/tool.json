@@ -577,6 +577,8 @@
         "exitField": "exit",
         "enterMsField": "enterMs",
         "exitMsField": "exitMs",
+        "enterEaseField": "enterEase",
+        "exitEaseField": "exitEase",
         "muteField": "mute",
         "linkField": "linkOf",
         "laneField": "lane",
@@ -1444,6 +1446,22 @@
           "label": "Linked to",
           "default": "",
           "help": "The id of the box this one is A/V-linked to — written on BOTH sides when a clip's audio is detached onto its own lane, so re-attaching works from either side. Machine-written by the timeline panel, never typed; showFor:[] keeps it out of the sidebar."
+        },
+        {
+          "id": "enterEase",
+          "showFor": [],
+          "type": "text",
+          "label": "In easing",
+          "default": "",
+          "help": "The timing curve the animate-in preset's GEOMETRY follows: a preset name (linear, ease-out, ease-in, ease-in-out, overshoot, anticipate) or a CSS cubic-bezier(a,b,c,d). Empty leaves the preset on its own built-in curve, which is what every composition authored before this control existed still renders with. Opacity is not governed by it."
+        },
+        {
+          "id": "exitEase",
+          "showFor": [],
+          "type": "text",
+          "label": "Out easing",
+          "default": "",
+          "help": "The same curve control for the animate-out preset. Same wire format, same geometry-only reach."
         }
       ],
       "default": [

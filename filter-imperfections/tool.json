@@ -8,16 +8,20 @@
   "status": "official",
   "category": "designer",
   "tags": ["imperfections", "print", "risograph", "misregistration", "photocopy", "grain", "paper", "photo", "filter", "effect", "vector", "image"],
+  "featured": {
+    "order": 7,
+    "blurb": "Risograph, misregistration and photocopy wear, on purpose"
+  },
   "examples": [
     { "label": "Subtle press", "values": { "preset": "subtle", "paperTint": "#f2ead9", "seed": 7 } },
-    { "label": "Risograph", "values": { "preset": "riso", "ink1": "#0078bf", "ink2": "#ff48b0", "paperTint": "#f7f2e7", "grainAmount": 35, "seed": 21 } },
+    { "label": "Risograph", "values": { "preset": "riso", "paperTint": "#f7f2e7", "grainAmount": 35, "seed": 21 } },
     { "label": "Photocopy", "values": { "preset": "photocopy", "paperTint": "#f4f4f2", "paperTintStrength": 35, "grainAmount": 40, "seed": 3 } },
     { "label": "Worn print", "values": { "preset": "worn", "grainAmount": 55, "paperTint": "#e9dfc8", "paperTintStrength": 80, "seed": 42 } }
   ],
   "render": {
     "width": 1000,
     "height": 1000,
-    "formats": ["svg", "png", "jpg", "webp", "avif", "gif", "apng", "webm", "mp4"],
+    "formats": ["svg", "pdf", "pdf-cmyk", "png", "jpg", "webp", "avif", "tiff", "cmyk-tiff", "gif", "apng", "webp-anim", "webm", "mp4"],
     "actions": ["copy", "download", "save"],
     "video": { "wait": 0, "duration": 5 },
     "transparentBg": false,
@@ -72,15 +76,15 @@
       "id": "ink1",
       "label": "Ink 1",
       "type": "color",
-      "default": "#0078bf",
-      "help": "First ink for the two-ink looks (the Risograph preset, or Custom with Two inks)."
+      "default": "{color.semantic.primary}",
+      "help": "First ink for the two-ink looks (the Risograph preset, or Custom with Two inks). Defaults to the brand's primary."
     },
     {
       "id": "ink2",
       "label": "Ink 2",
       "type": "color",
-      "default": "#ff48b0",
-      "help": "Second ink for the two-ink looks."
+      "default": "{color.semantic.secondary}",
+      "help": "Second ink for the two-ink looks. Defaults to the brand's secondary."
     },
     {
       "id": "fit",

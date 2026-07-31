@@ -8,6 +8,10 @@
   "status": "official",
   "category": "designer",
   "tags": ["finish", "foil", "spot-uv", "emboss", "deboss", "soft-touch", "print", "plate", "spot-colour", "photo", "filter", "effect", "vector", "image"],
+  "featured": {
+    "order": 6,
+    "blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  },
   "examples": [
     { "label": "Gold foil highlights", "values": { "finish": "foil-gold", "maskSource": "light", "threshold": 62 } },
     { "label": "Holographic shadows", "values": { "finish": "foil-holographic", "maskSource": "dark", "threshold": 45 } },
@@ -17,7 +21,7 @@
   "render": {
     "width": 1000,
     "height": 1000,
-    "formats": ["svg", "pdf", "png", "webp", "avif", "gif", "apng", "webm", "mp4"],
+    "formats": ["svg", "pdf", "pdf-cmyk", "png", "jpg", "webp", "avif", "tiff", "cmyk-tiff", "gif", "apng", "webp-anim", "webm", "mp4"],
     "actions": ["copy", "download", "save"],
     "video": { "wait": 0, "duration": 5 },
     "transparentBg": false
@@ -150,6 +154,7 @@
       "id": "plateView",
       "label": "Plate view (printer-ready)",
       "section": "Plate",
+      "group": "export",
       "type": "boolean",
       "default": false,
       "help": "Switch to the deliverable: the finish mask as pure black on white with an overprint label. Send THIS to your print house — the shiny preview is presentation only and must never be baked into artwork."

@@ -511,15 +511,23 @@ function buildSvg(args) {
     var e = f2(2 + 2 * k);
     var eo = f2(0.3 + 0.55 * k);
     var raised = args.finish === 'emboss';
-    var liteD = raised ? -e : e;   // light from top-left when raised
-    var darkD = raised ? e : -e;
+    // INNER bands: each band is SourceAlpha minus a displaced copy of itself, so
+    // it sits just inside the shape edge. The outer form (offset copy minus
+    // SourceAlpha) draws strictly OUTSIDE the shape, which is invisible whenever
+    // the mask is the whole region — the bands land outside the viewBox and are
+    // clipped away, so the finish did nothing at all. Inner bands are always in
+    // frame, for a shaped mask and a full-bleed one alike.
+    // Displacing the copy DOWN-RIGHT leaves the TOP-LEFT inner edge uncovered,
+    // hence the positive offset carries the light band when the shape is raised.
+    var liteD = raised ? e : -e;
+    var darkD = raised ? -e : e;
     defs += '<filter id="' + U + 'bevel" x="-5%" y="-5%" width="110%" height="110%" color-interpolation-filters="sRGB">'
       + '<feOffset in="SourceAlpha" dx="' + liteD + '" dy="' + liteD + '" result="oL"/>'
-      + '<feComposite in="oL" in2="SourceAlpha" operator="out" result="bandL"/>'
+      + '<feComposite in="SourceAlpha" in2="oL" operator="out" result="bandL"/>'
       + '<feFlood flood-color="#ffffff" flood-opacity="' + eo + '" result="fw"/>'
       + '<feComposite in="fw" in2="bandL" operator="in" result="lite"/>'
       + '<feOffset in="SourceAlpha" dx="' + darkD + '" dy="' + darkD + '" result="oD"/>'
-      + '<feComposite in="oD" in2="SourceAlpha" operator="out" result="bandD"/>'
+      + '<feComposite in="SourceAlpha" in2="oD" operator="out" result="bandD"/>'
       + '<feFlood flood-color="#000000" flood-opacity="' + eo + '" result="fb"/>'
       + '<feComposite in="fb" in2="bandD" operator="in" result="dark"/>'
       + '<feMerge><feMergeNode in="lite"/><feMergeNode in="dark"/></feMerge>'

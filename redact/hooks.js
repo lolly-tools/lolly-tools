@@ -12,14 +12,25 @@
  *                  BY CONSTRUCTION — the re-encode is the metadata kill.
  *   SVG (default): rasterised through the same canvas path → PNG out.
  *   SVG (vector) : opt-in string surgery — metadata/comments/scripts/foreignObject/
- *                  editor cruft deleted, bars appended as opaque rects. Honest
- *                  caveat everywhere: vector mode COVERS positioned text, it
- *                  cannot compute glyph geometry offline to delete it.
+ *                  editor cruft deleted, THEN every element a bar touches deleted
+ *                  outright, then bars appended as opaque rects. The geometry the
+ *                  sandbox cannot compute is measured in the browser instead: the
+ *                  page renders as INLINE SVG, the template script reads real
+ *                  painted bounds off the live DOM and commits the addresses of
+ *                  the nodes to delete alongside the bars.
  *   PDF          : rasterise-and-rebuild via host.pdf.redact (feature-detected;
  *                  shells without it degrade to a clear "not available here").
- *                  Pages preview as per-page SVGs via host.pdf.pages, so bars
- *                  are drawn directly in PDF point space (viewBox = points,
+ *                  Pages preview as per-page INLINE SVGs via host.pdf.pages, so
+ *                  bars are drawn directly in PDF point space (viewBox = points,
  *                  origin top-left) and play straight over the PDF at export.
+ *
+ * Why inline and not an <img src="blob:…">: an SVG inside an <img> is a closed
+ * document. Nothing outside can walk it, so getBBox / getBoundingClientRect are
+ * unreachable and no node bounds exist at all. Inline, the same markup is part
+ * of the live DOM and every glyph run, path and image reports its true painted
+ * box. That is the enabling change for snap-to-cover, the partial-coverage
+ * warning and vector deletion. Raster sources stay <img> — flat pixels have no
+ * nodes to measure, and the copy says so.
  *
  * The differentiator is honesty: the tool reports, live, what the current marks
  * do and do NOT remove — and exportFile re-scans its own output (residual
@@ -585,6 +596,189 @@ function svgDims(text) {
   return { w: null, h: null, viewBox: null, attrWh: false };
 }
 
+// ─── inline-SVG preparation (the enabling change for node geometry) ─────────
+// A page has to be part of the live DOM before anything can read a node's
+// painted bounds, so both the PDF page previews and an SVG source are INLINED
+// into the template rather than handed to an <img>. Two consequences this pass
+// has to handle, because an inline fragment shares the app's document:
+//
+//   1. Code. <script>, <foreignObject> and on* handlers would execute in the
+//      app's origin. They are deleted here, before the markup is ever inlined.
+//      (Vector EXPORT deletes the same classes again from the original text —
+//      this pass only prepares the preview and never feeds the export.)
+//   2. Styles. A <style> inside inline SVG is document-wide in HTML, so a file
+//      carrying `.cls-1 { fill: #fff }` would repaint the app. Every rule is
+//      rescoped under the root's own attribute selector instead of dropped, so
+//      the preview still looks like the file the user is redacting.
+//
+// TRUST: the markup passed through here is either OUR OWN renderer's output
+// (host.pdf.pages → engine pdf-svg) or the user's own file, opened on their own
+// device and never fetched from anywhere. It is not third-party markup arriving
+// over a network. That is why sanitising the executable subset plus scoping the
+// styles is proportionate, and why the template can use a raw {{{ }}} slot for
+// it. It is still an untrusted-INPUT surface (a hostile SVG someone was sent is
+// exactly the threat this tool exists for), so the code classes go regardless.
+
+// Every element gets data-rdn="<token index>", its address in tokenize(text).
+// Both this pass and the export's deletion pass tokenize the SAME original
+// string, so the index is stable by construction — no id minting, no matching.
+const INLINE_DROP_EL = new Set(['script', 'foreignobject']);
+
+// A URL that an inline fragment may keep. Only two forms cannot reach the
+// network from inside the app: a same-document fragment (#grad) and a data:
+// URI the file already carries. EVERYTHING else is dropped, including relative
+// paths — an inline <image href="logo.png"> resolves against the APP's origin,
+// so it is both a broken paint and a request the user never asked for.
+//
+// This is the difference an inline preview makes. Rounds 1-3 rendered the
+// source inside <img>, where SVG-as-image blocks every external resource load
+// for us; round 4 inlines it into the live document, so the block has to be
+// ours. A hostile file arriving through a communication channel — the exact
+// threat this tool exists for — must not phone home merely because it was
+// opened here, and the empty state promises the file is never uploaded.
+function safeInlineUrl(v) {
+  const s = String(v == null ? '' : v).trim();
+  if (!s) return false;
+  if (s.charAt(0) === '#') return true;
+  return /^data:/i.test(s);
+}
+
+// Every url(...) in a scoped rule that could leave the device, neutralised.
+// `none` is valid in every property that takes a url() here (fill, stroke,
+// filter, mask, clip-path, background, @font-face src), so the rule stays
+// parseable and simply paints nothing instead of fetching.
+function stripRemoteCssUrls(css) {
+  return String(css).replace(/url\(\s*(?:"([^"]*)"|'([^']*)'|([^)]*))\)/gi, (m, dq, sq, bare) => {
+    const v = dq != null ? dq : (sq != null ? sq : (bare || ''));
+    return safeInlineUrl(v) ? m : 'none';
+  });
+}
+
+// @import is dropped outright; every remaining url() is checked, because a
+// preview that fetches is a preview that reports the file was opened.
+function scopeCssRules(rawCss, prefix, depth) {
+  // Dropped BEFORE parsing: an @import has no braces, so it would otherwise be
+  // read as part of the next rule's selector and survive into the preview,
+  // where it would fetch from inside the app.
+  const css = stripRemoteCssUrls(rawCss.replace(/@import[^;]*;/gi, ''));
+  let out = '';
+  let i = 0;
+  const n = css.length;
+  while (i < n) {
+    const brace = css.indexOf('{', i);
+    if (brace === -1) { out += css.slice(i); break; }
+    const head = css.slice(i, brace);
+    // Match the block, tolerating nesting.
+    let depthB = 0, j = brace;
+    for (; j < n; j++) {
+      if (css[j] === '{') depthB++;
+      else if (css[j] === '}') { depthB--; if (depthB === 0) break; }
+    }
+    const body = css.slice(brace + 1, j === n ? n : j);
+    const sel = head.trim();
+    if (sel.charAt(0) === '@') {
+      const nested = /^@(?:media|supports|layer|container)\b/i.test(sel);
+      out += head + '{' + (nested && depth < 3 ? scopeCssRules(body, prefix, depth + 1) : body) + '}';
+    } else if (sel) {
+      const scoped = sel.split(',').map((s) => {
+        const t = s.trim();
+        return t ? prefix + ' ' + t : '';
+      }).filter(Boolean).join(',');
+      out += scoped + '{' + body + '}';
+    }
+    i = (j === n ? n : j + 1);
+  }
+  return out;
+}
+
+// Attributes that name a resource the browser fetches as soon as the element is
+// in the document.
+const INLINE_URL_ATTR = new Set(['href', 'xlink:href', 'src', 'xlink:src']);
+
+function inlineAttrsFor(tk, isRoot, opts) {
+  const kept = [];
+  for (const a of tk.attrs) {
+    const lower = a.name.toLowerCase();
+    if (/^on[a-z]/.test(lower)) continue;                       // handlers are code
+    // javascript: is code; http(s):, protocol-relative and plain relative paths
+    // are all requests from the app's own origin the moment this is inlined.
+    if (INLINE_URL_ATTR.has(lower) && !safeInlineUrl(a.value)) continue;
+    if (isRoot && (lower === 'width' || lower === 'height')) continue; // replaced below
+    if (lower === 'data-rdn') continue;                         // never trust an incoming address
+    if (a.value == null) { kept.push(a.name); continue; }
+    // fill="url(https://…)", style="mask:url(//…)": same fetch, different spelling.
+    if (a.value.indexOf('url(') !== -1 || a.value.indexOf('URL(') !== -1) {
+      const cleaned = stripRemoteCssUrls(a.value);
+      const q = cleaned.indexOf('"') !== -1 ? "'" : '"';
+      kept.push(`${a.name}=${q}${cleaned}${q}`);
+      continue;
+    }
+    const quote = a.value.indexOf('"') !== -1 ? "'" : '"';
+    kept.push(`${a.name}=${quote}${a.value}${quote}`);
+  }
+  if (isRoot) {
+    // The root is sized in CSS pixels at the SAME natural size the bars are
+    // measured against, with the viewBox left alone. An inline <svg> then
+    // letterboxes its viewBox inside that box exactly the way an <img> does,
+    // so one uniform client↔bar-space mapping covers pointer maths and node
+    // bounds alike, and it agrees with the export's own mapping.
+    kept.push(`width="${opts.natW}"`, `height="${opts.natH}"`);
+    kept.push(`class="${opts.className || 'rd-img'}"`, 'data-rdsvg=""', 'aria-hidden="true"');
+  }
+  return kept.length ? ' ' + kept.join(' ') : '';
+}
+
+// Returns inline-ready markup, or '' when the text has no <svg> root at all.
+function prepareInlineSvg(text, opts) {
+  const toks = tokenize(text);
+  const out = [];
+  let rootSeen = false;
+  let dropName = null, dropDepth = 0;
+  let styleDepth = 0;
+  const scope = 'svg[data-rdsvg]';
+
+  for (let i = 0; i < toks.length; i++) {
+    const tk = toks[i];
+    if (dropDepth > 0) {
+      if (tk.t === 'open' && tk.name === dropName) dropDepth++;
+      else if (tk.t === 'close' && tk.name === dropName) dropDepth--;
+      continue;
+    }
+    switch (tk.t) {
+      case 'comment':
+      case 'doctype':
+      case 'pi':
+        break; // an inline fragment carries no prologue, and comments are noise
+      case 'cdata':
+        out.push(styleDepth > 0 ? scopeCssRules(tk.text || '', scope, 0) : tk.raw);
+        break;
+      case 'text':
+        out.push(styleDepth > 0 ? scopeCssRules(tk.raw, scope, 0) : tk.raw);
+        break;
+      case 'open':
+      case 'self': {
+        const lname = tk.name.toLowerCase();
+        if (INLINE_DROP_EL.has(lname)) {
+          if (tk.t === 'open') { dropName = tk.name; dropDepth = 1; }
+          break;
+        }
+        const isRoot = !rootSeen && lname === 'svg';
+        if (isRoot) rootSeen = true;
+        const addr = (!isRoot && opts.annotate !== false) ? ` data-rdn="${i}"` : '';
+        const body = tk.name + inlineAttrsFor(tk, isRoot, opts) + addr;
+        out.push(tk.t === 'self' ? `<${body}/>` : `<${body}>`);
+        if (tk.t === 'open' && lname === 'style') styleDepth++;
+        break;
+      }
+      case 'close':
+        if (tk.name.toLowerCase() === 'style' && styleDepth > 0) styleDepth--;
+        out.push(tk.raw);
+        break;
+    }
+  }
+  return rootSeen ? out.join('') : '';
+}
+
 // ─── SVG deep analysis (redact adds code/embed findings to strip-data's set) ─
 
 function analyzeSvg(text) {
@@ -670,12 +864,15 @@ function analyzeSvg(text) {
 // ─── SVG vector-mode surgery ─────────────────────────────────────────────────
 // REMOVE, never hide: metadata, comments, scripts, foreignObject, editor
 // namespaces, data-* attributes, event handlers, @font-face data-URI blocks —
-// then unreferenced defs entries, then the opaque bars are appended in root
-// viewBox coordinates. What this deliberately does NOT do: delete positioned
-// <text> under a bar. Glyph geometry is a layout computation this sandbox
-// cannot do offline, so vector mode COVERS text and the UI says so plainly.
-// Returns { out, removed } — removed is the string content that was inside
-// deleted nodes, used by the export gate's grep.
+// AND every element whose painted bounds touched a bar, addressed by the token
+// index the browser read off the inline preview (`dropSet`). Then unreferenced
+// defs entries, then the opaque bars are appended in root viewBox coordinates.
+//
+// Deletion policy is over-inclusive on purpose: a node that TOUCHES a bar goes
+// entirely. Half a word is a leak, and partial glyph surgery would be a worse
+// lie than deleting the whole run. `removed` collects the text and payload
+// hrefs that went, and the export gate greps the serialised output for every
+// one of them, so "deleted" is a checked claim rather than an intention.
 
 function rebuildTag(tk) {
   const kept = [];
@@ -693,13 +890,15 @@ function stripFontFaceDataUris(css) {
   return css.replace(/@font-face[^{}]*\{[^}]*\}/gi, (rule) => (/data:/i.test(rule) ? '' : rule));
 }
 
-function cleanSvgTokens(toks, removed) {
+function cleanSvgTokens(toks, removed, dropSet) {
   const out = [];
   const stack = [];
   let dropName = null, dropDepth = 0;
   let styleDepth = 0;
+  let rootSeen = false;
 
-  for (const tk of toks) {
+  for (let ti = 0; ti < toks.length; ti++) {
+    const tk = toks[ti];
     if (dropDepth > 0) {
       // Inside a deleted subtree: collect its text so the gate can grep for it.
       if (tk.t === 'text' || tk.t === 'cdata') removed.push(tk.t === 'cdata' ? (tk.text || '') : tk.raw);
@@ -733,7 +932,18 @@ function cleanSvgTokens(toks, removed) {
       }
       case 'open':
       case 'self': {
+        const isRoot = !rootSeen && tk.name.toLowerCase() === 'svg';
+        if (isRoot) rootSeen = true;
         if (shouldDropElement(tk.name)) {
+          if (tk.t === 'open') { dropName = tk.name; dropDepth = 1; }
+          break;
+        }
+        // Touched by a bar: the whole element goes. Its text is collected by
+        // the dropDepth branch above; its payload hrefs are collected here so
+        // the gate can grep for those too. The root <svg> is never a target —
+        // deleting it would delete the document.
+        if (dropSet && dropSet.has(ti) && !isRoot) {
+          for (const a of tk.attrs) if (isRemoteOrDataHref(a)) removed.push(a.value);
           if (tk.t === 'open') { dropName = tk.name; dropDepth = 1; }
           break;
         }
@@ -776,11 +986,36 @@ function cleanSvgTokens(toks, removed) {
   return out.join('');
 }
 
-// Second pass: drop <defs> children whose id is no longer referenced anywhere
-// in the cleaned output (a removed consumer must not leave its master behind).
-// Scoped to defs on purpose — an unreferenced id on a painting element outside
-// defs still renders, so deleting it would change the artwork.
+// Elements that paint NOTHING where they sit — they only ever render through a
+// reference (<use href>, fill="url(#…)", mask=, filter=, marker-end=). A
+// <symbol> full of text is the standard sprite idiom and is routinely declared
+// at the top level rather than inside <defs>, so scoping the sweep below to
+// <defs> children left a deleted <use>'s master, and its text, in the output
+// with the export gate none the wiser. Dropping an unreferenced one of these
+// cannot change the artwork, wherever it sits, because nothing was drawing it.
+const NONRENDERING_EL = new Set([
+  'symbol', 'marker', 'mask', 'clippath', 'pattern', 'filter',
+  'lineargradient', 'radialgradient', 'meshgradient', 'solidcolor',
+]);
+
+// Second pass: drop definitions nothing references any more — <defs> children by
+// id, and non-rendering containers anywhere in the tree. A removed consumer must
+// not leave its master behind. An unreferenced id on a PAINTING element outside
+// defs is left alone: it still renders, so deleting it would change the artwork.
+//
+// Run to a fixed point (bounded): a dropped <symbol> can be the last reference
+// to the gradient it used, and that gradient is then unreferenced in turn.
 function dropUnreferencedDefs(svgText) {
+  let text = svgText;
+  for (let pass = 0; pass < 4; pass++) {
+    const next = dropUnreferencedOnce(text);
+    if (next === text) break;
+    text = next;
+  }
+  return text;
+}
+
+function dropUnreferencedOnce(svgText) {
   const referenced = new Set();
   let m;
   const urlRe = /url\(\s*["']?#([^)"'\s]+)/g;
@@ -799,12 +1034,11 @@ function dropUnreferencedDefs(svgText) {
     }
     if (tk.t === 'open' || tk.t === 'self') {
       const lname = tk.name.toLowerCase();
-      if (defsDepth === 1 && lname !== 'defs') {
-        const idAttr = tk.attrs.find((a) => a.name.toLowerCase() === 'id');
-        if (idAttr && idAttr.value && !referenced.has(idAttr.value)) {
-          if (tk.t === 'open') { dropName = tk.name; dropDepth = 1; }
-          continue;
-        }
+      const idAttr = tk.attrs.find((a) => a.name.toLowerCase() === 'id');
+      const unreferenced = !idAttr || !idAttr.value || !referenced.has(idAttr.value);
+      if (unreferenced && (NONRENDERING_EL.has(lname) || (defsDepth === 1 && lname !== 'defs' && idAttr && idAttr.value))) {
+        if (tk.t === 'open') { dropName = tk.name; dropDepth = 1; }
+        continue;
       }
       if (lname === 'defs' && tk.t === 'open') defsDepth++;
     } else if (tk.t === 'close' && tk.name.toLowerCase() === 'defs' && defsDepth > 0) {
@@ -815,8 +1049,37 @@ function dropUnreferencedDefs(svgText) {
   return out.join('');
 }
 
-function svgWithBars(svgText, rects, vb) {
-  if (!rects.length) return svgText;
+function xmlEscape(s) {
+  return String(s).replace(/[&<>"']/g, (c) => (
+    c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;'
+  ));
+}
+
+const num2 = (n) => String(Math.round(n * 100) / 100);
+
+// The painted shape as SVG path data — the SAME shape the canvas paths trace,
+// so an SVG export and a PNG export of the same marks cover the same area.
+function shapePathD(s) {
+  const [tl, tr, br, bl] = s.radii;
+  if (!tl && !tr && !br && !bl) {
+    return `M${num2(s.x0)},${num2(s.y0)}H${num2(s.x1)}V${num2(s.y1)}H${num2(s.x0)}Z`;
+  }
+  const d = [`M${num2(s.x0 + tl)},${num2(s.y0)}`, `H${num2(s.x1 - tr)}`];
+  if (tr) d.push(`A${num2(tr)},${num2(tr)} 0 0 1 ${num2(s.x1)},${num2(s.y0 + tr)}`);
+  d.push(`V${num2(s.y1 - br)}`);
+  if (br) d.push(`A${num2(br)},${num2(br)} 0 0 1 ${num2(s.x1 - br)},${num2(s.y1)}`);
+  d.push(`H${num2(s.x0 + bl)}`);
+  if (bl) d.push(`A${num2(bl)},${num2(bl)} 0 0 1 ${num2(s.x0)},${num2(s.y1 - bl)}`);
+  d.push(`V${num2(s.y0 + tl)}`);
+  if (tl) d.push(`A${num2(tl)},${num2(tl)} 0 0 1 ${num2(s.x0 + tl)},${num2(s.y0)}`);
+  d.push('Z');
+  return d.join('');
+}
+
+// `shapes` are already in the root's viewBox coordinates. Every fill is fully
+// opaque: the mark's colour is a brand choice, its opacity never is.
+function svgWithBars(svgText, shapes, mark, scale) {
+  if (!shapes.length) return svgText;
   // Tolerate whitespace in the close tag ('</svg >'); a document whose bars
   // cannot be inserted must fail loudly, never ship without them.
   let close = -1, m;
@@ -825,10 +1088,28 @@ function svgWithBars(svgText, rects, vb) {
   if (close === -1) {
     throw new Error('Verification failed: the redaction bars could not be placed in this SVG. Nothing was downloaded.');
   }
-  const parts = rects.map((r) => {
-    const x = vb.x + r.x0, y = vb.y + r.y0;
-    return `<rect x="${x}" y="${y}" width="${r.x1 - r.x0}" height="${r.y1 - r.y0}" fill="#000000" fill-opacity="1"/>`;
-  });
+  const ink = normaliseInk(mark && mark.ink) || NEUTRAL_INK;
+  const labelInk = normaliseInk(mark && mark.labelInk) || '#ffffff';
+  const label = mark && mark.label ? String(mark.label) : '';
+  const parts = [];
+  for (const s of shapes) {
+    // Square corners stay a <rect>: same painted area, simpler output, and a
+    // reader of the file can see at a glance that the mark is a plain box.
+    const square = !s.radii[0] && !s.radii[1] && !s.radii[2] && !s.radii[3];
+    parts.push(square
+      ? `<rect x="${num2(s.x0)}" y="${num2(s.y0)}" width="${num2(s.x1 - s.x0)}" height="${num2(s.y1 - s.y0)}" fill="${ink}" fill-opacity="1"/>`
+      : `<path d="${shapePathD(s)}" fill="${ink}" fill-opacity="1"/>`);
+    // Painted ON TOP of a shape that is already fully opaque, so it can reveal
+    // nothing: what was under it is gone from the file, not hidden by it.
+    const lay = label ? stampFit(s, label, 14 / (scale || 1)) : null;
+    if (lay) {
+      parts.push(
+        `<text x="${num2(lay.cx)}" y="${num2(lay.cy)}" fill="${labelInk}" font-family="sans-serif"`
+        + ` font-size="${num2(lay.size)}" font-weight="600" text-anchor="middle"`
+        + ` dominant-baseline="central">${xmlEscape(label)}</text>`
+      );
+    }
+  }
   return `${svgText.slice(0, close)}<g>${parts.join('')}</g>${svgText.slice(close)}`;
 }
 
@@ -844,9 +1125,38 @@ function parseBars(v) {
     const page = Math.max(1, Math.round(Number(row.page)) || 1);
     const x = Number(row.x), y = Number(row.y), w = Number(row.w), h = Number(row.h);
     if (!isFinite(x) || !isFinite(y) || !(w > 0) || !(h > 0)) continue;
-    out.push({ page, x, y, w, h });
+    out.push({ page, x, y, w, h, n: row.n == null ? '' : String(row.n) });
   }
   return out;
+}
+
+// The per-bar `n` field is the browser's answer to "which elements does this
+// bar touch", written by the template script at commit time. Three states, and
+// the difference between the last two is the whole honesty of vector mode:
+//
+//   ''        never measured — a bar typed into the sidebar, restored from a
+//             URL, or driven headlessly. Vector export REFUSES rather than
+//             quietly covering what it cannot delete.
+//   'm'       measured on the page preview, nothing under it.
+//   'm:3,17'  measured, and these token addresses are to be deleted.
+//
+// Returns null for "never measured", otherwise an array of indices.
+function parseNodeMarks(v) {
+  const s = v == null ? '' : String(v).trim();
+  if (s.charAt(0) !== 'm') return null;
+  const rest = s.slice(1).replace(/^:/, '');
+  if (!rest) return [];
+  const out = [];
+  for (const part of rest.split(',')) {
+    const nn = Number(part);
+    if (isFinite(nn) && nn >= 0) out.push(Math.round(nn));
+  }
+  return out;
+}
+
+function formatNodeMarks(list) {
+  const arr = Array.isArray(list) ? list.filter((n) => isFinite(n) && n >= 0) : [];
+  return arr.length ? 'm:' + arr.map((n) => Math.round(n)).join(',') : 'm';
 }
 
 // Every row, coerced but NOT area-filtered — the canvas round-trip. The canvas
@@ -863,12 +1173,18 @@ function barRows(v) {
     out.push({
       page: Math.max(1, Math.round(Number(row.page)) || 1),
       x: num(row.x), y: num(row.y), w: num(row.w), h: num(row.h),
+      n: row.n == null ? '' : String(row.n),
     });
   }
   return out;
 }
 
 const INFLATE_PX = 2;      // chroma-subsampling edge bleed margin, each side
+// The raster resolution the PDF rebuild renders at. Named here because the
+// canvas needs it too: the stamp's minimum size is decided in DEVICE pixels on
+// that side of the bridge, so a preview that asked the question in points would
+// hide a label the downloaded page carries.
+const REDACT_DPI = 200;
 const QUANT_GRID = 24;     // widths round UP to this grid when quantise is on
 const QUANT_GRID_PT = 18;  // the same 24 CSS px in PDF points (24 * 72 / 96)
 
@@ -885,14 +1201,31 @@ function quantiseSpan(x0, x1, grid) {
   return { x0: x0 - Math.floor(extra / 2), x1: x1 + Math.ceil(extra / 2) };
 }
 
-// Bars in PDF point space, width-quantised in place. The rebuild inflates and
-// clamps per page in device pixels (pdf-redact-core barToPixels), so this pass
-// only ever widens.
-function quantiseBarsPt(bars) {
+// Bars in PDF point space, made EFFECTIVE before they cross the bridge: integer
+// snap, the 2-unit inflation, then the optional width quantise — the same order,
+// on the same numbers, as effectiveRect and the canvas mirror's effBox.
+//
+// The order and the units both matter. The rebuild inflates by 2 DEVICE pixels
+// (0.72pt at 200 dpi) and has no width grid at all, so quantising the raw span
+// here and leaving the inflation to the far side painted a bar several points
+// narrower than the one the preview drew — area the user watched go black
+// shipped readable. Doing the whole effective rect here in points means the
+// preview and the burn describe one rectangle; the bridge's own inflation then
+// only ever adds a little more.
+function quantiseBarsPt(bars, quantise) {
   return bars.map((b) => {
-    const q = quantiseSpan(b.x, b.x + b.w, QUANT_GRID_PT);
-    const x = Math.max(0, q.x0);
-    return { page: b.page, x, y: b.y, w: q.x1 - x, h: b.h };
+    let x0 = Math.floor(b.x) - INFLATE_PX;
+    let x1 = Math.ceil(b.x + b.w) + INFLATE_PX;
+    if (quantise !== false) {
+      const q = quantiseSpan(x0, x1, QUANT_GRID_PT);
+      x0 = q.x0;
+      x1 = q.x1;
+    }
+    const y0 = Math.floor(b.y) - INFLATE_PX;
+    const y1 = Math.ceil(b.y + b.h) + INFLATE_PX;
+    const x = Math.max(0, x0);
+    const y = Math.max(0, y0);
+    return { page: b.page, x, y, w: Math.max(1, x1 - x), h: Math.max(1, y1 - y) };
   });
 }
 
@@ -926,6 +1259,149 @@ function rectsFor(bars, W, H, quantise, page) {
   return out;
 }
 
+// ─── node geometry: snap-to-cover and partial coverage (pure) ───────────────
+// The sandbox cannot compute glyph geometry; the browser can. So the TEMPLATE
+// measures (real painted bounds off the inline SVG) and this file owns the
+// MATHS. Everything below is pure and node-testable, and template.html carries
+// a delimited mirror of the same three functions (@geom-mirror) that
+// tests/redact.test.ts evaluates and compares case by case, so the two copies
+// cannot drift silently.
+//
+// Boxes are {x, y, w, h} in the frame's own bar space: PDF points for a page,
+// natural CSS pixels for an SVG. Raster frames have no nodes at all, so neither
+// behaviour can fire there and the copy says so.
+
+// Touching counts as covered-adjacent: shared edges included. A node one unit
+// outside a bar is a node the bar was probably meant to take.
+function rectTouches(a, b) {
+  return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
+}
+
+function unionBox(a, b) {
+  const x = Math.min(a.x, b.x);
+  const y = Math.min(a.y, b.y);
+  return {
+    x, y,
+    w: Math.max(a.x + a.w, b.x + b.w) - x,
+    h: Math.max(a.y + a.h, b.y + b.h) - y,
+  };
+}
+
+// The effective painted box for a bar, as {x,y,w,h} — effectiveRect's geometry
+// (integer snap, 2px inflation, optional width quantise, clamp to the frame)
+// expressed in the same shape the node maths use. Falls back to the raw box
+// when the bar clamps away entirely, so a probe is never empty.
+function effBox(bar, W, H, quantise) {
+  const r = effectiveRect(bar, W, H, quantise);
+  if (!r) return { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
+  return { x: r.x0, y: r.y0, w: r.x1 - r.x0, h: r.y1 - r.y0 };
+}
+
+// A node this big is the PAGE, not a thing on it: a scanned page's single image
+// XObject, an Illustrator artboard rect, a full-bleed background. Snapping to it
+// would union a bar with the whole page and ship the document as one solid
+// rectangle; reporting it as partly covered would nag forever, since no bar can
+// ever finish it; deleting it in vector mode would take the artwork's own
+// backdrop out. So it is excluded from the node set entirely, and a bar over it
+// covers exactly what the user drew — the same honest deal a raster source gets.
+const BACKDROP_SPAN = 0.85;
+
+function isBackdropNode(nb, W, H) {
+  if (!nb || !(W > 0) || !(H > 0)) return false;
+  return nb.w >= W * BACKDROP_SPAN && nb.h >= H * BACKDROP_SPAN;
+}
+
+const SNAP_PASSES = 8;
+
+// Grow a drawn bar to the union of every node box its PAINTED area touches.
+// A bar that half-covers a glyph is a leak, so this has no off switch: the
+// honest tool does not ship a leak mode. Repeated until nothing new is caught,
+// because growing can reach a node the original missed and the deletion set has
+// to be closed under that; bounded so a pathological document cannot spin.
+//
+// `effOf` maps a raw box to the box that actually gets painted (inflation and
+// width quantisation), so a node the widened bar will cover is also a node the
+// vector export deletes. Omit it and the raw box is probed.
+//
+// Quantise ordering is a consequence, not a separate step: this returns the raw
+// grown bar and the export quantises THAT, so snap always happens first and the
+// grid only ever widens the already-snapped span.
+function snapBarToNodes(bar, nodes, effOf) {
+  let box = { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
+  const hit = [];
+  const taken = new Set();
+  for (let pass = 0; pass < SNAP_PASSES; pass++) {
+    const probe = effOf ? effOf(box) : box;
+    let grew = false;
+    for (let i = 0; i < nodes.length; i++) {
+      if (taken.has(i)) continue;
+      const nb = nodes[i];
+      if (!nb || !isFinite(nb.x) || !isFinite(nb.y) || !(nb.w >= 0) || !(nb.h >= 0)) continue;
+      if (!rectTouches(probe, nb)) continue;
+      taken.add(i);
+      hit.push(i);
+      box = unionBox(box, nb);
+      grew = true;
+    }
+    if (!grew) break;
+  }
+  hit.sort((a, b) => a - b);
+  return { x: box.x, y: box.y, w: box.w, h: box.h, hit };
+}
+
+// r minus c, as up to four boxes. Exact — no sampling grid, so a one-unit
+// sliver of an uncovered glyph cannot fall between samples.
+function subtractBox(r, c) {
+  if (!rectTouches(r, c)) return [r];
+  const out = [];
+  const top = Math.max(r.y, Math.min(r.y + r.h, c.y));
+  const bottom = Math.min(r.y + r.h, Math.max(r.y, c.y + c.h));
+  if (top > r.y) out.push({ x: r.x, y: r.y, w: r.w, h: top - r.y });
+  if (bottom < r.y + r.h) out.push({ x: r.x, y: bottom, w: r.w, h: r.y + r.h - bottom });
+  const midH = bottom - top;
+  if (midH > 0) {
+    const left = Math.max(r.x, Math.min(r.x + r.w, c.x));
+    const right = Math.min(r.x + r.w, Math.max(r.x, c.x + c.w));
+    if (left > r.x) out.push({ x: r.x, y: top, w: left - r.x, h: midH });
+    if (right < r.x + r.w) out.push({ x: right, y: top, w: r.x + r.w - right, h: midH });
+  }
+  return out;
+}
+
+// Slivers under this many frame units are antialiasing, not readable content.
+const COVER_EPS = 0.75;
+
+function uncoveredParts(node, covers, eps) {
+  const e = eps == null ? COVER_EPS : eps;
+  let parts = [{ x: node.x, y: node.y, w: node.w, h: node.h }];
+  for (const c of covers) {
+    const next = [];
+    for (const p of parts) for (const q of subtractBox(p, c)) next.push(q);
+    parts = next.filter((p) => p.w > e && p.h > e);
+    if (!parts.length) break;
+  }
+  return parts;
+}
+
+// Nodes that a bar reaches but does not finish. Impossible to detect on a
+// raster source (no nodes exist), and normally impossible right after a draw
+// (snap-to-cover just grew the bar past them) — it shows up after an undo, a
+// sidebar edit, or a bar deleted out from under a neighbour. Coverage is tested
+// against the UNION of every painted bar, so two bars that jointly finish a
+// word are not reported.
+function partialNodes(nodes, covers, eps) {
+  const out = [];
+  if (!covers.length) return out;
+  for (let i = 0; i < nodes.length; i++) {
+    const nb = nodes[i];
+    if (!nb || !(nb.w > 0) || !(nb.h > 0)) continue;
+    if (!covers.some((c) => rectTouches(c, nb))) continue;
+    const parts = uncoveredParts(nb, covers, eps);
+    if (parts.length) out.push({ index: i, parts });
+  }
+  return out;
+}
+
 // Union coverage of the repainted pixels, computed on a 100x100 occupancy grid
 // so overlapping bars aren't double-counted. Accurate to about 1%.
 function coveragePercent(rects, W, H) {
@@ -944,6 +1420,248 @@ function coveragePercent(rects, W, H) {
   let n = 0;
   for (let i = 0; i < grid.length; i++) n += grid[i];
   return Math.min(100, Math.round(n / (G * G) * 100));
+}
+
+// ─── the mark itself: ink, corner radius, stamp ─────────────────────────────
+// A redaction is an act of authorship, and its look is a trust surface: an
+// anonymous black smear reads as a cover-up, a consistent branded mark reads as
+// an accountable edit by a known entity. None of that is a security property —
+// ANY 100% opaque fill destroys the pixels beneath it equally, and the research
+// is explicit that colour is not a hiding criterion. Translucency IS a security
+// property, so nothing here can produce a fill below full opacity.
+//
+// Three styles, not a style editor:
+//   solid    square, neutral near-black
+//   branded  the loaded brand's own dark tone, corners slightly rounded
+//   stamped  branded, plus a short label painted ON TOP of the opaque bar
+//
+// The label is safe precisely because it sits on pixels that are already gone.
+// It is the user's own text, their profile name, or the word REDACTED — never
+// anything derived from what was covered.
+
+const NEUTRAL_INK = '#14161a'; // deliberate ink, not a hole punched in the page
+const STAMP_FALLBACK = 'REDACTED';
+const STAMP_MAX = 24;
+
+// One uniform radius in FRAME units (PDF points on a page, pixels on an image),
+// not a fraction of each bar: a per-bar radius would make the inflation below
+// grow with the bar, and the whole point is that the extra area is small and
+// predictable.
+//
+// It does have to scale with the FILE, though. 3 units is a slight softening on
+// a 612pt page and an invisible sub-pixel on a 3024px phone photo, where the
+// Branded and Stamped presets then looked identical to Solid — the user picks a
+// rounded mark, is told the corners round, and gets a square bar. So the radius
+// is a small fraction of the frame's short side, floored at the old constant and
+// capped so it stays a softening rather than a lozenge.
+const MARK_RADIUS = 3;
+const MARK_RADIUS_MAX = 14;
+const MARK_RADIUS_FRAC = 0.006;
+
+const MARK_STYLES = { solid: 1, branded: 1, stamped: 1 };
+
+function markStyleOf(v) {
+  const s = v == null ? '' : String(v);
+  return Object.prototype.hasOwnProperty.call(MARK_STYLES, s) ? s : 'branded';
+}
+
+// A caller-supplied colour as a canonical '#rrggbb', or null. Mirrors
+// normaliseInk in the web shell's pdf-redact-core.ts, and refuses for the same
+// reason: alpha below full opacity leaves covered ink faintly recoverable, and
+// an unreadable canvas fillStyle is a silent no-op that would leave the previous
+// fill (white) painting bars that redact nothing.
+function normaliseInk(v) {
+  if (typeof v !== 'string') return null;
+  const s = v.trim().toLowerCase();
+  const short = /^#([0-9a-f]{3})([0-9a-f])?$/.exec(s);
+  if (short) {
+    if (short[2] && short[2] !== 'f') return null;
+    return '#' + short[1].split('').map((c) => c + c).join('');
+  }
+  const long = /^#([0-9a-f]{6})([0-9a-f]{2})?$/.exec(s);
+  if (long) {
+    if (long[2] && long[2] !== 'ff') return null;
+    return '#' + long[1];
+  }
+  return null;
+}
+
+// Readable stamp colour for a given ink. sRGB relative luminance, WCAG weights.
+function inkContrast(hex) {
+  const h = normaliseInk(hex) || NEUTRAL_INK;
+  const ch = (i) => {
+    const v = parseInt(h.slice(1 + i * 2, 3 + i * 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4);
+  };
+  const L = 0.2126 * ch(0) + 0.7152 * ch(1) + 0.0722 * ch(2);
+  return L > 0.4 ? NEUTRAL_INK : '#ffffff';
+}
+
+// `W`/`H` are the frame the mark is painted in, in its own units. Omit them (the
+// PDF path, whose page space is points and whose pages are all roughly a sheet
+// of paper) and the base radius stands.
+function markRadiusFor(style, W, H) {
+  if (style === 'solid') return 0;
+  const short = Math.min(Number(W) || 0, Number(H) || 0);
+  if (!(short > 0)) return MARK_RADIUS;
+  return Math.max(MARK_RADIUS, Math.min(MARK_RADIUS_MAX, Math.round(short * MARK_RADIUS_FRAC)));
+}
+
+// THE ROUNDED-CORNER RULE. A rounded rectangle does not cover the corners of the
+// box it is inscribed in, so rounding a bar in place would uncover four slivers
+// of exactly what the user marked. So the painted box is INFLATED by the radius
+// on every side first: each corner arc's centre then lands precisely on a corner
+// of the requested rect, every point of that rect is within `radius` of such a
+// centre and inside the enclosing box, and containment follows by construction —
+// no sampling, no epsilon. A corner whose sides had to clamp to the frame edge is
+// painted SQUARE, because the clamp drags the arc centre inward and it would cut
+// back into the rect, which is the one failure this whole shape exists to avoid.
+//
+// `rect` is an effectiveRect ({x0,y0,x1,y1}); the result is the same shape plus
+// four radii, clockwise from the top-left.
+function paintedShape(rect, radius, W, H) {
+  const rad = Math.max(0, Math.floor(Number(radius) || 0));
+  if (!rad) return { x0: rect.x0, y0: rect.y0, x1: rect.x1, y1: rect.y1, radii: [0, 0, 0, 0] };
+  const wantX0 = rect.x0 - rad, wantY0 = rect.y0 - rad;
+  const wantX1 = rect.x1 + rad, wantY1 = rect.y1 + rad;
+  const x0 = Math.max(0, wantX0), y0 = Math.max(0, wantY0);
+  const x1 = Math.min(W, wantX1), y1 = Math.min(H, wantY1);
+  const cL = x0 > wantX0, cT = y0 > wantY0, cR = x1 < wantX1, cB = y1 < wantY1;
+  // A smaller radius only ever paints MORE, so capping can never break
+  // containment; it only stops opposite corners meeting on a hairline bar.
+  const cap = Math.max(0, Math.min(rad, Math.floor(Math.min(x1 - x0, y1 - y0) / 2)));
+  return {
+    x0, y0, x1, y1,
+    radii: [
+      cL || cT ? 0 : cap,
+      cR || cT ? 0 : cap,
+      cR || cB ? 0 : cap,
+      cL || cB ? 0 : cap,
+    ],
+  };
+}
+
+// Where a stamp sits on a finished bar: centred, at a size the bar can hold.
+// Null when the bar is too small — a stamp is decoration on an already-opaque
+// mark, so it is dropped rather than squeezed. 0.62em per character is wide
+// enough for the sans a canvas or a viewer falls back to.
+function stampFit(shape, text, maxSize) {
+  const t = String(text || '').trim();
+  if (!t) return null;
+  const w = shape.x1 - shape.x0, h = shape.y1 - shape.y0;
+  const size = Math.floor(Math.min(maxSize, h * 0.5));
+  if (size < 7) return null;
+  if (t.length * size * 0.62 > w * 0.86) return null;
+  return { size, cx: shape.x0 + w / 2, cy: shape.y0 + h / 2 };
+}
+
+// ─── brand tone + author name (read through the host, cached per mount) ──────
+// A community tool inherits the loaded brand rather than carrying one. The
+// brand's own dark text tone is the redaction ink; with no brand loaded (or a
+// token that cannot be painted honestly) the neutral near-black stands in, so
+// the tool looks the same in a bare shell as it always did.
+
+const INK_TOKENS = ['color.semantic.text', 'color.semantic.primary'];
+const INK_BUDGET_MS = 500;
+
+let _inkJob = null;
+
+function inkJobFor(host) {
+  if (_inkJob) return _inkJob;
+  const job = { promise: null, value: null, done: false };
+  job.promise = Promise.resolve()
+    .then(() => (host && host.tokens && typeof host.tokens.colors === 'function') ? host.tokens.colors() : [])
+    .then((list) => {
+      // ColorSwatch.value is always a hex string, so no colour parsing (and no
+      // canvas) is needed here — which is what keeps this sandbox-pure and
+      // identical headless.
+      const arr = Array.isArray(list) ? list : [];
+      for (const path of INK_TOKENS) {
+        for (const sw of arr) {
+          if (!sw || sw.path !== path) continue;
+          const hex = normaliseInk(sw.value);
+          if (hex) { job.value = hex; return; }
+        }
+      }
+    })
+    .catch(() => { /* no tokens here: the neutral ink stands in */ })
+    .then(() => { job.done = true; });
+  _inkJob = job;
+  return job;
+}
+
+// `wait` false uses the short budget (a live paint must not stall); export
+// awaits properly, so preview and output agree on the same resolved value.
+async function resolveInk(host, style, wait) {
+  if (style === 'solid') return NEUTRAL_INK;
+  const job = inkJobFor(host);
+  if (!job.done) {
+    if (wait) { try { await job.promise; } catch (e) { /* handled in the job */ } }
+    else await withBudget(job.promise, INK_BUDGET_MS);
+  }
+  return job.value || NEUTRAL_INK;
+}
+
+let _profJob = null;
+
+function profileJobFor(host) {
+  if (_profJob) return _profJob;
+  const job = { promise: null, name: '', useDetails: false, done: false };
+  job.promise = Promise.resolve()
+    .then(() => (host && host.profile && typeof host.profile.get === 'function') ? host.profile.get() : null)
+    .then((p) => {
+      const o = p && typeof p === 'object' ? p : {};
+      job.name = [o.firstname, o.lastname].map((s) => (s == null ? '' : String(s).trim()))
+        .filter(Boolean).join(' ');
+      job.useDetails = o.useDetails === true;
+    })
+    .catch(() => { /* no profile: the stamp falls back to REDACTED */ })
+    .then(() => { job.done = true; });
+  _profJob = job;
+  return job;
+}
+
+async function resolveProfile(host, wait) {
+  const job = profileJobFor(host);
+  if (!job.done) {
+    if (wait) { try { await job.promise; } catch (e) { /* handled in the job */ } }
+    else await withBudget(job.promise, INK_BUDGET_MS);
+  }
+  return { name: job.name, useDetails: job.useDetails };
+}
+
+// The stamp's text: what the user typed, else their profile name, else the word.
+// Never anything read out of the document.
+function stampTextFor(typed, profileName) {
+  const t = String(typed == null ? '' : typed).trim().slice(0, STAMP_MAX);
+  if (t) return t;
+  const n = String(profileName || '').trim().slice(0, STAMP_MAX);
+  return n || STAMP_FALLBACK;
+}
+
+// Everything the paint paths need, resolved once. `wait` is true on the export
+// path so the burned mark is never the fallback just because tokens were slow.
+//
+// The two lookups run CONCURRENTLY, and that is load-bearing on the live paint:
+// each carries its own INK_BUDGET_MS, and awaiting them one after the other sums
+// the budgets. The PDF branch of patch() then spends up to PAGES_BUDGET_MS on
+// top, and the whole pass has to fit the runtime's 2000ms onInput box — an
+// overrun DISCARDS the patch, so the drop would simply look dead.
+async function resolveMark(host, inputs, wait) {
+  const style = markStyleOf(inputs.style);
+  const [ink, prof] = await Promise.all([
+    resolveInk(host, style, wait),
+    resolveProfile(host, wait),
+  ]);
+  return {
+    style,
+    ink,
+    radius: markRadiusFor(style),
+    label: style === 'stamped' ? stampTextFor(inputs.stampLabel, prof.name) : '',
+    labelInk: inkContrast(ink),
+    authorName: prof.name,
+    useDetails: prof.useDetails,
+  };
 }
 
 // ─── preset bar heights (the canvas rail's Line / Heading / Block buttons) ───
@@ -983,9 +1701,10 @@ function joinPages(list) {
 //
 // The first-bar advisory is the ONLY guidance that arrives at the moment of the
 // edit, so it must not overstate what the current export mode does. Vector SVG
-// export deliberately never deletes <text>/<tspan>/<textPath> (cleanSvgTokens,
-// above): it covers them. Saying "destroyed" there would be the one false
-// sentence in the tool.
+// export now DELETES every element a bar touches (cleanSvgTokens takes the node
+// addresses the browser measured), so "destroyed" is true there too — but the
+// output is still SVG, a readable text format, and that residue is stated
+// rather than left for the user to discover.
 function advisoryFor(state, seen) {
   const cands = [];
   const failed = Array.isArray(state.pagesFailed) ? state.pagesFailed : [];
@@ -1005,7 +1724,7 @@ function advisoryFor(state, seen) {
     cands.push({
       key: 'first-bar',
       text: state.vectorMode
-        ? 'Vector export covers what sits under a bar. The text stays in the file. Turn vector mode off to destroy it.'
+        ? 'Every element a bar touches is deleted from the file, then painted over. The output is still SVG, a readable text format.'
         : 'Covered content is destroyed when the file is rebuilt, not hidden.',
     });
     if (state.isImage) {
@@ -1152,60 +1871,27 @@ const PAGES_BUDGET_MS = 1400;
 // state (result/error) so a later re-render can read it synchronously — the
 // template poll re-commits the bars array until the job settles, and the
 // settled result must be pick-up-able without another await race.
-// Object URLs created for page SVGs are tracked module-level and revoked when
-// the file changes (a new key retires the old job's URLs).
+//
+// Pages are INLINED, not handed to an <img src="blob:…">. An SVG inside an
+// <img> is a closed document, so no node inside it can be measured and neither
+// snap-to-cover nor the partial-coverage warning could exist. Inlining also
+// retires the whole object-URL lifecycle that used to live here (create, track,
+// revoke on a delay): there is nothing to revoke, and a replaced file simply
+// drops the markup with the rest of the extras. prepareInlineSvg runs ONCE per
+// job, not per paint.
 
 let _pagesJob = { key: '', promise: null, result: null, error: null };
-let _pageUrls = [];
-
-function revokeUrls(urls) {
-  if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
-    for (const u of urls) {
-      try { URL.revokeObjectURL(u); } catch (e) { /* already gone */ }
-    }
-  }
-}
-
-// Old page URLs are revoked on a DELAY, not immediately: the runtime's
-// immediate pre-hook emit repaints the OLD extras, so fresh <img> elements can
-// still be loading these URLs for a beat after a new file lands (the patch
-// itself takes up to the 1400ms pages budget). 1.5s outlives that window.
-const URL_RETIRE_MS = 1500;
-
-function retirePageUrls() {
-  const old = _pageUrls;
-  _pageUrls = [];
-  if (!old.length) return;
-  if (typeof setTimeout === 'function') setTimeout(() => revokeUrls(old), URL_RETIRE_MS);
-  else revokeUrls(old);
-}
 
 // Called whenever the loaded file is no longer a PDF (replaced with an image,
-// cleared, unsupported) — without this, replacing a 40-page PDF with a JPEG
-// left every page blob URL alive until the next PDF or page unload.
+// cleared, unsupported), so a stale job never answers for the new file.
 function resetPagesJob() {
   if (_pagesJob.key || _pagesJob.promise) {
     _pagesJob = { key: '', promise: null, result: null, error: null };
   }
-  retirePageUrls();
-}
-
-// Preview URL for one page SVG: object URL when the globals exist (browser),
-// data: URL otherwise (node/CLI shells with no Blob/URL.createObjectURL).
-function svgPreviewUrl(svg) {
-  if (typeof URL !== 'undefined' && typeof URL.createObjectURL === 'function' && typeof Blob !== 'undefined') {
-    try {
-      const u = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
-      _pageUrls.push(u);
-      return u;
-    } catch (e) { /* fall through to data: */ }
-  }
-  return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
 }
 
 function pdfPagesJobFor(host, f, key) {
   if (_pagesJob.key === key && _pagesJob.promise) return _pagesJob;
-  retirePageUrls();
   const job = { key, promise: null, result: null, error: null };
   job.promise = Promise.resolve()
     .then(() => host.pdf.pages(f.bytes))
@@ -1213,7 +1899,7 @@ function pdfPagesJobFor(host, f, key) {
       const pages = res && Array.isArray(res.pages) ? res.pages : [];
       job.result = {
         pages: pages.map((p) => ({
-          url: svgPreviewUrl(p.svg),
+          svg: prepareInlineSvg(p.svg, { className: 'rd-img', natW: p.widthPt, natH: p.heightPt }),
           page: p.page,
           w: p.widthPt,
           h: p.heightPt,
@@ -1281,14 +1967,33 @@ async function patch(ctx) {
   const trigger = ctx.id || '';
   const inputs = inputsFrom(model);
   const f = inputs.source;
-  // NOTE: no key returned here may match a declared input id (source, bars,
-  // quantise, grayscale, svgVector, resign) — those would write back into the
-  // model. The template reads the toggles by id straight from the input values.
+  // The mark: brand ink, corner radius, stamp text. Budgeted here (this pass has
+  // 2000ms and the PDF branch already spends most of it) and awaited properly on
+  // the export path, so the preview and the burned output agree.
+  const mark = await resolveMark(host, inputs, false);
+  // NOTE: exactly ONE key returned here matches a declared input id, and it is
+  // deliberate: `fileKind` carries the sniffed format back into the model so the
+  // format-only toggles (svgVector, resign) can hide themselves via showIf for a
+  // file they do not apply to. showIf can only compare input VALUES, and the
+  // file's type is not one — so the hook has to publish it. Every other key here
+  // must NOT match an input id (source, bars, quantise, grayscale, svgVector,
+  // resign, style, stampLabel), or it would silently overwrite what the user set.
   const blank = {
+    fileKind: '',
     hasFile: false, supported: false, pdfUnavailable: false, pdfRedactUnavailable: false,
     fileName: '', fileSize: '', kind: '',
     isRaster: false, isSvg: false, isPdfKind: false, vectorMode: false,
     previewUrl: '', barsJson: '[]',
+    // Inline SVG source preview (empty → the raster <img> path is used instead).
+    inlineSvg: '', hasInlineSvg: false, svgW: 0, svgH: 0,
+    // Geometry constants the canvas mirror needs, from ONE source of truth.
+    geomJson: JSON.stringify({ inflate: INFLATE_PX, gridPx: QUANT_GRID, gridPt: QUANT_GRID_PT, quantise: true, radius: 0, dpi: REDACT_DPI }),
+    // How the mark looks, for the canvas — one JSON blob so the drawing surface
+    // paints exactly the shape and colour the export burns.
+    markJson: JSON.stringify({ ink: NEUTRAL_INK, labelInk: '#ffffff', label: '', radius: 0, style: 'solid' }),
+    barInk: NEUTRAL_INK, markStyle: 'solid', stampText: '',
+    authorName: '', authorKnown: false,
+    pageCount: 0, hasManyPages: false,
     findings: [], foundSummary: '', nothingFound: false, analysisPending: false, analysisFailed: false,
     barCount: 0, barPlural: false, hasBars: false, staleBars: 0, staleNote: '',
     coveragePct: 0, hasCoverage: false,
@@ -1296,6 +2001,18 @@ async function patch(ctx) {
     pageBars: [], hasPageBars: false, resignUnavailable: false,
     pdfPages: [], hasPdfPages: false, pagesPending: false, pagesError: '', pagesTruncated: false,
     toastKey: '', toastText: '',
+    // Can this frame's elements be measured at all? Snap-to-cover, the partial
+    // -coverage warning and vector deletion all need real painted bounds, which
+    // exist only on an INLINE page or SVG. A raster source has none, and neither
+    // does an SVG that fell back to the <img> preview — so the stage hint must
+    // not promise a bar "can never clip a word in half" for either of them.
+    canMeasure: false,
+    // The drawing surface still owes the bars work — page previews are rendering,
+    // or a bar arrived unmeasured (a share link, the sidebar editor, `lolly
+    // redact --bars=`) and the re-snap pass has not committed yet. Automation
+    // drives this tool by clicking [data-export-file] as soon as it is enabled,
+    // which for a headless caller landed before snap-to-cover had run at all.
+    exportWait: false,
     presetsJson: JSON.stringify(PRESET_FRACS),
     downloadLabel: 'Download redacted copy',
   };
@@ -1304,11 +2021,28 @@ async function patch(ctx) {
   const base = { ...blank, hasFile: true, fileName: f.name, fileSize: fmtBytes(f.size) };
   const info = classify(f.bytes);
   base.kind = info.kind;
-  if (info.kind !== 'PDF') resetPagesJob(); // a non-PDF replacing a PDF retires the page URLs
+  base.fileKind = info.kind;
+  base.markStyle = mark.style;
+  base.barInk = mark.ink;
+  base.stampText = mark.label;
+  base.authorName = mark.authorName;
+  // Named on the credential only when the profile's "Use my details" is on —
+  // the tool says which of the two is true rather than implying a name it
+  // cannot actually record.
+  base.authorKnown = Boolean(mark.authorName) && mark.useDetails;
+  base.markJson = JSON.stringify({
+    ink: mark.ink, labelInk: mark.labelInk, label: mark.label,
+    radius: mark.radius, style: mark.style,
+  });
+  if (info.kind !== 'PDF') resetPagesJob(); // a non-PDF replacing a PDF drops the page markup
   if (info.kind === 'file') return base; // supported stays false → guidance
 
   const bars = parseBars(inputs.bars);
   const quantise = inputs.quantise !== false;
+  base.geomJson = JSON.stringify({
+    inflate: INFLATE_PX, gridPx: QUANT_GRID, gridPt: QUANT_GRID_PT, quantise,
+    radius: mark.radius, dpi: REDACT_DPI,
+  });
   base.barCount = bars.length;
   base.barPlural = bars.length > 1;
   base.hasBars = bars.length > 0;
@@ -1347,6 +2081,10 @@ async function patch(ctx) {
       if (job.result) {
         base.pdfPages = job.result.pages;
         base.hasPdfPages = job.result.pages.length > 0;
+        base.pageCount = job.result.pages.length;
+        // Two or more pages means the stack really scrolls, which is what the
+        // page indicator in the rail exists for.
+        base.hasManyPages = job.result.pages.length > 1;
         base.pagesTruncated = job.result.truncated;
         failedPages = job.result.failed || [];
       } else if (job.error) {
@@ -1355,6 +2093,13 @@ async function patch(ctx) {
         base.pagesPending = true;
       }
     }
+
+    // Elements can be measured on a page preview, so the stage hint may promise
+    // snap-to-cover; and until every bar HAS been measured the surface is not
+    // ready to export (see exportWait below).
+    base.canMeasure = base.hasPdfPages;
+    base.exportWait = base.pagesPending
+      || (base.hasPdfPages && bars.some((b) => parseNodeMarks(b.n) === null));
 
     let findings = pdfByteFindings(f.bytes);
     if (analyzeWait) await analyzeWait;
@@ -1406,6 +2151,27 @@ async function patch(ctx) {
   base.isSvg = info.kind === 'SVG';
   base.isRaster = !base.isSvg;
 
+  // An SVG source renders INLINE so its nodes can be measured (snap-to-cover,
+  // the partial-coverage warning and vector deletion all need real bounds).
+  // Sized at the natural pixel size the bars are measured in, so the client↔bar
+  // mapping matches the export's. A file with no usable size, or markup with no
+  // <svg> root the tokenizer can find, falls back to the <img> preview and the
+  // node behaviours simply do not fire.
+  if (base.isSvg) {
+    try {
+      const d = svgDims(info.text);
+      if (d.w > 0 && d.h > 0) {
+        const markup = prepareInlineSvg(info.text, { className: 'rd-img', natW: d.w, natH: d.h });
+        if (markup) {
+          base.inlineSvg = markup;
+          base.hasInlineSvg = true;
+          base.svgW = d.w;
+          base.svgH = d.h;
+        }
+      }
+    } catch (e) { base.inlineSvg = ''; base.hasInlineSvg = false; }
+  }
+
   // A single-frame file has exactly one page. Bars on any other page are left
   // over from a PDF the user replaced (`bars` is its own input and survives a
   // source swap), and there is no surface here on which to draw or delete them.
@@ -1420,6 +2186,11 @@ async function patch(ctx) {
   base.barCount = pageBarsOne.length;
   base.barPlural = pageBarsOne.length > 1;
   base.hasBars = pageBarsOne.length > 0;
+  // Only an INLINE SVG has measurable elements. Flat pixels have none, and
+  // neither does an SVG whose root declares no usable size, which falls back to
+  // the <img> preview — the hint has to tell each of those the truth.
+  base.canMeasure = base.hasInlineSvg;
+  base.exportWait = base.canMeasure && pageBarsOne.some((b) => parseNodeMarks(b.n) === null);
   // Vector mode is only real for an SVG — the svgVector toggle can be left on
   // from an earlier file, and the raster copy must not flip on a JPEG.
   base.vectorMode = base.isSvg && Boolean(inputs.svgVector);
@@ -1447,16 +2218,31 @@ async function patch(ctx) {
     else if (info.kind === 'WebP') dims = webpDims(f.bytes);
     else if (info.kind === 'SVG') { const d = svgDims(info.text); dims = d.w && d.h ? { w: d.w, h: d.h } : null; }
   } catch (e) { dims = null; }
+
+  // The corner radius scales with the frame, so re-publish both blobs once the
+  // frame is known: on a phone photo the base 3 units is a sub-pixel and the
+  // Branded preset would be indistinguishable from Solid, on the preview and in
+  // the exported file alike.
+  if (dims && dims.w > 0 && dims.h > 0) {
+    const radius = markRadiusFor(mark.style, dims.w, dims.h);
+    base.markJson = JSON.stringify({
+      ink: mark.ink, labelInk: mark.labelInk, label: mark.label, radius, style: mark.style,
+    });
+    base.geomJson = JSON.stringify({
+      inflate: INFLATE_PX, gridPx: QUANT_GRID, gridPt: QUANT_GRID_PT, quantise, radius, dpi: REDACT_DPI,
+    });
+  }
+
   if (dims && pageBarsOne.length) {
     const rects = rectsFor(pageBarsOne, dims.w, dims.h, quantise, 1);
     const pct = coveragePercent(rects, dims.w, dims.h);
     const n = pageBarsOne.length;
     base.coveragePct = pct;
     base.hasCoverage = true;
-    // Honest verb per mode: raster paths destroy the pixels, vector mode only
-    // covers what sits under the bar.
+    // Honest verb per mode: the raster path destroys pixels, vector mode
+    // deletes the elements a bar touches and paints over the area.
     base.coverageText = base.vectorMode
-      ? `${n} mark${n > 1 ? 's' : ''} will cover about ${pct}% of the frame.`
+      ? `${n} mark${n > 1 ? 's' : ''} will delete what ${n > 1 ? 'they touch' : 'it touches'} and cover about ${pct}% of the frame.`
       : `${n} mark${n > 1 ? 's' : ''} will repaint about ${pct}% of the pixels.`;
     base.coverageHigh = pct >= 97;
   }
@@ -1532,9 +2318,32 @@ function encodeCanvas(canvas, mime, quality) {
   });
 }
 
+// Trace and fill the painted shape. Hand-traced rather than ctx.roundRect: the
+// per-corner radii are load-bearing (a clamped corner must stay square) and
+// roundRect is not present on every context this can run in.
+function fillShape(ctx, s, color) {
+  ctx.fillStyle = color;
+  const [tl, tr, br, bl] = s.radii;
+  if (!tl && !tr && !br && !bl) { ctx.fillRect(s.x0, s.y0, s.x1 - s.x0, s.y1 - s.y0); return; }
+  ctx.beginPath();
+  ctx.moveTo(s.x0 + tl, s.y0);
+  ctx.lineTo(s.x1 - tr, s.y0);
+  if (tr) ctx.arcTo(s.x1, s.y0, s.x1, s.y0 + tr, tr);
+  ctx.lineTo(s.x1, s.y1 - br);
+  if (br) ctx.arcTo(s.x1, s.y1, s.x1 - br, s.y1, br);
+  ctx.lineTo(s.x0 + bl, s.y1);
+  if (bl) ctx.arcTo(s.x0, s.y1, s.x0, s.y1 - bl, bl);
+  ctx.lineTo(s.x0, s.y0 + tl);
+  if (tl) ctx.arcTo(s.x0, s.y0, s.x0 + tl, s.y0, tl);
+  ctx.closePath();
+  ctx.fill();
+}
+
 // Composite onto opaque white (kills alpha-hidden content), optional grayscale
-// pass, then the bars at 100% opaque black. Returns the canvas.
-function drawRedacted(img, W, H, rects, grayscale) {
+// pass, then the marks at 100% opacity in the resolved ink. Returns the canvas.
+// Grayscale runs BEFORE the marks: the scanned-page mode is about the source's
+// colour (the yellow channel tracking dots live in), and the mark is ours.
+function drawRedacted(img, W, H, rects, grayscale, mark) {
   const canvas = document.createElement('canvas');
   canvas.width = W;
   canvas.height = H;
@@ -1553,9 +2362,23 @@ function drawRedacted(img, W, H, rects, grayscale) {
     }
     ctx.putImageData(id, 0, 0);
   }
-  ctx.fillStyle = '#000000';
+  const ink = normaliseInk(mark && mark.ink) || NEUTRAL_INK;
+  const labelInk = normaliseInk(mark && mark.labelInk) || '#ffffff';
+  const label = mark && mark.label ? String(mark.label) : '';
+  const radius = mark ? mark.radius : 0;
   ctx.globalAlpha = 1;
-  for (const r of rects) ctx.fillRect(r.x0, r.y0, r.x1 - r.x0, r.y1 - r.y0);
+  for (const r of rects) {
+    const s = paintedShape(r, radius, W, H);
+    fillShape(ctx, s, ink);
+    const lay = label ? stampFit(s, label, 14) : null;
+    if (lay) {
+      ctx.fillStyle = labelInk;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.font = `600 ${lay.size}px system-ui, sans-serif`;
+      ctx.fillText(label, lay.cx, lay.cy);
+    }
+  }
   return canvas;
 }
 
@@ -1594,13 +2417,33 @@ function residualRasterMetadata(bytes, kind) {
   return null;
 }
 
+function inkRgb(hex) {
+  const h = normaliseInk(hex) || NEUTRAL_INK;
+  return [
+    parseInt(h.slice(1, 3), 16),
+    parseInt(h.slice(3, 5), 16),
+    parseInt(h.slice(5, 7), 16),
+  ];
+}
+
 // Re-decode the output and sample points inside every bar rect: each sampled
-// pixel must be (near) black. JPEG and lossy WebP ring slightly at edges even
-// inside an inflated bar, so lossy formats get a small tolerance; PNG must be
-// exact. `checked: false` is only possible when no 2D context exists at all —
-// the caller fails the export in that case rather than shipping unchecked bars
-// under the "verified before download" promise.
-async function verifyBarsPainted(outBytes, mime, kind, rects) {
+// pixel must be the ink that was supposed to be painted there. This checks the
+// EFFECTIVE rect, never the inflated shape, because the effective rect is the
+// part containment guarantees is solid — a corner of the inflated box is
+// legitimately outside a rounded mark.
+//
+// It compares against the RESOLVED ink rather than asserting near-black, which
+// is the check that keeps a branded fill honest: a colour that failed to reach
+// the canvas (an unreadable fillStyle is a silent no-op) fails here instead of
+// shipping. Stamped bars skip samples that land under the label, which is
+// painted on top of the already-solid fill.
+//
+// JPEG and lossy WebP ring slightly at edges even inside an inflated bar, so
+// lossy formats get a small tolerance; PNG must be near-exact. `checked: false`
+// is only possible when no 2D context exists at all — the caller fails the
+// export in that case rather than shipping unchecked bars under the "verified
+// before download" promise.
+async function verifyBarsPainted(outBytes, mime, kind, rects, mark) {
   if (!canRaster()) return { checked: false };
   const img = await decodeImage(outBytes, mime);
   const W = img.width || img.naturalWidth;
@@ -1611,8 +2454,15 @@ async function verifyBarsPainted(outBytes, mime, kind, rects) {
   const ctx = canvas.getContext('2d');
   if (!ctx) return { checked: false };
   ctx.drawImage(img, 0, 0);
-  const tol = kind === 'PNG' ? 2 : 16;
+  const tol = kind === 'PNG' ? 4 : 20;
+  const want = inkRgb(mark && mark.ink);
+  const label = mark && mark.label ? String(mark.label) : '';
+  const radius = mark ? mark.radius : 0;
   for (const r of rects) {
+    // The label's own box, so its pixels are never mistaken for a failed fill.
+    const lay = label ? stampFit(paintedShape(r, radius, W, H), label, 14) : null;
+    const halfW = lay ? (label.length * lay.size * 0.62) / 2 + 2 : 0;
+    const halfH = lay ? lay.size / 2 + 2 : 0;
     // Sample a 3x3 grid inset from the rect edges (the inflation absorbs any
     // codec ringing at the boundary).
     const inset = 3;
@@ -1623,9 +2473,10 @@ async function verifyBarsPainted(outBytes, mime, kind, rects) {
         const px = Math.round(x0 + (x1 - x0) * sx / 2);
         const py = Math.round(y0 + (y1 - y0) * sy / 2);
         if (px < 0 || py < 0 || px >= W || py >= H) continue;
+        if (lay && Math.abs(px - lay.cx) <= halfW && Math.abs(py - lay.cy) <= halfH) continue;
         const d = ctx.getImageData(px, py, 1, 1).data;
-        if (d[0] > tol || d[1] > tol || d[2] > tol) {
-          throw new Error('Verification failed: a bar region is not solid black in the output. Nothing was downloaded.');
+        if (Math.abs(d[0] - want[0]) > tol || Math.abs(d[1] - want[1]) > tol || Math.abs(d[2] - want[2]) > tol) {
+          throw new Error('Verification failed: a bar region is not the solid fill it should be in the output. Nothing was downloaded.');
         }
       }
     }
@@ -1645,6 +2496,10 @@ function verifyRasterOutput(outBytes, kind) {
 
 // Vector-mode gate: no removed string may survive into the output. Tokens are
 // trimmed, deduplicated and capped; short fragments (under 4 chars) are noise.
+// Returns the surviving token, or null when nothing was found — the caller
+// decides which sentence that failure deserves, because a stamp label the user
+// typed could in principle repeat a deleted word, and "change the stamp text" is
+// a very different instruction from "this file could not be redacted".
 function verifySvgRemoved(outText, removed) {
   const seen = new Set();
   let checked = 0;
@@ -1653,12 +2508,11 @@ function verifySvgRemoved(outText, removed) {
       const t = token.trim();
       if (t.length < 4 || seen.has(t)) continue;
       seen.add(t);
-      if (outText.includes(t)) {
-        throw new Error('Verification failed: removed content is still present in the SVG output. Nothing was downloaded.');
-      }
-      if (++checked >= 4000) return;
+      if (outText.includes(t)) return t;
+      if (++checked >= 4000) return null;
     }
   }
+  return null;
 }
 
 function residualSvg(outText) {
@@ -1701,6 +2555,10 @@ async function exportFile({ model, host }) {
   const bars = parseBars(inputs.bars);
   const quantise = inputs.quantise !== false;
   const grayscale = Boolean(inputs.grayscale);
+  // Resolved once, waited for properly (this hook's budget is 10s): the burned
+  // mark must never fall back to the neutral ink just because the brand tokens
+  // were slow, or the export would not match the preview the user approved.
+  const mark = await resolveMark(host, inputs, true);
 
   // ── PDF: rasterise-and-rebuild in the shell ──
   if (info.kind === 'PDF') {
@@ -1709,13 +2567,25 @@ async function exportFile({ model, host }) {
     }
     if (!bars.length) throw new Error('Draw or add at least one redaction bar first.');
     // Bars for a PDF are stored in PDF point space (page origin top-left), so
-    // they survive any DPI choice; the shell converts per page. Width
-    // quantisation happens HERE, in points, before the bars cross the bridge:
-    // the rebuild only snaps and inflates, it has no width grid, so a raw hand
-    // -off would ship a 37pt bar over a short name with the glyph-position hint
-    // intact while the sidebar claimed the mitigation was on.
-    const sent = quantise ? quantiseBarsPt(bars) : bars;
-    const res = await host.pdf.redact(f.bytes, { bars: sent, dpi: 200, grayscale });
+    // they survive any DPI choice; the shell converts per page. The whole
+    // EFFECTIVE rect is computed HERE, in points, before the bars cross the
+    // bridge: the rebuild only snaps and inflates by two device pixels and has
+    // no width grid at all, so a raw hand-off both dropped the mitigation the
+    // sidebar claimed was on and painted a narrower bar than the preview drew.
+    // The bridge's PdfRedactBar is {page,x,y,w,h}: the per-bar node addresses
+    // are a drawing-surface concern (the PDF path rasterises and rebuilds, it
+    // deletes nothing by address), so they stay on this side of the bridge.
+    const sent = quantiseBarsPt(bars, quantise);
+    // color/radius/label/labelColor are the v1.90 additive fields; an older
+    // shell simply ignores them and burns its own neutral bars, which is why
+    // they are passed unconditionally rather than feature-detected.
+    const res = await host.pdf.redact(f.bytes, {
+      bars: sent, dpi: REDACT_DPI, grayscale,
+      color: mark.ink,
+      radius: mark.radius,
+      label: mark.label,
+      labelColor: mark.labelInk,
+    });
     if (!res || !res.bytes) throw new Error('PDF redaction returned no output. Nothing was downloaded.');
     // A bar aimed at a page the document does not have is silently skipped by
     // the rebuild — refuse instead of shipping that region fully visible.
@@ -1772,10 +2642,29 @@ async function exportFile({ model, host }) {
     return { bytes: out, mime: 'application/pdf', filename: redactedName(f.name, '.pdf') };
   }
 
-  // ── SVG vector mode: pure string surgery, stays sandbox-only ──
+  // ── SVG vector mode: string surgery over browser-measured node addresses ──
   if (info.kind === 'SVG' && inputs.svgVector) {
+    // Every bar must carry the browser's answer to "what do you touch". A bar
+    // that was never measured (typed into the sidebar, restored from a URL,
+    // driven headlessly) cannot name the nodes to delete, and covering what we
+    // promised to delete would be the one dishonest export in the tool.
+    const svgBars = bars.filter((b) => (b.page || 1) === 1);
+    const drop = new Set();
+    for (const b of svgBars) {
+      const marks = parseNodeMarks(b.n);
+      if (marks === null) {
+        // The wording is load bearing: the CLI classifies a failure as
+        // browser-tier work by reading it (needsBrowserTier in
+        // shells/cli/src/run.ts), and measuring is exactly what a browser can
+        // do and this host cannot. Saying so escalates `lolly redact
+        // --svgVector` into the real web shell, where the template measures the
+        // bars and the export succeeds, instead of failing the run outright.
+        throw new Error('Vector export deletes the elements a bar touches, so every mark first has to be measured against the page — which needs a browser canvas. Draw the mark on the preview, or turn vector mode off to export a PNG instead.');
+      }
+      for (const idx of marks) drop.add(idx);
+    }
     const removed = [];
-    let out = cleanSvgTokens(tokenize(info.text), removed);
+    let out = cleanSvgTokens(tokenize(info.text), removed, drop);
     out = dropUnreferencedDefs(out);
 
     // Map bars (drawn in the preview's natural pixel space) into root viewBox
@@ -1794,7 +2683,7 @@ async function exportFile({ model, host }) {
     const s = Math.min(natW / vb.w, natH / vb.h);
     const ox = (natW - vb.w * s) / 2;
     const oy = (natH - vb.h * s) / 2;
-    const pageOneBars = bars.filter((b) => (b.page || 1) === 1);
+    const pageOneBars = svgBars;
     const rects = rectsFor(bars, natW, natH, quantise, 1)
       .map((r) => ({ x0: (r.x0 - ox) / s, y0: (r.y0 - oy) / s, x1: (r.x1 - ox) / s, y1: (r.y1 - oy) / s }));
     // Hard gate: every drawn bar must actually map to a painted rect. A bar
@@ -1802,11 +2691,36 @@ async function exportFile({ model, host }) {
     if (rects.length < pageOneBars.length) {
       throw new Error(`Verification failed: ${pageOneBars.length - rects.length} of ${pageOneBars.length} bar${pageOneBars.length > 1 ? 's' : ''} could not be placed on this SVG. Nothing was downloaded.`);
     }
-    out = svgWithBars(out, rects, vb);
+    // The mark is built in the SAME viewBox coordinates as the rects: the
+    // painted shape (inflate by radius, round, clamp) is computed here so what
+    // the preview drew and what lands in the file are one shape, not two.
+    // Radius from the frame the preview measured in (the natural pixel size),
+    // then into viewBox units — one number, same as the canvas drew.
+    const vecRadius = markRadiusFor(mark.style, natW, natH);
+    const shapes = rects.map((r) => {
+      const shape = paintedShape(r, vecRadius / s, vb.w, vb.h);
+      return {
+        x0: vb.x + shape.x0, y0: vb.y + shape.y0,
+        x1: vb.x + shape.x1, y1: vb.y + shape.y1,
+        radii: shape.radii,
+      };
+    });
+    const beforeMarks = out;
+    out = svgWithBars(out, shapes, mark, s);
 
     // The gate: grep the serialised output for anything that was deleted, and
     // re-run the residual scan for the node/attribute classes we remove.
-    verifySvgRemoved(out, removed);
+    const survivor = verifySvgRemoved(out, removed);
+    if (survivor) {
+      // The only user-supplied text this export appends is the stamp label, so
+      // when the document itself is clean, the label is the offender — and
+      // "change the stamp text" is a far more useful sentence than a failure
+      // that reads as if the file could not be redacted at all.
+      const inDoc = verifySvgRemoved(beforeMarks, removed);
+      throw new Error(inDoc
+        ? 'Verification failed: removed content is still present in the SVG output. Nothing was downloaded.'
+        : 'Verification failed: the stamp text repeats content this export deleted, so it would put it back. Change the stamp text. Nothing was downloaded.');
+    }
     const residual = residualSvg(out);
     if (residual) {
       throw new Error(`Verification failed: the SVG output still carries ${residual}. Nothing was downloaded.`);
@@ -1841,7 +2755,9 @@ async function exportFile({ model, host }) {
     const missed = pageOneBars.length - rects.length;
     throw new Error(`Verification failed: ${missed} of ${pageOneBars.length} bar${pageOneBars.length > 1 ? 's' : ''} ${missed > 1 ? 'fall' : 'falls'} outside this image and could not be painted. Nothing was downloaded.`);
   }
-  const canvas = drawRedacted(img, W, H, rects, grayscale);
+  // Corner radius scaled to this frame, exactly as the preview scaled it.
+  const frameMark = { ...mark, radius: markRadiusFor(mark.style, W, H) };
+  const canvas = drawRedacted(img, W, H, rects, grayscale, frameMark);
 
   // Same-family re-encode is the metadata kill: jpeg→jpeg, png→png, webp→webp
   // (quality 1 asks the encoder for its lossless/best mode). SVG rasterises to
@@ -1861,7 +2777,7 @@ async function exportFile({ model, host }) {
   // The gate — rescan the OUTPUT: no metadata, nothing past the terminator,
   // and every bar region re-decoded and sampled as solid fill.
   verifyRasterOutput(out, outKind);
-  const barCheck = await verifyBarsPainted(out, mime, outKind, rects);
+  const barCheck = await verifyBarsPainted(out, mime, outKind, rects, frameMark);
   if (rects.length && !barCheck.checked) {
     throw new Error('Verification failed: the bar regions could not be re-checked in this browser. Nothing was downloaded.');
   }

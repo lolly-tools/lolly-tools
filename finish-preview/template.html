@@ -7,3 +7,26 @@
       what the user exports (SVG/PDF/PNG) for their printer. The plate branch
       in hooks.js is deliberately filter-free (a pre-baked black-on-white
       raster inside the SVG) so it survives every export path unchanged. --}}
+{{!-- EXPORT FIDELITY — why render.formats is what it is (measured 2026-07-31):
+      IN: svg (the whole thing: <image> artwork + <mask> + gradients + filters),
+      every raster format (png/jpg/webp/avif/tiff/cmyk-tiff and the animated
+      gif/apng/webp-anim/webm/mp4 — the browser paints the filters natively at
+      the raster chokepoint), and pdf/pdf-cmyk.
+      OUT: emf, eps, eps-cmyk, dxf. Those four share the SVG→IR walk in
+      shells/web/src/bridge/svg-ir.ts, which SKIPs <filter> and <mask> (line 31),
+      never reads mix-blend-mode, drops any url(#gradient) paint as unparseable
+      (parseColor → null → the shape is not emitted), and only recovers a filter
+      when it is a plain drop shadow (parseSvgDropShadow explicitly rejects
+      feTurbulence/feDisplacementMap/feComponentTransfer). engine/src/dxf.ts:138
+      additionally drops every image prim outright. The sibling tool
+      filter-imperfections measured 575–851 bytes of flat rectangles for those
+      formats against a 1.39 MB SVG — the artwork, the mask and the finish all
+      gone. A file that looks plausible and is empty is worse than a refusal.
+      CAVEAT to tell users, not a blocker: PDF cannot express an SVG filter, so
+      export.ts's drawSvgVectorsInRegion rasterises any SVG containing a
+      filter/gradient/pattern into ONE image at ~150 dpi (capped 2000 px) — the
+      PREVIEW pdf is therefore a raster page, and pdf-cmyk leaves that image
+      XObject in DeviceRGB (renderCmykPdf skips image XObjects by design), so
+      only the marks are true DeviceCMYK. The PLATE view has no filter or
+      gradient, so it takes the real vector path and its <image> plate is placed
+      as-is; for a true CMYK plate deliverable, cmyk-tiff converts every pixel. --}}

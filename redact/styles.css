@@ -20,6 +20,11 @@
   --rd-brandfg: var(--primary-foreground, 0 0% 100%);
   --rd-warn:    var(--destructive, 0 72% 51%);
   --rd-warnfg:  var(--destructive-foreground, 0 0% 100%);
+  /* A whole colour, not an HSL triple: --brand-warn is the loaded brand's own
+     warm tone (brand-vars.ts sets it as a hex on :root) and there is no triple
+     form of it. Used for the partly-covered treatment, which is a warning the
+     user can act on, NOT a failure — failures are the only red in this tool. */
+  --rd-attn:    var(--brand-warn, #b45309);
 
   position: relative;
   width: 100%;
@@ -131,9 +136,11 @@
    hairline border, see .toast in parts/tool-chrome.css), not a card bolted to
    the top of the drawing surface.
 
-   STICKY, directly under the sticky rail. This canvas grows to the height of the
-   whole page stack, so a toast anchored to the top of the tool painted several
-   thousand pixels above the viewport on a 10-page PDF and was never seen. It is
+   STICKY, directly under the sticky rail. The page stack now scrolls in its own
+   bounded box rather than growing the canvas, so on a PDF this is belt and
+   braces; it still earns its keep for a very tall image, where the canvas is
+   taller than the stage and a toast anchored to the top of the tool would paint
+   far above what the reader is looking at. It is
    not position:fixed either: the shell's stage zoom puts a transform on the
    canvas wrapper, and a transformed ancestor becomes the containing block for
    fixed descendants, so a "viewport" toast would snap back into the same trap
@@ -154,6 +161,11 @@
   height: 0;
   display: flex;
   justify-content: center;
+  /* flex-start, NOT the default stretch: the box is height:0 so it stays out of
+     flow, and a stretched item inherits that zero content height while its text
+     keeps its own — the sentence then paints outside the pill, onto the page art
+     underneath, and the close button sits on a zero-height line. */
+  align-items: flex-start;
   pointer-events: none;
 }
 .rd-toast {
@@ -210,10 +222,10 @@
 /* ── Marking stage: tool rail + page frames ── */
 .rd-stage { margin-bottom: 4px; }
 
-/* Sticky, because the canvas grows to the height of the whole page stack: on a
-   10-page PDF a rail pinned to the top of the tool meant scrolling back up to
-   switch from Bar to Remove and scrolling down again. It rides the top of the
-   scroll instead, on its own opaque strip so page art never shows through it. */
+/* Sticky: the rail rides the top of whatever scrolls it, on its own opaque strip
+   so page art never shows through it. Since the page stack scrolls in its own
+   bounded box the rail no longer moves on a multi-page PDF at all, which is the
+   point — the tools and the page indicator stay put while the document moves. */
 .rd-rail {
   position: sticky;
   top: 0;
@@ -268,6 +280,18 @@
 }
 .rd-rail-btn[aria-pressed="true"]:hover { background: hsl(var(--rd-brand) / 0.2); }
 .rd-rail-presets .rd-rail-btn { padding: 5px 9px; }
+/* Which page you are looking at, and two buttons that step the scroller. Quiet
+   on purpose: it is a cue, not a control surface. */
+.rd-pagenav { align-items: center; }
+.rd-pagenav .rd-rail-btn { padding: 5px 7px; }
+.rd-pagenow {
+  padding: 0 2px;
+  font-family: var(--font-mono, "SUSE Mono", monospace);
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: hsl(var(--rd-muted));
+  white-space: nowrap;
+}
 
 .rd-frame {
   position: relative;
@@ -289,18 +313,88 @@
   user-select: none;
   -webkit-user-drag: none;
 }
+/* A single-frame source (a photo, a screenshot, an SVG) gets the same bounding
+   the page stack gets. Without a height cap a 3024x4032 phone photo laid out a
+   frame taller than the stage, the tool reported that height to the shell, and
+   fitCanvas scaled the WHOLE tool — rail labels, the 22px delete dots, the
+   download button — to about half size. The script keeps this property in step
+   with the stage, so the preview is as large as the stage can actually show. */
+.rd-frame:not(.rd-pageframe) > .rd-img {
+  max-height: var(--rd-frameview, 520px);
+  width: auto;
+}
+/* PDF pages and SVG sources render as INLINE svg, not <img> — that is the only
+   way anything can read a node's painted bounds. The root carries width/height
+   attributes at the file's natural size, so max-width plus height:auto scales
+   it down exactly the way an <img> would, and the client-to-frame mapping the
+   drawing surface uses stays one uniform scale. */
+svg.rd-img {
+  height: auto;
+  overflow: hidden; /* a page's artwork must not paint outside its own frame */
+}
+/* An inline fragment brings its own paint; nothing in it may take pointer
+   events away from the drawing surface or answer a hit test. */
+svg.rd-img * {
+  pointer-events: none;
+}
 .rd-marks {
   position: absolute;
   inset: 0;
 }
+/* The mark. --rd-ink is set on the stage by the template script from the value
+   the HOOK resolved (the loaded brand's dark tone, or the neutral near-black
+   when no brand is loaded) — the same value the export burns, so the preview
+   cannot drift from the file. It is never read from the app's --brand-*
+   properties directly, which would be a second source of truth.
+
+   The fill is fully opaque and there is no way to make it otherwise: colour is
+   security-neutral, translucency is not. Rounded corners come from the script as
+   real pixel radii on a box that has already been GROWN by the radius, so what
+   the user marked stays completely inside the opaque area. */
 .rd-bar {
   position: absolute;
-  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Deliberately NOT overflow:hidden — the remove dot is positioned outside this
+     box on purpose, and clipping it would take the tool's own documented removal
+     path away. The stamp cannot overflow instead: it is only drawn on a bar with
+     room for it, by the same fit rule the export uses. */
+  background: var(--rd-ink, #14161a);
   opacity: 1;
 }
+/* The stamp sits on top of a bar that is already opaque, so it can reveal
+   nothing. Its colour is chosen against the ink by the hook. */
+.rd-bar-stamp {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+/* The draft is a preview of the SHAPE, so it is deliberately not the final
+   opacity — nothing is committed yet. */
 .rd-bar.rd-draft {
-  background: hsl(0 0% 0% / 0.65);
+  background: color-mix(in srgb, var(--rd-ink, #14161a) 72%, transparent);
   outline: 1px solid hsl(var(--rd-brand) / 0.9);
+}
+/* Partly-covered element: an item a bar reaches but does not finish, so it
+   stays readable. Not red — red in this tool means a check actually failed and
+   nothing downloaded; this is a mark the user can still fix, and it is drawn on
+   the brand's own warm tone with a FULL hairline plus a hatch fill (never a
+   one-sided border, and never a dashed outline, which this app reserves for
+   drop targets). */
+.rd-partial {
+  position: absolute;
+  border: 2px solid var(--rd-attn);
+  border-radius: 3px;
+  background: repeating-linear-gradient(
+    45deg,
+    color-mix(in srgb, var(--rd-attn) 26%, transparent) 0 5px,
+    transparent 5px 10px
+  );
+  pointer-events: none;
 }
 .rd-stroke {
   position: absolute;
@@ -361,11 +455,52 @@
   color: hsl(var(--rd-muted) / 0.8);
 }
 
-/* ── PDF page stack (host.pdf.pages previews) ── */
+/* ── PDF page stack (host.pdf.pages previews) ──
+   FIT TO WIDTH, SCROLL VERTICALLY. One page fills the column at a size you can
+   actually read, and the stack scrolls inside this box.
+
+   The alternative — letting the canvas grow to the summed height of every page —
+   hands the shell a 760-by-many-thousand canvas, and fitCanvas scales the whole
+   thing down to fit the stage: a ten-page document becomes one strip of
+   illegible grey, which is exactly the report this replaces. Redact's canvas is
+   never exported (exportFile owns the output), so a bounded, scrollable working
+   surface costs nothing and the export is byte-identical either way.
+
+   overscroll-behavior keeps a flick at the end of the document from scrolling
+   the app behind it. The height is a custom property because the script sets it
+   from the stage the shell will actually show — this value is only the ceiling
+   for a roomy stage, and it is NOT declared on this element, or the inherited
+   one could never win. */
+.rd-scroll {
+  position: relative;
+  max-height: var(--rd-pageview, 520px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding-right: 2px; /* room for the scrollbar so it never sits on the page */
+}
 .rd-pagestack {
   display: grid;
   gap: 12px;
-  justify-items: start;
+  justify-items: stretch;
+}
+/* A page frame takes the full column width; the inline SVG keeps its aspect
+   from its own viewBox, so height follows. The pointer maths divide by the live
+   bounding rect, so nothing about the drawing surface depends on this size. */
+/* A page frame is PAPER. The page SVG is transparent by design (engine
+   pdf-svg leaves the plate to the caller) and the rebuilt PDF composites onto
+   opaque white, so without a plate here a dark or brand theme showed black glyph
+   paths on near-black through the frame's alpha checkerboard — the document you
+   are trying to redact, unreadable, and disagreeing with the file it exports.
+   The checkerboard still earns its keep on a raster or SVG source, where alpha
+   is the file's own. */
+.rd-pageframe {
+  display: block;
+  width: 100%;
+  background: #fff;
+}
+.rd-pageframe > svg.rd-img {
+  width: 100%;
 }
 .rd-page-chip {
   position: absolute;
