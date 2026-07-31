@@ -498,9 +498,9 @@
     stage.style.setProperty('--rd-ink', markCfg.ink);
 
     /* @geom-mirror-start
-       Pure geometry, mirrored from hooks.js (rectTouches / unionBox / effBox /
-       snapBarToNodes / subtractBox / uncoveredParts / partialNodes /
-       paintedShape). The hook
+       Pure geometry, mirrored from hooks.js (rectTouches / rectOverlaps /
+       unionBox / effBox / snapBarToNodes / subtractBox / uncoveredParts /
+       partialNodes / paintedShape). The hook
        owns the maths and is where the behaviour is tested; this copy exists
        because the measuring has to happen where the DOM is, and a sandboxed
        hook cannot be called mid-gesture. tests/redact.test.ts extracts THIS
@@ -831,6 +831,131 @@
        ancestor transform and the painted stroke, which is the over-inclusive
        side to err on. Called ONCE per gesture (at pointerdown) and once per
        repaint for the coverage check, never per pointermove. */
+    /* WORD boxes inside one text element, measured with a DOM Range over its
+       character data. Page frames only, and the reason is granularity: one
+       interpreted PDF text run is one <text> carrying a <tspan> PER LINE (engine
+       pdf-svg), so the element's box is the whole paragraph and a bar snapped to
+       it covers the paragraph however tightly it was drawn. Whole lines are not
+       much better — you cannot redact a name out of a sentence. A range rect is
+       the same ruler as everything else here (client rects, so ancestor
+       transforms and the frame's fit scale are already in it), which is why this
+       is a Range and not getExtentOfChar's user-space box.
+
+       Only page frames get this. An SVG frame's nodes decide what vector export
+       DELETES, and deleting a whole <text> because a bar covered one word of it
+       would remove lines the user can still see. The page path only rasterises,
+       so here the finer unit costs nothing and buys word-level redaction.
+
+       Returns false when there is nothing to split (no Range support, no text),
+       and the caller falls back to the element box. */
+    function wordSplit(el, idx, push) {
+      var doc = el.ownerDocument;
+      if (!doc || typeof doc.createRange !== 'function') return false;
+      var leaves = el.getElementsByTagName('tspan');
+      var hosts = (leaves && leaves.length) ? leaves : [el];
+      var any = false;
+      for (var s = 0; s < hosts.length; s++) {
+        var tn = hosts[s].firstChild;
+        /* Character data only: a tspan wrapping more tspans is handled by its
+           own turn in the list. */
+        if (!tn || tn.nodeType !== 3) continue;
+        var text = String(tn.nodeValue || '');
+        /* Already one word: its own box IS the word box, and a Range would only
+           be a slower way to ask. Worth the special case — an interpreted page
+           can carry several hundred of these, and this walk runs per render. */
+        if (text.trim() && !/\s/.test(text.trim())) {
+          push(hosts[s], hosts[s].getBoundingClientRect(), idx);
+          any = true;
+          continue;
+        }
+        var i = 0;
+        while (i < text.length) {
+          if (/\s/.test(text.charAt(i))) { i++; continue; }
+          var j = i;
+          while (j < text.length && !/\s/.test(text.charAt(j))) j++;
+          var range = doc.createRange();
+          range.setStart(tn, i);
+          range.setEnd(tn, j);
+          var r = range.getBoundingClientRect();
+          if (r && (r.width > 0 || r.height > 0)) { push(hosts[s], r, idx); any = true; }
+          i = j;
+        }
+      }
+      return any;
+    }
+
+    /* ── Paper, and why it is not a node ────────────────────────────────────
+       An interpreted PDF page is not just its ink. A page produced by a word
+       processor carries a WHITE RECTANGLE PER LINE OF TEXT — the run's own
+       background box, 450pt wide on a 612pt page, invisible against the paper
+       and meaningless to a reader. It is a node like any other to a
+       getBoundingClientRect walk, and it was the real reason a 20x20pt bar came
+       back 475pt wide: snap-to-cover was not chaining across the paragraph so
+       much as landing on the paragraph's own upholstery.
+
+       So a node with nothing visible to cover is not a node. Two cases, both
+       decided from computed style rather than from tag names:
+         · no paint at all (fill none/transparent, no stroke, zero opacity)
+         · filled with the page's own background colour and not stroked
+       Text, images and <use> are never treated as paper: white text on a dark
+       plate is content, and the page background is a poor guide to what sits
+       under a nested reference.
+
+       Excluding is the SAFE direction in every consumer. Growth: a bar no longer
+       inherits a full-width backdrop it was never aimed at. Coverage warnings: a
+       white rectangle is not "partly covered and still readable". Vector export:
+       a paper rectangle is not deleted — and that one matters twice over, since
+       a white box drawn OVER text is how people fake a redaction, and removing
+       it would expose exactly what its author was hiding. */
+    function paintOf(el) {
+      var v = el.ownerDocument && el.ownerDocument.defaultView;
+      if (!v || typeof v.getComputedStyle !== 'function') return null;
+      try { return v.getComputedStyle(el); } catch (e) { return null; }
+    }
+
+    /* The page's own background colour, read off the backdrop node the walk is
+       about to discard. Falls back to white, which is what a PDF page is. */
+    var PAPER_SCAN = 8;   // drawables to look at before giving up on a backdrop
+
+    function paperFill(all, sp, sx, sy, rr) {
+      var looked = 0;
+      for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        if (!NODE_TAGS[String(el.tagName || '').toLowerCase()]) continue;
+        /* Paint order is back-to-front, so the page's own backdrop is one of
+           the first things drawn. Looking further would mean a client rect for
+           every element on the page, on every render, to find something that is
+           either at the front of the list or not there at all. */
+        if (++looked > PAPER_SCAN) break;
+        var r = el.getBoundingClientRect();
+        var nb = { x: (r.left - rr.left) * sx, y: (r.top - rr.top) * sy, w: r.width * sx, h: r.height * sy };
+        if (!RDGeom.isBackdropNode(nb, sp.w, sp.h)) continue;
+        var cs = paintOf(el);
+        var f = cs && cs.fill;
+        if (f && f !== 'none') return f;
+      }
+      return 'rgb(255, 255, 255)';
+    }
+
+    /* Shapes only. Text, images and <use> are never paper (white text on a dark
+       plate is content), and skipping them by tag keeps getComputedStyle — the
+       expensive call here — off the several hundred text runs of a page. */
+    var PAPER_TAGS = { path: 1, rect: 1, circle: 1, ellipse: 1, line: 1, polyline: 1, polygon: 1 };
+
+    function isPaperNode(el, tag, paper) {
+      if (!PAPER_TAGS[tag]) return false;
+      var cs = paintOf(el);
+      if (!cs) return false;
+      if (parseFloat(cs.opacity) === 0) return true;
+      var stroked = cs.stroke && cs.stroke !== 'none' && parseFloat(cs.strokeOpacity) !== 0;
+      if (stroked) return false;
+      var fill = cs.fill;
+      if (!fill || fill === 'none' || parseFloat(cs.fillOpacity) === 0) return true;
+      /* Both strings come from getComputedStyle, so they are normalised the
+         same way and a plain comparison is exact. */
+      return fill === paper;
+    }
+
     function collectNodes(root, sp, fine) {
       var out = [];
       if (!root || String(root.tagName || '').toLowerCase() !== 'svg') return out;
@@ -853,11 +978,13 @@
         out.push(nb);
       }
       var all = root.querySelectorAll('*');
+      var paper = paperFill(all, sp, sx, sy, rr);
       for (var i = 0; i < all.length; i++) {
         var el = all[i];
         var tag = String(el.tagName || '').toLowerCase();
         if (!NODE_TAGS[tag]) continue;
         if (insideDefinition(el, root)) continue;
+        if (isPaperNode(el, tag, paper)) continue;
         var idx = parseInt(el.getAttribute('data-rdn') || '', 10);
         /* LINE granularity, page frames only. One interpreted PDF text run is
            one <text> element carrying a <tspan> PER LINE (engine pdf-svg), so
@@ -868,13 +995,7 @@
            deleted from a file. SVG frames keep whole-element boxes precisely
            because there it does: vector mode deletes the addressed <text>, and
            snapping to one line of it would paint one line and remove them all. */
-        if (fine && tag === 'text') {
-          var spans = el.getElementsByTagName('tspan');
-          if (spans && spans.length > 1) {
-            for (var s = 0; s < spans.length; s++) push(spans[s], spans[s].getBoundingClientRect(), idx);
-            continue;
-          }
-        }
+        if (fine && tag === 'text' && wordSplit(el, idx, push)) continue;
         push(el, el.getBoundingClientRect(), idx);
       }
       return out;
@@ -1034,9 +1155,14 @@
         var prev = canvasRoot ? (parseInt(canvasRoot.dataset.rdPartialCount || '0', 10) || 0) : 0;
         if (canvasRoot) canvasRoot.dataset.rdPartialCount = String(total);
         if (total > 0 && total !== prev) {
+          /* Says exactly what was computed — an item with ink under a bar and
+             ink outside it — and nothing about which bar meant to take it. A
+             bar can clip a neighbour it was never aimed at, and for that one the
+             fix is to pull back rather than to widen, so the copy offers both.
+             See partialNodes in hooks.js for why both are reported. */
           pushToast(total === 1
-            ? '1 item is only partly covered and stays readable. Drag its bar out over the rest of it.'
-            : total + ' items are only partly covered and stay readable. Drag their bars out over the rest of them.');
+            ? '1 item is only partly covered and stays readable. Widen its bar over the rest of it, or pull the bar off it.'
+            : total + ' items are only partly covered and stay readable. Widen their bars over the rest of them, or pull the bars off them.');
         }
       }, 0);
     }
@@ -1066,6 +1192,20 @@
          partial-coverage warning can fire there, and the copy says so. */
       function nodesNow(sp) {
         return isVectorFrame ? collectNodes(img, sp, frame.classList.contains('rd-pageframe')) : [];
+      }
+
+
+      /* The painted boxes of this page's bars — the same rect the coverage
+         maths use, and the test for "has this page anything to measure for". */
+      function coversNow(sp) {
+        var eff = effOfIn(sp);
+        var out = [];
+        for (var i = 0; i < bars.length; i++) {
+          var b = bars[i];
+          if ((b.page || 1) !== page || !(b.w > 0) || !(b.h > 0)) continue;
+          out.push(eff(b));
+        }
+        return out;
       }
 
       /* What the document-wide re-measure pass needs from THIS page: the
@@ -1166,9 +1306,7 @@
            long document on every render is the one expensive thing here, and a
            page with no bar has neither a leak to find nor an address to fill
            in. */
-        var nodes = bars.some(function (b) {
-          return (b.page || 1) === page && b.w > 0 && b.h > 0;
-        }) ? nodesNow(sp) : [];
+        var nodes = coversNow(sp).length ? nodesNow(sp) : [];
         var fr = img.getBoundingClientRect();
         var scale = fr.width > 0 ? fr.width / sp.w : 1;
         bars.forEach(function (b, idx) {
@@ -1264,9 +1402,11 @@
            stays a pure arithmetic loop. A bar that half-covers a glyph is a
            leak — ascenders and descenders sticking out of a strikethrough are
            still readable — so on release the bar grows to contain every element
-           it touches. There is no off switch: shipping a leak mode would undo
-           the one promise this tool makes. The draft shows the grown outline
-           DURING the drag, so the growth is never a surprise on release. */
+           it is OVER. There is no off switch: shipping a leak mode would undo
+           the one promise this tool makes. It grows once, to what the drag
+           reached, and not to what the growth then reaches — see snapBarToNodes.
+           The draft shows the grown outline DURING the drag, so the growth is
+           never a surprise on release. */
         var nodes = nodesNow(sp);
         var eff = effOfIn(sp);
         function snapOf(raw) {

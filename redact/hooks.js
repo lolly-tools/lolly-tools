@@ -1263,7 +1263,7 @@ function rectsFor(bars, W, H, quantise, page) {
 // The sandbox cannot compute glyph geometry; the browser can. So the TEMPLATE
 // measures (real painted bounds off the inline SVG) and this file owns the
 // MATHS. Everything below is pure and node-testable, and template.html carries
-// a delimited mirror of the same three functions (@geom-mirror) that
+// a delimited mirror of these same functions (@geom-mirror) that
 // tests/redact.test.ts evaluates and compares case by case, so the two copies
 // cannot drift silently.
 //
