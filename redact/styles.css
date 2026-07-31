@@ -3,7 +3,12 @@
    inherit into the scoped tool canvas, so the tool restyles itself the instant
    the theme changes. Fallbacks (light theme) keep the sheet valid in shells that
    don't ship the tokens. The `--rd-*` aliases hold bare HSL triples so use-sites
-   can alpha-composite: hsl(var(--x) / .1). */
+   can alpha-composite: hsl(var(--x) / .1).
+
+   House rules honoured here: separators are full-width hairlines on a flat
+   surface, never a coloured border on one side of a rounded card; red appears
+   only on real failures (the export button's error state, warn-tone findings of
+   data that is actually present) and never as guidance. */
 .rd {
   --rd-bg:      var(--background, 0 0% 98%);
   --rd-fg:      var(--foreground, 224 71% 4%);
@@ -16,12 +21,13 @@
   --rd-warn:    var(--destructive, 0 72% 51%);
   --rd-warnfg:  var(--destructive-foreground, 0 0% 100%);
 
+  position: relative;
   width: 100%;
   min-height: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  padding: 28px;
+  padding: 24px;
   box-sizing: border-box;
   font-family: var(--font-brand, "SUSE", system-ui, sans-serif);
   color: hsl(var(--rd-fg));
@@ -73,23 +79,22 @@
 }
 .rd-pick:hover { background: hsl(var(--rd-brand)); color: hsl(var(--rd-brandfg)); }
 
-/* ── Working card ── */
-.rd-card {
+/* ── Workspace column ── */
+.rd-work {
   width: 100%;
-  max-width: 640px;
-  background: hsl(var(--rd-card));
-  border: 1px solid hsl(var(--rd-bd));
-  border-radius: 14px;
-  padding: 22px;
-  box-shadow: 0 1px 3px hsl(0 0% 0% / 0.06);
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
 }
+
 .rd-head {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
   justify-content: space-between;
   gap: 6px 10px;
-  padding-bottom: 14px;
+  padding-bottom: 12px;
   border-bottom: 1px solid hsl(var(--rd-bd) / 0.6);
   margin-bottom: 14px;
 }
@@ -105,7 +110,6 @@
   font-family: var(--font-mono, "SUSE Mono", monospace);
   font-size: 11px;
   color: hsl(var(--rd-muted));
-  text-transform: uppercase;
   letter-spacing: 0.04em;
 }
 .rd-replace {
@@ -123,8 +127,114 @@
 }
 .rd-replace:hover { border-color: hsl(var(--rd-brand)); color: hsl(var(--rd-brand)); }
 
-/* ── Drawing stage ── */
-.rd-stage { margin-bottom: 16px; }
+/* ── Advisory toasts — one at a time, overlaid so appearing/disappearing never
+   reflows the drawing surface mid-gesture. Neutral surface on purpose: an
+   advisory is guidance, not a failure. ── */
+.rd-toasts {
+  position: absolute;
+  top: 14px;
+  left: 24px;
+  right: 24px;
+  z-index: 30;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+.rd-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 440px;
+  padding: 10px 12px 10px 14px;
+  pointer-events: auto;
+  background: hsl(var(--rd-card));
+  border: 1px solid hsl(var(--rd-bd));
+  border-radius: 10px;
+  box-shadow: 0 6px 20px hsl(0 0% 0% / 0.14);
+  animation: rd-toast-in 0.18s ease-out;
+}
+@keyframes rd-toast-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+.rd-toast-text {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: hsl(var(--rd-fg) / 0.9);
+}
+.rd-toast-x {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: -2px -2px 0 0;
+  padding: 0;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: hsl(var(--rd-muted));
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+}
+.rd-toast-x:hover { background: hsl(var(--rd-fill)); color: hsl(var(--rd-fg)); }
+
+/* ── Degraded / unsupported states ── */
+.rd-state { text-align: center; margin-bottom: 8px; }
+.rd-state-lead {
+  margin: 4px 0 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: hsl(var(--rd-brand));
+}
+
+/* ── Marking stage: tool rail + page frames ── */
+.rd-stage { margin-bottom: 4px; }
+
+.rd-rail {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+  margin-bottom: 10px;
+}
+.rd-rail-group {
+  display: inline-flex;
+  gap: 4px;
+  padding: 3px;
+  background: hsl(var(--rd-fill));
+  border: 1px solid hsl(var(--rd-bd) / 0.6);
+  border-radius: 10px;
+}
+.rd-rail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  background: transparent;
+  color: hsl(var(--rd-muted));
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.rd-rail-btn svg {
+  width: 15px;
+  height: 15px;
+  flex: none;
+}
+.rd-rail-btn:hover { color: hsl(var(--rd-fg)); }
+.rd-rail-btn[aria-pressed="true"] {
+  background: hsl(var(--rd-card));
+  border-color: hsl(var(--rd-bd));
+  color: hsl(var(--rd-brand));
+  box-shadow: 0 1px 2px hsl(0 0% 0% / 0.08);
+}
+.rd-rail-presets .rd-rail-btn { padding: 5px 9px; }
+
 .rd-frame {
   position: relative;
   display: inline-block;
@@ -142,7 +252,6 @@
 .rd-img {
   display: block;
   max-width: 100%;
-  max-height: 340px;
   user-select: none;
   -webkit-user-drag: none;
 }
@@ -158,6 +267,13 @@
 .rd-bar.rd-draft {
   background: hsl(0 0% 0% / 0.65);
   outline: 1px solid hsl(var(--rd-brand) / 0.9);
+}
+.rd-stroke {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 .rd-bar-del {
   position: absolute;
@@ -183,6 +299,14 @@
 }
 .rd-bar:hover .rd-bar-del,
 .rd-bar-del:focus-visible { opacity: 1; }
+
+/* Remove mode: bars become the click targets, their dots stay visible, and the
+   surface stops advertising drawing. */
+.rd-stage[data-rd-mode="erase"] .rd-frame { cursor: default; }
+.rd-stage[data-rd-mode="erase"] .rd-bar { cursor: pointer; }
+.rd-stage[data-rd-mode="erase"] .rd-bar-del { opacity: 1; }
+.rd-stage[data-rd-mode="erase"] .rd-bar:hover { outline: 2px solid hsl(var(--rd-brand)); }
+
 .rd-stage-hint {
   margin: 8px 0 0;
   font-size: 11.5px;
@@ -193,7 +317,7 @@
 /* ── PDF page stack (host.pdf.pages previews) ── */
 .rd-pagestack {
   display: grid;
-  gap: 10px;
+  gap: 12px;
   justify-items: start;
 }
 .rd-page-chip {
@@ -208,7 +332,6 @@
   font-size: 10px;
   line-height: 1.4;
   color: hsl(var(--rd-muted));
-  text-transform: uppercase;
   letter-spacing: 0.04em;
   pointer-events: none;
 }
@@ -228,26 +351,39 @@
   font-size: 12.5px;
 }
 
-/* ── Sections: one flat card, hairline separators (strip-data's register) ── */
-.rd-sect {
-  margin: 16px 0 0;
-  padding: 14px 0 0;
+/* ── Status strip: coverage, findings summary, caveats ── */
+.rd-status {
+  margin-top: 14px;
+  padding-top: 14px;
   border-top: 1px solid hsl(var(--rd-bd) / 0.6);
 }
-.rd-sect-title {
+.rd-line {
   margin: 0 0 8px;
   font-size: 13px;
-  font-weight: 700;
-}
-.rd-summary {
-  margin: 0 0 10px;
-  font-size: 13.5px;
   line-height: 1.5;
   color: hsl(var(--rd-fg) / 0.85);
 }
 
-/* Show-details toggle: visually hidden checkbox, keyboard reachable, values
-   stay hidden until asked (strip-data's pattern). */
+/* Coverage meter */
+.rd-meter {
+  height: 8px;
+  margin: 2px 0 8px;
+  border-radius: 999px;
+  background: hsl(var(--rd-fill));
+  border: 1px solid hsl(var(--rd-bd) / 0.7);
+  overflow: hidden;
+}
+.rd-meter-fill {
+  display: block;
+  height: 100%;
+  background: hsl(var(--rd-brand));
+  border-radius: inherit;
+  transition: width 0.15s ease-out;
+}
+
+/* Findings: one summary line, values behind the reveal (strip-data's pattern:
+   visually hidden checkbox, keyboard reachable). */
+.rd-found { margin: 4px 0 8px; }
 .rd-reveal-cb {
   position: absolute;
   width: 1px;
@@ -264,7 +400,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  margin: 0 0 12px;
+  margin: 0 0 10px;
   padding: 5px 11px;
   border-radius: 8px;
   background: hsl(var(--rd-brand) / 0.1);
@@ -298,9 +434,10 @@
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
+  display: none;
   gap: 6px;
 }
+.rd-reveal-cb:checked ~ .rd-findings { display: grid; }
 .rd-finding {
   display: flex;
   align-items: baseline;
@@ -323,7 +460,6 @@
    stays legible in dark/suse, where --destructive is a fill hue. */
 .rd-finding.warn .rd-finding-label { color: color-mix(in oklab, hsl(var(--rd-warn)), hsl(var(--rd-fg)) 30%); }
 .rd-finding-detail {
-  display: none;
   font-family: var(--font-mono, "SUSE Mono", monospace);
   font-size: 12px;
   color: hsl(var(--rd-muted));
@@ -333,46 +469,31 @@
   white-space: nowrap;
   max-width: 60%;
 }
-.rd-reveal-cb:checked ~ .rd-findings .rd-finding-detail { display: block; }
 
-/* ── Coverage meter ── */
-.rd-meter {
-  height: 8px;
-  margin: 2px 0 10px;
-  border-radius: 999px;
+/* Vector-mode caveat is guidance, so it stays neutral: tinted fill, full
+   hairline, no red. */
+.rd-warn-note {
+  padding: 8px 10px;
+  border-radius: 8px;
   background: hsl(var(--rd-fill));
-  border: 1px solid hsl(var(--rd-bd) / 0.7);
-  overflow: hidden;
-}
-.rd-meter-fill {
-  display: block;
-  height: 100%;
-  background: hsl(var(--rd-brand));
-  border-radius: inherit;
-  transition: width 0.15s ease-out;
+  border: 1px solid hsl(var(--rd-bd));
+  color: hsl(var(--rd-fg) / 0.8);
 }
 
-/* ── Option rows (in-canvas [data-input-id] toggles) ── */
-.rd-opt {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin: 8px 0 0;
+/* "What will not be removed" — a quiet details reveal, native disclosure kept */
+.rd-limits-details { margin: 6px 0 0; }
+.rd-limits-details summary {
   font-size: 12.5px;
-  line-height: 1.45;
-  color: hsl(var(--rd-fg) / 0.85);
+  font-weight: 600;
+  color: hsl(var(--rd-muted));
   cursor: pointer;
+  user-select: none;
+  padding: 4px 0;
 }
-.rd-opt input {
-  flex: none;
-  margin: 2px 0 0;
-  accent-color: hsl(var(--rd-brand));
-}
-
-/* ── "Will not be removed" prose list ── */
+.rd-limits-details summary:hover { color: hsl(var(--rd-fg)); }
 .rd-limits {
   list-style: none;
-  margin: 0;
+  margin: 8px 0 0;
   padding: 0;
   display: grid;
   gap: 8px;
@@ -396,6 +517,11 @@
 }
 
 /* ── Gate line + download ── */
+.rd-dl {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid hsl(var(--rd-bd) / 0.6);
+}
 .rd-gate {
   margin: 0 0 10px;
   font-size: 11.5px;
@@ -426,31 +552,11 @@
 }
 .rd-download:disabled:hover { background: hsl(var(--rd-fill)); }
 
-/* ── Info / degraded states ── */
-.rd-state { text-align: center; margin-bottom: 8px; }
-.rd-state-lead {
-  margin: 4px 0 8px;
-  font-size: 15px;
-  font-weight: 700;
-  color: hsl(var(--rd-brand));
-}
 .rd-note {
   margin: 8px 0 0;
   font-size: 11.5px;
   line-height: 1.45;
   color: hsl(var(--rd-muted) / 0.8);
-}
-.rd-note-strong {
-  margin: 0;
-  font-size: 13px;
-  font-weight: 600;
-}
-.rd-warn-note {
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: hsl(var(--rd-warn) / 0.08);
-  border: 1px solid hsl(var(--rd-warn) / 0.35);
-  color: color-mix(in oklab, hsl(var(--rd-warn)), hsl(var(--rd-fg)) 45%);
 }
 .rd-note code {
   font-family: var(--font-mono, "SUSE Mono", monospace);

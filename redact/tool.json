@@ -2,7 +2,7 @@
   "id": "redact",
   "name": "Redact",
   "description": "Black out sensitive content by rebuilding the file, then verify the output before it downloads, all on your device.",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "utility",

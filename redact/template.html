@@ -285,6 +285,27 @@
       if (x) x.addEventListener('click', dismiss);
     })();
 
+    /* ── Findings reveal: the checkbox holds its open/closed state in the DOM
+       only, and every commit repaints via innerHTML — so without this the list
+       slammed shut each time a bar was drawn. State rides the persistent canvas
+       container, like the rail's mode/preset. The id is also re-keyed per canvas
+       so N mounted copies (multi-edit) don't all point their label at the first
+       checkbox in the document. ── */
+    (function wireReveal() {
+      var cb = wrap.querySelector('.rd-reveal-cb');
+      var label = wrap.querySelector('.rd-reveal-toggle');
+      if (!cb) return;
+      if (canvasRoot && canvasRoot.id && cb.id) {
+        var uid = cb.id + '-' + canvasRoot.id;
+        cb.id = uid;
+        if (label) label.setAttribute('for', uid);
+      }
+      if (canvasRoot && canvasRoot.dataset.rdDetails === '1') cb.checked = true;
+      cb.addEventListener('change', function () {
+        if (canvasRoot) canvasRoot.dataset.rdDetails = cb.checked ? '1' : '0';
+      });
+    })();
+
     var stage = wrap.querySelector('.rd-stage');
     if (!stage || stage.dataset.rdWired) return;
     stage.dataset.rdWired = '1';
