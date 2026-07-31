@@ -578,6 +578,7 @@
         "enterMsField": "enterMs",
         "exitMsField": "exitMs",
         "muteField": "mute",
+        "linkField": "linkOf",
         "laneField": "lane",
         "minSize": 8,
         "import": {
@@ -1435,6 +1436,14 @@
               "label": "Sequence"
             }
           ]
+        },
+        {
+          "id": "linkOf",
+          "showFor": [],
+          "type": "text",
+          "label": "Linked to",
+          "default": "",
+          "help": "The id of the box this one is A/V-linked to — written on BOTH sides when a clip's audio is detached onto its own lane, so re-attaching works from either side. Machine-written by the timeline panel, never typed; showFor:[] keeps it out of the sidebar."
         }
       ],
       "default": [

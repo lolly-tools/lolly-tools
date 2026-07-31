@@ -1,0 +1,9 @@
+{{{finishSvg}}}
+{{!-- PRODUCT RULE — preview vs plate: the shiny finish simulation above is
+      PRESENTATION ONLY and must never be baked into artwork sent to print.
+      The real deliverable for a print house is the finish plate: flip the
+      "Plate view (printer-ready)" input and the canvas becomes the plate —
+      pure black mask shapes on white plus an overprint label line — which is
+      what the user exports (SVG/PDF/PNG) for their printer. The plate branch
+      in hooks.js is deliberately filter-free (a pre-baked black-on-white
+      raster inside the SVG) so it survives every export path unchanged. --}}

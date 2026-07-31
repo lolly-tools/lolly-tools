@@ -1,0 +1,428 @@
+{
+  "id": "filter-imperfections",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
+  "a11yLabel": "The chosen image reproduced as an imperfect print, with offset ink plates, roughened edges and paper grain",
+  "version": "1.0.0",
+  "engineVersion": "^1.0.0",
+  "status": "official",
+  "category": "designer",
+  "tags": ["imperfections", "print", "risograph", "misregistration", "photocopy", "grain", "paper", "photo", "filter", "effect", "vector", "image"],
+  "examples": [
+    { "label": "Subtle press", "values": { "preset": "subtle", "paperTint": "#f2ead9", "seed": 7 } },
+    { "label": "Risograph", "values": { "preset": "riso", "ink1": "#0078bf", "ink2": "#ff48b0", "paperTint": "#f7f2e7", "grainAmount": 35, "seed": 21 } },
+    { "label": "Photocopy", "values": { "preset": "photocopy", "paperTint": "#f4f4f2", "paperTintStrength": 35, "grainAmount": 40, "seed": 3 } },
+    { "label": "Worn print", "values": { "preset": "worn", "grainAmount": 55, "paperTint": "#e9dfc8", "paperTintStrength": 80, "seed": 42 } }
+  ],
+  "render": {
+    "width": 1000,
+    "height": 1000,
+    "formats": ["svg", "png", "jpg", "webp", "avif", "gif", "apng", "webm", "mp4"],
+    "actions": ["copy", "download", "save"],
+    "video": { "wait": 0, "duration": 5 },
+    "transparentBg": false,
+    "convertPaths": false
+  },
+  "inputs": [
+    {
+      "id": "image",
+      "label": "Image",
+      "type": "asset",
+      "assetType": "raster",
+      "allowUpload": true,
+      "help": "Pick a photo or upload your own. It's processed on your device — the pixels never leave the browser."
+    },
+    {
+      "id": "preset",
+      "label": "Press character",
+      "type": "select",
+      "default": "subtle",
+      "options": [
+        { "value": "subtle", "label": "Subtle press" },
+        { "value": "riso", "label": "Risograph" },
+        { "value": "photocopy", "label": "Photocopy" },
+        { "value": "worn", "label": "Worn print" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "help": "A ready-made recipe of misregistration, ink bleed and wear. Pick Custom to fine-tune each imperfection yourself."
+    },
+    {
+      "id": "strength",
+      "label": "Strength",
+      "type": "number",
+      "display": "slider",
+      "default": 100,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Scales every imperfection at once. 0 is a clean print; 100 is the full recipe."
+    },
+    {
+      "id": "seed",
+      "label": "Seed",
+      "type": "number",
+      "display": "slider",
+      "default": 7,
+      "min": 1,
+      "max": 200,
+      "step": 1,
+      "help": "Changes the plate jitter and textures. The same seed always gives the same result."
+    },
+    {
+      "id": "ink1",
+      "label": "Ink 1",
+      "type": "color",
+      "default": "#0078bf",
+      "help": "First ink for the two-ink looks (the Risograph preset, or Custom with Two inks)."
+    },
+    {
+      "id": "ink2",
+      "label": "Ink 2",
+      "type": "color",
+      "default": "#ff48b0",
+      "help": "Second ink for the two-ink looks."
+    },
+    {
+      "id": "fit",
+      "label": "Image fit",
+      "type": "select",
+      "default": "cover",
+      "options": [
+        { "value": "contain", "label": "Contain (whole image)" },
+        { "value": "cover", "label": "Cover (fill, crop edges)" }
+      ]
+    },
+    {
+      "id": "plates",
+      "label": "Ink plates",
+      "section": "Fine-tune",
+      "type": "select",
+      "default": "cmy",
+      "showIf": { "preset": "custom" },
+      "options": [
+        { "value": "cmy", "label": "Three inks (CMY)" },
+        { "value": "duo", "label": "Two inks" },
+        { "value": "mono", "label": "One ink (mono)" }
+      ],
+      "help": "How the artwork is separated into printing plates before they are misprinted."
+    },
+    {
+      "id": "misregAmount",
+      "label": "Misregistration",
+      "section": "Fine-tune",
+      "type": "number",
+      "display": "slider",
+      "default": 2,
+      "min": 0,
+      "max": 12,
+      "step": 0.1,
+      "showIf": { "preset": "custom" },
+      "help": "How far the ink plates drift out of alignment, in canvas units."
+    },
+    {
+      "id": "bleedAmount",
+      "label": "Ink bleed",
+      "section": "Fine-tune",
+      "type": "number",
+      "display": "slider",
+      "default": 1.5,
+      "min": 0,
+      "max": 8,
+      "step": 0.1,
+      "showIf": { "preset": "custom" },
+      "help": "Softens and roughens edges as if the ink soaked into the paper."
+    },
+    {
+      "id": "degradeAmount",
+      "label": "Photocopy wear",
+      "section": "Fine-tune",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "showIf": { "preset": "custom" },
+      "help": "Washes out colour, hardens the tones and adds copier streaks."
+    },
+    {
+      "id": "paperTint",
+      "label": "Paper tint",
+      "section": "Paper",
+      "type": "color",
+      "default": "#f2ead9",
+      "help": "The colour of the paper stock the print sits on."
+    },
+    {
+      "id": "paperTintStrength",
+      "label": "Tint strength",
+      "section": "Paper",
+      "type": "number",
+      "display": "slider",
+      "default": 60,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "How far the paper shifts from bright white toward the tint. Blended perceptually, so mid-strengths stay clean."
+    },
+    {
+      "id": "grainAmount",
+      "label": "Paper grain",
+      "section": "Paper",
+      "type": "number",
+      "display": "slider",
+      "default": 25,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Speckle of the paper tooth showing through the ink."
+    },
+    {
+      "id": "hue",
+      "label": "Hue",
+      "section": "Colour",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "help": "Rotate every colour around the wheel."
+    },
+    {
+      "id": "saturation",
+      "label": "Saturation",
+      "section": "Colour",
+      "type": "number",
+      "display": "slider",
+      "default": 100,
+      "min": 0,
+      "max": 200,
+      "step": 1,
+      "help": "0 = greyscale · 100 = original · 200 = vivid."
+    },
+    {
+      "id": "lightness",
+      "label": "Lightness",
+      "section": "Colour",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "help": "Lift toward white or sink toward black."
+    },
+    {
+      "id": "treatmentColor",
+      "label": "Colour treatment",
+      "section": "Colour",
+      "type": "color",
+      "default": "",
+      "help": "Blend a colour over the result. Leave empty for none."
+    },
+    {
+      "id": "blendMode",
+      "label": "Blend mode",
+      "section": "Colour",
+      "type": "select",
+      "default": "multiply",
+      "options": [
+        { "value": "normal", "label": "Normal" },
+        { "value": "multiply", "label": "Multiply" },
+        { "value": "screen", "label": "Screen" },
+        { "value": "overlay", "label": "Overlay" },
+        { "value": "darken", "label": "Darken" },
+        { "value": "lighten", "label": "Lighten" },
+        { "value": "color-dodge", "label": "Colour dodge" },
+        { "value": "color-burn", "label": "Colour burn" },
+        { "value": "hard-light", "label": "Hard light" },
+        { "value": "soft-light", "label": "Soft light" },
+        { "value": "difference", "label": "Difference" },
+        { "value": "exclusion", "label": "Exclusion" },
+        { "value": "hue", "label": "Hue" },
+        { "value": "saturation", "label": "Saturation" },
+        { "value": "color", "label": "Colour" },
+        { "value": "luminosity", "label": "Luminosity" }
+      ],
+      "help": "How the treatment colour mixes with the image."
+    },
+    {
+      "id": "treatmentIntensity",
+      "label": "Intensity",
+      "section": "Colour",
+      "type": "number",
+      "display": "slider",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Opacity of the colour overlay."
+    },
+    {
+      "id": "noFilter",
+      "label": "No filter (show raw)",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "Show the original photo or live camera feed untouched — handy for placing just a logo / lower-third over the raw footage."
+    },
+    {
+      "id": "showLogo",
+      "label": "SUSE logo overlay",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "Overlay the SUSE logo on the result. Off by default."
+    },
+    {
+      "id": "logoPosition",
+      "label": "Logo position",
+      "section": "Overlay",
+      "type": "select",
+      "default": "top-right",
+      "showIf": { "showLogo": true },
+      "options": [
+        { "value": "top-left", "label": "Top left" },
+        { "value": "top-right", "label": "Top right" },
+        { "value": "bottom-left", "label": "Bottom left" },
+        { "value": "bottom-right", "label": "Bottom right" },
+        { "value": "top", "label": "Top centre" },
+        { "value": "bottom", "label": "Bottom centre" },
+        { "value": "center", "label": "Centre" },
+        { "value": "full", "label": "Full (watermark)" }
+      ]
+    },
+    {
+      "id": "logoStyle",
+      "label": "Logo colour",
+      "section": "Overlay",
+      "type": "select",
+      "default": "white",
+      "showIf": { "showLogo": true },
+      "options": [
+        { "value": "white", "label": "White" },
+        { "value": "green", "label": "Green" },
+        { "value": "black", "label": "Black" }
+      ],
+      "help": "White and green read on dark or busy footage; black suits light backgrounds."
+    },
+    {
+      "id": "logoScale",
+      "label": "Logo size",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0.25,
+      "max": 3,
+      "step": 0.05,
+      "showIf": { "showLogo": true },
+      "help": "Scale the logo up or down."
+    },
+    {
+      "id": "lowerThird",
+      "label": "Lower-third name card",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "A gently-animated name card that draws in over the footage. Uses your profile name & headshot."
+    },
+    {
+      "id": "ltTheme",
+      "label": "Card style",
+      "section": "Overlay",
+      "type": "select",
+      "default": "bar",
+      "showIf": { "lowerThird": true },
+      "options": [
+        { "value": "bar", "label": "SUSE brand bar" },
+        { "value": "minimal", "label": "Minimal" },
+        { "value": "glass", "label": "Glass" }
+      ]
+    },
+    {
+      "id": "ltPosition",
+      "label": "Card position",
+      "section": "Overlay",
+      "type": "select",
+      "default": "left",
+      "showIf": { "lowerThird": true },
+      "options": [
+        { "value": "left", "label": "Bottom left" },
+        { "value": "center", "label": "Bottom centre" },
+        { "value": "right", "label": "Bottom right" }
+      ]
+    },
+    {
+      "id": "firstname",
+      "label": "First name",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "bindToProfile": "firstname",
+      "showIf": { "lowerThird": true }
+    },
+    {
+      "id": "lastname",
+      "label": "Last name",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "bindToProfile": "lastname",
+      "showIf": { "lowerThird": true }
+    },
+    {
+      "id": "title",
+      "label": "Role / subtitle",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "showIf": { "lowerThird": true },
+      "help": "Optional line below the name — e.g. a role or event."
+    },
+    {
+      "id": "nameWeight",
+      "label": "Name weight",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "showIf": { "lowerThird": true },
+      "help": "Font weight of the name line (100 Thin → 900 Black)."
+    },
+    {
+      "id": "subtitleWeight",
+      "label": "Subtitle weight",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "showIf": { "lowerThird": true },
+      "help": "Font weight of the role / subtitle line (100 Thin → 900 Black)."
+    },
+    {
+      "id": "ltHeadshot",
+      "label": "Headshot (optional)",
+      "section": "Overlay",
+      "type": "asset",
+      "assetType": "raster",
+      "allowUpload": true,
+      "showIf": { "lowerThird": true },
+      "help": "Defaults to your profile headshot. Pick or upload another to override."
+    }
+  ],
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "onFrame": true,
+    "beforeExport": true,
+    "afterExport": true
+  }
+}
