@@ -908,6 +908,78 @@ function coveragePercent(rects, W, H) {
   return Math.min(100, Math.round(n / (G * G) * 100));
 }
 
+// ─── preset bar heights (the canvas rail's Line / Heading / Block buttons) ───
+// Fractions of the frame height, so a preset reads the same on an A4 page and a
+// phone screenshot. The template script multiplies the fraction by the frame's
+// own coordinate space (PDF points or natural pixels) — the constants live HERE,
+// once, and ship to the canvas as JSON so the script never re-declares them.
+
+const PRESET_FRACS = { line: 0.02, heading: 0.038, block: 0.14 };
+const PRESET_MIN = 6; // floor in frame units, so a tiny image still gets a visible bar
+
+function presetBarHeight(preset, frameH) {
+  if (!Object.prototype.hasOwnProperty.call(PRESET_FRACS, preset)) return null;
+  if (!(frameH > 0)) return null;
+  return Math.max(PRESET_MIN, Math.round(frameH * PRESET_FRACS[preset]));
+}
+
+// ─── advisories (transient toasts, not prose walls) ─────────────────────────
+// Guidance arrives as the user edits, one short sentence at a time. Each key
+// fires at most once per file (the seen set); at most one toast per patch. The
+// picker is pure — it never mutates `seen`, the caller marks a key seen only
+// when it actually emits the toast.
+
+const THIN_BAR_PT = 8;   // a bar under this height in PDF points can hint at what it hides
+const THIN_BAR_PX = 11;  // the same threshold for pixel-space frames (8pt at 96 dpi)
+
+function thinBarLimit(isPdf) {
+  return isPdf ? THIN_BAR_PT : THIN_BAR_PX;
+}
+
+function joinPages(list) {
+  return list.join(', ').replace(/, ([^,]*)$/, ' and $1');
+}
+
+// state: { pagesFailed: number[], pagesTruncated, barsEdited, barCount,
+//          isImage, hasThinBar }. Returns { key, text } or null.
+function advisoryFor(state, seen) {
+  const cands = [];
+  const failed = Array.isArray(state.pagesFailed) ? state.pagesFailed : [];
+  if (failed.length) {
+    const list = joinPages(failed);
+    cands.push({
+      key: 'pages-failed',
+      text: failed.length > 1
+        ? `Pages ${list} could not be rendered, so their previews are missing. The export refuses to ship a page that fails to render.`
+        : `Page ${list} could not be rendered, so its preview is missing. The export refuses to ship a page that fails to render.`,
+    });
+  }
+  if (state.pagesTruncated) {
+    cands.push({ key: 'pages-truncated', text: 'Not every page could be previewed. Only pages with a preview can be marked here.' });
+  }
+  if (state.barsEdited && state.barCount > 0) {
+    cands.push({ key: 'first-bar', text: 'Covered content is destroyed when the file is rebuilt, not hidden.' });
+    if (state.isImage) {
+      cands.push({ key: 'image-mark', text: 'Whole-image watermarks survive partial cover. This tool removes what you mark, it does not launder provenance.' });
+    }
+    if (state.hasThinBar) {
+      cands.push({ key: 'thin-bar', text: 'A very thin bar can hint at what it hides.' });
+    }
+  }
+  for (const c of cands) {
+    if (!seen.has(c.key)) return c;
+  }
+  return null;
+}
+
+// Seen keys per file identity — a new file starts a clean advisory slate.
+let _advice = { key: '', seen: new Set() };
+
+function adviceSeenFor(fileKey) {
+  if (_advice.key !== fileKey) _advice = { key: fileKey, seen: new Set() };
+  return _advice.seen;
+}
+
 // ─── raster analysis ─────────────────────────────────────────────────────────
 
 function gpsDetail(gps) {
@@ -1153,7 +1225,11 @@ function pdfByteFindings(bytes) {
 
 // ─── lifecycle: analysis + live mark feedback ────────────────────────────────
 
-async function patch({ model, host }) {
+async function patch(ctx) {
+  const { model, host } = ctx;
+  // The input id that triggered this pass ('' for onInit) — bar advisories only
+  // fire on a real bars edit, never on hydration of a URL-restored session.
+  const trigger = ctx.id || '';
   const inputs = inputsFrom(model);
   const f = inputs.source;
   // NOTE: no key returned here may match a declared input id (source, bars,
@@ -1169,7 +1245,8 @@ async function patch({ model, host }) {
     coverageText: '', coverageHigh: false,
     pageBars: [], hasPageBars: false, resignUnavailable: false,
     pdfPages: [], hasPdfPages: false, pagesPending: false, pagesError: '', pagesTruncated: false,
-    pagesFailedNote: '',
+    toastKey: '', toastText: '',
+    presetsJson: JSON.stringify(PRESET_FRACS),
     downloadLabel: 'Download redacted copy',
   };
   if (!f || !f.bytes) { resetPagesJob(); return blank; }
@@ -1200,6 +1277,7 @@ async function patch({ model, host }) {
       && !(host.c2pa && typeof host.c2pa.sign === 'function');
 
     const fileKey = `${f.url || ''}|${f.name}|${f.size}`;
+    let failedPages = [];
 
     // Start the analyze wait FIRST so its budget timer runs concurrently with
     // the pages wait below. Awaiting them sequentially summed the budgets
@@ -1220,15 +1298,9 @@ async function patch({ model, host }) {
         base.pdfPages = job.result.pages;
         base.hasPdfPages = job.result.pages.length > 0;
         base.pagesTruncated = job.result.truncated;
-        const failed = job.result.failed || [];
-        if (failed.length) {
-          const list = failed.join(', ').replace(/, ([^,]*)$/, ' and $1');
-          base.pagesFailedNote = failed.length > 1
-            ? `Pages ${list} could not be rendered, so their previews are missing. Bars for those pages can still be set in the sidebar, and the export refuses to ship a page that fails to render.`
-            : `Page ${list} could not be rendered, so its preview is missing. Bars for that page can still be set in the sidebar, and the export refuses to ship a page that fails to render.`;
-        }
+        failedPages = job.result.failed || [];
       } else if (job.error) {
-        base.pagesError = 'The page previews could not be rendered. The analysis below still applies, and bars set in the sidebar still redact.';
+        base.pagesError = 'The page previews could not be rendered. The analysis below still applies.';
       } else {
         base.pagesPending = true;
       }
@@ -1256,6 +1328,25 @@ async function patch({ model, host }) {
       .map((p) => ({ page: p, count: perPage.get(p), plural: perPage.get(p) > 1 }));
     base.hasPageBars = base.pageBars.length > 0;
     base.downloadLabel = 'Download redacted PDF';
+
+    // One advisory toast at most, each key once per file. Bar advisories only
+    // on a real bars edit; page advisories on whichever pass first sees them.
+    const seen = adviceSeenFor(fileKey);
+    const adv = advisoryFor({
+      pagesFailed: failedPages,
+      pagesTruncated: base.pagesTruncated,
+      barsEdited: trigger === 'bars',
+      barCount: bars.length,
+      isImage: false,
+      hasThinBar: bars.some((b) => b.h < thinBarLimit(true)),
+    }, seen);
+    if (adv) {
+      seen.add(adv.key);
+      // The DOM dedupe marker needs file identity too, so a NEW file's first
+      // toast is never suppressed by the previous file's dismissal record.
+      base.toastKey = `${adv.key}@${f.name}:${f.size}`;
+      base.toastText = adv.text;
+    }
     return base;
   }
 
@@ -1306,6 +1397,21 @@ async function patch({ model, host }) {
   base.downloadLabel = base.isSvg
     ? (inputs.svgVector ? 'Download redacted SVG' : 'Download redacted PNG')
     : `Download redacted ${info.kind}`;
+
+  const seen = adviceSeenFor(`${f.url || ''}|${f.name}|${f.size}`);
+  const adv = advisoryFor({
+    pagesFailed: [],
+    pagesTruncated: false,
+    barsEdited: trigger === 'bars',
+    barCount: bars.length,
+    isImage: true,
+    hasThinBar: bars.some((b) => b.h < thinBarLimit(false)),
+  }, seen);
+  if (adv) {
+    seen.add(adv.key);
+    base.toastKey = `${adv.key}@${f.name}:${f.size}`;
+    base.toastText = adv.text;
+  }
   return base;
 }
 

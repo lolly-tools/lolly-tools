@@ -5,18 +5,27 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13.5h8" stroke-width="3"/><path d="M8 18h5"/></svg>
       </div>
       <h2>Redact an image, SVG or PDF</h2>
-      <p>Drag a JPEG, PNG, WebP, SVG or PDF anywhere onto this area, or choose one below. Draw bars over what should go. The file is rebuilt from scratch so the covered content and the hidden data are removed, not hidden, and the output is verified before it downloads.</p>
+      <p>Drop a JPEG, PNG, WebP, SVG or PDF anywhere here, or choose one below. Draw bars over what should go. The file is rebuilt from scratch so covered content and hidden data are removed, not hidden, and the output is verified before it downloads.</p>
       <button type="button" class="rd-pick" data-file-pick>Choose a file…</button>
       <p class="rd-empty-note">Everything happens in your browser. Your file is never uploaded.</p>
     </div>
   {{/unless}}
 
   {{#if hasFile}}
-    <div class="rd-card">
+    <div class="rd-work">
       <div class="rd-head">
         <span class="rd-file" title="{{fileName}}">{{fileName}}</span>
         <span class="rd-kind">{{kind}} · {{fileSize}}</span>
         <button type="button" class="rd-replace" data-file-pick data-export-hide>Replace</button>
+      </div>
+
+      <div class="rd-toasts" data-export-hide aria-live="polite" role="status">
+        {{#if toastKey}}
+          <div class="rd-toast" data-toast-key="{{toastKey}}">
+            <span class="rd-toast-text">{{toastText}}</span>
+            <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+          </div>
+        {{/if}}
       </div>
 
       {{#unless supported}}
@@ -34,13 +43,35 @@
           </div>
         {{else}}
 
-          <div class="rd-stage" data-bars="{{barsJson}}"{{#if pagesPending}} data-pages-pending="1"{{/if}}>
+          <div class="rd-stage" data-bars="{{barsJson}}" data-presets="{{presetsJson}}"{{#if pagesPending}} data-pages-pending="1"{{/if}}>
+            <div class="rd-rail" data-export-hide role="toolbar" aria-label="Marking tools">
+              <div class="rd-rail-group" data-rail-modes>
+                <button type="button" class="rd-rail-btn" data-mode="bar" aria-pressed="true" title="Drag a rectangle over what should go">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="9" width="16" height="6" rx="1" fill="currentColor"/></svg>
+                  <span>Bar</span>
+                </button>
+                <button type="button" class="rd-rail-btn" data-mode="marker" aria-pressed="false" title="Scribble freehand, committed as solid bands">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 17c3-6 5 4 8-3s5 1 8-5"/></svg>
+                  <span>Marker</span>
+                </button>
+                <button type="button" class="rd-rail-btn" data-mode="erase" aria-pressed="false" title="Tap a bar to remove it">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12l8 8 8-8-8-8z"/><path d="M9 7l8 8"/></svg>
+                  <span>Remove</span>
+                </button>
+              </div>
+              <div class="rd-rail-group rd-rail-presets" data-rail-presets aria-label="Bar height">
+                <button type="button" class="rd-rail-btn" data-preset="free" aria-pressed="true" title="Bar height follows the drag">Free</button>
+                <button type="button" class="rd-rail-btn" data-preset="line" aria-pressed="false" title="One text line tall">Line</button>
+                <button type="button" class="rd-rail-btn" data-preset="heading" aria-pressed="false" title="Heading tall">Heading</button>
+                <button type="button" class="rd-rail-btn" data-preset="block" aria-pressed="false" title="A paragraph block tall">Block</button>
+              </div>
+            </div>
+
             {{#unless isPdfKind}}
               <div class="rd-frame">
                 <img class="rd-img" src="{{previewUrl}}" alt="Preview of {{fileName}}" draggable="false">
                 <div class="rd-marks" data-export-hide></div>
               </div>
-              <p class="rd-stage-hint" data-export-hide>Drag on the preview to draw a redaction bar. Click a bar's dot to remove it.</p>
             {{/unless}}
 
             {{#if isPdfKind}}
@@ -54,13 +85,6 @@
                     </div>
                   {{/each}}
                 </div>
-                <p class="rd-stage-hint" data-export-hide>Drag on a page to draw a redaction bar. Click a bar's dot to remove it.</p>
-                {{#if pagesFailedNote}}
-                  <p class="rd-note">{{pagesFailedNote}}</p>
-                {{/if}}
-                {{#if pagesTruncated}}
-                  <p class="rd-note">Not every page is shown. Bars for later pages can still be set in the sidebar, in page points from the top left.</p>
-                {{/if}}
               {{/if}}
               {{#if pagesPending}}
                 <p class="rd-note" data-pages-note>Rendering pages…</p>
@@ -70,7 +94,7 @@
               {{/if}}
               {{#unless hasPdfPages}}{{#unless pagesPending}}
                 {{#unless pagesError}}
-                  <p class="rd-note">Page previews aren't available in this app. Bars are set in the sidebar, in page points from the top left of each page.</p>
+                  <p class="rd-note">Page previews aren't available in this app, so bars can't be drawn here. Open this tool in the Lolly web app to redact this PDF.</p>
                 {{/unless}}
                 {{#if hasPageBars}}
                   <ul class="rd-pages">
@@ -81,110 +105,74 @@
                 {{/if}}
               {{/unless}}{{/unless}}
             {{/if}}
+            <p class="rd-stage-hint" data-export-hide>Drag on the preview to draw. Click a bar's dot to remove it. Pinch or Cmd-scroll to zoom.</p>
           </div>
 
-          <!-- What's inside this file, before any marks. -->
-          <section class="rd-sect">
-            <h3 class="rd-sect-title">What's inside this file</h3>
-            {{#if analysisPending}}
-              <p class="rd-note">Still reading the document structure…</p>
-            {{/if}}
-            {{#if analysisFailed}}
-              <p class="rd-note">The document structure could not be read. The structural checks did not run, so nothing can be claimed about attachments, scripts or earlier versions.</p>
-            {{/if}}
-            {{#if nothingFound}}
-              <p class="rd-note">No hidden data was found by these checks. Absence of a finding is not proof there is nothing there.</p>
-            {{/if}}
-            {{#if foundSummary}}
-              <p class="rd-summary">{{foundSummary}}</p>
-              <input type="checkbox" id="rd-show-details" class="rd-reveal-cb">
-              <label for="rd-show-details" class="rd-reveal-toggle" data-export-hide>
-                <span class="rd-reveal-icon" aria-hidden="true"></span>
-                <span class="rd-reveal-show">Show details</span>
-                <span class="rd-reveal-hide">Hide details</span>
-              </label>
-              <ul class="rd-findings">
-                {{#each findings}}
-                  <li class="rd-finding {{tone}}">
-                    <span class="rd-finding-label">{{label}}</span>
-                    <span class="rd-finding-detail" title="{{detail}}">{{detail}}</span>
-                  </li>
-                {{/each}}
-              </ul>
-            {{/if}}
-          </section>
-
-          <!-- What the current marks remove, live. -->
-          <section class="rd-sect">
-            <h3 class="rd-sect-title">What your marks remove</h3>
+          <div class="rd-status">
             {{#unless isPdfKind}}
               {{#if hasCoverage}}
                 <div class="rd-meter" role="img" aria-label="{{coverageText}}">
                   <span class="rd-meter-fill" style="width: {{coveragePct}}%"></span>
                 </div>
                 {{#if vectorMode}}
-                  <p class="rd-summary">{{coverageText}} Each bar is an opaque shape added on top. What sits underneath is covered, not deleted, exactly as the vector note below explains.</p>
+                  <p class="rd-line">{{coverageText}} In vector mode each bar covers what sits under it, it is not deleted.</p>
                 {{else}}
-                  <p class="rd-summary">{{coverageText}} Under each bar the original pixels are replaced with solid black before the file is re-encoded, so they are not in the output.</p>
-                {{/if}}
-                {{#if coverageHigh}}
-                  {{#unless vectorMode}}
-                    <p class="rd-note">Your marks cover nearly the whole frame. At full coverage almost no pixel of the original survives, including anything spread across the image.</p>
-                  {{/unless}}
-                {{/if}}
-              {{else}}
-                {{#if vectorMode}}
-                  <p class="rd-note">No marks yet. The vector rebuild already removes the hidden data listed above. Bars added in vector mode cover content, they do not delete it.</p>
-                {{else}}
-                  <p class="rd-note">No marks yet. Rebuilding the file already removes all the hidden data listed above, bars additionally destroy the pixels they cover.</p>
+                  <p class="rd-line">{{coverageText}} The pixels under each bar are gone from the output.</p>
                 {{/if}}
               {{/if}}
             {{/unless}}
             {{#if isPdfKind}}
               {{#if hasBars}}
-                <p class="rd-summary">{{barCount}} bar{{#if barPlural}}s{{/if}} set. Each page is flattened to a picture and the bars are burned in, so covered text is destroyed, not hidden behind a box.</p>
-              {{else}}
-                <p class="rd-note">No bars yet. This tool exports only once a bar is drawn, and the rebuild then also removes metadata, attachments, scripts and earlier versions. For a metadata-only clean with no bars, use the Strip Hidden Data tool.</p>
+                <p class="rd-line">{{barCount}} bar{{#if barPlural}}s{{/if}} set. Each page is flattened to a picture with the bars burned in.</p>
               {{/if}}
             {{/if}}
-            <label class="rd-opt" data-export-hide>
-              <input type="checkbox" data-input-id="quantise" {{#if quantise}}checked{{/if}}>
-              <span>Round bar widths up to a coarse grid</span>
-            </label>
-            <label class="rd-opt" data-export-hide>
-              <input type="checkbox" data-input-id="grayscale" {{#if grayscale}}checked{{/if}}>
-              <span>Scanned page: drop all colour</span>
-            </label>
-            {{#if isSvg}}
-              <label class="rd-opt" data-export-hide>
-                <input type="checkbox" data-input-id="svgVector" {{#if svgVector}}checked{{/if}}>
-                <span>Keep SVG as vector. I understand vector output covers text rather than deleting it</span>
-              </label>
-              {{#if svgVector}}
-                <p class="rd-note rd-warn-note">Vector mode removes metadata, comments, scripts, editor data, titles and descriptions, and embedded images and external references go entirely because each can carry its own hidden data. It cannot compute where glyphs sit, so positioned text under a bar is covered, not deleted. Raster export is the safe choice for text.</p>
-              {{/if}}
-            {{/if}}
-            {{#if isPdfKind}}
-              <label class="rd-opt" data-export-hide>
-                <input type="checkbox" data-input-id="resign" {{#if resign}}checked{{/if}}>
-                <span>Add a fresh Content Credential to the redacted copy</span>
-              </label>
-              {{#if resignUnavailable}}
-                <p class="rd-note">A fresh Content Credential isn't available in this app, the redacted file will be exported without one.</p>
-              {{/if}}
-            {{/if}}
-          </section>
 
-          <!-- Limits we cannot test, so they never get a green pip. -->
-          <section class="rd-sect">
-            <h3 class="rd-sect-title">What will not be removed</h3>
-            <ul class="rd-limits">
-              <li>A bar destroys only the pixels it covers. Invisible watermarks such as Google's SynthID span the whole image and this tool cannot detect or remove them.</li>
-              <li>A bar's width can still hint at the length of what it hides. Rounding widths up to a coarse grid softens this, it does not remove it.</li>
-              <li>Scans of printed pages can carry tracking dots from colour laser printers. The scanned page mode drops the yellow channel they live in, other print forensics remain.</li>
-              <li>There is no blur or pixelate option on purpose. Blurred text has been recovered in practice, a solid fill has no inverse.</li>
-            </ul>
-          </section>
+            {{#if analysisPending}}
+              <p class="rd-note">Still reading the document structure…</p>
+            {{/if}}
+            {{#if analysisFailed}}
+              <p class="rd-note">The document structure could not be read, so nothing can be claimed about attachments, scripts or earlier versions.</p>
+            {{/if}}
+            {{#if nothingFound}}
+              <p class="rd-note">No hidden data was found by these checks. Absence of a finding is not proof there is nothing there.</p>
+            {{/if}}
+            {{#if foundSummary}}
+              <div class="rd-found">
+                <p class="rd-line">{{foundSummary}}</p>
+                <input type="checkbox" id="rd-show-details" class="rd-reveal-cb">
+                <label for="rd-show-details" class="rd-reveal-toggle" data-export-hide>
+                  <span class="rd-reveal-icon" aria-hidden="true"></span>
+                  <span class="rd-reveal-show">Show details</span>
+                  <span class="rd-reveal-hide">Hide details</span>
+                </label>
+                <ul class="rd-findings">
+                  {{#each findings}}
+                    <li class="rd-finding {{tone}}">
+                      <span class="rd-finding-label">{{label}}</span>
+                      <span class="rd-finding-detail" title="{{detail}}">{{detail}}</span>
+                    </li>
+                  {{/each}}
+                </ul>
+              </div>
+            {{/if}}
+
+            {{#if vectorMode}}
+              <p class="rd-note rd-warn-note">Vector mode removes metadata, comments, scripts, editor data and embedded images, but it cannot compute where glyphs sit, so positioned text under a bar is covered, not deleted. Raster export is the safe choice for text.</p>
+            {{/if}}
+            {{#if resignUnavailable}}
+              <p class="rd-note">A fresh Content Credential isn't available in this app, the redacted file will be exported without one.</p>
+            {{/if}}
+
+            <details class="rd-limits-details">
+              <summary>What will not be removed</summary>
+              <ul class="rd-limits">
+                <li>A bar destroys only the pixels it covers. Invisible watermarks such as Google's SynthID span the whole image and this tool cannot detect or remove them.</li>
+                <li>A bar's width can still hint at the length of what it hides. Rounding widths up to a coarse grid softens this, it does not remove it.</li>
+                <li>Scans of printed pages can carry tracking dots from colour laser printers. The scanned page mode drops the yellow channel they live in, other print forensics remain.</li>
+                <li>There is no blur or pixelate option on purpose. Blurred text has been recovered in practice, a solid fill has no inverse.</li>
+              </ul>
+            </details>
+          </div>
 
           {{#if pdfRedactUnavailable}}
             <div class="rd-state">
@@ -192,23 +180,15 @@
               <p class="rd-note">The analysis above still applies. Open this tool in the Lolly web app to produce the redacted copy.</p>
             </div>
           {{else}}
-            <div class="rd-sect rd-sect-dl">
+            <div class="rd-dl">
+              <p class="rd-gate">The rebuilt file is verified before download and nothing ships if a check fails.</p>
               {{#if isPdfKind}}
-                <p class="rd-gate">The rebuilt PDF is verified before download and nothing ships if a check fails.</p>
-                {{#if resign}}{{#unless resignUnavailable}}
-                  <p class="rd-note">The fresh Content Credential is added after those checks pass, as a signed update to the verified file.</p>
-                {{/unless}}{{/if}}
-                {{#if hasBars}}
-                  <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
-                {{else}}
+                {{#unless hasBars}}
                   <button type="button" class="rd-download" data-export-file disabled>Draw a bar over what should go first</button>
-                {{/if}}
-              {{else}}
-                {{#if vectorMode}}
-                  <p class="rd-gate">The cleaned SVG is verified before download and nothing ships if a check fails.</p>
                 {{else}}
-                  <p class="rd-gate">The rebuilt file is verified before download and nothing ships if a check fails.</p>
-                {{/if}}
+                  <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
+                {{/unless}}
+              {{else}}
                 <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
               {{/if}}
             </div>
@@ -221,18 +201,15 @@
 <script>
   (function () {
     'use strict';
-    /* Rubber-band bar drawing over every frame in the stage. A frame is the
-       single image preview, or one PDF page (host.pdf.pages renders each page
-       as an SVG whose viewBox is the page in PDF points, origin top-left).
-       Coordinate space per frame: data-ptw/data-pth present = PDF points
-       (scale = ptw / rect.width, no dpi involved); absent = the image's
-       natural pixels. Live DOM feedback only during the gesture; ONE commit
-       of the whole bars array on release (a commit re-renders the tool and
-       would tear the DOM out from under an active drag). */
-    /* Own wrap = this script's previous sibling (offscreen compose/batch stages
-       can mount extra .rd copies, so a global last-match can grab the wrong
-       instance). currentScript is null when the shell executes detached — fall
-       back to newest-wrap then. */
+    /* Marking surface for redact. One committed bars array; three pointer modes
+       (bar, marker, erase) plus preset bar heights, all held on the PERSISTENT
+       canvas container's dataset ([data-lolly-canvas] survives every repaint;
+       this stage div does not). Coordinate space per frame: data-ptw/data-pth
+       present = PDF points (scale = ptw / rect.width); absent = the image's
+       natural pixels. All maths divide client deltas by the frame's live
+       bounding rect, so the shell's stage zoom (a uniform transform on the
+       canvas wrapper) cancels out. Live DOM feedback only during a gesture;
+       ONE commit of the whole bars array on release. */
     var cs = document.currentScript;
     var wrap = cs && cs.previousElementSibling && cs.previousElementSibling.classList
       && cs.previousElementSibling.classList.contains('rd')
@@ -243,6 +220,71 @@
       wrap = wraps[wraps.length - 1];
     }
     if (!wrap) return;
+
+    var canvasRoot = wrap.closest('[data-lolly-canvas]');
+    var commitFn = canvasRoot && canvasRoot.__lollyCommit;
+    var nudgeFn = canvasRoot && canvasRoot.__lollyNudge;
+
+    function alive() { return document.contains(wrap); }
+
+    /* ── Content-fit: grow the live canvas frame to the tool's natural height so
+       a long page stack is never clipped by the manifest's 620px box. Only the
+       interactive #tool-canvas — the off-screen batch renderer sizes itself. ── */
+    if (canvasRoot && canvasRoot.id === 'tool-canvas') {
+      var syncHeight = function () {
+        var h = Math.ceil(wrap.offsetHeight);
+        if (h < 1) return;
+        if ((parseInt(canvasRoot.style.height, 10) || 0) === h) return;
+        canvasRoot.style.height = h + 'px';
+        canvasRoot.dispatchEvent(new CustomEvent('canvas-resize'));
+      };
+      syncHeight();
+      if (typeof ResizeObserver !== 'undefined') {
+        if (window.__rdSizeRO) window.__rdSizeRO.disconnect();
+        window.__rdSizeRO = new ResizeObserver(syncHeight);
+        window.__rdSizeRO.observe(wrap);
+      }
+    }
+
+    /* ── Advisory toast: at most one, auto-dismiss, Escape or the close button
+       dismisses early. The hooks emit each advisory key once per file; the
+       dataset done-list only stops a dismissed toast reappearing on repaints
+       that re-render the same extras. Keys carry file identity from the hook,
+       so a new file is never muted by the old file's record. ── */
+    (function wireToast() {
+      var box = wrap.querySelector('.rd-toasts');
+      if (!box || box.dataset.rdWired) return;
+      box.dataset.rdWired = '1';
+      var toast = box.querySelector('.rd-toast');
+      if (!toast) return;
+      var key = toast.getAttribute('data-toast-key') || '';
+      var doneList = (canvasRoot && canvasRoot.dataset.rdToastDone) ? canvasRoot.dataset.rdToastDone.split('') : [];
+      if (key && doneList.indexOf(key) !== -1) { toast.parentNode.removeChild(toast); return; }
+      var timer;
+      function dismiss() {
+        clearTimeout(timer);
+        document.removeEventListener('keydown', onKey, true);
+        if (canvasRoot && key) {
+          var d = canvasRoot.dataset.rdToastDone || '';
+          if (d.split('').indexOf(key) === -1) {
+            canvasRoot.dataset.rdToastDone = d ? d + '' + key : key;
+          }
+        }
+        if (toast.parentNode) toast.parentNode.removeChild(toast);
+      }
+      function onKey(e) {
+        if (!alive() || !document.contains(toast)) {
+          document.removeEventListener('keydown', onKey, true);
+          return;
+        }
+        if (e.key === 'Escape') { e.stopPropagation(); dismiss(); }
+      }
+      timer = setTimeout(dismiss, 5000);
+      document.addEventListener('keydown', onKey, true);
+      var x = toast.querySelector('.rd-toast-x');
+      if (x) x.addEventListener('click', dismiss);
+    })();
+
     var stage = wrap.querySelector('.rd-stage');
     if (!stage || stage.dataset.rdWired) return;
     stage.dataset.rdWired = '1';
@@ -251,43 +293,29 @@
     try { bars = JSON.parse(stage.getAttribute('data-bars') || '[]'); } catch (e) { bars = []; }
     if (!Array.isArray(bars)) bars = [];
 
-    /* Per-canvas commit channel (bound by the shell to THIS session's runtime).
-       Absent offscreen and in older shells — then fall back to poking the one
-       [data-input-id] control (mesh-gradient's legacy path). The nudge channel
-       re-runs an input's CURRENT runtime value with no history entry — the only
-       safe poll mechanism (a stale bars commit could overwrite a newer edit). */
-    var canvasRoot = wrap.closest('[data-lolly-canvas]');
-    var commitFn = canvasRoot && canvasRoot.__lollyCommit;
-    var nudgeFn = canvasRoot && canvasRoot.__lollyNudge;
-
-    function alive() { return document.contains(wrap); }
+    var presetFracs;
+    try { presetFracs = JSON.parse(stage.getAttribute('data-presets') || '{}'); } catch (e2) { presetFracs = {}; }
 
     function commit(next) {
       if (commitFn) { commitFn('bars', next); return; }
       /* Legacy poke: only a field that can hold the whole JSON array may take
-         it. bars is a blocks input rendered as per-field number inputs — the
-         JSON string would corrupt the first row's page field, so do nothing
-         then rather than commit garbage. */
-      var box = document.querySelector('[data-input-id="bars"]');
-      if (!box) return;
-      var field = box.matches('textarea, input[type="text"], input[type="hidden"]')
-        ? box
-        : box.querySelector('textarea, input[type="text"], input[type="hidden"]');
+         it (bars renders nowhere as a text field now, so this is usually a
+         no-op outside old shells). */
+      var el = document.querySelector('[data-input-id="bars"]');
+      if (!el) return;
+      var field = el.matches('textarea, input[type="text"], input[type="hidden"]')
+        ? el
+        : el.querySelector('textarea, input[type="text"], input[type="hidden"]');
       if (!field) return;
       field.value = JSON.stringify(next);
       field.dispatchEvent(new Event('input', { bubbles: true }));
       field.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
-    /* While the shell renders the page previews, poll by re-running onInput
-       with the bars input's CURRENT runtime value (the nudge channel: no
-       history entry, no stale value — a poll tick can never overwrite a newer
-       edit or undo). Each run picks up the settled render job; until it
-       settles the hydrated output is byte-identical, so the shell skips the
-       repaint. The repaint that does land replaces this DOM, and alive()
-       stops the timer. Without any channel nothing here can re-run onInput,
-       so say so instead of showing "Rendering pages…" forever; the same
-       honesty applies when the poll budget runs out. */
+    /* While the shell renders the page previews, poll by re-running onInput with
+       the bars input's CURRENT runtime value (the nudge channel: no history
+       entry, no stale value). Without any channel nothing here can re-run
+       onInput, so say so instead of showing "Rendering pages…" forever. */
     if (stage.hasAttribute('data-pages-pending')) {
       var pendingNote = wrap.querySelector('[data-pages-note]');
       if (!nudgeFn) {
@@ -309,15 +337,80 @@
       }
     }
 
+    /* ── Pointer-mode + preset state, persisted on the canvas container so a
+       repaint (every commit repaints) keeps the chosen tool. ── */
+    var mode = (canvasRoot && canvasRoot.dataset.rdMode) || 'bar';
+    var preset = (canvasRoot && canvasRoot.dataset.rdPreset) || 'free';
+
+    function syncRail() {
+      stage.setAttribute('data-rd-mode', mode);
+      var btns = stage.querySelectorAll('.rd-rail-btn');
+      Array.prototype.forEach.call(btns, function (b) {
+        if (b.hasAttribute('data-mode')) b.setAttribute('aria-pressed', b.getAttribute('data-mode') === mode ? 'true' : 'false');
+        if (b.hasAttribute('data-preset')) b.setAttribute('aria-pressed', b.getAttribute('data-preset') === preset ? 'true' : 'false');
+      });
+    }
+    var rail = stage.querySelector('.rd-rail');
+    if (rail) {
+      rail.addEventListener('click', function (e) {
+        var btn = e.target && e.target.closest ? e.target.closest('.rd-rail-btn') : null;
+        if (!btn || !alive()) return;
+        var m = btn.getAttribute('data-mode');
+        var p = btn.getAttribute('data-preset');
+        if (m) { mode = m; if (canvasRoot) canvasRoot.dataset.rdMode = m; }
+        if (p) { preset = p; if (canvasRoot) canvasRoot.dataset.rdPreset = p; }
+        syncRail();
+      });
+    }
+    syncRail();
+
+    /* Preset height in FRAME units. The fractions come from the hook (the one
+       source of truth, tested there); free/unknown returns 0 = follow the drag. */
+    function presetH(frameH) {
+      if (!Object.prototype.hasOwnProperty.call(presetFracs, preset)) return 0;
+      return Math.max(6, Math.round(frameH * presetFracs[preset]));
+    }
+
     /* Frame space: PDF points when data-ptw/data-pth are present, else the
-       image's natural pixels (some browsers report 0 for an SVG with no
-       intrinsic size, then the displayed box is the drawing space, scale 1). */
+       image's natural pixels. */
     function frameSpace(frame, img) {
       var ptw = parseFloat(frame.getAttribute('data-ptw') || '');
       var pth = parseFloat(frame.getAttribute('data-pth') || '');
       if (isFinite(ptw) && ptw > 0 && isFinite(pth) && pth > 0) return { w: ptw, h: pth };
       var r = img.getBoundingClientRect();
       return { w: img.naturalWidth || r.width, h: img.naturalHeight || r.height };
+    }
+
+    /* Split a freehand stroke into horizontal bands: a band grows while its
+       vertical extent stays within one text line, a bigger jump starts the next
+       band. Each band commits as one solid bar inflated by the stroke radius. */
+    function strokeBands(pts, r, limit) {
+      var bands = [];
+      var cur = null;
+      for (var i = 0; i < pts.length; i++) {
+        var p = pts[i];
+        if (!cur) { cur = { x0: p.x, x1: p.x, y0: p.y, y1: p.y }; continue; }
+        var ny0 = Math.min(cur.y0, p.y);
+        var ny1 = Math.max(cur.y1, p.y);
+        if (ny1 - ny0 > limit) {
+          bands.push(cur);
+          cur = { x0: p.x, x1: p.x, y0: p.y, y1: p.y };
+        } else {
+          cur.y0 = ny0; cur.y1 = ny1;
+          cur.x0 = Math.min(cur.x0, p.x);
+          cur.x1 = Math.max(cur.x1, p.x);
+        }
+      }
+      if (cur) bands.push(cur);
+      var out = [];
+      for (var j = 0; j < bands.length; j++) {
+        var b = bands[j];
+        out.push({
+          x: Math.round(b.x0 - r), y: Math.round(b.y0 - r),
+          w: Math.round((b.x1 - b.x0) + 2 * r), h: Math.round((b.y1 - b.y0) + 2 * r),
+        });
+      }
+      return out;
     }
 
     function wireFrame(frame) {
@@ -333,11 +426,10 @@
         if (!sp.w || !sp.h) return;
         bars.forEach(function (b, idx) {
           if ((b.page || 1) !== page) return;
-          /* An incomplete sidebar row (no area yet) stays in the array so a
-             canvas commit cannot delete it, but there is nothing to paint. */
           if (!(b.w > 0) || !(b.h > 0)) return;
           var el = document.createElement('div');
           el.className = 'rd-bar';
+          el.setAttribute('data-idx', String(idx));
           el.style.left = (b.x / sp.w * 100) + '%';
           el.style.top = (b.y / sp.h * 100) + '%';
           el.style.width = (b.w / sp.w * 100) + '%';
@@ -355,20 +447,32 @@
       if (img.complete) renderBars();
       else img.addEventListener('load', renderBars);
 
-      marks.addEventListener('click', function (e) {
-        var del = e.target && e.target.closest ? e.target.closest('.rd-bar-del') : null;
-        if (!del || !alive()) return;
-        e.preventDefault();
-        var idx = parseInt(del.getAttribute('data-idx') || '-1', 10);
+      function removeBar(idx) {
         if (idx < 0 || idx >= bars.length) return;
-        var next = bars.slice(0, idx).concat(bars.slice(idx + 1));
-        commit(next);
+        commit(bars.slice(0, idx).concat(bars.slice(idx + 1)));
+      }
+
+      marks.addEventListener('click', function (e) {
+        if (!alive()) return;
+        var del = e.target && e.target.closest ? e.target.closest('.rd-bar-del') : null;
+        if (del) {
+          e.preventDefault();
+          removeBar(parseInt(del.getAttribute('data-idx') || '-1', 10));
+          return;
+        }
+        if (mode === 'erase') {
+          var bar = e.target && e.target.closest ? e.target.closest('.rd-bar') : null;
+          if (bar) {
+            e.preventDefault();
+            removeBar(parseInt(bar.getAttribute('data-idx') || '-1', 10));
+          }
+        }
       });
 
-      /* Draw a new bar: pointer capture on the frame, live rect during the
-         gesture, single commit on release. */
+      /* Draw: pointer capture on the frame, live feedback during the gesture,
+         single commit on release. Erase mode never draws. */
       frame.addEventListener('pointerdown', function (e) {
-        if (!alive()) return;
+        if (!alive() || mode === 'erase') return;
         if (e.target && e.target.closest && e.target.closest('.rd-bar-del')) return;
         if (e.button !== undefined && e.button !== 0) return;
         e.preventDefault();
@@ -379,23 +483,63 @@
         var sx = sp.w / rect.width;
         var sy = sp.h / rect.height;
         var startX = e.clientX, startY = e.clientY;
-        var draft = document.createElement('div');
-        draft.className = 'rd-bar rd-draft';
-        marks.appendChild(draft);
+        var fixedH = mode === 'bar' ? presetH(sp.h) : 0; /* frame units; 0 = free */
+        var pts = []; /* marker stroke, frame space */
+        var draft = null, strokeSvg = null, strokeLine = null;
 
+        if (mode === 'bar') {
+          draft = document.createElement('div');
+          draft.className = 'rd-bar rd-draft';
+          marks.appendChild(draft);
+        } else {
+          strokeSvg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          strokeSvg.setAttribute('class', 'rd-stroke');
+          strokeSvg.setAttribute('viewBox', '0 0 ' + sp.w + ' ' + sp.h);
+          strokeSvg.setAttribute('preserveAspectRatio', 'none');
+          strokeLine = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+          strokeLine.setAttribute('fill', 'none');
+          strokeLine.setAttribute('stroke', '#000');
+          strokeLine.setAttribute('stroke-linecap', 'round');
+          strokeLine.setAttribute('stroke-linejoin', 'round');
+          strokeLine.setAttribute('stroke-width', String(Math.max(6, Math.round(sp.h * 0.02))));
+          strokeSvg.appendChild(strokeLine);
+          marks.appendChild(strokeSvg);
+        }
+
+        function toFrame(ev) {
+          var cx = Math.max(rect.left, Math.min(rect.right, ev.clientX));
+          var cy = Math.max(rect.top, Math.min(rect.bottom, ev.clientY));
+          return { x: (cx - rect.left) * sx, y: (cy - rect.top) * sy };
+        }
         function box(ev) {
           var x0 = Math.max(rect.left, Math.min(startX, ev.clientX));
           var y0 = Math.max(rect.top, Math.min(startY, ev.clientY));
           var x1 = Math.min(rect.right, Math.max(startX, ev.clientX));
           var y1 = Math.min(rect.bottom, Math.max(startY, ev.clientY));
+          if (fixedH > 0) {
+            /* Preset height: the drag sets the x range, the bar is one preset
+               tall centred on the gesture's vertical midpoint. */
+            var midF = ((y0 + y1) / 2 - rect.top) * sy;
+            var topF = Math.max(0, Math.min(sp.h - fixedH, midF - fixedH / 2));
+            y0 = rect.top + (topF / sy);
+            y1 = rect.top + ((topF + fixedH) / sy);
+          }
           return { x0: x0, y0: y0, x1: x1, y1: y1 };
         }
         function paint(ev) {
-          var b = box(ev);
-          draft.style.left = ((b.x0 - rect.left) / rect.width * 100) + '%';
-          draft.style.top = ((b.y0 - rect.top) / rect.height * 100) + '%';
-          draft.style.width = ((b.x1 - b.x0) / rect.width * 100) + '%';
-          draft.style.height = ((b.y1 - b.y0) / rect.height * 100) + '%';
+          if (mode === 'bar' && draft) {
+            var b = box(ev);
+            draft.style.left = ((b.x0 - rect.left) / rect.width * 100) + '%';
+            draft.style.top = ((b.y0 - rect.top) / rect.height * 100) + '%';
+            draft.style.width = ((b.x1 - b.x0) / rect.width * 100) + '%';
+            draft.style.height = ((b.y1 - b.y0) / rect.height * 100) + '%';
+          } else if (strokeLine) {
+            var p = toFrame(ev);
+            pts.push(p);
+            strokeLine.setAttribute('points', strokeLine.getAttribute('points')
+              ? strokeLine.getAttribute('points') + ' ' + p.x.toFixed(1) + ',' + p.y.toFixed(1)
+              : p.x.toFixed(1) + ',' + p.y.toFixed(1));
+          }
         }
         function onMove(ev) {
           if (!alive()) return;
@@ -405,20 +549,39 @@
           frame.removeEventListener('pointermove', onMove);
           frame.removeEventListener('pointerup', onUp);
           frame.removeEventListener('pointercancel', onUp);
-          if (draft.parentNode) draft.parentNode.removeChild(draft);
+          if (draft && draft.parentNode) draft.parentNode.removeChild(draft);
+          if (strokeSvg && strokeSvg.parentNode) strokeSvg.parentNode.removeChild(strokeSvg);
           if (!alive()) return;
+
+          if (mode === 'marker') {
+            if (pts.length < 2) return;
+            var lineH = Math.max(6, Math.round(sp.h * 0.02));
+            var bands = strokeBands(pts, Math.round(lineH / 2), lineH);
+            var add = [];
+            for (var i = 0; i < bands.length; i++) {
+              var bd = bands[i];
+              if (!(bd.w > 0) || !(bd.h > 0)) continue;
+              add.push({
+                page: page,
+                x: Math.max(0, bd.x), y: Math.max(0, bd.y),
+                w: Math.min(sp.w, bd.x + bd.w) - Math.max(0, bd.x),
+                h: Math.min(sp.h, bd.y + bd.h) - Math.max(0, bd.y),
+              });
+            }
+            if (add.length) commit(bars.concat(add));
+            return;
+          }
+
           var b = box(ev);
-          /* A stray click is not a bar: the minimum is 4 CLIENT px, judged in
-             client space so a small page shown large (points-per-px well under
-             1) does not turn every real drag into a reject. */
-          if (b.x1 - b.x0 < 4 || b.y1 - b.y0 < 4) return;
+          /* A stray click is not a bar: minimum 4 CLIENT px of drag (width only
+             when a preset owns the height). */
+          if (b.x1 - b.x0 < 4 || (fixedH === 0 && b.y1 - b.y0 < 4)) return;
           var nx = Math.round((b.x0 - rect.left) * sx);
           var ny = Math.round((b.y0 - rect.top) * sy);
           var nw = Math.round((b.x1 - b.x0) * sx);
-          var nh = Math.round((b.y1 - b.y0) * sy);
+          var nh = fixedH > 0 ? fixedH : Math.round((b.y1 - b.y0) * sy);
           if (!(nw > 0) || !(nh > 0)) return;
-          var next = bars.concat([{ page: page, x: nx, y: ny, w: nw, h: nh }]);
-          commit(next);
+          commit(bars.concat([{ page: page, x: nx, y: ny, w: nw, h: nh }]));
         }
         paint(e);
         frame.addEventListener('pointermove', onMove);
