@@ -13,24 +13,33 @@
 
   {{#if hasFile}}
     <div class="rd-work">
-      <div class="rd-head">
-        <span class="rd-file" title="{{fileName}}">{{fileName}}</span>
-        <span class="rd-kind">{{kind}} · {{fileSize}}</span>
-        <button type="button" class="rd-replace" data-file-pick data-export-hide>Replace</button>
-      </div>
 
       {{#unless supported}}
-        <div class="rd-state">
-          <p class="rd-state-lead">This doesn't look like a supported file.</p>
-          <p class="rd-note">Choose a <code>JPEG</code>, <code>PNG</code>, <code>WebP</code>, <code>SVG</code> or <code>PDF</code> file.</p>
+        <div class="rd-msg">
+          <div class="rd-msg-head">
+            <span class="rd-file" title="{{fileName}}">{{fileName}}</span>
+            <span class="rd-kind">{{kind}} · {{fileSize}}</span>
+            <button type="button" class="rd-replace" data-file-pick data-export-hide>Replace</button>
+          </div>
+          <div class="rd-state">
+            <p class="rd-state-lead">This doesn't look like a supported file.</p>
+            <p class="rd-note">Choose a <code>JPEG</code>, <code>PNG</code>, <code>WebP</code>, <code>SVG</code> or <code>PDF</code> file.</p>
+          </div>
         </div>
       {{/unless}}
 
       {{#if supported}}
         {{#if pdfUnavailable}}
-          <div class="rd-state">
-            <p class="rd-state-lead">PDF redaction isn't available here.</p>
-            <p class="rd-note">Open this tool in the Lolly web app to redact a PDF. Images and SVG work everywhere.</p>
+          <div class="rd-msg">
+            <div class="rd-msg-head">
+              <span class="rd-file" title="{{fileName}}">{{fileName}}</span>
+              <span class="rd-kind">{{kind}} · {{fileSize}}</span>
+              <button type="button" class="rd-replace" data-file-pick data-export-hide>Replace</button>
+            </div>
+            <div class="rd-state">
+              <p class="rd-state-lead">PDF redaction isn't available here.</p>
+              <p class="rd-note">Open this tool in the Lolly web app to redact a PDF. Images and SVG work everywhere.</p>
+            </div>
           </div>
         {{else}}
 
@@ -43,7 +52,21 @@
                and without this they burned bars exactly as supplied — the
                clipped-glyph leak snap-to-cover exists to close. -->
           <div class="rd-stage" data-bars="{{barsJson}}" data-presets="{{presetsJson}}" data-geom="{{geomJson}}" data-mark="{{markJson}}"{{#if pagesPending}} data-pages-pending="1"{{/if}}{{#if exportWait}} data-export-wait="1"{{/if}}>
-            <div class="rd-rail" data-export-hide role="toolbar" aria-label="Marking tools">
+
+            <!-- TOP DOCK: file identity + the marking toolbar. Docked to the top
+                 of the stage and collapsible, so a long page can take the full
+                 height between the two docks. -->
+            <div class="rd-dock rd-dock-top" data-dock="top" data-export-hide>
+              <div class="rd-head">
+                <span class="rd-file" title="{{fileName}}">{{fileName}}</span>
+                <span class="rd-kind">{{kind}} · {{fileSize}}</span>
+                <button type="button" class="rd-replace" data-file-pick data-export-hide>Replace</button>
+                <button type="button" class="rd-dock-toggle" data-dock-toggle="top" aria-expanded="true" aria-label="Collapse tools" title="Collapse tools">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 15l-6-6-6 6"/></svg>
+                </button>
+              </div>
+              <div class="rd-dock-body">
+                <div class="rd-rail" role="toolbar" aria-label="Marking tools">
               <div class="rd-rail-group" data-rail-modes>
                 <button type="button" class="rd-rail-btn" data-mode="bar" aria-pressed="true" title="Drag a rectangle over what should go">
                   <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="9" width="16" height="6" rx="1" fill="currentColor"/></svg>
@@ -81,21 +104,13 @@
                 </div>
               {{/if}}
             </div>
-
-            <!-- Advisories live directly under the sticky rail, so guidance about
-                 the bar you just drew arrives where you are looking. Anchored to
-                 the top of the tool it scrolled out of sight on any multi-page
-                 document, and viewport-fixed it would re-anchor to the stage
-                 zoom wrapper the moment the user zoomed in. -->
-            <div class="rd-toasts" data-export-hide aria-live="polite" role="status">
-              {{#if toastKey}}
-                <div class="rd-toast" data-toast-key="{{toastKey}}">
-                  <span class="rd-toast-text">{{toastText}}</span>
-                  <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
-                </div>
-              {{/if}}
+              </div>
             </div>
+            <!-- /TOP DOCK -->
 
+            <!-- VIEWPORT: the drawing surface, flex:1 between the two docks so it
+                 takes every pixel of height the stage can give it. -->
+            <div class="rd-viewport">
             {{#unless isPdfKind}}
               {{#if hasInlineSvg}}
                 <!-- An SVG source renders INLINE, never as <img src="blob:…">: an
@@ -165,112 +180,172 @@
                 {{/if}}
               {{/unless}}{{/unless}}
             {{/if}}
-            <p class="rd-stage-hint" data-export-hide>Drag on the preview to draw a bar. To take one off, tap its corner dot or switch to Remove and tap the bar. Pinch or Cmd-scroll to zoom in on detail.{{#if hasManyPages}} Pages scroll in the box above, one page wide; the arrows in the toolbar step through them.{{/if}}
-              {{#if canMeasure}}A bar grows to cover every element it touches, so it can never clip a word in half.{{else}}{{#if isRaster}}This is a picture, so there are no elements to measure: a bar covers exactly the area you draw and nothing more.{{else}}Nothing in this file could be measured, so a bar covers exactly the area you draw and nothing more.{{/if}}{{/if}}</p>
-          </div>
+            </div>
+            <!-- /VIEWPORT -->
 
-          <div class="rd-status">
-            {{#unless isPdfKind}}
-              {{#if hasCoverage}}
-                <div class="rd-meter" role="img" aria-label="{{coverageText}}">
-                  <span class="rd-meter-fill" style="width: {{coveragePct}}%"></span>
-                </div>
-                {{#if vectorMode}}
-                  <p class="rd-line">{{coverageText}} Anything a bar touches is removed from the file before the rectangle is painted.</p>
-                {{else}}
-                  <p class="rd-line">{{coverageText}} The pixels under each bar are gone from the output.</p>
+            <!-- BOTTOM DOCK: what the marks amount to, and the action. A
+                 collapsible body (coverage + how-to) over an always-visible
+                 gate + download, so the action never scrolls away. -->
+            <div class="rd-dock rd-dock-bottom" data-dock="bottom" data-export-hide>
+              <div class="rd-dock-head">
+                <span class="rd-dock-summary">
+                  {{#unless isPdfKind}}{{#if hasCoverage}}{{coverageText}}{{/if}}{{/unless}}
+                  {{#if isPdfKind}}{{#if hasBars}}{{barCount}} bar{{#if barPlural}}s{{/if}} set{{/if}}{{/if}}
+                </span>
+                <button type="button" class="rd-dock-toggle" data-dock-toggle="bottom" aria-expanded="true" aria-label="Collapse details" title="Collapse details">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                </button>
+              </div>
+              <div class="rd-dock-body">
+                {{#unless isPdfKind}}
+                  {{#if hasCoverage}}
+                    <div class="rd-meter" role="img" aria-label="{{coverageText}}">
+                      <span class="rd-meter-fill" style="width: {{coveragePct}}%"></span>
+                    </div>
+                    {{#if vectorMode}}
+                      <p class="rd-line">{{coverageText}} Anything a bar touches is removed from the file before the rectangle is painted.</p>
+                    {{else}}
+                      <p class="rd-line">{{coverageText}} The pixels under each bar are gone from the output.</p>
+                    {{/if}}
+                  {{/if}}
+                {{/unless}}
+                {{#if isPdfKind}}
+                  {{#if hasBars}}
+                    <p class="rd-line">{{barCount}} bar{{#if barPlural}}s{{/if}} set. Each page is flattened to a picture with the bars burned in.</p>
+                  {{/if}}
                 {{/if}}
-              {{/if}}
-            {{/unless}}
-            {{#if isPdfKind}}
-              {{#if hasBars}}
-                <p class="rd-line">{{barCount}} bar{{#if barPlural}}s{{/if}} set. Each page is flattened to a picture with the bars burned in.</p>
-              {{/if}}
+                <p class="rd-stage-hint">Drag on the preview to draw a bar. To take one off, tap its corner dot or switch to Remove and tap the bar. Pinch or Cmd-scroll to zoom in on detail.{{#if hasManyPages}} Pages scroll in the viewport above, one page wide; the arrows in the toolbar step through them.{{/if}}
+                  {{#if canMeasure}}A bar grows to cover every element it touches, so it can never clip a word in half.{{else}}{{#if isRaster}}This is a picture, so there are no elements to measure: a bar covers exactly the area you draw and nothing more.{{else}}Nothing in this file could be measured, so a bar covers exactly the area you draw and nothing more.{{/if}}{{/if}}</p>
+              </div>
+              <div class="rd-dock-foot">
+                {{#if pdfRedactUnavailable}}
+                  <div class="rd-state">
+                    <p class="rd-state-lead">PDF redaction isn't available in this app yet.</p>
+                    <p class="rd-note">The notes in the corner still apply. Open this tool in the Lolly web app to produce the redacted copy.</p>
+                  </div>
+                {{else}}
+                  <p class="rd-gate">
+                    <svg class="rd-gate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                    <span>Re-read and checked before it downloads. If a check fails, nothing downloads.</span>
+                  </p>
+                  {{#if isPdfKind}}
+                    {{#unless hasBars}}
+                      <button type="button" class="rd-download" data-export-file disabled>Draw a bar over what should go first</button>
+                    {{else}}
+                      <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
+                    {{/unless}}
+                  {{else}}
+                    <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
+                  {{/if}}
+                {{/if}}
+              </div>
+            </div>
+            <!-- /BOTTOM DOCK -->
+          </div>
+          <!-- /STAGE -->
+
+          <!-- TOASTS: everything informational, docked to the top-right corner and
+               dismissable. The advisory (partial coverage, snap-to-cover) clears
+               itself; the reference cards (hidden data found, what will not be
+               removed, how it signs) stay until dismissed. Absolute inside the
+               work area rather than position:fixed, which the stage-zoom transform
+               would trap; keyed by file so a new file shows its own set. -->
+          <div class="rd-toasts" data-export-hide aria-live="polite" role="status">
+            {{#if toastKey}}
+              <div class="rd-toast" data-toast-key="{{toastKey}}">
+                <span class="rd-toast-text">{{toastText}}</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
+            {{/if}}
+
+            {{#if foundSummary}}
+              <div class="rd-toast rd-toast-keep" data-toast-key="found|{{fileName}}|{{fileSize}}">
+                <div class="rd-toast-body">
+                  <p class="rd-toast-title">{{foundSummary}}</p>
+                  <input type="checkbox" id="rd-show-details" class="rd-reveal-cb">
+                  <label for="rd-show-details" class="rd-reveal-toggle">
+                    <span class="rd-reveal-icon" aria-hidden="true"></span>
+                    <span class="rd-reveal-show">Show details</span>
+                    <span class="rd-reveal-hide">Hide details</span>
+                  </label>
+                  <ul class="rd-findings">
+                    {{#each findings}}
+                      <li class="rd-finding {{tone}}">
+                        <span class="rd-finding-label">{{label}}</span>
+                        <span class="rd-finding-detail" title="{{detail}}">{{detail}}</span>
+                      </li>
+                    {{/each}}
+                  </ul>
+                </div>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
+            {{/if}}
+
+            {{#if nothingFound}}
+              <div class="rd-toast rd-toast-keep" data-toast-key="nothing|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">No hidden data was found by these checks. Absence of a finding is not proof there is nothing there.</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
+            {{/if}}
+            {{#if analysisPending}}
+              <div class="rd-toast rd-toast-keep" data-toast-key="analysing|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">Still reading the document structure…</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
+            {{/if}}
+            {{#if analysisFailed}}
+              <div class="rd-toast rd-toast-keep" data-toast-key="analysisfailed|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">The document structure could not be read, so nothing can be claimed about attachments, scripts or earlier versions.</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
             {{/if}}
 
             {{#if staleNote}}
-              <p class="rd-note">{{staleNote}}</p>
-            {{/if}}
-
-            {{#if analysisPending}}
-              <p class="rd-note">Still reading the document structure…</p>
-            {{/if}}
-            {{#if analysisFailed}}
-              <p class="rd-note">The document structure could not be read, so nothing can be claimed about attachments, scripts or earlier versions.</p>
-            {{/if}}
-            {{#if nothingFound}}
-              <p class="rd-note">No hidden data was found by these checks. Absence of a finding is not proof there is nothing there.</p>
-            {{/if}}
-            {{#if foundSummary}}
-              <div class="rd-found">
-                <p class="rd-line">{{foundSummary}}</p>
-                <input type="checkbox" id="rd-show-details" class="rd-reveal-cb">
-                <label for="rd-show-details" class="rd-reveal-toggle" data-export-hide>
-                  <span class="rd-reveal-icon" aria-hidden="true"></span>
-                  <span class="rd-reveal-show">Show details</span>
-                  <span class="rd-reveal-hide">Hide details</span>
-                </label>
-                <ul class="rd-findings">
-                  {{#each findings}}
-                    <li class="rd-finding {{tone}}">
-                      <span class="rd-finding-label">{{label}}</span>
-                      <span class="rd-finding-detail" title="{{detail}}">{{detail}}</span>
-                    </li>
-                  {{/each}}
-                </ul>
+              <div class="rd-toast rd-toast-keep" data-toast-key="stale|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">{{staleNote}}</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
               </div>
             {{/if}}
 
             {{#if vectorMode}}
-              <p class="rd-note rd-warn-note">Vector mode removes metadata, comments, scripts, editor data and embedded images, and deletes every element a bar touches, whole. A word half under a bar goes entirely, because half a word is a leak. The output is still SVG, a readable text format, so export a PNG if that matters. Marks have to be drawn on the preview above so their elements can be measured.</p>
+              <div class="rd-toast rd-toast-keep" data-toast-key="vector|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">Vector mode removes metadata, comments, scripts, editor data and embedded images, and deletes every element a bar touches, whole. A word half under a bar goes entirely, because half a word is a leak. The output is still SVG, a readable text format, so export a PNG if that matters. Marks have to be drawn on the preview so their elements can be measured.</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
             {{/if}}
             {{#if resignUnavailable}}
-              <p class="rd-note">A fresh Content Credential isn't available in this app, the redacted file will be exported without one.</p>
+              <div class="rd-toast rd-toast-keep" data-toast-key="resignun|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">A fresh Content Credential isn't available in this app, the redacted file will be exported without one.</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
             {{/if}}
             {{#if isPdfKind}}{{#if resign}}{{#unless resignUnavailable}}
-              <!-- A redaction is an act of authorship, so the credential says who
-                   stands behind the edit. What gets recorded is stated here in
-                   full, including the case where no name can be recorded — the
-                   profile's "Use my details" opt-in governs that, not this tool. -->
-              <p class="rd-note">The redacted copy is signed as a new work: {{#if authorKnown}}you ({{authorName}}) as its author{{else}}no author name, because "Use my details" is off in your profile{{/if}}, this app as the software, and one edit step reading "Covered content removed and the file rebuilt". No ingredients and no thumbnail of the original travel with it.</p>
+              <div class="rd-toast rd-toast-keep" data-toast-key="resign|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">The redacted copy is signed as a new work: {{#if authorKnown}}you ({{authorName}}) as its author{{else}}no author name, because "Use my details" is off in your profile{{/if}}, this app as the software, and one edit step reading "Covered content removed and the file rebuilt". No ingredients and no thumbnail of the original travel with it.</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
             {{/unless}}{{/if}}{{/if}}
             {{#if stampText}}
-              <p class="rd-note">Each mark is stamped &ldquo;{{stampText}}&rdquo;, painted on top of the bar where the covered pixels are already gone. Stamp text never comes from the content you covered.</p>
+              <div class="rd-toast rd-toast-keep" data-toast-key="stamp|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">Each mark is stamped &ldquo;{{stampText}}&rdquo;, painted on top of the bar where the covered pixels are already gone. Stamp text never comes from the content you covered.</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
             {{/if}}
 
-            <details class="rd-limits-details">
-              <summary>What will not be removed</summary>
-              <ul class="rd-limits">
-                <li>A bar destroys only the pixels it covers. Invisible watermarks such as Google's SynthID span the whole image and this tool cannot detect or remove them.</li>
-                <li>A bar's width can still hint at the length of what it hides. Rounding widths up to a coarse grid softens this, it does not remove it.</li>
-                <li>Scans of printed pages can carry tracking dots from colour laser printers. The scanned page mode drops the yellow channel they live in, other print forensics remain.</li>
-                <li>There is no blur or pixelate option on purpose. Blurred text has been recovered in practice, a solid fill has no inverse.</li>
-              </ul>
-            </details>
+            <div class="rd-toast rd-toast-keep" data-toast-key="limits|{{fileName}}|{{fileSize}}">
+              <div class="rd-toast-body">
+                <p class="rd-toast-title">What will not be removed</p>
+                <ul class="rd-limits">
+                  <li>A bar destroys only the pixels it covers. Invisible watermarks such as Google's SynthID span the whole image and this tool cannot detect or remove them.</li>
+                  <li>A bar's width can still hint at the length of what it hides. Rounding widths up to a coarse grid softens this, it does not remove it.</li>
+                  <li>Scans of printed pages can carry tracking dots from colour laser printers. The scanned page mode drops the yellow channel they live in, other print forensics remain.</li>
+                  <li>There is no blur or pixelate option on purpose. Blurred text has been recovered in practice, a solid fill has no inverse.</li>
+                </ul>
+              </div>
+              <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+            </div>
           </div>
-
-          {{#if pdfRedactUnavailable}}
-            <div class="rd-state">
-              <p class="rd-state-lead">PDF redaction isn't available in this app yet.</p>
-              <p class="rd-note">The analysis above still applies. Open this tool in the Lolly web app to produce the redacted copy.</p>
-            </div>
-          {{else}}
-            <div class="rd-dl">
-              <p class="rd-gate">
-                <svg class="rd-gate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
-                <span>The rebuilt file is re-read and checked before it downloads. If a check fails, nothing downloads.</span>
-              </p>
-              {{#if isPdfKind}}
-                {{#unless hasBars}}
-                  <button type="button" class="rd-download" data-export-file disabled>Draw a bar over what should go first</button>
-                {{else}}
-                  <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
-                {{/unless}}
-              {{else}}
-                <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
-              {{/if}}
-            </div>
-          {{/if}}
+          <!-- /TOASTS -->
         {{/if}}
       {{/if}}
     </div>
@@ -311,18 +386,20 @@
 
     function alive() { return document.contains(wrap); }
 
-    /* ── Content-fit: grow the live canvas frame to the tool's natural height so
-       a long page stack is never clipped by the manifest's 620px box. Only the
-       interactive #tool-canvas — the off-screen batch renderer sizes itself.
+    /* ── Fill the stage. The tool is a full-height flex column (top dock,
+       viewport, bottom dock); the job here is only to PIN the live canvas to the
+       stage's own height so the shell renders it at scale 1 and the viewport's
+       flex:1 claims every remaining pixel. Only the interactive #tool-canvas —
+       the off-screen batch renderer sizes itself.
 
-       Growing is only half the job. The shell fits the canvas into the stage by
-       SCALING it, so a tool that reports a taller canvas than the stage can hold
-       gets everything shrunk — the page, the rail, the bar handles, the download
-       button — which is the "I cannot read the text I am redacting" complaint
-       with the shrinking merely spread out. So the preview box is sized to what
-       the stage will actually show: measure the chrome around it, give the box
-       the rest, and the canvas then fits at scale 1. The 520px stylesheet value
-       stays the ceiling for a roomy stage. ── */
+       The old model grew the canvas to the tool's natural height and then sized a
+       preview box back down to fit; the flex column does that distribution
+       itself, so all this owes the layout is the right outer height. A single
+       image/SVG frame still needs a pixel cap (it is inline, not a flex-filling
+       scroller), so --rd-frameview is set to the live viewport height; the PDF
+       page scroller fills the viewport through flexbox and needs no measurement.
+       --rd-toast-top keeps the top-right toast stack clear of the top dock. ── */
+    var syncHeight = null;
     if (canvasRoot && canvasRoot.id === 'tool-canvas') {
       /* The stage is the canvas's grandparent (canvas → centred outer → stage),
          and it is outside the canvas transform, so its rect is honest. 32px is
@@ -333,40 +410,36 @@
         if (!stageEl || typeof stageEl.getBoundingClientRect !== 'function') return 0;
         return Math.floor(stageEl.getBoundingClientRect().height) - 32;
       };
-      var viewBox = function () {
-        return wrap.querySelector('[data-page-scroll]')
-          || wrap.querySelector('.rd-frame');
-      };
-      var fitView = function () {
+      syncHeight = function () {
         var avail = stageAvail();
         if (!(avail > 200)) return;
-        var box = viewBox();
-        if (!box) return;
-        var boxH = box.offsetHeight;
-        if (!(boxH > 0)) return;
-        /* Everything that is NOT the preview: head, rail, hint, status, gate,
-           download button. It does not change when the box does. */
-        var chrome = wrap.offsetHeight - boxH;
-        var target = Math.max(240, Math.min(520, avail - chrome));
-        var now = parseInt(wrap.style.getPropertyValue('--rd-pageview'), 10) || 0;
-        if (Math.abs(now - target) <= 2) return;
-        wrap.style.setProperty('--rd-pageview', target + 'px');
-        wrap.style.setProperty('--rd-frameview', target + 'px');
-      };
-      var syncHeight = function () {
-        fitView();
-        var h = Math.ceil(wrap.offsetHeight);
-        if (h < 1) return;
-        if ((parseInt(canvasRoot.style.height, 10) || 0) === h) return;
-        canvasRoot.style.height = h + 'px';
-        canvasRoot.dispatchEvent(new CustomEvent('canvas-resize'));
+        if ((parseInt(canvasRoot.style.height, 10) || 0) !== avail) {
+          canvasRoot.style.height = avail + 'px';
+          canvasRoot.dispatchEvent(new CustomEvent('canvas-resize'));
+        }
+        var dockTop = wrap.querySelector('.rd-dock-top');
+        if (dockTop) wrap.style.setProperty('--rd-toast-top', (dockTop.offsetHeight + 12) + 'px');
+        var vp = wrap.querySelector('.rd-viewport');
+        if (vp) {
+          var vh = Math.floor(vp.clientHeight);
+          if (vh > 40) wrap.style.setProperty('--rd-frameview', vh + 'px');
+        }
       };
       syncHeight();
-      if (typeof ResizeObserver !== 'undefined') {
+      /* Re-fit when the STAGE changes size (window resize, sidebar toggle). The
+         canvas is pinned to the stage height, so observing the stage — not the
+         tool — is what avoids a growth feedback loop. */
+      var outer0 = canvasRoot.parentElement;
+      var stageEl0 = outer0 && outer0.parentElement;
+      if (typeof ResizeObserver !== 'undefined' && stageEl0) {
         if (window.__rdSizeRO) window.__rdSizeRO.disconnect();
-        window.__rdSizeRO = new ResizeObserver(syncHeight);
-        window.__rdSizeRO.observe(wrap);
+        window.__rdSizeRO = new ResizeObserver(function () {
+          (typeof requestAnimationFrame === 'function' ? requestAnimationFrame : setTimeout)(syncHeight);
+        });
+        window.__rdSizeRO.observe(stageEl0);
       }
+      /* The viewport's clientHeight is only right once the docks have laid out. */
+      if (typeof requestAnimationFrame === 'function') requestAnimationFrame(syncHeight);
     }
 
     /* ── Advisory toast: at most one, auto-dismiss, Escape or the close button
@@ -376,7 +449,7 @@
        so a new file is never muted by the old file's record. The done-list is
        newline-delimited (it used to use a raw U+0001, which is invisible in an
        editor and does not survive a copy-paste). ── */
-    function wireToastEl(toast, key) {
+    function wireToastEl(toast, key, keep) {
       var timer;
       function dismiss() {
         clearTimeout(timer);
@@ -396,16 +469,20 @@
         }
         if (e.key === 'Escape') { e.stopPropagation(); dismiss(); }
       }
-      /* Entrance is a class flip on the next frame so the CSS TRANSITION plays
-         it. A transition can be neutralised by a prefers-reduced-motion block;
-         the keyframe this replaced could not be, and the app's own .toast made
-         the same choice for the same reason. */
-      if (typeof requestAnimationFrame === 'function') {
+      /* A transient advisory slides in on the next frame so the CSS TRANSITION
+         plays it (a transition, not a keyframe, so prefers-reduced-motion can
+         neutralise it — the app's own .toast made the same choice). A kept
+         reference card is recreated on every repaint, so it appears at once
+         rather than re-animating each time a bar is drawn, and it never
+         auto-dismisses — it stays until the person closes it. */
+      if (keep) {
+        toast.classList.add('is-visible');
+      } else if (typeof requestAnimationFrame === 'function') {
         requestAnimationFrame(function () { if (toast.parentNode) toast.classList.add('is-visible'); });
       } else {
         toast.classList.add('is-visible');
       }
-      timer = setTimeout(dismiss, 5000);
+      if (!keep) timer = setTimeout(dismiss, 5000);
       document.addEventListener('keydown', onKey, true);
       var x = toast.querySelector('.rd-toast-x');
       if (x) x.addEventListener('click', dismiss);
@@ -431,19 +508,59 @@
       toast.appendChild(span);
       toast.appendChild(x);
       box.appendChild(toast);
-      wireToastEl(toast, key || '');
+      wireToastEl(toast, key || '', false);
     }
 
-    (function wireToast() {
+    /* Wire every toast the markup rendered: the transient advisory (auto-clears)
+       and the persistent reference cards (rd-toast-keep, stay until dismissed).
+       A card already dismissed for THIS file — the done-list is keyed by file —
+       is removed rather than re-shown, so a repaint does not bring back what the
+       person closed. Runs per repaint because innerHTML recreates the box. */
+    (function wireToasts() {
       var box = wrap.querySelector('.rd-toasts');
       if (!box || box.dataset.rdWired) return;
       box.dataset.rdWired = '1';
-      var toast = box.querySelector('.rd-toast');
-      if (!toast) return;
-      var key = toast.getAttribute('data-toast-key') || '';
       var doneList = (canvasRoot && canvasRoot.dataset.rdToastDone) ? canvasRoot.dataset.rdToastDone.split('\n') : [];
-      if (key && doneList.indexOf(key) !== -1) { toast.parentNode.removeChild(toast); return; }
-      wireToastEl(toast, key);
+      var toasts = box.querySelectorAll('.rd-toast');
+      Array.prototype.forEach.call(toasts, function (toast) {
+        var key = toast.getAttribute('data-toast-key') || '';
+        if (key && doneList.indexOf(key) !== -1) {
+          if (toast.parentNode) toast.parentNode.removeChild(toast);
+          return;
+        }
+        wireToastEl(toast, key, toast.classList.contains('rd-toast-keep'));
+      });
+    })();
+
+    /* ── Dock collapse: fold either dock away to hand its height to the viewport.
+       State rides the persistent canvas container (like the rail mode/preset and
+       the findings reveal), because every commit repaints via innerHTML. ── */
+    (function wireDocks() {
+      var toggles = wrap.querySelectorAll('[data-dock-toggle]');
+      if (!toggles.length) return;
+      Array.prototype.forEach.call(toggles, function (btn) {
+        var which = btn.getAttribute('data-dock-toggle');
+        var dock = btn.closest ? btn.closest('.rd-dock') : null;
+        if (!dock) return;
+        var dsKey = which === 'bottom' ? 'rdDockBottom' : 'rdDockTop';
+        var collapsed = !!(canvasRoot && canvasRoot.dataset[dsKey] === '1');
+        function apply() {
+          if (collapsed) dock.setAttribute('data-collapsed', '1');
+          else dock.removeAttribute('data-collapsed');
+          btn.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+        }
+        apply();
+        btn.addEventListener('click', function () {
+          collapsed = !collapsed;
+          if (canvasRoot) canvasRoot.dataset[dsKey] = collapsed ? '1' : '0';
+          apply();
+          /* Folding a dock changes the viewport height; re-measure so a single
+             image frame and the toast anchor follow. */
+          if (typeof syncHeight === 'function') {
+            (typeof requestAnimationFrame === 'function' ? requestAnimationFrame : setTimeout)(syncHeight);
+          }
+        });
+      });
     })();
 
     /* ── Findings reveal: the checkbox holds its open/closed state in the DOM

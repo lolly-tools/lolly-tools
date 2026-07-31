@@ -28,11 +28,12 @@
 
   position: relative;
   width: 100%;
+  height: 100%;
   min-height: 100%;
   display: flex;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
-  padding: 24px;
+  padding: 20px;
   box-sizing: border-box;
   font-family: var(--font-brand, "SUSE", system-ui, sans-serif);
   color: hsl(var(--rd-fg));
@@ -84,25 +85,125 @@
 }
 .rd-pick:hover { background: hsl(var(--rd-brand)); color: hsl(var(--rd-brandfg)); }
 
-/* ── Workspace column ── */
+/* ── Full-height workspace: two docks with the drawing surface stretched
+   between them, so a page claims every pixel of height the stage can give it,
+   instead of a fixed-width column that capped the preview and stacked the whole
+   status report underneath. ── */
 .rd-work {
+  position: relative;
   width: 100%;
-  max-width: 680px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   min-width: 0;
 }
 
-.rd-head {
+/* Degraded states (unsupported file, PDF engine missing) — a centred card, not
+   the dock layout. */
+.rd-msg {
+  margin: auto;
+  max-width: 460px;
+  text-align: center;
+}
+.rd-msg-head {
   display: flex;
   align-items: baseline;
   flex-wrap: wrap;
-  justify-content: space-between;
+  justify-content: center;
   gap: 6px 10px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid hsl(var(--rd-bd) / 0.6);
   margin-bottom: 14px;
 }
+
+/* The stage is the flex column: top dock (auto), viewport (flex:1), bottom dock
+   (auto). It still carries the drawing surface's data-* attributes and stays the
+   ancestor of the rail, frames and page scroller the script queries. */
+.rd-stage {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+}
+
+/* Docks: fixed-height panels, each with a collapsible body so either can be
+   folded away to hand its height to the viewport. */
+.rd-dock { flex: none; min-width: 0; }
+.rd-dock-top { padding-bottom: 8px; }
+.rd-dock-bottom {
+  padding-top: 10px;
+  margin-top: 8px;
+  border-top: 1px solid hsl(var(--rd-bd) / 0.6);
+}
+.rd-dock[data-collapsed] .rd-dock-body { display: none; }
+
+.rd-dock-toggle {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid hsl(var(--rd-bd));
+  border-radius: 8px;
+  background: hsl(var(--rd-card));
+  color: hsl(var(--rd-muted));
+  cursor: pointer;
+  transition: border-color 0.12s, color 0.12s, background 0.12s;
+}
+.rd-dock-toggle svg { width: 15px; height: 15px; transition: transform 0.15s ease; }
+.rd-dock-toggle:hover { border-color: hsl(var(--rd-brand)); color: hsl(var(--rd-brand)); }
+.rd-dock[data-collapsed] .rd-dock-toggle svg { transform: rotate(180deg); }
+
+/* Bottom dock: a one-line summary + collapse control, the collapsible body
+   (coverage + how-to), and the always-visible gate + download foot. */
+.rd-dock-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 26px;
+}
+.rd-dock-summary {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: hsl(var(--rd-fg) / 0.85);
+}
+.rd-dock-bottom .rd-dock-body { margin-top: 10px; }
+.rd-dock-foot { margin-top: 12px; }
+.rd-dock-top .rd-dock-body { margin-top: 8px; }
+
+/* ── Viewport: the drawing surface, taking all the height between the docks.
+   The PDF page scroller fills it through flexbox; a single image/SVG frame is
+   centred and capped to the live viewport height via --rd-frameview. ── */
+.rd-viewport {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+/* A single image/SVG frame is letterboxed in the viewport: centred, capped to
+   the viewport width, and to the live viewport height via --rd-frameview on the
+   image itself. */
+.rd-viewport > .rd-frame:not(.rd-pageframe) {
+  margin: auto;
+  max-width: 100%;
+  min-height: 0;
+}
+
+.rd-head {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+}
+.rd-head .rd-file { flex: 1 1 120px; }
 .rd-file {
   font-weight: 700;
   font-size: 15px;
@@ -155,24 +256,25 @@
    preference itself. Neutral surface on purpose: an advisory is guidance, not a
    failure. ── */
 .rd-toasts {
-  position: sticky;
-  top: 52px;
+  position: absolute;
+  top: var(--rd-toast-top, 56px);
+  right: 0;
   z-index: 40;
-  height: 0;
   display: flex;
-  justify-content: center;
-  /* flex-start, NOT the default stretch: the box is height:0 so it stays out of
-     flow, and a stretched item inherits that zero content height while its text
-     keeps its own — the sentence then paints outside the pill, onto the page art
-     underneath, and the close button sits on a zero-height line. */
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
+  max-width: min(24rem, calc(100% - 8px));
+  max-height: calc(100% - var(--rd-toast-top, 56px) - 8px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
   pointer-events: none;
 }
 .rd-toast {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  max-width: min(100%, 34rem);
+  max-width: 100%;
   padding: 10px 10px 10px 14px;
   pointer-events: auto;
   background: hsl(var(--rd-card) / 0.92);
@@ -210,6 +312,22 @@
 }
 .rd-toast-x:hover { background: hsl(var(--rd-fill)); color: hsl(var(--rd-fg)); }
 
+/* A reference card (hidden data, limits, how-it-signs): richer body, stays put
+   until dismissed. */
+.rd-toast-body { min-width: 0; flex: 1 1 auto; }
+.rd-toast-title {
+  margin: 0 0 8px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: hsl(var(--rd-fg));
+}
+/* A long findings list stays inside its card rather than pushing the stack off
+   the bottom of the stage. */
+.rd-toast .rd-findings { max-height: 42vh; overflow-y: auto; }
+.rd-toast .rd-reveal-toggle { margin: 0 0 8px; }
+.rd-toast .rd-reveal-cb:checked ~ .rd-findings { margin-top: 2px; }
+
 /* ── Degraded / unsupported states ── */
 .rd-state { text-align: center; margin-bottom: 8px; }
 .rd-state-lead {
@@ -219,24 +337,12 @@
   color: hsl(var(--rd-brand));
 }
 
-/* ── Marking stage: tool rail + page frames ── */
-.rd-stage { margin-bottom: 4px; }
-
-/* Sticky: the rail rides the top of whatever scrolls it, on its own opaque strip
-   so page art never shows through it. Since the page stack scrolls in its own
-   bounded box the rail no longer moves on a multi-page PDF at all, which is the
-   point — the tools and the page indicator stay put while the document moves. */
+/* ── Marking rail: the toolbar, now docked (not sticky) in the top dock. ── */
 .rd-rail {
-  position: sticky;
-  top: 0;
-  z-index: 20;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 14px;
-  margin-bottom: 10px;
-  padding: 8px 0;
-  background: hsl(var(--rd-bg));
 }
 .rd-rail-group {
   display: inline-flex;
@@ -473,16 +579,24 @@ svg.rd-img * {
    one could never win. */
 .rd-scroll {
   position: relative;
-  max-height: var(--rd-pageview, 520px);
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
   overflow-y: auto;
   overflow-x: hidden;
   overscroll-behavior: contain;
   padding-right: 2px; /* room for the scrollbar so it never sits on the page */
 }
+/* Pages fill the column at a readable size, capped so a portrait page is not
+   stretched absurdly wide on a large screen and centred; the now full-height
+   viewport is what shows most of a page at once. */
 .rd-pagestack {
   display: grid;
   gap: 12px;
-  justify-items: stretch;
+  justify-items: center;
+  width: 100%;
+  max-width: 52rem;
+  margin-inline: auto;
 }
 /* A page frame takes the full column width; the inline SVG keeps its aspect
    from its own viewBox, so height follows. The pointer maths divide by the live
@@ -533,12 +647,7 @@ svg.rd-img * {
   font-size: 12.5px;
 }
 
-/* ── Status strip: coverage, findings summary, caveats ── */
-.rd-status {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid hsl(var(--rd-bd) / 0.6);
-}
+/* ── Bottom-dock body: coverage line + meter ── */
 .rd-line {
   margin: 0 0 8px;
   font-size: 13px;
@@ -564,8 +673,8 @@ svg.rd-img * {
 }
 
 /* Findings: one summary line, values behind the reveal (strip-data's pattern:
-   visually hidden checkbox, keyboard reachable). */
-.rd-found { margin: 4px 0 8px; }
+   visually hidden checkbox, keyboard reachable). Now hosted inside the hidden-
+   data toast card. */
 .rd-reveal-cb {
   position: absolute;
   width: 1px;
@@ -652,27 +761,8 @@ svg.rd-img * {
   max-width: 60%;
 }
 
-/* Vector-mode caveat is guidance, so it stays neutral: tinted fill, full
-   hairline, no red. */
-.rd-warn-note {
-  padding: 8px 10px;
-  border-radius: 8px;
-  background: hsl(var(--rd-fill));
-  border: 1px solid hsl(var(--rd-bd));
-  color: hsl(var(--rd-fg) / 0.8);
-}
-
-/* "What will not be removed" — a quiet details reveal, native disclosure kept */
-.rd-limits-details { margin: 6px 0 0; }
-.rd-limits-details summary {
-  font-size: 12.5px;
-  font-weight: 600;
-  color: hsl(var(--rd-muted));
-  cursor: pointer;
-  user-select: none;
-  padding: 4px 0;
-}
-.rd-limits-details summary:hover { color: hsl(var(--rd-fg)); }
+/* "What will not be removed" — the bullet list, now hosted in its own toast
+   card (the native <details> disclosure was retired with the status strip). */
 .rd-limits {
   list-style: none;
   margin: 8px 0 0;
@@ -698,18 +788,11 @@ svg.rd-img * {
   background: hsl(var(--rd-bd));
 }
 
-/* ── Gate line + download ── */
-.rd-dl {
-  margin-top: 14px;
-  padding-top: 14px;
-  border-top: 1px solid hsl(var(--rd-bd) / 0.6);
-}
-/* The export gate is the whole differentiator over drawing a rectangle in
-   Preview, so it is not fine print. It used to be the smallest, faintest,
-   centred line in the tool while the four caveats above it sat larger, which
-   said the limits mattered more than the guarantee. Now: full-size text on a
-   tinted brand strip, with a tick that means "this is a tested fact", directly
-   above the button it governs. */
+/* ── Gate line + download, in the bottom dock foot ──
+   The export gate is the whole differentiator over drawing a rectangle in
+   Preview, so it is not fine print: full-size text on a tinted brand strip with
+   a tick that means "this is a tested fact", directly above the button it
+   governs and always visible even when the dock body is collapsed. */
 .rd-gate {
   display: flex;
   align-items: flex-start;
