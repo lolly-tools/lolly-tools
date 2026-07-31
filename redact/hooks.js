@@ -2562,10 +2562,17 @@ async function exportFile({ model, host }) {
 
   // ── PDF: rasterise-and-rebuild in the shell ──
   if (info.kind === 'PDF') {
+    // The bars check comes FIRST, and the order is load bearing on a headless
+    // host. "not available in this app" is the sentence the CLI/MCP read as
+    // "escalate to the browser tier" (needsBrowserTier), so raising it before
+    // noticing there are no bars sent a no-op run all the way into a real
+    // Chromium, which then timed out waiting for an export button that the tool
+    // was never going to offer — and reported that timeout instead of the one
+    // sentence that explains the problem. Missing bars is not a capability gap.
+    if (!bars.length) throw new Error('Draw or add at least one redaction bar first.');
     if (!host || !host.pdf || typeof host.pdf.redact !== 'function') {
       throw new Error('PDF redaction is not available in this app.');
     }
-    if (!bars.length) throw new Error('Draw or add at least one redaction bar first.');
     // Bars for a PDF are stored in PDF point space (page origin top-left), so
     // they survive any DPI choice; the shell converts per page. The whole
     // EFFECTIVE rect is computed HERE, in points, before the bars cross the
