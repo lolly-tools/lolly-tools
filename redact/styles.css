@@ -127,15 +127,31 @@
 }
 .rd-replace:hover { border-color: hsl(var(--rd-brand)); color: hsl(var(--rd-brand)); }
 
-/* ── Advisory toasts — one at a time, overlaid so appearing/disappearing never
-   reflows the drawing surface mid-gesture. Neutral surface on purpose: an
-   advisory is guidance, not a failure. ── */
+/* ── Advisory toasts — the shell's quiet-notice idiom (translucent blurred pill,
+   hairline border, see .toast in parts/tool-chrome.css), not a card bolted to
+   the top of the drawing surface.
+
+   STICKY, directly under the sticky rail. This canvas grows to the height of the
+   whole page stack, so a toast anchored to the top of the tool painted several
+   thousand pixels above the viewport on a 10-page PDF and was never seen. It is
+   not position:fixed either: the shell's stage zoom puts a transform on the
+   canvas wrapper, and a transformed ancestor becomes the containing block for
+   fixed descendants, so a "viewport" toast would snap back into the same trap
+   the moment anyone zoomed in. Sticky is measured against the scrollport and is
+   immune to that. height:0 keeps it out of flow so no gap appears when there is
+   no toast.
+
+   Entrance is a TRANSITION, not a keyframe: the script adds .is-visible on the
+   next frame, and the reduced-motion block at the foot of this sheet can then
+   neutralise it. A keyframe could not be, and the app's accessibility prefs
+   deliberately never reach inside .tool-canvas, so this sheet honours the
+   preference itself. Neutral surface on purpose: an advisory is guidance, not a
+   failure. ── */
 .rd-toasts {
-  position: absolute;
-  top: 14px;
-  left: 24px;
-  right: 24px;
-  z-index: 30;
+  position: sticky;
+  top: 52px;
+  z-index: 40;
+  height: 0;
   display: flex;
   justify-content: center;
   pointer-events: none;
@@ -144,23 +160,27 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  max-width: 440px;
-  padding: 10px 12px 10px 14px;
+  max-width: min(100%, 34rem);
+  padding: 10px 10px 10px 14px;
   pointer-events: auto;
-  background: hsl(var(--rd-card));
+  background: hsl(var(--rd-card) / 0.92);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
   border: 1px solid hsl(var(--rd-bd));
-  border-radius: 10px;
-  box-shadow: 0 6px 20px hsl(0 0% 0% / 0.14);
-  animation: rd-toast-in 0.18s ease-out;
+  border-radius: 14px;
+  box-shadow: 0 8px 30px hsl(0 0% 0% / 0.18);
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.16s ease, transform 0.22s cubic-bezier(0.32, 0.72, 0, 1);
 }
-@keyframes rd-toast-in {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: none; }
+.rd-toast.is-visible {
+  opacity: 1;
+  transform: none;
 }
 .rd-toast-text {
-  font-size: 12.5px;
+  font-size: 13px;
   line-height: 1.45;
-  color: hsl(var(--rd-fg) / 0.9);
+  color: hsl(var(--rd-fg) / 0.92);
 }
 .rd-toast-x {
   flex: none;
@@ -190,12 +210,21 @@
 /* ── Marking stage: tool rail + page frames ── */
 .rd-stage { margin-bottom: 4px; }
 
+/* Sticky, because the canvas grows to the height of the whole page stack: on a
+   10-page PDF a rail pinned to the top of the tool meant scrolling back up to
+   switch from Bar to Remove and scrolling down again. It rides the top of the
+   scroll instead, on its own opaque strip so page art never shows through it. */
 .rd-rail {
+  position: sticky;
+  top: 0;
+  z-index: 20;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
   gap: 6px 14px;
   margin-bottom: 10px;
+  padding: 8px 0;
+  background: hsl(var(--rd-bg));
 }
 .rd-rail-group {
   display: inline-flex;
@@ -227,12 +256,17 @@
   flex: none;
 }
 .rd-rail-btn:hover { color: hsl(var(--rd-fg)); }
+/* Selected reads as ON in every theme. The old pill filled with --card inside a
+   group filled with --muted, and in dark (card 7% L, muted 14% L) and suse
+   (17% on 20%) the ACTIVE tool came out darker than the rail: a segmented
+   control saying "this one is off". A brand tint is lighter-or-darker agnostic
+   because it changes HUE, and the border and label carry the same signal. */
 .rd-rail-btn[aria-pressed="true"] {
-  background: hsl(var(--rd-card));
-  border-color: hsl(var(--rd-bd));
+  background: hsl(var(--rd-brand) / 0.14);
+  border-color: hsl(var(--rd-brand) / 0.55);
   color: hsl(var(--rd-brand));
-  box-shadow: 0 1px 2px hsl(0 0% 0% / 0.08);
 }
+.rd-rail-btn[aria-pressed="true"]:hover { background: hsl(var(--rd-brand) / 0.2); }
 .rd-rail-presets .rd-rail-btn { padding: 5px 9px; }
 
 .rd-frame {
@@ -275,30 +309,43 @@
   height: 100%;
   pointer-events: none;
 }
+/* Removing a bar is a routine edit, so it is NOT red — red in this tool means a
+   check actually failed (the download button's .is-error state). The dot is a
+   neutral chip on the theme card colour, sized as a real tap target, and it is
+   permanently visible on any device with no hover, where the old hover-only dot
+   made the tool's own documented removal path unreachable. */
 .rd-bar-del {
   position: absolute;
-  top: -7px;
-  right: -7px;
-  width: 16px;
-  height: 16px;
+  top: -11px;
+  right: -11px;
+  width: 22px;
+  height: 22px;
   padding: 0;
   border: 1px solid hsl(var(--rd-bd));
   border-radius: 50%;
   background: hsl(var(--rd-card));
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.12s;
+  transition: opacity 0.12s, border-color 0.12s, color 0.12s;
 }
 .rd-bar-del::before {
   content: "×";
   display: block;
-  font-size: 12px;
-  line-height: 13px;
-  color: hsl(var(--rd-warn));
+  font-size: 15px;
+  line-height: 20px;
+  color: hsl(var(--rd-muted));
   font-weight: 700;
 }
+.rd-bar-del:hover {
+  border-color: hsl(var(--rd-brand));
+}
+.rd-bar-del:hover::before { color: hsl(var(--rd-brand)); }
 .rd-bar:hover .rd-bar-del,
 .rd-bar-del:focus-visible { opacity: 1; }
+/* No hover to reveal it with: show it always. */
+@media (hover: none) {
+  .rd-bar-del { opacity: 1; }
+}
 
 /* Remove mode: bars become the click targets, their dots stay visible, and the
    surface stops advertising drawing. */
@@ -522,12 +569,32 @@
   padding-top: 14px;
   border-top: 1px solid hsl(var(--rd-bd) / 0.6);
 }
+/* The export gate is the whole differentiator over drawing a rectangle in
+   Preview, so it is not fine print. It used to be the smallest, faintest,
+   centred line in the tool while the four caveats above it sat larger, which
+   said the limits mattered more than the guarantee. Now: full-size text on a
+   tinted brand strip, with a tick that means "this is a tested fact", directly
+   above the button it governs. */
 .rd-gate {
-  margin: 0 0 10px;
-  font-size: 11.5px;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: hsl(var(--rd-brand) / 0.1);
+  border: 1px solid hsl(var(--rd-brand) / 0.28);
+  font-size: 13px;
+  font-weight: 600;
   line-height: 1.45;
-  text-align: center;
-  color: hsl(var(--rd-muted) / 0.9);
+  color: hsl(var(--rd-fg) / 0.92);
+}
+.rd-gate-icon {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  margin-top: 1px;
+  color: hsl(var(--rd-brand));
 }
 .rd-download {
   width: 100%;
@@ -565,4 +632,29 @@
   padding: 1px 4px;
   border-radius: 4px;
   color: hsl(var(--rd-muted));
+}
+
+/* ── Reduced motion ──────────────────────────────────────────────────────────
+   The app's accessibility preferences deliberately stop at the tool canvas
+   boundary (a render is the user's creative output and its geometry is shared
+   with the CLI export path), so nothing outside this file will calm the tool's
+   own chrome. Every transition here is decoration on a state change that is
+   already visible without it, so the OS preference simply turns them off.
+   Nothing inside a bar or a page frame is touched, and no geometry moves, so an
+   exported PNG/SVG/PDF is byte-identical either way. */
+@media (prefers-reduced-motion: reduce) {
+  .rd-toast {
+    transition: none;
+    transform: none;
+  }
+  .rd-pick,
+  .rd-replace,
+  .rd-rail-btn,
+  .rd-bar-del,
+  .rd-meter-fill,
+  .rd-reveal-toggle,
+  .rd-reveal-icon,
+  .rd-download {
+    transition: none;
+  }
 }

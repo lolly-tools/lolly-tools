@@ -19,15 +19,6 @@
         <button type="button" class="rd-replace" data-file-pick data-export-hide>Replace</button>
       </div>
 
-      <div class="rd-toasts" data-export-hide aria-live="polite" role="status">
-        {{#if toastKey}}
-          <div class="rd-toast" data-toast-key="{{toastKey}}">
-            <span class="rd-toast-text">{{toastText}}</span>
-            <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
-          </div>
-        {{/if}}
-      </div>
-
       {{#unless supported}}
         <div class="rd-state">
           <p class="rd-state-lead">This doesn't look like a supported file.</p>
@@ -65,6 +56,20 @@
                 <button type="button" class="rd-rail-btn" data-preset="heading" aria-pressed="false" title="Heading tall">Heading</button>
                 <button type="button" class="rd-rail-btn" data-preset="block" aria-pressed="false" title="A paragraph block tall">Block</button>
               </div>
+            </div>
+
+            <!-- Advisories live directly under the sticky rail, so guidance about
+                 the bar you just drew arrives where you are looking. Anchored to
+                 the top of the tool it scrolled out of sight on any multi-page
+                 document, and viewport-fixed it would re-anchor to the stage
+                 zoom wrapper the moment the user zoomed in. -->
+            <div class="rd-toasts" data-export-hide aria-live="polite" role="status">
+              {{#if toastKey}}
+                <div class="rd-toast" data-toast-key="{{toastKey}}">
+                  <span class="rd-toast-text">{{toastText}}</span>
+                  <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+                </div>
+              {{/if}}
             </div>
 
             {{#unless isPdfKind}}
@@ -105,7 +110,7 @@
                 {{/if}}
               {{/unless}}{{/unless}}
             {{/if}}
-            <p class="rd-stage-hint" data-export-hide>Drag on the preview to draw. Click a bar's dot to remove it. Pinch or Cmd-scroll to zoom.</p>
+            <p class="rd-stage-hint" data-export-hide>Drag on the preview to draw a bar. To take one off, tap its corner dot or switch to Remove and tap the bar. Pinch or Cmd-scroll to zoom in on detail.</p>
           </div>
 
           <div class="rd-status">
@@ -125,6 +130,10 @@
               {{#if hasBars}}
                 <p class="rd-line">{{barCount}} bar{{#if barPlural}}s{{/if}} set. Each page is flattened to a picture with the bars burned in.</p>
               {{/if}}
+            {{/if}}
+
+            {{#if staleNote}}
+              <p class="rd-note">{{staleNote}}</p>
             {{/if}}
 
             {{#if analysisPending}}
@@ -181,7 +190,10 @@
             </div>
           {{else}}
             <div class="rd-dl">
-              <p class="rd-gate">The rebuilt file is verified before download and nothing ships if a check fails.</p>
+              <p class="rd-gate">
+                <svg class="rd-gate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <span>The rebuilt file is re-read and checked before it downloads. If a check fails, nothing downloads.</span>
+              </p>
               {{#if isPdfKind}}
                 {{#unless hasBars}}
                   <button type="button" class="rd-download" data-export-file disabled>Draw a bar over what should go first</button>
@@ -250,7 +262,9 @@
        dismisses early. The hooks emit each advisory key once per file; the
        dataset done-list only stops a dismissed toast reappearing on repaints
        that re-render the same extras. Keys carry file identity from the hook,
-       so a new file is never muted by the old file's record. ── */
+       so a new file is never muted by the old file's record. The done-list is
+       newline-delimited (it used to use a raw U+0001, which is invisible in an
+       editor and does not survive a copy-paste). ── */
     (function wireToast() {
       var box = wrap.querySelector('.rd-toasts');
       if (!box || box.dataset.rdWired) return;
@@ -258,7 +272,7 @@
       var toast = box.querySelector('.rd-toast');
       if (!toast) return;
       var key = toast.getAttribute('data-toast-key') || '';
-      var doneList = (canvasRoot && canvasRoot.dataset.rdToastDone) ? canvasRoot.dataset.rdToastDone.split('') : [];
+      var doneList = (canvasRoot && canvasRoot.dataset.rdToastDone) ? canvasRoot.dataset.rdToastDone.split('\n') : [];
       if (key && doneList.indexOf(key) !== -1) { toast.parentNode.removeChild(toast); return; }
       var timer;
       function dismiss() {
@@ -266,8 +280,8 @@
         document.removeEventListener('keydown', onKey, true);
         if (canvasRoot && key) {
           var d = canvasRoot.dataset.rdToastDone || '';
-          if (d.split('').indexOf(key) === -1) {
-            canvasRoot.dataset.rdToastDone = d ? d + '' + key : key;
+          if (d.split('\n').indexOf(key) === -1) {
+            canvasRoot.dataset.rdToastDone = d ? d + '\n' + key : key;
           }
         }
         if (toast.parentNode) toast.parentNode.removeChild(toast);
@@ -278,6 +292,15 @@
           return;
         }
         if (e.key === 'Escape') { e.stopPropagation(); dismiss(); }
+      }
+      /* Entrance is a class flip on the next frame so the CSS TRANSITION plays
+         it. A transition can be neutralised by a prefers-reduced-motion block;
+         the keyframe this replaced could not be, and the app's own .toast made
+         the same choice for the same reason. */
+      if (typeof requestAnimationFrame === 'function') {
+        requestAnimationFrame(function () { if (toast.parentNode) toast.classList.add('is-visible'); });
+      } else {
+        toast.classList.add('is-visible');
       }
       timer = setTimeout(dismiss, 5000);
       document.addEventListener('keydown', onKey, true);
@@ -491,11 +514,22 @@
       });
 
       /* Draw: pointer capture on the frame, live feedback during the gesture,
-         single commit on release. Erase mode never draws. */
+         single commit on release. Erase mode never draws.
+
+         Multi-touch belongs to the shell's stage zoom, not to us. The frame sets
+         touch-action:none, so a pinch arrives here as two pointerdowns; without
+         a guard each opened its own gesture and released as a full-width bar
+         over content nobody meant to cover. So: only the PRIMARY pointer starts
+         a gesture, and the arrival of any second pointer ABANDONS the one in
+         flight (draft removed, nothing committed) and leaves the pinch to
+         stage-nav, which is still receiving the same bubbled events. */
+      var abortGesture = null;
       frame.addEventListener('pointerdown', function (e) {
         if (!alive() || mode === 'erase') return;
         if (e.target && e.target.closest && e.target.closest('.rd-bar-del')) return;
         if (e.button !== undefined && e.button !== 0) return;
+        if (abortGesture) { abortGesture(); return; }   /* second finger: pinch, not a bar */
+        if (e.isPrimary === false) return;
         e.preventDefault();
         frame.setPointerCapture(e.pointerId);
         var rect = img.getBoundingClientRect();
@@ -566,12 +600,20 @@
           if (!alive()) return;
           paint(ev);
         }
-        function onUp(ev) {
+        /* Detach and clear the live feedback WITHOUT committing. onUp calls it
+           and then decides what to commit; the second-finger abort calls it and
+           decides nothing. */
+        function teardown() {
+          abortGesture = null;
           frame.removeEventListener('pointermove', onMove);
           frame.removeEventListener('pointerup', onUp);
           frame.removeEventListener('pointercancel', onUp);
           if (draft && draft.parentNode) draft.parentNode.removeChild(draft);
           if (strokeSvg && strokeSvg.parentNode) strokeSvg.parentNode.removeChild(strokeSvg);
+          try { frame.releasePointerCapture(e.pointerId); } catch (err) { /* already released */ }
+        }
+        function onUp(ev) {
+          teardown();
           if (!alive()) return;
 
           if (mode === 'marker') {
@@ -604,6 +646,7 @@
           if (!(nw > 0) || !(nh > 0)) return;
           commit(bars.concat([{ page: page, x: nx, y: ny, w: nw, h: nh }]));
         }
+        abortGesture = teardown;
         paint(e);
         frame.addEventListener('pointermove', onMove);
         frame.addEventListener('pointerup', onUp);

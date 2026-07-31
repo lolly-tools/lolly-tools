@@ -536,13 +536,28 @@ function tokenize(s) {
   return toks;
 }
 
-// Only a unitless or px length is a natural-pixel size the browser preview
-// uses. '100%', '210mm', '10em' etc. must NOT be taken as pixel dimensions —
-// for those the viewBox is the drawing space, exactly as the browser resolves
-// it. parseFloat would happily read '210mm' as 210 and misplace every bar.
+// The browser resolves an SVG's intrinsic size from its width/height whenever
+// those carry an ABSOLUTE CSS length — '210mm' is 793.7 natural pixels in an
+// <img>, not 210 and not the viewBox. The drawing surface measures bars against
+// exactly that natural size, so this table has to agree with the browser or
+// every bar in vector mode lands in the wrong place. em/rem resolve against the
+// 16px initial font size, which is what an SVG loaded as an image gets.
+// Percentages and font-metric units (ex, ch) and viewport units have no
+// resolvable value here, so they return NaN and the caller falls back to the
+// viewBox, which is what the browser does too.
+const CSS_PX_PER_UNIT = {
+  '': 1, px: 1, in: 96, cm: 96 / 2.54, mm: 96 / 25.4, q: 96 / 101.6,
+  pt: 96 / 72, pc: 16, em: 16, rem: 16,
+};
+
 function pxLength(v) {
-  const m = /^\s*\+?(\d*\.?\d+)(?:px)?\s*$/i.exec(v == null ? '' : String(v));
-  return m ? parseFloat(m[1]) : NaN;
+  const m = /^\s*\+?(\d*\.?\d+)([a-z]*)\s*$/i.exec(v == null ? '' : String(v));
+  if (!m) return NaN;
+  const unit = m[2].toLowerCase();
+  // hasOwnProperty, not a truthiness test: '10constructor' must not resolve
+  // through the prototype chain.
+  if (!Object.prototype.hasOwnProperty.call(CSS_PX_PER_UNIT, unit)) return NaN;
+  return parseFloat(m[1]) * CSS_PX_PER_UNIT[unit];
 }
 
 function svgDims(text) {
@@ -853,8 +868,33 @@ function barRows(v) {
   return out;
 }
 
-const INFLATE_PX = 2;   // chroma-subsampling edge bleed margin, each side
-const QUANT_GRID = 24;  // widths round UP to this grid when quantise is on
+const INFLATE_PX = 2;      // chroma-subsampling edge bleed margin, each side
+const QUANT_GRID = 24;     // widths round UP to this grid when quantise is on
+const QUANT_GRID_PT = 18;  // the same 24 CSS px in PDF points (24 * 72 / 96)
+
+// Widen a horizontal span so its width lands on a coarse grid, keeping it
+// centred on the original. This is the whole glyph-position mitigation the
+// sidebar toggle and the limits panel both promise (Bland/Iyer/Levchenko,
+// PoPETs 2023), so EVERY export path routes through it: raster and SVG via
+// effectiveRect, PDF via the point-space pass in exportFile. A toggle that
+// meant different things per format would be worse than no toggle.
+function quantiseSpan(x0, x1, grid) {
+  const w = x1 - x0;
+  const qw = Math.ceil(w / grid) * grid;
+  const extra = qw - w;
+  return { x0: x0 - Math.floor(extra / 2), x1: x1 + Math.ceil(extra / 2) };
+}
+
+// Bars in PDF point space, width-quantised in place. The rebuild inflates and
+// clamps per page in device pixels (pdf-redact-core barToPixels), so this pass
+// only ever widens.
+function quantiseBarsPt(bars) {
+  return bars.map((b) => {
+    const q = quantiseSpan(b.x, b.x + b.w, QUANT_GRID_PT);
+    const x = Math.max(0, q.x0);
+    return { page: b.page, x, y: b.y, w: q.x1 - x, h: b.h };
+  });
+}
 
 // The one shared geometry: integer-snapped, inflated, optionally width-
 // quantised, clamped to the frame. Preview coverage, the canvas burn and the
@@ -866,11 +906,9 @@ function effectiveRect(bar, W, H, quantise) {
   let x1 = Math.ceil(bar.x + bar.w) + INFLATE_PX;
   let y1 = Math.ceil(bar.y + bar.h) + INFLATE_PX;
   if (quantise) {
-    const w = x1 - x0;
-    const qw = Math.ceil(w / QUANT_GRID) * QUANT_GRID;
-    const extra = qw - w;
-    x0 -= Math.floor(extra / 2);
-    x1 += Math.ceil(extra / 2);
+    const q = quantiseSpan(x0, x1, QUANT_GRID);
+    x0 = q.x0;
+    x1 = q.x1;
   }
   x0 = Math.max(0, x0); y0 = Math.max(0, y0);
   x1 = Math.min(W, x1); y1 = Math.min(H, y1);
@@ -941,7 +979,13 @@ function joinPages(list) {
 }
 
 // state: { pagesFailed: number[], pagesTruncated, barsEdited, barCount,
-//          isImage, hasThinBar }. Returns { key, text } or null.
+//          isImage, vectorMode, hasThinBar }. Returns { key, text } or null.
+//
+// The first-bar advisory is the ONLY guidance that arrives at the moment of the
+// edit, so it must not overstate what the current export mode does. Vector SVG
+// export deliberately never deletes <text>/<tspan>/<textPath> (cleanSvgTokens,
+// above): it covers them. Saying "destroyed" there would be the one false
+// sentence in the tool.
 function advisoryFor(state, seen) {
   const cands = [];
   const failed = Array.isArray(state.pagesFailed) ? state.pagesFailed : [];
@@ -958,7 +1002,12 @@ function advisoryFor(state, seen) {
     cands.push({ key: 'pages-truncated', text: 'Not every page could be previewed. Only pages with a preview can be marked here.' });
   }
   if (state.barsEdited && state.barCount > 0) {
-    cands.push({ key: 'first-bar', text: 'Covered content is destroyed when the file is rebuilt, not hidden.' });
+    cands.push({
+      key: 'first-bar',
+      text: state.vectorMode
+        ? 'Vector export covers what sits under a bar. The text stays in the file. Turn vector mode off to destroy it.'
+        : 'Covered content is destroyed when the file is rebuilt, not hidden.',
+    });
     if (state.isImage) {
       cands.push({ key: 'image-mark', text: 'Whole-image watermarks survive partial cover. This tool removes what you mark, it does not launder provenance.' });
     }
@@ -1241,7 +1290,8 @@ async function patch(ctx) {
     isRaster: false, isSvg: false, isPdfKind: false, vectorMode: false,
     previewUrl: '', barsJson: '[]',
     findings: [], foundSummary: '', nothingFound: false, analysisPending: false, analysisFailed: false,
-    barCount: 0, barPlural: false, hasBars: false, coveragePct: 0, hasCoverage: false,
+    barCount: 0, barPlural: false, hasBars: false, staleBars: 0, staleNote: '',
+    coveragePct: 0, hasCoverage: false,
     coverageText: '', coverageHigh: false,
     pageBars: [], hasPageBars: false, resignUnavailable: false,
     pdfPages: [], hasPdfPages: false, pagesPending: false, pagesError: '', pagesTruncated: false,
@@ -1338,6 +1388,7 @@ async function patch(ctx) {
       barsEdited: trigger === 'bars',
       barCount: bars.length,
       isImage: false,
+      vectorMode: false,
       hasThinBar: bars.some((b) => b.h < thinBarLimit(true)),
     }, seen);
     if (adv) {
@@ -1354,6 +1405,21 @@ async function patch(ctx) {
   base.previewUrl = f.url || '';
   base.isSvg = info.kind === 'SVG';
   base.isRaster = !base.isSvg;
+
+  // A single-frame file has exactly one page. Bars on any other page are left
+  // over from a PDF the user replaced (`bars` is its own input and survives a
+  // source swap), and there is no surface here on which to draw or delete them.
+  // Reporting them in the count while the export burns only page 1 was the lie;
+  // the counts now describe page 1 and the leftovers are stated plainly.
+  const pageBarsOne = bars.filter((b) => (b.page || 1) === 1);
+  const staleBars = bars.length - pageBarsOne.length;
+  if (staleBars > 0) {
+    base.staleBars = staleBars;
+    base.staleNote = `${staleBars} mark${staleBars > 1 ? 's are' : ' is'} set on a page of the document you replaced. This file has one page, so ${staleBars > 1 ? 'they are' : 'it is'} ignored here and dropped from the export.`;
+  }
+  base.barCount = pageBarsOne.length;
+  base.barPlural = pageBarsOne.length > 1;
+  base.hasBars = pageBarsOne.length > 0;
   // Vector mode is only real for an SVG — the svgVector toggle can be left on
   // from an earlier file, and the raster copy must not flip on a JPEG.
   base.vectorMode = base.isSvg && Boolean(inputs.svgVector);
@@ -1381,16 +1447,17 @@ async function patch(ctx) {
     else if (info.kind === 'WebP') dims = webpDims(f.bytes);
     else if (info.kind === 'SVG') { const d = svgDims(info.text); dims = d.w && d.h ? { w: d.w, h: d.h } : null; }
   } catch (e) { dims = null; }
-  if (dims && bars.length) {
-    const rects = rectsFor(bars, dims.w, dims.h, quantise, 1);
+  if (dims && pageBarsOne.length) {
+    const rects = rectsFor(pageBarsOne, dims.w, dims.h, quantise, 1);
     const pct = coveragePercent(rects, dims.w, dims.h);
+    const n = pageBarsOne.length;
     base.coveragePct = pct;
     base.hasCoverage = true;
     // Honest verb per mode: raster paths destroy the pixels, vector mode only
     // covers what sits under the bar.
     base.coverageText = base.vectorMode
-      ? `${bars.length} mark${bars.length > 1 ? 's' : ''} will cover about ${pct}% of the frame.`
-      : `${bars.length} mark${bars.length > 1 ? 's' : ''} will repaint about ${pct}% of the pixels.`;
+      ? `${n} mark${n > 1 ? 's' : ''} will cover about ${pct}% of the frame.`
+      : `${n} mark${n > 1 ? 's' : ''} will repaint about ${pct}% of the pixels.`;
     base.coverageHigh = pct >= 97;
   }
 
@@ -1403,9 +1470,10 @@ async function patch(ctx) {
     pagesFailed: [],
     pagesTruncated: false,
     barsEdited: trigger === 'bars',
-    barCount: bars.length,
+    barCount: pageBarsOne.length,
     isImage: true,
-    hasThinBar: bars.some((b) => b.h < thinBarLimit(false)),
+    vectorMode: base.vectorMode,
+    hasThinBar: pageBarsOne.some((b) => b.h < thinBarLimit(false)),
   }, seen);
   if (adv) {
     seen.add(adv.key);
@@ -1641,8 +1709,13 @@ async function exportFile({ model, host }) {
     }
     if (!bars.length) throw new Error('Draw or add at least one redaction bar first.');
     // Bars for a PDF are stored in PDF point space (page origin top-left), so
-    // they survive any DPI choice; the shell converts per page.
-    const res = await host.pdf.redact(f.bytes, { bars, dpi: 200, grayscale });
+    // they survive any DPI choice; the shell converts per page. Width
+    // quantisation happens HERE, in points, before the bars cross the bridge:
+    // the rebuild only snaps and inflates, it has no width grid, so a raw hand
+    // -off would ship a 37pt bar over a short name with the glyph-position hint
+    // intact while the sidebar claimed the mitigation was on.
+    const sent = quantise ? quantiseBarsPt(bars) : bars;
+    const res = await host.pdf.redact(f.bytes, { bars: sent, dpi: 200, grayscale });
     if (!res || !res.bytes) throw new Error('PDF redaction returned no output. Nothing was downloaded.');
     // A bar aimed at a page the document does not have is silently skipped by
     // the rebuild — refuse instead of shipping that region fully visible.
@@ -1758,7 +1831,16 @@ async function exportFile({ model, host }) {
   }
   if (!(W > 0) || !(H > 0)) throw new Error('That file could not be decoded as an image.');
 
-  const rects = rectsFor(bars, W, H, quantise, 1);
+  // A single-frame file has one page. Bars left on other pages by a replaced
+  // PDF are dropped (the UI says so before the click); bars ON page one must
+  // ALL place, or the covered region would ship fully visible — the same hard
+  // gate the SVG vector path runs.
+  const pageOneBars = bars.filter((b) => (b.page || 1) === 1);
+  const rects = rectsFor(pageOneBars, W, H, quantise, 1);
+  if (rects.length < pageOneBars.length) {
+    const missed = pageOneBars.length - rects.length;
+    throw new Error(`Verification failed: ${missed} of ${pageOneBars.length} bar${pageOneBars.length > 1 ? 's' : ''} ${missed > 1 ? 'fall' : 'falls'} outside this image and could not be painted. Nothing was downloaded.`);
+  }
   const canvas = drawRedacted(img, W, H, rects, grayscale);
 
   // Same-family re-encode is the metadata kill: jpeg→jpeg, png→png, webp→webp
