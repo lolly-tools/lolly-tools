@@ -2,7 +2,7 @@
   "id": "redact",
   "name": "Redact",
   "description": "Black out sensitive content by rebuilding the file, then verify the output before it downloads, all on your device.",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "utility",
@@ -14,7 +14,6 @@
     "height": 620,
     "formats": ["png", "jpg", "webp", "svg", "pdf"],
     "export": false,
-    "layout": "canvas",
     "actions": []
   },
   "hooks": {
@@ -29,20 +28,7 @@
       "type": "file",
       "accept": ["image/jpeg", "image/png", "image/webp", "image/svg+xml", "application/pdf", ".jpg", ".jpeg", ".png", ".webp", ".svg", ".pdf"],
       "maxSize": 52428800,
-      "help": "A JPEG, PNG, WebP, SVG or PDF. It's read in your browser and never leaves your device."
-    },
-    {
-      "id": "bars",
-      "label": "Redaction bars",
-      "type": "blocks",
-      "labelledFields": true,
-      "fields": [
-        { "id": "page", "label": "Page", "type": "number", "default": 1, "min": 1, "step": 1 },
-        { "id": "x", "label": "X", "type": "number", "default": 0, "min": 0 },
-        { "id": "y", "label": "Y", "type": "number", "default": 0, "min": 0 },
-        { "id": "w", "label": "Width", "type": "number", "default": 0, "min": 0 },
-        { "id": "h", "label": "Height", "type": "number", "default": 0, "min": 0 }
-      ]
+      "help": "A JPEG, PNG, WebP, SVG or PDF. It's read in your browser and never leaves your device. You can also drop it straight onto the canvas."
     },
     {
       "id": "quantise",
@@ -63,14 +49,28 @@
       "label": "Keep SVG as vector",
       "type": "boolean",
       "default": false,
-      "help": "I understand: vector output stays a readable text format and covers positioned text rather than deleting it. Raster export is the safe choice for text."
+      "help": "SVG files only. I understand: vector output stays a readable text format and covers positioned text rather than deleting it. Raster export is the safe choice for text."
     },
     {
       "id": "resign",
       "label": "Add a fresh Content Credential",
       "type": "boolean",
       "default": false,
-      "help": "Off by default. When on, the redacted PDF is re-signed as a new derivative with no ingredients and no thumbnails of the original."
+      "help": "PDF files only, off by default. When on, the redacted PDF is re-signed as a new derivative with no ingredients and no thumbnails of the original."
+    },
+    {
+      "id": "bars",
+      "label": "Redaction bars",
+      "type": "blocks",
+      "labelledFields": true,
+      "showIf": { "source": "__drawn-on-canvas" },
+      "fields": [
+        { "id": "page", "label": "Page", "type": "number", "default": 1, "min": 1, "step": 1 },
+        { "id": "x", "label": "X", "type": "number", "default": 0, "min": 0 },
+        { "id": "y", "label": "Y", "type": "number", "default": 0, "min": 0 },
+        { "id": "w", "label": "Width", "type": "number", "default": 0, "min": 0 },
+        { "id": "h", "label": "Height", "type": "number", "default": 0, "min": 0 }
+      ]
     }
   ]
 }

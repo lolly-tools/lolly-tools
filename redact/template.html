@@ -55,12 +55,15 @@
                   {{/each}}
                 </div>
                 <p class="rd-stage-hint" data-export-hide>Drag on a page to draw a redaction bar. Click a bar's dot to remove it.</p>
+                {{#if pagesFailedNote}}
+                  <p class="rd-note">{{pagesFailedNote}}</p>
+                {{/if}}
                 {{#if pagesTruncated}}
                   <p class="rd-note">Not every page is shown. Bars for later pages can still be set in the sidebar, in page points from the top left.</p>
                 {{/if}}
               {{/if}}
               {{#if pagesPending}}
-                <p class="rd-note">Rendering pages…</p>
+                <p class="rd-note" data-pages-note>Rendering pages…</p>
               {{/if}}
               {{#if pagesError}}
                 <p class="rd-note">{{pagesError}}</p>
@@ -85,6 +88,9 @@
             <h3 class="rd-sect-title">What's inside this file</h3>
             {{#if analysisPending}}
               <p class="rd-note">Still reading the document structure…</p>
+            {{/if}}
+            {{#if analysisFailed}}
+              <p class="rd-note">The document structure could not be read. The structural checks did not run, so nothing can be claimed about attachments, scripts or earlier versions.</p>
             {{/if}}
             {{#if nothingFound}}
               <p class="rd-note">No hidden data was found by these checks. Absence of a finding is not proof there is nothing there.</p>
@@ -116,19 +122,29 @@
                 <div class="rd-meter" role="img" aria-label="{{coverageText}}">
                   <span class="rd-meter-fill" style="width: {{coveragePct}}%"></span>
                 </div>
-                <p class="rd-summary">{{coverageText}} Under each bar the original pixels are replaced with solid black before the file is re-encoded, so they are not in the output.</p>
+                {{#if vectorMode}}
+                  <p class="rd-summary">{{coverageText}} Each bar is an opaque shape added on top. What sits underneath is covered, not deleted, exactly as the vector note below explains.</p>
+                {{else}}
+                  <p class="rd-summary">{{coverageText}} Under each bar the original pixels are replaced with solid black before the file is re-encoded, so they are not in the output.</p>
+                {{/if}}
                 {{#if coverageHigh}}
-                  <p class="rd-note">Your marks cover nearly the whole frame. At full coverage almost no pixel of the original survives, including anything spread across the image.</p>
+                  {{#unless vectorMode}}
+                    <p class="rd-note">Your marks cover nearly the whole frame. At full coverage almost no pixel of the original survives, including anything spread across the image.</p>
+                  {{/unless}}
                 {{/if}}
               {{else}}
-                <p class="rd-note">No marks yet. Rebuilding the file already removes all the hidden data listed above, bars additionally destroy the pixels they cover.</p>
+                {{#if vectorMode}}
+                  <p class="rd-note">No marks yet. The vector rebuild already removes the hidden data listed above. Bars added in vector mode cover content, they do not delete it.</p>
+                {{else}}
+                  <p class="rd-note">No marks yet. Rebuilding the file already removes all the hidden data listed above, bars additionally destroy the pixels they cover.</p>
+                {{/if}}
               {{/if}}
             {{/unless}}
             {{#if isPdfKind}}
               {{#if hasBars}}
                 <p class="rd-summary">{{barCount}} bar{{#if barPlural}}s{{/if}} set. Each page is flattened to a picture and the bars are burned in, so covered text is destroyed, not hidden behind a box.</p>
               {{else}}
-                <p class="rd-note">No bars yet. Rebuilding the PDF already removes metadata, attachments, scripts and earlier versions, bars additionally destroy what they cover.</p>
+                <p class="rd-note">No bars yet. This tool exports only once a bar is drawn, and the rebuild then also removes metadata, attachments, scripts and earlier versions. For a metadata-only clean with no bars, use the Strip Hidden Data tool.</p>
               {{/if}}
             {{/if}}
             <label class="rd-opt" data-export-hide>
@@ -179,13 +195,16 @@
             <div class="rd-sect rd-sect-dl">
               {{#if isPdfKind}}
                 <p class="rd-gate">The rebuilt PDF is verified before download and nothing ships if a check fails.</p>
+                {{#if resign}}{{#unless resignUnavailable}}
+                  <p class="rd-note">The fresh Content Credential is added after those checks pass, as a signed update to the verified file.</p>
+                {{/unless}}{{/if}}
                 {{#if hasBars}}
                   <button type="button" class="rd-download" data-export-file data-busy-label="Redacting…">{{downloadLabel}}</button>
                 {{else}}
                   <button type="button" class="rd-download" data-export-file disabled>Draw a bar over what should go first</button>
                 {{/if}}
               {{else}}
-                {{#if svgVector}}
+                {{#if vectorMode}}
                   <p class="rd-gate">The cleaned SVG is verified before download and nothing ships if a check fails.</p>
                 {{else}}
                   <p class="rd-gate">The rebuilt file is verified before download and nothing ships if a check fails.</p>
@@ -234,9 +253,12 @@
 
     /* Per-canvas commit channel (bound by the shell to THIS session's runtime).
        Absent offscreen and in older shells — then fall back to poking the one
-       [data-input-id] control (mesh-gradient's legacy path). */
+       [data-input-id] control (mesh-gradient's legacy path). The nudge channel
+       re-runs an input's CURRENT runtime value with no history entry — the only
+       safe poll mechanism (a stale bars commit could overwrite a newer edit). */
     var canvasRoot = wrap.closest('[data-lolly-canvas]');
     var commitFn = canvasRoot && canvasRoot.__lollyCommit;
+    var nudgeFn = canvasRoot && canvasRoot.__lollyNudge;
 
     function alive() { return document.contains(wrap); }
 
@@ -257,20 +279,34 @@
       field.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
-    /* While the shell renders the page previews, poll by re-committing a CLONE
-       of the current bars (same content, new identity). Each commit re-runs
-       onInput, which picks up the settled render job; until it settles the
-       hydrated output is byte-identical, so the shell skips the repaint. The
-       repaint that does land replaces this DOM, and alive() stops the timer. */
-    if (stage.hasAttribute('data-pages-pending') && commitFn) {
-      var polls = 0;
-      var pollTimer = setInterval(function () {
-        if (!alive() || !stage.hasAttribute('data-pages-pending') || ++polls > 40) {
-          clearInterval(pollTimer);
-          return;
-        }
-        commitFn('bars', bars.slice());
-      }, 700);
+    /* While the shell renders the page previews, poll by re-running onInput
+       with the bars input's CURRENT runtime value (the nudge channel: no
+       history entry, no stale value — a poll tick can never overwrite a newer
+       edit or undo). Each run picks up the settled render job; until it
+       settles the hydrated output is byte-identical, so the shell skips the
+       repaint. The repaint that does land replaces this DOM, and alive()
+       stops the timer. Without any channel nothing here can re-run onInput,
+       so say so instead of showing "Rendering pages…" forever; the same
+       honesty applies when the poll budget runs out. */
+    if (stage.hasAttribute('data-pages-pending')) {
+      var pendingNote = wrap.querySelector('[data-pages-note]');
+      if (!nudgeFn) {
+        if (pendingNote) pendingNote.textContent = 'Rendering pages… This view cannot refresh itself. Change any input to check for the finished previews.';
+      } else {
+        var polls = 0;
+        var pollTimer = setInterval(function () {
+          if (!alive() || !stage.hasAttribute('data-pages-pending')) {
+            clearInterval(pollTimer);
+            return;
+          }
+          if (++polls > 40) {
+            clearInterval(pollTimer);
+            if (pendingNote) pendingNote.textContent = 'Rendering pages is taking a while. Change any input to check again.';
+            return;
+          }
+          nudgeFn('bars');
+        }, 700);
+      }
     }
 
     /* Frame space: PDF points when data-ptw/data-pth are present, else the
@@ -297,6 +333,9 @@
         if (!sp.w || !sp.h) return;
         bars.forEach(function (b, idx) {
           if ((b.page || 1) !== page) return;
+          /* An incomplete sidebar row (no area yet) stays in the array so a
+             canvas commit cannot delete it, but there is nothing to paint. */
+          if (!(b.w > 0) || !(b.h > 0)) return;
           var el = document.createElement('div');
           el.className = 'rd-bar';
           el.style.left = (b.x / sp.w * 100) + '%';

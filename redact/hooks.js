@@ -834,6 +834,25 @@ function parseBars(v) {
   return out;
 }
 
+// Every row, coerced but NOT area-filtered — the canvas round-trip. The canvas
+// script commits the whole array back on each draw/delete, so a half-typed
+// sidebar row (w and h still 0) must survive that round-trip instead of
+// vanishing under the user's cursor. parseBars stays the geometry filter for
+// coverage, burning and export; this is only for data-bars.
+function barRows(v) {
+  if (!Array.isArray(v)) return [];
+  const out = [];
+  const num = (x) => { const n = Number(x); return isFinite(n) ? n : 0; };
+  for (const row of v) {
+    if (!row || typeof row !== 'object') continue;
+    out.push({
+      page: Math.max(1, Math.round(Number(row.page)) || 1),
+      x: num(row.x), y: num(row.y), w: num(row.w), h: num(row.h),
+    });
+  }
+  return out;
+}
+
 const INFLATE_PX = 2;   // chroma-subsampling edge bleed margin, each side
 const QUANT_GRID = 24;  // widths round UP to this grid when quantise is on
 
@@ -999,7 +1018,7 @@ function analyzeWebp(bytes) {
 
 // One in-flight (or settled) analyze job keyed on file identity, so re-renders
 // during a slow analyze share a single run (compress-pdf's _job pattern).
-let _pdfJob = { key: '', promise: null };
+let _pdfJob = { key: '', promise: null, result: null, error: false };
 // Both waits happen inside ONE onInput pass, whose runtime budget is 2000ms
 // (HOOK_BUDGET_MS — an overrun DISCARDS the whole patch, so the drop would look
 // dead). They run concurrently in patch(), so the wall-time worst case is
@@ -1018,13 +1037,36 @@ const PAGES_BUDGET_MS = 1400;
 let _pagesJob = { key: '', promise: null, result: null, error: null };
 let _pageUrls = [];
 
-function revokePageUrls() {
+function revokeUrls(urls) {
   if (typeof URL !== 'undefined' && typeof URL.revokeObjectURL === 'function') {
-    for (const u of _pageUrls) {
+    for (const u of urls) {
       try { URL.revokeObjectURL(u); } catch (e) { /* already gone */ }
     }
   }
+}
+
+// Old page URLs are revoked on a DELAY, not immediately: the runtime's
+// immediate pre-hook emit repaints the OLD extras, so fresh <img> elements can
+// still be loading these URLs for a beat after a new file lands (the patch
+// itself takes up to the 1400ms pages budget). 1.5s outlives that window.
+const URL_RETIRE_MS = 1500;
+
+function retirePageUrls() {
+  const old = _pageUrls;
   _pageUrls = [];
+  if (!old.length) return;
+  if (typeof setTimeout === 'function') setTimeout(() => revokeUrls(old), URL_RETIRE_MS);
+  else revokeUrls(old);
+}
+
+// Called whenever the loaded file is no longer a PDF (replaced with an image,
+// cleared, unsupported) — without this, replacing a 40-page PDF with a JPEG
+// left every page blob URL alive until the next PDF or page unload.
+function resetPagesJob() {
+  if (_pagesJob.key || _pagesJob.promise) {
+    _pagesJob = { key: '', promise: null, result: null, error: null };
+  }
+  retirePageUrls();
 }
 
 // Preview URL for one page SVG: object URL when the globals exist (browser),
@@ -1042,7 +1084,7 @@ function svgPreviewUrl(svg) {
 
 function pdfPagesJobFor(host, f, key) {
   if (_pagesJob.key === key && _pagesJob.promise) return _pagesJob;
-  revokePageUrls();
+  retirePageUrls();
   const job = { key, promise: null, result: null, error: null };
   job.promise = Promise.resolve()
     .then(() => host.pdf.pages(f.bytes))
@@ -1056,6 +1098,9 @@ function pdfPagesJobFor(host, f, key) {
           h: p.heightPt,
         })),
         truncated: Boolean(res && res.truncated),
+        // 1-based pages the shell could not render (v1.85 additive field) —
+        // surfaced as a note so a missing page never passes silently.
+        failed: res && Array.isArray(res.failed) ? res.failed.filter((n) => isFinite(n)) : [],
       };
     })
     .catch((e) => {
@@ -1065,12 +1110,20 @@ function pdfPagesJobFor(host, f, key) {
   return job;
 }
 
+// Analyze job: same settled-state shape as the pages job. A rejection is a
+// terminal error state, NOT a reset — resetting retried the failing analyze on
+// every onInput (including every poll tick) while the UI claimed "still
+// reading" forever. The error sticks per file identity and the template says
+// plainly that the structural checks did not run.
 function pdfJobFor(host, f, key) {
-  if (_pdfJob.key === key && _pdfJob.promise) return _pdfJob.promise;
-  const p = Promise.resolve().then(() => host.pdf.analyze(f.bytes));
-  _pdfJob = { key, promise: p };
-  p.catch(() => { if (_pdfJob.key === key) _pdfJob = { key: '', promise: null }; });
-  return p;
+  if (_pdfJob.key === key && _pdfJob.promise) return _pdfJob;
+  const job = { key, promise: null, result: null, error: false };
+  job.promise = Promise.resolve()
+    .then(() => host.pdf.analyze(f.bytes))
+    .then((res) => { job.result = res || { findings: [] }; })
+    .catch(() => { job.error = true; });
+  _pdfJob = job;
+  return job;
 }
 
 function withBudget(promise, ms) {
@@ -1109,20 +1162,22 @@ async function patch({ model, host }) {
   const blank = {
     hasFile: false, supported: false, pdfUnavailable: false, pdfRedactUnavailable: false,
     fileName: '', fileSize: '', kind: '',
-    isRaster: false, isSvg: false, isPdfKind: false,
+    isRaster: false, isSvg: false, isPdfKind: false, vectorMode: false,
     previewUrl: '', barsJson: '[]',
-    findings: [], foundSummary: '', nothingFound: false, analysisPending: false,
+    findings: [], foundSummary: '', nothingFound: false, analysisPending: false, analysisFailed: false,
     barCount: 0, barPlural: false, hasBars: false, coveragePct: 0, hasCoverage: false,
     coverageText: '', coverageHigh: false,
     pageBars: [], hasPageBars: false, resignUnavailable: false,
     pdfPages: [], hasPdfPages: false, pagesPending: false, pagesError: '', pagesTruncated: false,
+    pagesFailedNote: '',
     downloadLabel: 'Download redacted copy',
   };
-  if (!f || !f.bytes) return blank;
+  if (!f || !f.bytes) { resetPagesJob(); return blank; }
 
   const base = { ...blank, hasFile: true, fileName: f.name, fileSize: fmtBytes(f.size) };
   const info = classify(f.bytes);
   base.kind = info.kind;
+  if (info.kind !== 'PDF') resetPagesJob(); // a non-PDF replacing a PDF retires the page URLs
   if (info.kind === 'file') return base; // supported stays false → guidance
 
   const bars = parseBars(inputs.bars);
@@ -1130,7 +1185,9 @@ async function patch({ model, host }) {
   base.barCount = bars.length;
   base.barPlural = bars.length > 1;
   base.hasBars = bars.length > 0;
-  base.barsJson = JSON.stringify(bars);
+  // The canvas gets EVERY row (coerced, not filtered): its commits echo the
+  // whole array back, so an incomplete sidebar row must round-trip intact.
+  base.barsJson = JSON.stringify(barRows(inputs.bars));
 
   if (info.kind === 'PDF') {
     base.isPdfKind = true;
@@ -1148,7 +1205,10 @@ async function patch({ model, host }) {
     // the pages wait below. Awaiting them sequentially summed the budgets
     // (1800 + 1200 = 3000ms on a slow scanned PDF), which blew the runtime's
     // 2000ms onInput box — the patch was discarded and the drop looked dead.
-    const analyzeWait = withBudget(pdfJobFor(host, f, fileKey), PREVIEW_BUDGET_MS);
+    const analyzeJob = pdfJobFor(host, f, fileKey);
+    const analyzeWait = (analyzeJob.result || analyzeJob.error)
+      ? null
+      : withBudget(analyzeJob.promise, PREVIEW_BUDGET_MS);
 
     // Page previews: render every page to a self-contained SVG in the shell
     // (host.pdf.pages), budgeted so a slow render never blocks the paint. The
@@ -1160,6 +1220,13 @@ async function patch({ model, host }) {
         base.pdfPages = job.result.pages;
         base.hasPdfPages = job.result.pages.length > 0;
         base.pagesTruncated = job.result.truncated;
+        const failed = job.result.failed || [];
+        if (failed.length) {
+          const list = failed.join(', ').replace(/, ([^,]*)$/, ' and $1');
+          base.pagesFailedNote = failed.length > 1
+            ? `Pages ${list} could not be rendered, so their previews are missing. Bars for those pages can still be set in the sidebar, and the export refuses to ship a page that fails to render.`
+            : `Page ${list} could not be rendered, so its preview is missing. Bars for that page can still be set in the sidebar, and the export refuses to ship a page that fails to render.`;
+        }
       } else if (job.error) {
         base.pagesError = 'The page previews could not be rendered. The analysis below still applies, and bars set in the sidebar still redact.';
       } else {
@@ -1168,11 +1235,13 @@ async function patch({ model, host }) {
     }
 
     let findings = pdfByteFindings(f.bytes);
-    const res = await analyzeWait;
+    if (analyzeWait) await analyzeWait;
+    const res = analyzeJob.result;
     if (res && Array.isArray(res.findings)) findings = findings.concat(res.findings);
+    else if (analyzeJob.error) base.analysisFailed = true;
     else if (!res) base.analysisPending = true;
     base.findings = findings;
-    base.nothingFound = !base.analysisPending && findings.length === 0;
+    base.nothingFound = !base.analysisPending && !base.analysisFailed && findings.length === 0;
     base.foundSummary = findings.length
       ? `Found ${findings.length} item${findings.length > 1 ? 's' : ''} of hidden or non-visible data.`
       : '';
@@ -1194,6 +1263,9 @@ async function patch({ model, host }) {
   base.previewUrl = f.url || '';
   base.isSvg = info.kind === 'SVG';
   base.isRaster = !base.isSvg;
+  // Vector mode is only real for an SVG — the svgVector toggle can be left on
+  // from an earlier file, and the raster copy must not flip on a JPEG.
+  base.vectorMode = base.isSvg && Boolean(inputs.svgVector);
 
   let findings = [];
   try {
@@ -1223,7 +1295,11 @@ async function patch({ model, host }) {
     const pct = coveragePercent(rects, dims.w, dims.h);
     base.coveragePct = pct;
     base.hasCoverage = true;
-    base.coverageText = `${bars.length} mark${bars.length > 1 ? 's' : ''} will repaint about ${pct}% of the pixels.`;
+    // Honest verb per mode: raster paths destroy the pixels, vector mode only
+    // covers what sits under the bar.
+    base.coverageText = base.vectorMode
+      ? `${bars.length} mark${bars.length > 1 ? 's' : ''} will cover about ${pct}% of the frame.`
+      : `${bars.length} mark${bars.length > 1 ? 's' : ''} will repaint about ${pct}% of the pixels.`;
     base.coverageHigh = pct >= 97;
   }
 
@@ -1347,8 +1423,9 @@ function residualRasterMetadata(bytes, kind) {
 // Re-decode the output and sample points inside every bar rect: each sampled
 // pixel must be (near) black. JPEG and lossy WebP ring slightly at edges even
 // inside an inflated bar, so lossy formats get a small tolerance; PNG must be
-// exact. Skipping is only allowed when there is no canvas at all, and that is
-// reported to the caller so the result line can say so.
+// exact. `checked: false` is only possible when no 2D context exists at all —
+// the caller fails the export in that case rather than shipping unchecked bars
+// under the "verified before download" promise.
 async function verifyBarsPainted(outBytes, mime, kind, rects) {
   if (!canRaster()) return { checked: false };
   const img = await decodeImage(outBytes, mime);
@@ -1494,8 +1571,15 @@ async function exportFile({ model, host }) {
     }
     if (typeof host.pdf.analyze === 'function') {
       const recheck = await host.pdf.analyze(out);
-      if (recheck && Array.isArray(recheck.findings) && recheck.findings.length) {
-        throw new Error(`Verification failed: the rebuilt PDF still carries ${recheck.findings[0].label}. Nothing was downloaded.`);
+      // The analyzer's inventory reports the page count for EVERY valid PDF —
+      // 'Pages' is document structure, not leaked content, so it never fails
+      // the gate. Every other label (Info fields, XMP, attachments, scripts,
+      // annotations, layers, signatures) cannot exist in an image-only rebuild
+      // and stays a hard failure.
+      const leaks = (recheck && Array.isArray(recheck.findings) ? recheck.findings : [])
+        .filter((r) => r && r.label !== 'Pages');
+      if (leaks.length) {
+        throw new Error(`Verification failed: the rebuilt PDF still carries ${leaks[0].label}. Nothing was downloaded.`);
       }
     }
 
@@ -1589,7 +1673,10 @@ async function exportFile({ model, host }) {
   // The gate — rescan the OUTPUT: no metadata, nothing past the terminator,
   // and every bar region re-decoded and sampled as solid fill.
   verifyRasterOutput(out, outKind);
-  await verifyBarsPainted(out, mime, outKind, rects);
+  const barCheck = await verifyBarsPainted(out, mime, outKind, rects);
+  if (rects.length && !barCheck.checked) {
+    throw new Error('Verification failed: the bar regions could not be re-checked in this browser. Nothing was downloaded.');
+  }
 
   return { bytes: out, mime, filename: redactedName(f.name, OUT_EXT[outKind]) };
 }
