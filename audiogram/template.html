@@ -45,6 +45,13 @@
 }
 
 .ag-wavebox { flex: 1 1 auto; min-height: 0; position: relative; }
+/* The export frame-clock anchor for captioned renders (the slides / filter-*
+   pattern): 0×0, paints nothing, exists only to be the FIRST canvas that
+   registers a frame renderer. Absolute so the flex column never sees it. */
+.ag-clock { position: absolute; width: 0; height: 0; }
+/* The caption layer. LAST in the wavebox so it paints over every visual,
+   including a shell-mounted MilkDrop canvas. */
+.ag-wavebox .ag-cap { pointer-events: none; }
 /* The MilkDrop surface. The element is an empty placeholder the shell mounts a WebGL
    canvas into (see lib/viz-tool-mount.ts) — the tool never holds the context itself. */
 .ag-viz { position: absolute; inset: 0; }
@@ -104,10 +111,21 @@
      data-audio-start="{{default start 0}}"
      data-style="{{default style "bars"}}"
      data-accent="{{default accent "#5b8def"}}"
+     data-ink="{{default ink "#eef1f4"}}"
+     data-bg="{{default bg "#101828"}}"
+     data-ag-cues="{{agCues}}"
      data-ag-meta="{{agMeta}}"
      data-ag-colors="{{agColors}}"
      data-ag-beats="{{agBeats}}"
      data-ag-data="{{agData}}">
+  {{#if agCues}}
+  {{!-- The frame-clock anchor. The export takes the FIRST canvas carrying a
+        renderer, and the caption layer must be driven even when the shell's
+        MilkDrop canvas (mounted before #ag-wave) owns the picture — so this
+        inert canvas registers first and forwards the tick. Only present when
+        there are cues, so an uncaptioned card is byte-identical. --}}
+  <canvas id="ag-clock" class="ag-clock" width="0" height="0" aria-hidden="true"></canvas>
+  {{/if}}
   <div class="ag-wavebox">
     {{#if agVizPreset}}
     {{!-- Before the fallback canvas on purpose: the export frame clock takes the FIRST
@@ -125,6 +143,12 @@
     <svg class="ag-ph" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true"><path d="{{agStatic}}" fill="{{default accent "#5b8def"}}"/></svg>
     {{/if}}
     <canvas id="ag-wave" aria-hidden="true"></canvas>
+    {{#if agCues}}
+    {{!-- Captions paint here, on top of whichever visual is live — #ag-wave, or
+          the viz canvas that hides it. Kept out of #ag-wave so the MilkDrop
+          style gets subtitles too. --}}
+    <canvas id="ag-cap" class="ag-cap" aria-hidden="true"></canvas>
+    {{/if}}
   </div>
   {{#if title}}
   <div class="ag-meta">
@@ -218,6 +242,23 @@
   var SS = 2;      // backing-store supersample, so a 1920px export stays crisp
   var MAXW = 3200; // backing-store cap
 
+  // ── Captions ───────────────────────────────────────────────────────────────
+  //
+  // Cues come pre-grouped from hooks.js (a mirror of engine/src/captions.ts) as
+  // [{t0,t1,text}], seconds relative to the analysed window — present only when
+  // the clip carries its own word timings (a Script-audio asset). Drawn on the
+  // dedicated top canvas #ag-cap so they ride every style, including a
+  // shell-mounted MilkDrop canvas that covers #ag-wave.
+  var cap = document.getElementById('ag-cap');
+  var clockEl = document.getElementById('ag-clock');
+  var CUES;
+  try { CUES = JSON.parse(root.dataset.agCues || '[]'); } catch (e) { CUES = []; }
+  if (!Array.isArray(CUES)) CUES = [];
+  var capCtx = cap && typeof cap.getContext === 'function' ? cap.getContext('2d') : null;
+  var captions = !!(capCtx && clockEl && CUES.length);
+  var INK = root.dataset.ink || '#eef1f4';
+  var BG = root.dataset.bg || '#101828';
+
   // ── Reading the track ──────────────────────────────────────────────────────
 
   function at(track, f) { return track[f < 0 ? 0 : f >= COUNT ? COUNT - 1 : f] / 255; }
@@ -245,12 +286,13 @@
     return 0;
   }
 
-  function fit() {
-    var box = canvas.parentNode;
+  function fit(c) {
+    c = c || canvas;
+    var box = c.parentNode;
     var w = box.offsetWidth || 600, h = box.offsetHeight || 300;
     var scale = Math.min(SS, MAXW / Math.max(1, w));
     var bw = Math.round(w * scale), bh = Math.round(h * scale);
-    if (canvas.width !== bw || canvas.height !== bh) { canvas.width = bw; canvas.height = bh; }
+    if (c.width !== bw || c.height !== bh) { c.width = bw; c.height = bh; }
   }
 
   function bar(x, y, w, h, r) {
@@ -491,13 +533,95 @@
     (STYLES[style] || STYLES.bars)(W, H, f, prog);
   }
 
+  /** The cue on screen at `t` seconds, or null during silence. Linear — a
+   *  narration is at most a few hundred cues and this runs once per frame. */
+  function cueAtTime(t) {
+    for (var i = 0; i < CUES.length; i++) if (t >= CUES[i].t0 && t < CUES[i].t1) return CUES[i];
+    return null;
+  }
+
+  /**
+   * The lower-third caption for normalised clip time `p`, drawn onto #ag-cap:
+   * the active cue wrapped to at most two lines over a translucent plate in the
+   * card's own background colour, text in the ink colour. Payload-only and
+   * synchronous, like every other draw here.
+   */
+  function drawCaption(p) {
+    if (!captions) return;
+    fit(cap);
+    var W = cap.width, H = cap.height;
+    capCtx.clearRect(0, 0, W, H);
+    var cue = cueAtTime(p * DUR);
+    if (!cue) return;
+    // Type set against the box so a story export and a square preview carry the
+    // same proportion; the family follows the card's own (brand) face.
+    var fs = Math.max(16, Math.round(Math.min(W, H) * 0.052));
+    var fam = 'sans-serif';
+    try { fam = getComputedStyle(root).fontFamily || fam; } catch (e) { /* headless */ }
+    capCtx.font = '600 ' + fs + 'px ' + fam;
+    capCtx.textAlign = 'center';
+    capCtx.textBaseline = 'middle';
+    // Greedy wrap, one break at most: hooks.js caps a cue at 42 characters, so
+    // two lines always hold it — a third would climb into the visual.
+    var maxW = W * 0.86;
+    var wordsArr = cue.text.split(' ');
+    var lines = [];
+    var line = '';
+    for (var i = 0; i < wordsArr.length; i++) {
+      var next = line ? line + ' ' + wordsArr[i] : wordsArr[i];
+      if (line && !lines.length && capCtx.measureText(next).width > maxW) { lines.push(line); line = wordsArr[i]; }
+      else line = next;
+    }
+    lines.push(line);
+    var lh = fs * 1.3;
+    var padX = fs * 0.7, padY = fs * 0.45;
+    var wMax = 0;
+    for (var j = 0; j < lines.length; j++) {
+      var lw = capCtx.measureText(lines[j]).width;
+      if (lw > wMax) wMax = lw;
+    }
+    var pw = Math.min(W * 0.94, wMax + padX * 2);
+    var phH = lines.length * lh + padY * 2;
+    var px = (W - pw) / 2;
+    var py = H - Math.max(H * 0.045, fs * 0.8) - phH;
+    capCtx.globalAlpha = 0.72;
+    capCtx.fillStyle = BG;
+    if (capCtx.roundRect) { capCtx.beginPath(); capCtx.roundRect(px, py, pw, phH, fs * 0.35); capCtx.fill(); }
+    else capCtx.fillRect(px, py, pw, phH);
+    capCtx.globalAlpha = 1;
+    capCtx.fillStyle = INK;
+    for (var k = 0; k < lines.length; k++) {
+      capCtx.fillText(lines[k], W / 2, py + padY + (k + 0.5) * lh);
+    }
+  }
+
+  /** The shell-mounted MilkDrop canvas, when it is live and driveable. */
+  function vizCanvas() {
+    var el = root.querySelector('.ag-viz canvas');
+    return el && typeof el.__lollyFrameRender === 'function' ? el : null;
+  }
+
   var ph = root.querySelector('.ag-ph');
   if (ph) ph.style.display = 'none'; // the canvas takes over from here
 
   // Deterministic export frame clock (shared convention — see the slides tool and
   // bridge/export.ts): stills and every gif/webm/mp4/webp frame call this with the
   // normalised clip time; t=0 is the poster frame.
-  canvas.__lollyFrameRender = function (t) { draw(t, t === 0); };
+  //
+  // With captions the anchor moves to the inert #ag-clock (first in the DOM, so
+  // the export picks it over a mounted MilkDrop canvas): it draws the caption and
+  // forwards the tick to whichever visual is live, mirroring the driven flag so
+  // the visualizer's own preview loop stands down while the export drives.
+  if (captions) {
+    clockEl.__lollyFrameRender = function (t) {
+      var vc = vizCanvas();
+      if (vc) { vc.__lollyFrameDriven = clockEl.__lollyFrameDriven; vc.__lollyFrameRender(t); }
+      else draw(t, t === 0);
+      drawCaption(t === 0 ? (posterFrame + 0.5) / COUNT : t);
+    };
+  } else {
+    canvas.__lollyFrameRender = function (t) { draw(t, t === 0); };
+  }
 
   // Live preview loop. A repaint replaces the canvas (the loop dies via
   // isConnected); a script re-run on the SAME canvas (an export-size change) bumps
@@ -506,17 +630,29 @@
   var gen = (canvas.__agGen = (canvas.__agGen || 0) + 1);
   var reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
   draw(0, true);
+  drawCaption((posterFrame + 0.5) / COUNT);
   if (!reduce && typeof requestAnimationFrame === 'function') {
     var t0 = null;
     var loop = function (now) {
       if (!canvas.isConnected || canvas.__agGen !== gen) return;
+      // The captioned clock anchor owns the driven flag when it exists.
+      var driven = (captions ? clockEl : canvas).__lollyFrameDriven;
       // offsetParent is null once the shell hides this canvas behind a mounted
       // visualizer — drawing a full frame into something nobody can see, alongside a
       // WebGL render, is pure waste. It keeps polling so it resumes if the viz goes.
-      if (!canvas.__lollyFrameDriven && canvas.offsetParent !== null) {
+      // Captions keep animating either way: theirs is the canvas on top.
+      if (!driven && (captions || canvas.offsetParent !== null)) {
         if (t0 === null) t0 = now;
         var period = DUR * 1000;
-        draw(((now - t0) % period) / period, false);
+        var p = ((now - t0) % period) / period;
+        if (canvas.offsetParent !== null) draw(p, false);
+        if (captions) {
+          drawCaption(p);
+          // Export over: hand the visualizer its preview loop back (the clock's
+          // forwarder raised its flag while the export drove the frames).
+          var vc = vizCanvas();
+          if (vc && vc.__lollyFrameDriven) vc.__lollyFrameDriven = false;
+        }
       }
       requestAnimationFrame(loop);
     };

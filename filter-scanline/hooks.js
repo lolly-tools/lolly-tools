@@ -12,9 +12,16 @@
  * (CLI/jsdom) there's no 2D context, so the hook degrades to a placeholder.
  */
 
-var VIEW = 1000;        // viewBox units (square frame; matches render.width/height)
+var VIEW = 1000;        // default viewBox edge when the tool has no explicit size yet
+                        // (a square frame matching render.width/height). Once an image is
+                        // picked the canvas takes the photo's own pixel size (see the auto-fit
+                        // <script> in template.html); every render works in the live W×H.
+var MAX_EDGE = 8000;    // upper bound on either canvas edge (matches width/height inputs' max)
 var MAX_CELLS = 100000; // bound the total rect count so a tiny line size can't blow up the SVG
                         // (this is the real floor on detail at very small line sizes, not the input min)
+// Live canvas size from the width/height inputs (synced from the export bar by the shell).
+function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_EDGE); }
+function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
 // Default source image until the user picks one: a Lolly tool URL (bag-video → PNG),
 // resolved via host.compose. A plain catalog id still works (see resolver below).
 var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
@@ -25,6 +32,7 @@ var _memoKey = null;
 var _memoResult = null;
 var _bgTransparent = true; // for beforeExport: is the background empty (transparent)?
 var _lastOv = null;        // most recent overlay params (compute()) — read by beforeExport
+var _lastW = VIEW, _lastH = VIEW;  // most recent canvas size — read by beforeExport (overlay clock box)
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -45,14 +53,15 @@ function colour(v, fallback) {
   return (COLOUR_RE.test(s) || COLOUR_WORDS[s.toLowerCase()]) ? s : fallback;
 }
 
-function svgOpen() {
-  return '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" '
-    + 'viewBox="0 0 ' + VIEW + ' ' + VIEW + '" preserveAspectRatio="xMidYMid meet">';
+function svgOpen(W, H) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" '
+    + 'width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block;">';
 }
-function placeholder(message) {
-  return svgOpen()
-    + '<rect width="' + VIEW + '" height="' + VIEW + '" fill="#f4f4f5"/>'
-    + '<text x="' + (VIEW / 2) + '" y="' + (VIEW / 2) + '" text-anchor="middle" '
+function placeholder(message, W, H) {
+  W = W || VIEW; H = H || VIEW;
+  return svgOpen(W, H)
+    + '<rect width="' + W + '" height="' + H + '" fill="#f4f4f5"/>'
+    + '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" '
     + 'dominant-baseline="middle" font-family="sans-serif" font-size="34" fill="#9ca3af">'
     + message + '</text></svg>';
 }
@@ -444,14 +453,15 @@ function disarmFilterOverlayExport() {
 // ── render ───────────────────────────────────────────────────────────────────
 
 function buildSvg(args) {
+  var W = args.W || VIEW, H = args.H || VIEW;
   // No-filter bypass: show the raw source (still image or live camera frame) with the
   // overlay composited on top — "just how it is", plus optional logo / lower-third.
   if (args.noFilter) {
     var bgnf = _bgTransparent ? null : colour(args.background, '');
-    var onf = svgOpen();
-    if (bgnf) onf += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="' + bgnf + '"/>';
-    if (args.rawSrc) onf += '<image href="' + ovEsc(args.rawSrc) + '" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '" preserveAspectRatio="xMidYMid slice"/>';
-    onf += '<g id="lolly-ov-slot">' + buildOverlaySvg(VIEW, VIEW, args._ov || {}) + '</g>';
+    var onf = svgOpen(W, H);
+    if (bgnf) onf += '<rect width="' + W + '" height="' + H + '" fill="' + bgnf + '"/>';
+    if (args.rawSrc) onf += '<image href="' + ovEsc(args.rawSrc) + '" x="0" y="0" width="' + W + '" height="' + H + '" preserveAspectRatio="xMidYMid slice"/>';
+    onf += '<g id="lolly-ov-slot">' + buildOverlaySvg(W, H, args._ov || {}) + '</g>';
     onf += '</svg>';
     return onf;
   }
@@ -468,10 +478,11 @@ function buildSvg(args) {
 
   var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
   var ar = iw / ih;
+  var frameAR = W / H;
   var regionW, regionH;
-  if (fit === 'cover') { regionW = VIEW; regionH = VIEW; }
-  else if (ar >= 1) { regionW = VIEW; regionH = VIEW / ar; }
-  else { regionH = VIEW; regionW = VIEW * ar; }
+  if (fit === 'cover') { regionW = W; regionH = H; }
+  else if (ar >= frameAR) { regionW = W; regionH = W / ar; }
+  else { regionH = H; regionW = H * ar; }
 
   // Grid resolution depends only on the line size, never the gap — so changing the
   // gap re-thins the lines without re-sampling, and the image can't stretch or jump.
@@ -505,7 +516,7 @@ function buildSvg(args) {
     return v >= 204 ? 4 : v >= 153 ? 3 : v >= 102 ? 2 : v >= 51 ? 1 : 0;
   }
 
-  var offX = (VIEW - regionW) / 2, offY = (VIEW - regionH) / 2;
+  var offX = (W - regionW) / 2, offY = (H - regionH) / 2;
   var cellW = regionW / cols, cellH = regionH / rows;
   // Each cell paints a band at its top; the blank remainder below is the scanline
   // gap. The band is the line's "on" fraction vis/(vis+gap) of the fixed cell, so a
@@ -529,10 +540,10 @@ function buildSvg(args) {
 
   var bg = _bgTransparent ? null : colour(args.background, '');
   bg = bg ? treatHex(bg, _t) : bg; // treatment also tints the background fill
-  var out = svgOpen();
-  if (bg) out += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="' + bg + '"/>';
+  var out = svgOpen(W, H);
+  if (bg) out += '<rect width="' + W + '" height="' + H + '" fill="' + bg + '"/>';
   for (var t = 0; t < 5; t++) if (paths[t]) out += '<path fill="' + fills[t] + '" d="' + paths[t] + '"/>';
-  out += '<g id="lolly-ov-slot">' + buildOverlaySvg(VIEW, VIEW, args._ov || {}) + '</g>';
+  out += '<g id="lolly-ov-slot">' + buildOverlaySvg(W, H, args._ov || {}) + '</g>';
   out += '</svg>';
   return out;
 }
@@ -542,11 +553,16 @@ function buildSvg(args) {
 async function compute(model) {
   var inputs = inputsFrom(model);
   _bgTransparent = !colour(inputs.background, ''); // empty/invalid → transparent
+  var W = dimW(inputs), H = dimH(inputs);
+  _lastW = W; _lastH = H;
 
-  if (!canRaster()) return { svgContent: placeholder('Preview renders in the browser') };
+  if (!canRaster()) return { svgContent: placeholder('Preview renders in the browser', W, H) };
 
   var ref = inputs.image;
   var url = ref && typeof ref === 'object' ? ref.url : null;
+  // Only a user-chosen image drives the auto-fit (template.html); the demo default
+  // must never resize the canvas on first load.
+  var isUserPick = !!url;
   if (!url) {
     if (!_defaultUrl) {
       try {
@@ -572,7 +588,7 @@ async function compute(model) {
   _lastOv = ov; // read by beforeExport to arm the motion-export overlay clock (armFilterOverlayExport)
 
   var params = {
-    url: url, noFilter: ovi.noFilter, rawSrc: url, ov: ov,
+    url: url, W: W, H: H, noFilter: ovi.noFilter, rawSrc: url, ov: ov,
     lineSize: inputs.lineSize, gapSize: inputs.gapSize, separatePixels: inputs.separatePixels, everyLine: inputs.everyLine, fit: inputs.fit,
     highlight: inputs.highlight, light: inputs.light, mid: inputs.mid, shade: inputs.shade,
     shadow: inputs.shadow, background: inputs.background, brightness: inputs.brightness, contrast: inputs.contrast,
@@ -583,18 +599,28 @@ async function compute(model) {
   params._ov = ov;
   if (memoKey === _memoKey) return _memoResult;
 
-  var svgContent;
+  var svgContent, natW = 0, natH = 0;
   try {
-    params.img = await getImage(url);
+    var decoded = await getImage(url);
+    params.img = decoded;
+    natW = decoded.naturalWidth || decoded.width || 0;
+    natH = decoded.naturalHeight || decoded.height || 0;
     svgContent = buildSvg(params);
-    if (!svgContent) svgContent = placeholder('Preview renders in the browser');
+    if (!svgContent) svgContent = placeholder('Preview renders in the browser', W, H);
   } catch (e) {
     if (host.log) host.log('warn', 'filter-scanline: render failed', { error: String(e) });
-    svgContent = placeholder('Could not read this image');
+    svgContent = placeholder('Could not read this image', W, H);
   }
 
   _memoKey = memoKey;
-  _memoResult = { svgContent: svgContent };
+  // imgKey/natW/natH drive the auto-fit <script> in template.html: only a user pick
+  // carries a key (the demo default leaves imgKey empty so it never resizes the canvas).
+  _memoResult = {
+    svgContent: svgContent,
+    imgKey: isUserPick ? url : '',
+    natW: isUserPick ? natW : 0,
+    natH: isUserPick ? natH : 0,
+  };
   return _memoResult;
 }
 
@@ -611,6 +637,8 @@ function onFrame(ctx) {
   if (!canRaster() || typeof ImageData === 'undefined') return null;
   var inputs = inputsFrom(ctx.model);
   _bgTransparent = !colour(inputs.background, '');
+  var W = dimW(inputs), H = dimH(inputs);
+  _lastW = W; _lastH = H;
   var src;
   try {
     src = document.createElement('canvas');
@@ -631,7 +659,7 @@ function onFrame(ctx) {
   });
 
   var svg = buildSvg({
-    img: src, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? src.toDataURL('image/jpeg', 0.85) : null, _ov: ov,
+    img: src, W: W, H: H, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? src.toDataURL('image/jpeg', 0.85) : null, _ov: ov,
     lineSize: inputs.lineSize, gapSize: inputs.gapSize, separatePixels: inputs.separatePixels,
     everyLine: inputs.everyLine, fit: inputs.fit, highlight: inputs.highlight, light: inputs.light,
     mid: inputs.mid, shade: inputs.shade, shadow: inputs.shadow, background: inputs.background,
@@ -650,6 +678,6 @@ function beforeExport(ctx) {
   if (_bgTransparent && alpha.indexOf(ctx.format) !== -1) ctx.opts.background = 'transparent';
   // gif/apng/webm/mp4 only: replay the overlay's live-mode intro deterministically
   // across the clip instead of holding it at its settled resting pose throughout.
-  armFilterOverlayExport(ctx, VIEW, VIEW, _lastOv);
+  armFilterOverlayExport(ctx, _lastW, _lastH, _lastOv);
 }
 function afterExport() { disarmFilterOverlayExport(); }

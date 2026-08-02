@@ -5,7 +5,8 @@
  * The division of labour with template.html is deliberate:
  *
  *   hooks.js (here)  decides WHAT the animation knows — it calls host.audio to
- *                    analyse the visible window of the clip, derives the brand
+ *                    analyse the clip (all of it, from the in-point to the end,
+ *                    at an fps that adapts to its length), derives the brand
  *                    colour ramp from host.color, and hands both to the template
  *                    as a compact packed payload.
  *   template.html    decides how it LOOKS — a canvas draw function per style,
@@ -24,9 +25,41 @@
  * same frames as the browser.
  */
 
-/** Analysis frames per second. Matches the export's default fps, so one analysis
- *  frame is one video frame and nothing interpolates. */
+/** Analysis frames per second at full rate. Matches the export's default fps, so one
+ *  analysis frame is one video frame and nothing interpolates. Long clips scale this
+ *  down — see MAX_FRAMES. */
 const FPS = 30;
+
+/**
+ * Frame budget for the whole animation track — the knob that lets the window follow
+ * the clip instead of stopping at 8 seconds. The analysis fps adapts so the frame
+ * count stays near this budget: full 30fps up to 2 minutes, then coarser.
+ *
+ *   fps = clamp(floor(MAX_FRAMES / seconds), FPS_MIN, FPS)
+ *
+ * What that costs, per second of clip (raw bytes; base64 adds 4/3):
+ *
+ *   spectrum + scalars (6 + 48 B/frame):  ~1.6 KB/s at 30fps   ~0.32 KB/s at 6fps
+ *   scope rows        (1024 B/frame):     ~30 KB/s  at 30fps   ~6 KB/s    at 6fps
+ *   vizWave           (1024 B/frame):     ~30 KB/s  at 30fps   ~6 KB/s    at 6fps
+ *
+ * So the spectrum track lands near MAX_FRAMES × 54 B ≈ 190 KB worst case, and the
+ * sample-window styles (scope, milkdrop) near MAX_FRAMES × 1 KB ≈ 3.7 MB — bounded
+ * by the budget, not by the clip. Past 10 minutes the fps floor holds at FPS_MIN and
+ * the payload grows linearly again, which still works; it is just coarser and
+ * heavier, which is why the audio input's help says so.
+ */
+const MAX_FRAMES = 3600;
+
+/** The fps floor. Below ~6fps the animation stops reading as animation. */
+const FPS_MIN = 6;
+
+/** The analysis fps for a clip of `sec` seconds — full rate up to the budget, then
+ *  scaled down, never below the floor. Integer, so the maths stays stable. */
+function adaptFps(sec) {
+  if (!(sec > 0)) return FPS;
+  return Math.max(FPS_MIN, Math.min(FPS, Math.floor(MAX_FRAMES / sec)));
+}
 
 /** Spectrum bands. 48 log-spaced bands is more bars than any of these styles draws
  *  at once, so styles subsample rather than ask for a second analysis. */
@@ -60,9 +93,10 @@ const SCOPE = 1024;
  */
 const VIZ_SAMPLES = 1024;
 
-/** Seconds of audio to analyse. Matches render.video.duration — there is no reason
- *  to analyse a three-minute track to draw eight seconds of it. */
-const WINDOW = 8;
+/** Seconds the PLACEHOLDER track covers (and the manifest's default export length).
+ *  Real audio is always analysed to the end of the clip — the animation matches the
+ *  duration of the selected audio by construction. */
+const PLACEHOLDER_SEC = 8;
 
 /**
  * Deterministic speech-like placeholder, so the tool (and its gallery examples)
@@ -88,6 +122,50 @@ function synthTrack(count, bands) {
     }
   }
   return { rms, mag };
+}
+
+/**
+ * Cue grouping — a tiny mirror of the engine's `groupWordsToCues`
+ * (engine/src/captions.ts), same defaults: 42 chars, 5 s on screen, a 0.6 s
+ * silence starts a new cue, sentence punctuation closes the cue after its word.
+ * Tools are data and may not import the engine, so the reference implementation
+ * is mirrored here — a caption grouped by the web shell and one grouped here
+ * must break at the same words, so change BOTH or neither
+ * (tests/audiogram-captions.test.ts pins them against each other).
+ */
+const CUE_CHARS = 42;
+const CUE_SEC = 5;
+const CUE_GAP = 0.6;
+const SENTENCE_END = /[.!?…][)\]"'”’]*$/;
+
+/** Word timings ({text,start,end} seconds) → cues ({t0,t1,text}), greedily. */
+function groupCues(words) {
+  const cues = [];
+  let open = null;
+  for (const w of words) {
+    const text = String(w.text || '').trim();
+    if (!text) continue;
+    if (open) {
+      const joined = `${open.text} ${text}`;
+      const overflow = joined.length > CUE_CHARS || w.end - open.t0 > CUE_SEC;
+      const paused = w.start - open.t1 >= CUE_GAP;
+      if (overflow || paused) {
+        cues.push(open);
+        open = null;
+      } else {
+        open.text = joined;
+        open.t1 = w.end;
+      }
+    }
+    if (!open) open = { t0: w.start, t1: w.end, text };
+    // Sentence punctuation closes the cue AFTER the word that carries it.
+    if (SENTENCE_END.test(text)) {
+      cues.push(open);
+      open = null;
+    }
+  }
+  if (open) cues.push(open);
+  return cues;
 }
 
 /** 0..1 → one byte. Values outside the range are clamped rather than wrapped. */
@@ -144,13 +222,14 @@ function ramp(host, accent, n) {
  * The length of audio the last analysis actually covered, in seconds.
  *
  * Module-level because `beforeExport` needs it and hooks share one module instance per
- * mount (the same pattern mesh-gradient uses for its palette). Seeded with WINDOW so an
- * export that somehow precedes an analysis still gets the manifest's own default.
+ * mount (the same pattern mesh-gradient uses for its palette). Seeded with the
+ * placeholder length so an export that somehow precedes an analysis still gets the
+ * manifest's own default.
  */
-let _analysedSec = WINDOW;
+let _analysedSec = PLACEHOLDER_SEC;
 
 /**
- * Analyse the visible window and pack it for the template.
+ * Analyse the clip (from the in-point to its end) and pack it for the template.
  *
  * Returns the extras the template reads. Called from both onInit and onInput
  * because every input that changes what is analysed (the clip, the in-point, and
@@ -184,12 +263,13 @@ async function build(ctx) {
   const colors = ramp(h, accent, 6);
   const meta = {
     fps: FPS, bands: BANDS, buckets: BUCKETS, scope: 0,
-    count: 0, bpm: null, dur: WINDOW, start, real: false,
+    count: 0, bpm: null, dur: PLACEHOLDER_SEC, start, real: false,
   };
 
   let packed = '';
   let peaks = null;
   let beats = [];
+  let cues = [];
   // The visualizer's payload, kept OUT of agData: the shell decodes these windows
   // straight into butterchurn, and agData's section layout is a contract with the
   // template's own unpack(). One reader each beats making both agree on one buffer.
@@ -199,14 +279,29 @@ async function build(ctx) {
   const src = v.audio;
   if (src && h.audio && h.audio.isAvailable()) {
     try {
-      const a = await h.audio.analyse(src, {
-        fps: FPS,
+      // The whole remaining clip is analysed: `window` is OMITTED, which the
+      // host.audio contract defines as "to the end of the source". The fps adapts
+      // to the clip length (see MAX_FRAMES) — so the fps has to be guessed BEFORE
+      // the analysis. Uploaded and generated audio assets carry meta.durationMs,
+      // which makes the guess exact in the common case; without it, guess full
+      // rate and re-analyse below only if that turns out badly wrong.
+      const hintMs = src && src.meta && Number(src.meta.durationMs);
+      const hintSec = hintMs > 0 ? Math.max(0.5, hintMs / 1000 - start) : 0;
+      const opts = (fps) => ({
+        fps,
         bands: BANDS,
         buckets: BUCKETS,
         start,
-        window: WINDOW,
         ...(wantSamples ? { samples: wantViz ? VIZ_SAMPLES : SCOPE } : {}),
       });
+      let a = await h.audio.analyse(src, opts(hintSec ? adaptFps(hintSec) : FPS));
+      // The analysis reports the span it actually covered — that is the truth the
+      // guess is checked against. Re-analyse only when the guess was off by more
+      // than 2x (a missing durationMs on a long clip): a second decode is real
+      // work, and a track within 2x of budget draws fine.
+      const ideal = adaptFps(a.window);
+      if (ideal * 2 <= a.fps || ideal >= a.fps * 2) a = await h.audio.analyse(src, opts(ideal));
+      const fps = a.fps;
       const f = a.frames;
       const scopeLen = f.samples;
       // Section order is the contract with the template's unpack(): the six
@@ -229,18 +324,37 @@ async function build(ctx) {
       meta.count = f.count;
       meta.scope = wantScope ? scopeLen : 0;
       meta.bpm = a.bpm;
-      meta.dur = a.window || WINDOW;
+      meta.fps = fps;
+      meta.dur = a.window || PLACEHOLDER_SEC;
       // beforeExport reads this to make the video as long as the audio it draws.
       _analysedSec = meta.dur;
       meta.real = true;
       if (wantViz) {
         vizWave = b64(f.wave.subarray(0, f.count * scopeLen));
-        vizMeta = { count: f.count, samples: scopeLen, fps: FPS, poster: loudest(f.rms, f.count) };
+        vizMeta = { count: f.count, samples: scopeLen, fps, poster: loudest(f.rms, f.count) };
       }
       // Beat FRAME indices, not seconds: the draw loop already works in frames, and
-      // an index is one byte-ish of payload against a float's worth of text.
+      // an index is one byte-ish of payload against a float's worth of text. Mapped
+      // at the fps this analysis actually ran at, not the full-rate constant.
       if (v.beat !== false && a.bpm !== null) {
-        beats = Array.from(a.beats).map((t) => Math.round(t * FPS)).filter((i) => i >= 0 && i < f.count);
+        beats = Array.from(a.beats).map((t) => Math.round(t * fps)).filter((i) => i >= 0 && i < f.count);
+      }
+      /**
+       * Captions — only when the clip carries its own word timings, which a
+       * Script-audio asset does (meta.tts.words, exact by construction from the
+       * synthesis). Nothing is transcribed here: no timings, no captions. The
+       * timings are clip-absolute and the analysis runs from the in-point, so
+       * words are shifted onto the analysed window first and words already
+       * finished before it are dropped.
+       */
+      const tts = v.captions !== false && src && src.meta && src.meta.tts;
+      const words = tts && Array.isArray(tts.words) ? tts.words : null;
+      if (words) {
+        cues = groupCues(
+          words
+            .filter((w) => Number(w.end) > start)
+            .map((w) => ({ text: w.text, start: Math.max(0, Number(w.start) - start), end: Number(w.end) - start })),
+        );
       }
     } catch (err) {
       // An undecodable clip is a normal outcome, not a bug: codec support genuinely
@@ -253,7 +367,7 @@ async function build(ctx) {
   }
 
   if (!meta.real) {
-    const count = FPS * WINDOW;
+    const count = FPS * PLACEHOLDER_SEC;
     const { rms, mag } = synthTrack(count, BANDS);
     const bytes = new Uint8Array(count * 6 + count * BANDS + BUCKETS);
     let at = 0;
@@ -304,6 +418,12 @@ async function build(ctx) {
     agSummary: meta.real
       ? (meta.bpm ? `${Math.round(meta.bpm)} BPM` : 'waveform')
       : 'placeholder waveform',
+    // Subtitle cues as their own small JSON extra rather than a section of the
+    // packed payload: agData's section layout is a byte contract with the
+    // template's unpack(), and a handful of short strings is not worth touching
+    // it for. Empty (and the template's caption markup absent) for any clip
+    // without word timings.
+    agCues: cues.length ? JSON.stringify(cues) : '',
     // The static fallback path (see template.html): a polyline over the overview
     // peaks, so a script-less render is the clip's real envelope rather than a
     // stand-in. Built here because hooks are where the numbers already are.
@@ -362,21 +482,39 @@ async function onInput(ctx) {
 }
 
 /**
- * Make the video as long as the audio it is drawing.
+ * Make the video as long as the audio it is drawing — and an audio-only export the
+ * same excerpt the video would have carried.
  *
- * `WINDOW` asks for 8 seconds but the engine CLAMPS that to what the clip actually has
- * left after the in-point, so a 5-second voice memo yields 150 analysis frames — which
- * the template then walks across the manifest's full 8-second export. The picture runs
- * at 5/8 speed against its own soundtrack, and the further `start` is into a short clip
- * the worse the drift. Setting the duration from the analysis makes one analysis frame
- * one video frame by construction.
+ * VIDEO: the analysis covers the whole clip from the in-point, but the manifest's
+ * default export length is still 8 seconds — so a 5-second voice memo or a 3-minute
+ * track would otherwise be walked across the wrong duration and the picture would
+ * drift against its own soundtrack. Setting the duration from the analysed span makes
+ * the animation and the audio end together by construction, at any clip length.
  *
- * Only when the user has NOT chosen a duration themselves: the export popup's value is a
+ * AUDIO (wav/mp3/m4a/opus): the file IS the sound, and the sound is the excerpt the
+ * card is about — from "Start at" (stamped on the stage as data-audio-start, which is
+ * where the export path reads the in-point) to the end of the clip. The tool applies
+ * NOTHING to it: no fade, no normalisation, no gain. The video's soundtrack is the
+ * same span played at the export bar's own level, so the two exports agree about the
+ * same clip by construction rather than by matching two sets of maths.
+ *
+ * Leaving `duration` UNSET is what the export path reads as "to the end of the
+ * source", and it is also what lets an untrimmed export in the source's own format
+ * hand back the original bytes instead of a lossy re-encode. A duration inherited
+ * from the video card (the manifest's 8 s default) would silently truncate the sound
+ * to something nobody asked for, so it is cleared.
+ *
+ * Both branches defer to a duration the user chose: the export popup's value is a
  * deliberate instruction and must win. Same stance as the sequence tool's beforeExport.
  */
 function beforeExport(ctx) {
   if (!ctx || !ctx.opts) return;
   const ANIMATED = { webm: 1, mp4: 1, gif: 1, 'webp-anim': 1 };
+  const AUDIO_ONLY = { wav: 1, mp3: 1, m4a: 1, opus: 1 };
+  if (AUDIO_ONLY[ctx.format]) {
+    if (!ctx.opts.durationUserSet) delete ctx.opts.duration;
+    return;
+  }
   if (!ANIMATED[ctx.format]) return;
   if (ctx.opts.durationUserSet) return;
   if (_analysedSec > 0.5) ctx.opts.duration = Math.round(_analysedSec * 100) / 100;

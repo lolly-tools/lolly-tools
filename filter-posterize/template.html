@@ -4,5 +4,68 @@
       for gif/apng/webm/mp4 exports, replaying the brand-overlay intro deterministically
       instead of holding it at rest for the whole clip. Needed because the capture loop
       only drives a frame-accurate t through a <canvas> carrying that property (see the
-      slides tool for the same convention). 0×0 + aria-hidden: never painted, never seen. --}}
-<canvas data-ov-clock width="0" height="0" aria-hidden="true"></canvas>
+      slides tool for the same convention). 0×0 + aria-hidden: never painted, never seen.
+      It doubles as the auto-fit anchor: hooks.js stamps the chosen image's URL + natural
+      pixel size here, and the <script> below snaps the export size to it. --}}
+<canvas data-ov-clock width="0" height="0" aria-hidden="true"
+        data-img-key="{{imgKey}}" data-img-w="{{natW}}" data-img-h="{{natH}}"></canvas>
+<script>
+/* Auto-fit the canvas to a newly chosen image (native pixel dimensions).
+   hooks.js stamps the user-picked image's URL as data-img-key (empty for the demo
+   default or a headless render) plus its natural size (data-img-w/h) on the anchor
+   above. This <script> re-runs on every paint (runTemplateScripts); when the key
+   changes to a new image we snap the export Width/Height fields to the image's native
+   size (capped, aspect preserved) so the canvas takes the photo's own aspect ratio.
+   The filter then re-fills whatever the user resizes to afterwards, and we don't
+   re-snap until a different image is chosen. Keyed on the #tool-canvas element, which
+   is recreated per tool mount — so it auto-scopes per tool and, being absent for the
+   off-screen export canvas, never resizes the bar during an export. IIFE + var: this
+   <script> is recreated and re-run each render, so top-level const/let would throw. */
+(function () {
+  var anchor = document.querySelector('[data-img-key]');
+  if (!anchor) return;
+  var canvas = anchor.closest('#tool-canvas');
+  if (!canvas) return;                        // off-screen export canvas → never touch the export bar
+  var key = anchor.getAttribute('data-img-key') || '';
+  if (!('__filterFitKey' in canvas)) {        // FIRST run for this freshly-mounted canvas (#tool-canvas is
+    canvas.__filterFitKey = key;              // rebuilt per mount): adopt whatever image is already set as the
+    return;                                   // baseline WITHOUT resizing, so a saved/restored file keeps its
+  }                                           // saved export size (incl. a deliberate manual crop). Only a
+                                              // LATER change to the image input triggers a snap.
+  if (canvas.__filterFitKey === key) return;  // image unchanged since mount / last snap → respect manual resize
+  if (!key) { canvas.__filterFitKey = ''; return; } // image cleared → adopt empty baseline, no resize
+  var uEl = document.querySelector('[data-action="export-unit"]');
+  if (uEl && uEl.value && uEl.value !== 'px') return; // a deliberate mm/in page — don't override it
+  var wEl = document.querySelector('[data-action="export-width"]');
+  var hEl = document.querySelector('[data-action="export-height"]');
+  if (!wEl || !hEl) return;
+
+  var MAX = 8000;                             // keep a huge original from blowing up the export
+  function apply(nw, nh) {
+    if (!(nw > 0 && nh > 0)) return;
+    canvas.__filterFitKey = key;              // record BEFORE dispatch so the re-render it triggers is a no-op
+    var s = Math.min(1, MAX / Math.max(nw, nh));
+    var W = Math.max(1, Math.round(nw * s));
+    var H = Math.max(1, Math.round(nh * s));
+    var changed = false;
+    if (parseFloat(wEl.value) !== W) { wEl.value = String(W); changed = true; }
+    if (parseFloat(hEl.value) !== H) { hEl.value = String(H); changed = true; }
+    if (changed) {
+      wEl.dispatchEvent(new Event('input', { bubbles: true }));
+      hEl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+
+  var nw = parseFloat(anchor.getAttribute('data-img-w'));
+  var nh = parseFloat(anchor.getAttribute('data-img-h'));
+  if (nw > 0 && nh > 0) { apply(nw, nh); return; }  // fast path: the hook already decoded the image
+
+  if (canvas.__filterFitProbe === key) return;      // a probe for this key is already in flight
+  canvas.__filterFitProbe = key;
+  var probe = new Image();
+  probe.onload = function () { apply(probe.naturalWidth, probe.naturalHeight); };
+  probe.onerror = function () { if (canvas.__filterFitProbe === key) canvas.__filterFitProbe = null; };
+  probe.src = key;                                  // the key IS the image URL
+  if (probe.complete && probe.naturalWidth > 0) apply(probe.naturalWidth, probe.naturalHeight);
+})();
+</script>

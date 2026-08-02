@@ -31,6 +31,24 @@
       "help": "Pick a photo or upload your own. It's processed on your device — the pixels never leave the browser."
     },
     {
+      "id": "width",
+      "label": "Width",
+      "type": "number",
+      "default": 1000,
+      "min": 1,
+      "max": 8000,
+      "group": "export"
+    },
+    {
+      "id": "height",
+      "label": "Height",
+      "type": "number",
+      "default": 1000,
+      "min": 1,
+      "max": 8000,
+      "group": "export"
+    },
+    {
       "id": "lineSize",
       "label": "Line height",
       "type": "number",

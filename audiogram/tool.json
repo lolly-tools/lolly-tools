@@ -3,7 +3,7 @@
   "name": "Audiogram",
   "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
   "a11yLabel": "Audiogram card for {{default title \"an audio clip\"}} with a waveform animated from the audio",
-  "version": "2.2.3",
+  "version": "2.5.0",
   "engineVersion": "^1.71.0",
   "status": "community",
   "category": "everyone",
@@ -88,7 +88,11 @@
       "mp4",
       "gif",
       "webp-anim",
-      "html"
+      "html",
+      "wav",
+      "mp3",
+      "m4a",
+      "opus"
     ],
     "actions": [
       "copy",
@@ -109,7 +113,7 @@
       "type": "asset",
       "assetType": "audio",
       "allowUpload": true,
-      "help": "Pick a track from your library, upload a clip, or tap Record to speak one now. It's decoded on your device to drive the animation — the audio never leaves the browser. Leave empty for a placeholder waveform. To hear it in the export, choose \"This tool's audio\" as the Audio track in the download options."
+      "help": "Pick a track from your library, upload a clip, or tap Record to speak one now. It's decoded on your device to drive the animation — the audio never leaves the browser. The animation and the exported video run the full length of the clip; very long clips (over about 10 minutes) still work but get a coarser animation. Leave empty for a placeholder waveform. To hear it in the export, choose \"This tool's audio\" as the Audio track in the download options."
     },
     {
       "id": "title",
@@ -686,7 +690,7 @@
       "max": 3600,
       "step": 0.5,
       "unit": "s",
-      "help": "Which part of the clip to show, in seconds. The animation — and the audio in the exported video — both begin here."
+      "help": "Where in the clip to begin, in seconds. The animation and the audio in the exported video both start here and run to the end of the clip. An audio-only export (WAV, MP3, M4A or Opus) is that same excerpt, not the whole file."
     },
     {
       "id": "beat",
@@ -694,6 +698,13 @@
       "type": "boolean",
       "default": true,
       "help": "Adds a pulse on each detected beat. Has no effect on speech or ambient audio, where there is no steady tempo to find."
+    },
+    {
+      "id": "captions",
+      "label": "Captions",
+      "type": "boolean",
+      "default": true,
+      "help": "Shows subtitles when the audio was scripted in Lolly. The script's own word timings drive them, so nothing is transcribed or uploaded; other audio has no timings and shows none."
     },
     {
       "id": "accent",

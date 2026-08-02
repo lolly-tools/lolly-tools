@@ -463,11 +463,15 @@
     "width": 1920,
     "height": 1080,
     "formats": [
-      "png",
       "mp4",
       "webm",
       "gif",
-      "apng"
+      "apng",
+      "wav",
+      "mp3",
+      "m4a",
+      "opus",
+      "png"
     ],
     "actions": [
       "copy",

@@ -947,6 +947,13 @@ async function compute(model) {
   var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: 'still' });
   _lastOv = ov; _lastW = W; _lastH = H; // read by beforeExport to arm the motion-export overlay clock
 
+  // Auto-fit anchor for template.html: only a user pick carries a key (the demo default
+  // leaves it empty so it never resizes the canvas). natW/natH let the <script> skip the
+  // probe — the image is already decoded here.
+  patch.imgKey = (ref && ref.url) ? url : '';
+  patch.natW = patch.imgKey ? (img.naturalWidth || img.width || 0) : 0;
+  patch.natH = patch.imgKey ? (img.naturalHeight || img.height || 0) : 0;
+
   // Memoise the SVG on everything that changes the pixels — palette, steps, size,
   // quality, tone, transparency, photo, treatment, overlay (+ no-filter) — so dragging an
   // unrelated control is cheap. `ov` carries the overlay inputs + noFilter + resolved URLs.

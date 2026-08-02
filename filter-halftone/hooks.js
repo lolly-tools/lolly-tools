@@ -18,8 +18,18 @@
  * placeholder instead of throwing — this is a browser-rendered tool.
  */
 
-// The viewBox the dots live in — matches render.width/height (a square frame).
+// Default viewBox edge when the tool has no explicit size yet (a square frame,
+// matching render.width/height). Once the user picks an image the canvas takes the
+// photo's own pixel size (see the auto-fit <script> in template.html), and every
+// render below works in the live width×height read from the export controls.
 var VIEW = 1000;
+// Upper bound on either canvas edge — keeps a huge original from producing a runaway
+// export (and matches the export Width/Height inputs' max in tool.json).
+var MAX_EDGE = 8000;
+// Read the live canvas size from the width/height inputs (synced from the export bar
+// by the shell — see refreshCanvasPreview). Falls back to the square default.
+function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_EDGE); }
+function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
 // Upper bound on the dot grid so a tiny grid size can't emit a runaway SVG.
 var MAX_CELLS = 26000;
 // The default source image shown until the user picks one. A Lolly tool URL (the
@@ -43,6 +53,7 @@ var _memoResult = null;
 var _transparent = false;
 var _bgColor = '#ffffff';
 var _lastOv = null;        // most recent overlay params (compute()) — read by beforeExport
+var _lastW = VIEW, _lastH = VIEW;  // most recent canvas size — read by beforeExport (overlay clock box)
 
 // ── small helpers ────────────────────────────────────────────────────────────
 
@@ -69,16 +80,16 @@ function color(v, fallback) {
   return s ? s : fallback;
 }
 
-function svgOpen() {
-  return '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" '
-    + 'viewBox="0 0 ' + VIEW + ' ' + VIEW + '" '
-    + 'preserveAspectRatio="xMidYMid meet">';
+function svgOpen(W, H) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" '
+    + 'width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block;">';
 }
 
-function placeholder(message) {
-  return svgOpen()
-    + '<rect width="' + VIEW + '" height="' + VIEW + '" fill="#f4f4f5"/>'
-    + '<text x="' + (VIEW / 2) + '" y="' + (VIEW / 2) + '" text-anchor="middle" '
+function placeholder(message, W, H) {
+  W = W || VIEW; H = H || VIEW;
+  return svgOpen(W, H)
+    + '<rect width="' + W + '" height="' + H + '" fill="#f4f4f5"/>'
+    + '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" '
     + 'dominant-baseline="middle" font-family="sans-serif" font-size="34" '
     + 'fill="#9ca3af">' + esc(message) + '</text>'
     + '</svg>';
@@ -628,14 +639,15 @@ function disarmFilterOverlayExport() {
 // === /lolly:shared overlay ===
 
 function buildSvg(args) {
+  var W = args.W || VIEW, H = args.H || VIEW;
   // No-filter bypass: show the raw source (still image or live camera frame) with the
   // overlay composited on top — "just how it is", plus optional logo / lower-third.
   if (args.noFilter) {
     var bgnf = args.transparent ? null : color(args.bgColor, '#ffffff');
-    var onf = svgOpen();
-    if (bgnf) onf += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="' + esc(bgnf) + '"/>';
-    if (args.rawSrc) onf += '<image href="' + ovEsc(args.rawSrc) + '" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '" preserveAspectRatio="xMidYMid slice"/>';
-    onf += '<g id="lolly-ov-slot">' + buildOverlaySvg(VIEW, VIEW, args._ov || {}) + '</g>';
+    var onf = svgOpen(W, H);
+    if (bgnf) onf += '<rect width="' + W + '" height="' + H + '" fill="' + esc(bgnf) + '"/>';
+    if (args.rawSrc) onf += '<image href="' + ovEsc(args.rawSrc) + '" x="0" y="0" width="' + W + '" height="' + H + '" preserveAspectRatio="xMidYMid slice"/>';
+    onf += '<g id="lolly-ov-slot">' + buildOverlaySvg(W, H, args._ov || {}) + '</g>';
     onf += '</svg>';
     return onf;
   }
@@ -646,16 +658,19 @@ function buildSvg(args) {
   var iw = img.naturalWidth || img.width;
   var ih = img.naturalHeight || img.height;
   var ar = iw / ih;
+  var frameAR = W / H;
 
-  // Region the dots occupy inside the square viewBox. 'contain' fits the whole
-  // image (letterboxed by the background); 'cover' fills the frame.
+  // Region the dots occupy inside the W×H viewBox. 'contain' fits the whole image
+  // (letterboxed by the background when its aspect differs from the frame's); 'cover'
+  // fills the frame. When the canvas already carries the photo's aspect ratio (the
+  // default after an image is picked), contain fills exactly — no letterbox.
   var regionW, regionH;
   if (fit === 'cover') {
-    regionW = VIEW; regionH = VIEW;
-  } else if (ar >= 1) {
-    regionW = VIEW; regionH = VIEW / ar;
+    regionW = W; regionH = H;
+  } else if (ar >= frameAR) {
+    regionW = W; regionH = W / ar;
   } else {
-    regionH = VIEW; regionW = VIEW * ar;
+    regionH = H; regionW = H * ar;
   }
 
   var cols = Math.max(1, Math.round(regionW / cell));
@@ -685,8 +700,8 @@ function buildSvg(args) {
   else if (args.dither === 'ordered') ditherOrdered(grid, cols, rows);
   else if (args.dither === 'noise') ditherNoise(grid, cols, rows);
 
-  var offX = (VIEW - regionW) / 2;
-  var offY = (VIEW - regionH) / 2;
+  var offX = (W - regionW) / 2;
+  var offY = (H - regionH) / 2;
   var cellW = regionW / cols;
   var cellH = regionH / rows;
   var maxR = (Math.min(cellW, cellH) / 2) * clamp(n(args.dotScale, 1), 0.2, 3);
@@ -730,12 +745,12 @@ function buildSvg(args) {
 
   var bg = args.transparent ? null : color(args.bgColor, '#ffffff');
   if (bg) bg = treatHex(bg, _t);
-  var out = svgOpen();
-  if (bg) out += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="' + esc(bg) + '"/>';
+  var out = svgOpen(W, H);
+  if (bg) out += '<rect width="' + W + '" height="' + H + '" fill="' + esc(bg) + '"/>';
   for (var gi = 0; gi < order.length; gi++) {
     out += '<g fill="' + esc(order[gi]) + '">' + groups[order[gi]].join('') + '</g>';
   }
-  out += '<g id="lolly-ov-slot">' + buildOverlaySvg(VIEW, VIEW, args._ov || {}) + '</g>';
+  out += '<g id="lolly-ov-slot">' + buildOverlaySvg(W, H, args._ov || {}) + '</g>';
   out += '</svg>';
   return out;
 }
@@ -755,10 +770,16 @@ async function compute(model) {
   // would never resolve) and show the placeholder. This is a browser tool.
   if (!canRaster()) return { svgContent: placeholder('Preview renders in the browser') };
 
+  var W = dimW(inputs), H = dimH(inputs);
+  _lastW = W; _lastH = H;
+
   // Resolve the image URL: the user's pick, else the demo default asset (resolved
   // from storage once, then cached so keystrokes don't re-read it).
   var ref = inputs.image;
   var url = ref && typeof ref === 'object' ? ref.url : null;
+  // Only a user-chosen image drives the auto-fit (template.html); the demo default
+  // must never resize the canvas on first load.
+  var isUserPick = !!url;
   if (!url) {
     if (!_defaultUrl) {
       try {
@@ -790,7 +811,7 @@ async function compute(model) {
   // cache a stale preview). The overlay fields (via `ov`) + noFilter + rawSrc are in
   // the key so the still preview re-renders on any overlay edit.
   var params = {
-    url: url, noFilter: ovi.noFilter, rawSrc: url, ov: ov,
+    url: url, W: W, H: H, noFilter: ovi.noFilter, rawSrc: url, ov: ov,
     gridSize: inputs.gridSize, dotScale: inputs.dotScale, shape: inputs.shape,
     fgColor: inputs.fgColor, bgColor: inputs.bgColor, invert: inputs.invert, fit: inputs.fit,
     brightness: inputs.brightness, contrast: inputs.contrast, gamma: inputs.gamma,
@@ -806,18 +827,28 @@ async function compute(model) {
   params._ov = ov;
   if (memoKey === _memoKey) return _memoResult;
 
-  var svgContent;
+  var svgContent, natW = 0, natH = 0;
   try {
-    params.img = await getImage(url);
+    var decoded = await getImage(url);
+    params.img = decoded;
+    natW = decoded.naturalWidth || decoded.width || 0;
+    natH = decoded.naturalHeight || decoded.height || 0;
     svgContent = buildSvg(params);
-    if (!svgContent) svgContent = placeholder('Preview renders in the browser');
+    if (!svgContent) svgContent = placeholder('Preview renders in the browser', W, H);
   } catch (e) {
     if (host.log) host.log('warn', 'filter-halftone: render failed', { error: String(e) });
-    svgContent = placeholder('Could not read this image');
+    svgContent = placeholder('Could not read this image', W, H);
   }
 
   _memoKey = memoKey;
-  _memoResult = { svgContent: svgContent };
+  // imgKey/natW/natH drive the auto-fit <script> in template.html: only a user pick
+  // carries a key (the demo default leaves imgKey empty so it never resizes the canvas).
+  _memoResult = {
+    svgContent: svgContent,
+    imgKey: isUserPick ? url : '',
+    natW: isUserPick ? natW : 0,
+    natH: isUserPick ? natH : 0,
+  };
   return _memoResult;
 }
 
@@ -838,6 +869,8 @@ function onFrame(ctx) {
   _transparent = Boolean(inputs.transparentBg);
   // Match the still path: bake the treatment into the export-margin bg colour.
   _bgColor = treatHex(color(inputs.bgColor, '#ffffff'), treatmentFrom(inputs));
+  var W = dimW(inputs), H = dimH(inputs);
+  _lastW = W; _lastH = H;
 
   var src;
   try {
@@ -861,7 +894,7 @@ function onFrame(ctx) {
   });
 
   var svg = buildSvg({
-    img: src, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? src.toDataURL('image/jpeg', 0.85) : null, _ov: ov,
+    img: src, W: W, H: H, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? src.toDataURL('image/jpeg', 0.85) : null, _ov: ov,
     gridSize: inputs.gridSize, dotScale: inputs.dotScale, shape: inputs.shape,
     fgColor: inputs.fgColor, bgColor: inputs.bgColor, invert: inputs.invert, fit: inputs.fit,
     brightness: inputs.brightness, contrast: inputs.contrast, gamma: inputs.gamma,
@@ -891,6 +924,6 @@ function beforeExport(ctx) {
   }
   // gif/apng/webm/mp4 only: replay the overlay's live-mode intro deterministically
   // across the clip instead of holding it at its settled resting pose throughout.
-  armFilterOverlayExport(ctx, VIEW, VIEW, _lastOv);
+  armFilterOverlayExport(ctx, _lastW, _lastH, _lastOv);
 }
 function afterExport() { disarmFilterOverlayExport(); }

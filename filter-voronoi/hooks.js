@@ -717,12 +717,19 @@ async function compute(model) {
   var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: 'still' });
   _lastOv = ov; _lastW = pr.W; _lastH = pr.H; // read by beforeExport to arm the motion-export overlay clock
 
+  // Auto-fit anchor for template.html: only a user pick carries a key (the demo default
+  // leaves it empty so it never resizes the canvas). natW/natH let the <script> skip the
+  // probe — the image is already decoded here.
+  var imgKey = (ref && ref.url) ? url : '';
+  var natW = imgKey ? (img.naturalWidth || img.width || 0) : 0;
+  var natH = imgKey ? (img.naturalHeight || img.height || 0) : 0;
+
   var memoKey = JSON.stringify({
     url: url, c: pr.cells, j: f2(pr.jitter), rl: pr.relax, sd: pr.seed, ew: f2(pr.edgeWidth), ec: pr.edgeColor,
     con: pr.contrast, h: pr.hueDeg, s: pr.sat, l: pr.light, W: pr.W, H: pr.H, t: _transparent,
     tc: (_t.on ? _t.ov : null), tm: _t.mode, ti: _t.amt, ov: ov,
   });
-  if (memoKey === _memoKey) return { voronoiSvg: _memoResult };
+  if (memoKey === _memoKey) return { voronoiSvg: _memoResult, imgKey: imgKey, natW: natW, natH: natH };
 
   var svg;
   try { svg = buildVoronoi(pr.W, pr.H, gEff, mesh.sites, mesh.cells, pr.edgeWidth, pr.edgeColor, _t, ov, url); }
@@ -731,7 +738,7 @@ async function compute(model) {
     svg = placeholder('Could not mosaic this photo.');
   }
   _memoKey = memoKey; _memoResult = svg;
-  return { voronoiSvg: svg };
+  return { voronoiSvg: svg, imgKey: imgKey, natW: natW, natH: natH };
 }
 
 function onInit(ctx) { return compute(ctx.model); }

@@ -31,8 +31,12 @@
 
 /* global onInit, onInput, onFrame, beforeExport, afterExport, host */
 
-// The viewBox everything lives in — matches render.width/height (square frame).
+// Default viewBox edge when the tool has no explicit size yet (a square frame
+// matching render.width/height). Once an image is picked the canvas takes the photo's
+// own pixel size (see the auto-fit <script> in template.html); every render below works
+// in the live width×height read from the export controls.
 var VIEW = 1000;
+var MAX_EDGE = 8000;   // upper bound on either canvas edge (matches width/height inputs' max)
 // The default source image shown until the user picks one (a Lolly tool URL,
 // resolved lazily via host.compose — same demo source as the sibling filters).
 var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
@@ -43,8 +47,13 @@ var _memoResult = null;
 var _transparent = false; // remembered for beforeExport (which only gets format/opts)
 var _paperColor = '#ffffff';
 var _lastOv = null;       // most recent overlay params (compute()) — read by beforeExport
+var _lastW = VIEW, _lastH = VIEW;  // most recent canvas size — read by beforeExport (overlay clock box)
 
 // ── small helpers ────────────────────────────────────────────────────────────
+
+// Live canvas size from the width/height inputs (synced from the export bar by the shell).
+function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_EDGE); }
+function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
 
 function inputsFrom(model) {
   var o = {};
@@ -87,16 +96,21 @@ function canRaster() {
 }
 // === /lolly:shared canRaster ===
 
-function svgOpen() {
-  return '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" '
-    + 'viewBox="0 0 ' + VIEW + ' ' + VIEW + '" '
-    + 'preserveAspectRatio="xMidYMid meet">';
+// `extra` is an attribute string appended to the root <svg> — used to stamp the
+// auto-fit anchor (data-img-key) that the template.html <script> reads. The single
+// root <svg> is deliberate (CLI vector export), so the anchor lives ON the root
+// rather than a sibling element.
+function svgOpen(W, H, extra) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" '
+    + 'width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block;"'
+    + (extra || '') + '>';
 }
 
-function placeholder(message) {
-  return svgOpen()
-    + '<rect width="' + VIEW + '" height="' + VIEW + '" fill="#f4f4f5"/>'
-    + '<text x="' + (VIEW / 2) + '" y="' + (VIEW / 2) + '" text-anchor="middle" '
+function placeholder(message, W, H) {
+  W = W || VIEW; H = H || VIEW;
+  return svgOpen(W, H)
+    + '<rect width="' + W + '" height="' + H + '" fill="#f4f4f5"/>'
+    + '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" '
     + 'dominant-baseline="middle" font-family="sans-serif" font-size="34" '
     + 'fill="#9ca3af">' + esc(message) + '</text>'
     + '</svg>';
@@ -566,8 +580,8 @@ function grainDefs(e, paper, U) {
 }
 function grainRects(e, U) {
   if (e.grain <= 0.005) return '';
-  return '<rect width="' + VIEW + '" height="' + VIEW + '" filter="url(#' + U + 'grain-d)" opacity="' + f4(0.55 * e.grain) + '" style="mix-blend-mode:multiply"/>'
-    + '<rect width="' + VIEW + '" height="' + VIEW + '" filter="url(#' + U + 'grain-l)" opacity="' + f4(0.45 * e.grain) + '" style="mix-blend-mode:screen"/>';
+  return '<rect width="100%" height="100%" filter="url(#' + U + 'grain-d)" opacity="' + f4(0.55 * e.grain) + '" style="mix-blend-mode:multiply"/>'
+    + '<rect width="100%" height="100%" filter="url(#' + U + 'grain-l)" opacity="' + f4(0.45 * e.grain) + '" style="mix-blend-mode:screen"/>';
 }
 
 // Colour-section grade (hue/saturation/lightness) as a filter on the result group.
@@ -614,17 +628,21 @@ function defsPrefix(args) {
 }
 
 function buildSvg(args) {
+  var W = args.W || VIEW, H = args.H || VIEW;
   var par = args.fit === 'contain' ? 'xMidYMid meet' : 'xMidYMid slice';
+  // Auto-fit anchor stamped on the root <svg> — the demo default carries an empty key
+  // (never resizes); a live camera frame passes no key at all. See template.html.
+  var rootExtra = args.imgKey != null ? ' data-img-key="' + esc(args.imgKey) + '"' : '';
 
   // No-filter bypass: raw source + overlay, no press simulation at all. Honours
   // the SAME fit as the filtered path — toggling "No filter" must change the
   // effect only, never the framing, or it is useless as an A/B compare.
   if (args.noFilter) {
     var bgnf = args.transparent ? null : args.paper;
-    var onf = svgOpen();
-    if (bgnf) onf += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="' + esc(bgnf) + '"/>';
-    if (args.url) onf += '<image href="' + ovEsc(args.url) + '" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '" preserveAspectRatio="' + par + '"/>';
-    onf += '<g id="lolly-ov-slot">' + buildOverlaySvg(VIEW, VIEW, args._ov || {}) + '</g>';
+    var onf = svgOpen(W, H, rootExtra);
+    if (bgnf) onf += '<rect width="100%" height="100%" fill="' + esc(bgnf) + '"/>';
+    if (args.url) onf += '<image href="' + ovEsc(args.url) + '" x="0" y="0" width="100%" height="100%" preserveAspectRatio="' + par + '"/>';
+    onf += '<g id="lolly-ov-slot">' + buildOverlaySvg(W, H, args._ov || {}) + '</g>';
     onf += '</svg>';
     return onf;
   }
@@ -646,14 +664,14 @@ function buildSvg(args) {
   defs += hsl;
   defs += '</defs>';
 
-  var out = svgOpen() + defs;
+  var out = svgOpen(W, H, rootExtra) + defs;
 
   // Everything the Colour grade applies to (paper + print + grain).
   out += '<g' + (hsl ? ' filter="url(#' + U + 'hsl)"' : '') + '>';
 
   // Paper.
   if (!args.transparent) {
-    out += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="' + esc(args.paper) + '"/>';
+    out += '<rect width="100%" height="100%" fill="' + esc(args.paper) + '"/>';
   }
 
   // The print: one <image> per ink plate, separated by its matrix, multiplied
@@ -672,7 +690,7 @@ function buildSvg(args) {
     var dx = (rng() * 2 - 1) * e.misreg;
     var dy = (rng() * 2 - 1) * e.misreg;
     var density = 0.94 + rng() * 0.06; // uneven ink take-up, per plate
-    out += '<image href="' + ovEsc(args.url) + '" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '"'
+    out += '<image href="' + ovEsc(args.url) + '" x="0" y="0" width="100%" height="100%"'
       + ' preserveAspectRatio="' + par + '"'
       + ' filter="url(#' + U + 'p' + pI + ')"'
       + (e.misreg > 0.01 ? ' transform="translate(' + f2(dx) + ' ' + f2(dy) + ')"' : '')
@@ -689,11 +707,11 @@ function buildSvg(args) {
   // Colour treatment over the whole result.
   if (args.treat && args.treatAmt > 0) {
     var mode = BLEND_MODES[args.treatMode] ? args.treatMode : 'multiply';
-    out += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="' + esc(args.treat) + '"'
+    out += '<rect width="100%" height="100%" fill="' + esc(args.treat) + '"'
       + ' opacity="' + f4(args.treatAmt) + '" style="mix-blend-mode:' + mode + '"/>';
   }
 
-  out += '<g id="lolly-ov-slot">' + buildOverlaySvg(VIEW, VIEW, args._ov || {}) + '</g>';
+  out += '<g id="lolly-ov-slot">' + buildOverlaySvg(W, H, args._ov || {}) + '</g>';
   out += '</svg>';
   return out;
 }
@@ -709,6 +727,7 @@ function renderArgs(inputs, url, ov) {
   var treat = hexToRgb(inputs.treatmentColor) ? inputs.treatmentColor : null;
   return {
     url: url,
+    W: dimW(inputs), H: dimH(inputs),
     noFilter: !!(ov && ov.noFilter),
     effect: effect,
     ink1: inputs.ink1,
@@ -733,6 +752,9 @@ async function compute(model) {
   // Resolve the image URL: the user's pick, else the demo default (cached).
   var ref = inputs.image;
   var url = ref && typeof ref === 'object' ? ref.url : null;
+  // Only a user-chosen image drives the auto-fit (template.html); the demo default
+  // must never resize the canvas on first load.
+  var isUserPick = !!url;
   if (!url) {
     if (!_defaultUrl) {
       try {
@@ -757,7 +779,9 @@ async function compute(model) {
   _lastOv = ov; // read by beforeExport to arm the motion-export overlay clock
 
   var args = renderArgs(inputs, url, ov);
+  args.imgKey = isUserPick ? url : '';  // stamped on the root <svg> for the auto-fit script
   _paperColor = args.paper; // beforeExport fills non-square export margins with the paper
+  _lastW = args.W; _lastH = args.H;
 
   // The args object is the single source of truth for both the memo key and the
   // render, so a render-affecting input can never drift out of the memo.
@@ -809,6 +833,7 @@ function onFrame(ctx) {
 
   var args = renderArgs(inputs, url, ov);
   _paperColor = args.paper;
+  _lastW = args.W; _lastH = args.H;
   // A live frame supersedes the still memo, so a later still re-render recomputes.
   _memoKey = null;
   return { svgContent: buildSvg(args) };
@@ -855,6 +880,6 @@ function beforeExport(ctx) {
   }
   // gif/apng/webm/mp4 only: replay the overlay's intro deterministically.
   if (_lastOv && overlayActive(_lastOv) && OV_MOTION_FORMATS[ctx.format]) mountOvClockAnchor(ctx.node);
-  armFilterOverlayExport(ctx, VIEW, VIEW, _lastOv);
+  armFilterOverlayExport(ctx, _lastW, _lastH, _lastOv);
 }
 function afterExport() { disarmFilterOverlayExport(); unmountOvClockAnchor(); }
