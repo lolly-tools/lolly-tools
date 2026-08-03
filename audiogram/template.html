@@ -546,12 +546,18 @@
    * card's own background colour, text in the ink colour. Payload-only and
    * synchronous, like every other draw here.
    */
-  function drawCaption(p) {
+  // `span` is the length in seconds that `p` is a fraction OF. Live playback has
+  // only one answer (DUR, the analysed clip), but an EXPORT decides its own length
+  // — the frame plan can lower the frame rate or, at the extreme, truncate — and it
+  // hands that length in. Preferring it is what keeps a cue on the word: mapping p
+  // onto DUR while the video actually ran for a different number of seconds is what
+  // made a long narration paint its whole caption track over a short clip.
+  function drawCaption(p, span) {
     if (!captions) return;
     fit(cap);
     var W = cap.width, H = cap.height;
     capCtx.clearRect(0, 0, W, H);
-    var cue = cueAtTime(p * DUR);
+    var cue = cueAtTime(p * (span > 0 ? span : DUR));
     if (!cue) return;
     // Type set against the box so a story export and a square preview carry the
     // same proportion; the family follows the card's own (brand) face.
@@ -613,11 +619,11 @@
   // forwards the tick to whichever visual is live, mirroring the driven flag so
   // the visualizer's own preview loop stands down while the export drives.
   if (captions) {
-    clockEl.__lollyFrameRender = function (t) {
+    clockEl.__lollyFrameRender = function (t, clipSec) {
       var vc = vizCanvas();
-      if (vc) { vc.__lollyFrameDriven = clockEl.__lollyFrameDriven; vc.__lollyFrameRender(t); }
+      if (vc) { vc.__lollyFrameDriven = clockEl.__lollyFrameDriven; vc.__lollyFrameRender(t, clipSec); }
       else draw(t, t === 0);
-      drawCaption(t === 0 ? (posterFrame + 0.5) / COUNT : t);
+      drawCaption(t === 0 ? (posterFrame + 0.5) / COUNT : t, clipSec);
     };
   } else {
     canvas.__lollyFrameRender = function (t) { draw(t, t === 0); };
