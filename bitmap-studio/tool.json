@@ -21,7 +21,8 @@
     { "label": "Teal & orange cinema", "values": { "preset": "teal-orange", "vignette": 22, "halation": 18 } },
     { "label": "Faded matte + grain", "values": { "preset": "matte", "grain": 45, "vignette": 28 } },
     { "label": "Brand duotone", "values": { "treatment": "duotone", "treatmentAmount": 85 } },
-    { "label": "Classic black & white", "values": { "preset": "bw", "grain": 35, "vignette": 24, "contrast": 12 } }
+    { "label": "Classic black & white", "values": { "preset": "bw", "grain": 35, "vignette": 24, "contrast": 12 } },
+    { "label": "Vivid slide LUT", "values": { "lutSource": "preset", "lutPreset": "slide-vivid" } }
   ],
   "render": {
     "width": 1080,
@@ -187,13 +188,42 @@
       "help": "Blend between the untouched image (0) and the full look (100)."
     },
     {
+      "id": "lutSource",
+      "label": "LUT",
+      "section": "LUT",
+      "type": "select",
+      "default": "none",
+      "options": [
+        { "value": "none",   "label": "None" },
+        { "value": "preset", "label": "Open preset LUT" },
+        { "value": "custom", "label": "Upload your own" }
+      ],
+      "help": "Preset LUTs are open, public-domain looks you can apply and also download. Choose Upload for your own commercial or personal LUTs — those stay on your device and never travel in a share link, so a preset is what makes a look shareable in a URL."
+    },
+    {
+      "id": "lutPreset",
+      "label": "Preset",
+      "section": "LUT",
+      "type": "select",
+      "default": "slide-standard",
+      "options": [
+        { "value": "slide-standard", "label": "Standard slide" },
+        { "value": "slide-vivid",    "label": "Vivid slide" },
+        { "value": "chrome-muted",   "label": "Muted chrome" },
+        { "value": "mono-fine",      "label": "Fine mono (B&W)" }
+      ],
+      "showIf": { "lutSource": ["preset"] },
+      "help": "Open, public-domain film-emulation LUTs (CC0, no attribution needed). Applied on your device with tetrahedral interpolation, and downloadable below for any editor."
+    },
+    {
       "id": "lutFile",
       "label": "LUT file (.cube / .3dl)",
       "section": "LUT",
       "type": "file",
       "accept": [".cube", ".3dl", "text/plain"],
       "maxSize": 16777216,
-      "help": "Load a third-party colour LUT — Adobe/IRIDAS .cube (1D or 3D) or Autodesk .3dl. Applied on your device with tetrahedral interpolation, after Develop and the film look."
+      "showIf": { "lutSource": ["custom"] },
+      "help": "Load your own colour LUT — Adobe/IRIDAS .cube (1D or 3D) or Autodesk .3dl. Applied on your device with tetrahedral interpolation, after Develop and the film look. Your file never leaves the browser, and an uploaded LUT is not part of a share link."
     },
     {
       "id": "lutIntensity",
@@ -205,7 +235,17 @@
       "min": 0,
       "max": 100,
       "step": 1,
+      "showIf": { "lutSource": ["preset", "custom"] },
       "help": "Blend between the un-LUTted image (0) and the full LUT (100)."
+    },
+    {
+      "id": "downloadPresetLut",
+      "label": "Download this LUT (.cube)",
+      "section": "LUT",
+      "type": "boolean",
+      "default": false,
+      "showIf": { "lutSource": ["preset"] },
+      "help": "Save the selected open preset as a .cube for DaVinci Resolve, Premiere, Final Cut or Photoshop. These LUTs are public domain (CC0) — see the tool's NOTICE. The switch flips itself back off."
     },
     {
       "id": "bakeSize",
@@ -226,7 +266,7 @@
       "section": "LUT",
       "type": "boolean",
       "default": false,
-      "help": "Bakes the whole colour pipeline — Develop, film look, loaded LUT and brand treatment — into one .cube LUT for DaVinci Resolve, Premiere, Final Cut or Photoshop, and downloads it. The switch flips itself back off. Texture effects (grain, vignette…) are spatial and can't live in a LUT."
+      "help": "Bakes the whole colour pipeline — Develop, film look, the preset or uploaded LUT and brand treatment — into one .cube LUT for DaVinci Resolve, Premiere, Final Cut or Photoshop, and downloads it. The switch flips itself back off. Texture effects (grain, vignette…) are spatial and can't live in a LUT."
     },
     {
       "id": "treatment",

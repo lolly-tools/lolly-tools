@@ -52,6 +52,11 @@ var LUT_N = 33;       // grid size of the internal pipeline LUT (also the bake d
 // ceiling shipping .cube files use; .3dl grids top out at 64+1 in the wild.
 var CUBE_MAX_N = 129;
 var TDL_MAX_N = 65;
+// The shipped open (CC0) preset LUTs — see assets/luts/NOTICE.md. Keys are the
+// served .cube basenames; this doubles as the whitelist for the untrusted
+// lutPreset select value (never interpolate an unvalidated id into the URL).
+var PRESET_LUTS = { 'slide-standard': 1, 'slide-vivid': 1, 'chrome-muted': 1, 'mono-fine': 1 };
+var PRESET_LUT_BASE = '/tools/bitmap-studio/assets/luts/';
 
 var _memoKey = null;
 var _memoResult = null;
@@ -63,6 +68,9 @@ var _pipeLutCache = { key: null, lut: null };  // baked colour-pipeline LUT
 var _userLutCache = { id: null, lut: null };   // parsed .cube/.3dl (keyed by file identity)
 var _brandStops = null;                        // resolved brand palette stops (once per mount)
 var _bakeBusy = false;                         // re-entrancy guard for the .cube download
+var _presetLutCache = { id: null, lut: null, error: null }; // parsed preset .cube (keyed 'preset:<id>')
+var _presetInflight = { id: null, promise: null };          // in-flight preset fetch (shared)
+var _presetDlBusy = false;                                  // re-entrancy guard for preset download
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -384,6 +392,56 @@ function parseLutFile(file) {
   }
 }
 
+// ── preset LUTs (shipped, open/CC0) ──────────────────────────────────────────
+
+function fetchText(url) {
+  if (typeof fetch !== 'function') return Promise.reject(new Error('no fetch in this shell'));
+  return fetch(url).then(function (r) {
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    return r.text();
+  });
+}
+
+// Load + parse a shipped preset .cube by id (whitelisted). Cached across renders;
+// one in-flight fetch is shared. A browser/Tauri affordance — a shell without
+// fetch (headless CLI) rejects and the preset simply isn't applied, exactly like
+// the upload path needs a File. Returns a Promise<{ lut, error }>.
+function loadPresetLut(id) {
+  if (!PRESET_LUTS[id]) return Promise.resolve({ lut: null, error: 'unknown preset' });
+  var cid = 'preset:' + id;
+  if (_presetLutCache.id === cid) return Promise.resolve({ lut: _presetLutCache.lut, error: _presetLutCache.error });
+  if (_presetInflight.id === cid && _presetInflight.promise) return _presetInflight.promise;
+  var promise = fetchText(PRESET_LUT_BASE + id + '.cube').then(function (text) {
+    var lut = parseCube(text);
+    _presetLutCache = { id: cid, lut: lut, error: null };
+    _presetInflight = { id: null, promise: null };
+    return { lut: lut, error: null };
+  }).catch(function (e) {
+    var msg = String((e && e.message) || e);
+    _presetLutCache = { id: cid, lut: null, error: msg };
+    _presetInflight = { id: null, promise: null };
+    return { lut: null, error: msg };
+  });
+  _presetInflight = { id: cid, promise: promise };
+  return promise;
+}
+
+// Deliver the raw shipped preset .cube to the user via the transform path
+// (host.export.file — never watermarked; the bytes are a public-domain LUT).
+function deliverPresetDownload(id) {
+  if (_presetDlBusy || !PRESET_LUTS[id]) return Promise.resolve();
+  _presetDlBusy = true;
+  return fetchText(PRESET_LUT_BASE + id + '.cube').then(function (text) {
+    var name = 'bitmap-studio-' + id + '.cube';
+    var blob = typeof Blob !== 'undefined' ? new Blob([text], { type: 'text/plain' }) : text;
+    if (host.export && host.export.file) return host.export.file(blob, { filename: name });
+    if (host.export && host.export.download) return host.export.download(blob, name);
+    return null;
+  }).catch(function (e) {
+    if (host.log) host.log('warn', 'bitmap-studio: preset LUT download needs a shell with export.file (web or desktop) — ' + String(e));
+  }).then(function () { _presetDlBusy = false; });
+}
+
 // Sample a parsed LUT at r,g,b (0..1). 3D uses tetrahedral interpolation —
 // the standard for grading (exact on the grid, best diagonal behaviour);
 // 1D interpolates each channel linearly. Returns [r,g,b].
@@ -474,6 +532,13 @@ function paramsFrom(inputs) {
   var lutFileId = null;
   var lf = inputs.lutFile;
   if (lf && lf.bytes && lf.bytes.length) lutFileId = (lf.name || 'lut') + ':' + lf.size + ':' + fnvBytes(lf.bytes);
+  var lutSource = ['none', 'preset', 'custom'].indexOf(inputs.lutSource) !== -1 ? inputs.lutSource : 'none';
+  var lutPreset = PRESET_LUTS[inputs.lutPreset] ? inputs.lutPreset : 'slide-standard';
+  // One id for the active LUT — drives the pipeline-LUT cache + colour key,
+  // whichever source it comes from. null when no LUT is active.
+  var lutId = lutSource === 'custom' ? lutFileId
+    : lutSource === 'preset' ? 'preset:' + lutPreset
+      : null;
   return {
     // colour stages (baked into the pipeline LUT — also the .cube bake)
     temperature: clamp(n(inputs.temperature, 0), -100, 100) / 100,
@@ -486,7 +551,10 @@ function paramsFrom(inputs) {
     vibrance: clamp(n(inputs.vibrance, 0), -100, 100) / 100,
     preset: PRESETS[inputs.preset] ? inputs.preset : 'none',
     presetStrength: clamp(n(inputs.presetStrength, 100), 0, 100) / 100,
+    lutSource: lutSource,
+    lutPreset: lutPreset,
     lutFileId: lutFileId,
+    lutId: lutId,
     lutIntensity: clamp(n(inputs.lutIntensity, 100), 0, 100) / 100,
     treatment: ['tint', 'duotone', 'gradient', 'split'].indexOf(inputs.treatment) !== -1 ? inputs.treatment : 'none',
     treatmentAmount: clamp(n(inputs.treatmentAmount, 80), 0, 100) / 100,
@@ -519,7 +587,7 @@ function paramsFrom(inputs) {
 function colorKey(P, stops) {
   return JSON.stringify([
     P.temperature, P.tint, P.exposure, P.contrast, P.highlights, P.shadows,
-    P.saturation, P.vibrance, P.preset, P.presetStrength, P.lutFileId,
+    P.saturation, P.vibrance, P.preset, P.presetStrength, P.lutId,
     P.lutIntensity, P.treatment, P.treatmentAmount,
     P.treatShadow, P.treatMid, P.treatHighlight, stops,
   ]);
@@ -1100,6 +1168,27 @@ function currentUserLut(inputs, P) {
   return { lut: parsed, error: null };
 }
 
+// Resolve the active LUT for the current source: preset (async fetch+parse of a
+// shipped .cube), custom upload (sync), or none. Returns Promise<{ lut, error }>.
+function resolveLut(inputs, P) {
+  if (P.lutSource === 'custom') return Promise.resolve(currentUserLut(inputs, P));
+  if (P.lutSource === 'preset') return loadPresetLut(P.lutPreset);
+  return Promise.resolve({ lut: null, error: null });
+}
+
+// Sync accessor for the per-frame live path: the cached LUT without awaiting. A
+// preset not yet cached warms in the background and applies once loaded (the
+// still render before "Go live" has normally already cached it).
+function resolvedLutSync(inputs, P) {
+  if (P.lutSource === 'custom') return currentUserLut(inputs, P);
+  if (P.lutSource === 'preset') {
+    if (_presetLutCache.id === 'preset:' + P.lutPreset) return { lut: _presetLutCache.lut, error: _presetLutCache.error };
+    loadPresetLut(P.lutPreset); // warm, don't await
+    return { lut: null, error: null };
+  }
+  return { lut: null, error: null };
+}
+
 // The full render: framed source → colour LUT → texture. Returns a canvas.
 function renderFrame(source, iw, ih, dims, P, stops, userLut) {
   var key = null;
@@ -1159,7 +1248,7 @@ async function compute(model) {
   var stops = await resolveBrandStops();
   _stopsForKey = stops;
 
-  var lutRes = currentUserLut(inputs, P);
+  var lutRes = await resolveLut(inputs, P);
   var lutNote = lutRes.error ? 'LUT not readable: ' + lutRes.error : null;
   var lutLabel = lutRes.lut
     ? ((lutRes.lut.title || (inputs.lutFile && inputs.lutFile.name) || 'LUT')
@@ -1172,9 +1261,13 @@ async function compute(model) {
     await deliverBake(P, stops, lutRes.lut);
     // Fall through to the normal render; the patch below resets the switch.
   }
+  // Hand over the raw shipped preset .cube on request (separate from the bake).
+  if (inputs.downloadPresetLut && P.lutSource === 'preset') {
+    await deliverPresetDownload(P.lutPreset);
+  }
 
   if (!canRaster()) {
-    return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+    return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
   }
 
   // Resolve the source: the user's pick, else the procedural demo scene.
@@ -1184,8 +1277,11 @@ async function compute(model) {
   var dims = workDims(P.W, P.H, STILL_MAX);
   var memoKey = JSON.stringify({ url: url, P: P, d: dims, stops: stops });
   if (memoKey === _memoKey) {
-    // Still reset the bake switch on a repeated render.
-    return inputs.bakeLut ? Object.assign({}, _memoResult, { bakeLut: false }) : _memoResult;
+    // Still reset the transient action switches on a repeated render.
+    var patch = {};
+    if (inputs.bakeLut) patch.bakeLut = false;
+    if (inputs.downloadPresetLut) patch.downloadPresetLut = false;
+    return Object.keys(patch).length ? Object.assign({}, _memoResult, patch) : _memoResult;
   }
 
   var source, iw, ih;
@@ -1193,26 +1289,26 @@ async function compute(model) {
     if (url) {
       var img = await getImage(url);
       iw = img.naturalWidth || img.width; ih = img.naturalHeight || img.height;
-      if (!iw || !ih) return { outSrc: null, note: 'Could not read this image', bakeLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+      if (!iw || !ih) return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
       source = img; source.__srcId = url;
     } else {
       source = makeDemoScene();
-      if (!source) return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+      if (!source) return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
       iw = source.width; ih = source.height; source.__srcId = 'demo';
     }
   } catch (e) {
     if (host.log) host.log('warn', 'bitmap-studio: image load failed', { error: String(e) });
-    return { outSrc: null, note: 'Could not read this image', bakeLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+    return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
   }
 
   var out = renderFrame(source, iw, ih, dims, P, stops, lutRes.lut);
-  if (!out) return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+  if (!out) return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
 
   var outSrc;
   try { outSrc = out.toDataURL('image/jpeg', 0.92); }
   catch (e) {
     if (host.log) host.log('warn', 'bitmap-studio: canvas read failed (tainted image?)', { error: String(e) });
-    return { outSrc: null, note: 'Could not read this image', bakeLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+    return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
   }
 
   var histSvg = P.histogram ? buildHistogramSvg(out) : '';
@@ -1224,7 +1320,7 @@ async function compute(model) {
   _memoResult = {
     outSrc: outSrc, prevSrc: prev, note: null,
     histSvg: histSvg, lutNote: lutNote, lutLabel: lutLabel,
-    bakeLut: false, split: P.splitPreview,
+    bakeLut: false, downloadPresetLut: false, split: P.splitPreview,
   };
   return _memoResult;
 }
@@ -1245,7 +1341,7 @@ function onFrame(ctx) {
   _stopsForKey = stops;
   if (!_brandStops) resolveBrandStops(); // warm for the next frame, don't await
 
-  var lutRes = currentUserLut(inputs, P);
+  var lutRes = resolvedLutSync(inputs, P);
   var dims = workDims(P.W, P.H, LIVE_MAX);
   var srcFrame, live;
   try {
@@ -1267,6 +1363,6 @@ function onFrame(ctx) {
   return {
     outSrc: outSrc, prevSrc: null, note: null,
     histSvg: P.histogram ? buildHistogramSvg(out) : '',
-    bakeLut: false, split: P.splitPreview,
+    bakeLut: false, downloadPresetLut: false, split: P.splitPreview,
   };
 }
