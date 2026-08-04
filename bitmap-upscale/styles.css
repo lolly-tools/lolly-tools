@@ -1,0 +1,8 @@
+/* Bitmap Upscale — the whole render is one SVG element, framed by the inline
+   script in template.html, and carries no CSS dependency, so exports stay
+   byte-stable. There is no screen-only chrome to style (no HUD, no split
+   preview), so this sheet is intentionally near-empty. */
+
+svg[data-lolly-anno] {
+  display: block;
+}

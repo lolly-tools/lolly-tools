@@ -1,0 +1,55 @@
+{
+  "id": "bitmap-upscale",
+  "name": "Bitmap Upscale",
+  "description": "Frame and export an AI-upscaled photo, keeping the render path that carries your credential.",
+  "a11yLabel": "{{default upscaleNote \"Upscaled image ready to export\"}}",
+  "version": "1.0.0",
+  "engineVersion": "^1.101.0",
+  "status": "community",
+  "category": "designer",
+  "tags": [
+    "photo", "image", "bitmap", "upscale", "upres", "enlarge", "resolution",
+    "ai", "super-resolution", "sharpen", "print", "resize"
+  ],
+  "featured": {
+    "order": 8,
+    "blurb": "Enlarge a photo with AI upscaling, then export it clean"
+  },
+  "examples": [
+    { "label": "Square export", "values": { "width": 2048, "height": 2048 } },
+    { "label": "Wide export", "values": { "width": 2560, "height": 1440 } }
+  ],
+  "render": {
+    "width": 1080,
+    "height": 1080,
+    "formats": ["png", "jpg", "webp"],
+    "actions": ["copy", "download", "save"]
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true
+  },
+  "inputs": [
+    {
+      "id": "image",
+      "label": "Image",
+      "type": "asset",
+      "assetType": "raster",
+      "allowUpload": true,
+      "help": "Pick a photo or upload your own. Use the picker's Upscale action to enlarge it with AI before dropping it here — this tool just frames and exports the result."
+    },
+    {
+      "id": "imageFraming",
+      "label": "Zoom & Position",
+      "help": "Zoom scales the photo up; X / Y pan it within the frame. Drag a label or type a value.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom", "label": "Zoom", "min": 100, "max": 400, "step": 1, "default": 100 },
+        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
+        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
+      ]
+    },
+    { "id": "width",  "label": "Width",  "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" },
+    { "id": "height", "label": "Height", "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" }
+  ]
+}

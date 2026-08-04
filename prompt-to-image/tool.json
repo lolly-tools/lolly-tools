@@ -1,24 +1,71 @@
 {
   "id": "prompt-to-image",
   "name": "Prompt to Image",
-  "description": "AI models are cheaper at processing images than they are text",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "version": "1.0.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "utility",
   "privacy": "on-device",
-  "tags": ["ai", "llm", "prompt", "tokens", "context", "text", "image", "vision", "developer", "paste", "on-device"],
+  "tags": [
+    "ai",
+    "llm",
+    "prompt",
+    "tokens",
+    "context",
+    "text",
+    "image",
+    "vision",
+    "developer",
+    "paste",
+    "on-device"
+  ],
   "a11yLabel": "Prompt to Image — paste or drop text on the canvas and it is laid out to fit inside one small image",
   "examples": [
-    { "label": "Two-column brief", "values": { "columns": "2", "text": "You are a naming consultant.\n\nGiven a product description, propose five names.\n\nRules:\n- one or two syllables\n- easy to say out loud\n- nothing that collides with a trademark\n- a one-line rationale for each", "width": 1280, "height": 800 } },
-    { "label": "Compact card", "values": { "columns": "1", "padding": 64, "lineHeight": 1.5, "text": "Summarise this thread in three bullet points.\n\nKeep every number exactly as written. If a decision was made, state it first.", "width": 1024, "height": 640 } },
-    { "label": "Tall checklist", "values": { "columns": "1", "keepLines": true, "paraGap": 1.4, "text": "Release checklist:\n\n1. Changelog written\n2. Screenshots refreshed\n3. Version bumped\n4. Tags pushed\n5. Announcement drafted", "width": 900, "height": 1200 } }
+    {
+      "label": "Two-column brief",
+      "values": {
+        "columns": "2",
+        "text": "You are a naming consultant.\n\nGiven a product description, propose five names.\n\nRules:\n- one or two syllables\n- easy to say out loud\n- nothing that collides with a trademark\n- a one-line rationale for each",
+        "width": 1280,
+        "height": 800
+      }
+    },
+    {
+      "label": "Compact card",
+      "values": {
+        "columns": "1",
+        "padding": 64,
+        "lineHeight": 1.5,
+        "text": "Summarise this thread in three bullet points.\n\nKeep every number exactly as written. If a decision was made, state it first.",
+        "width": 1024,
+        "height": 640
+      }
+    },
+    {
+      "label": "Tall checklist",
+      "values": {
+        "columns": "1",
+        "keepLines": true,
+        "paraGap": 1.4,
+        "text": "Release checklist:\n\n1. Changelog written\n2. Screenshots refreshed\n3. Version bumped\n4. Tags pushed\n5. Announcement drafted",
+        "width": 900,
+        "height": 1200
+      }
+    }
   ],
   "render": {
     "width": 1024,
     "height": 1024,
-    "formats": ["png", "webp"],
-    "actions": ["copy", "download", "save"],
+    "formats": [
+      "png",
+      "webp"
+    ],
+    "actions": [
+      "copy",
+      "download",
+      "save"
+    ],
     "transparentBg": false,
     "units": false
   },
@@ -43,11 +90,26 @@
       "default": "auto",
       "help": "Auto picks whatever packs the text at the largest size.",
       "options": [
-        { "value": "auto", "label": "Auto" },
-        { "value": "1", "label": "1" },
-        { "value": "2", "label": "2" },
-        { "value": "3", "label": "3" },
-        { "value": "4", "label": "4" }
+        {
+          "value": "auto",
+          "label": "Auto"
+        },
+        {
+          "value": "1",
+          "label": "1"
+        },
+        {
+          "value": "2",
+          "label": "2"
+        },
+        {
+          "value": "3",
+          "label": "3"
+        },
+        {
+          "value": "4",
+          "label": "4"
+        }
       ]
     },
     {

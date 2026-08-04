@@ -1,0 +1,135 @@
+<svg xmlns="http://www.w3.org/2000/svg" data-lolly-anno="{{default upscaleNote ''}}" viewBox="0 0 {{width}} {{height}}" width="{{width}}" height="{{height}}"
+     style="width:100%;height:auto;display:block;">
+  <rect id="bu-bg" width="100%" height="100%" fill="#101018"/>
+
+  {{!-- Declarative default = a centred "cover" fill of the whole canvas. The script
+        below upgrades this to object-fit:cover + object-position (Zoom / Position
+        X / Position Y) once the image's natural size is known (browser only); in
+        headless renders it stays a centred cover.
+
+        No pixel processing happens here or in hooks.js — the upscale itself runs
+        earlier, in the shell's asset picker "Upscale" dialog (host.upscale). By the
+        time an asset lands in this input it is already the enlarged bitmap; this
+        template only frames and exports it, so the render stays on the normal
+        stamped path that carries the C2PA credential. --}}
+  {{#if image}}
+  <image id="bu-img"
+    preserveAspectRatio="xMidYMid slice"
+    href="{{asset image}}"
+    x="0" y="0" width="100%" height="100%"
+    data-zoom="{{imageFraming.zoom}}" data-posx="{{imageFraming.x}}" data-posy="{{imageFraming.y}}"/>
+  {{else}}
+  <text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle"
+        font-family="system-ui, sans-serif" font-size="34" fill="#9ca3af">Choose an image to export</text>
+  {{/if}}
+</svg>
+{{!-- Auto-fit anchor: the template stamps the user-picked image URL as
+      data-img-key (empty when no image is set); the second script below snaps
+      the export Width/Height fields to the image's native pixel size — the
+      point of this tool, since the whole reason to visit it is an image that
+      just grew a lot larger. 0×0 + aria-hidden: never painted, never seen. --}}
+<canvas data-img-key="{{#if image}}{{asset image}}{{/if}}" width="0" height="0" aria-hidden="true"></canvas>
+<script>
+(function () {
+  var img = document.getElementById('bu-img');
+  var anchor = img || document.getElementById('bu-bg');
+  var svg = anchor && anchor.ownerSVGElement;
+  if (!svg) return;
+
+  var vb = (svg.getAttribute('viewBox') || '0 0 1080 1080').split(/\s+/).map(Number);
+  var wEl = document.querySelector('[data-action="export-width"]');
+  var hEl = document.querySelector('[data-action="export-height"]');
+  var W = (wEl && parseFloat(wEl.value) > 0) ? parseFloat(wEl.value) : vb[2];
+  var H = (hEl && parseFloat(hEl.value) > 0) ? parseFloat(hEl.value) : vb[3];
+  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
+  svg.setAttribute('width', W);
+  svg.setAttribute('height', H);
+
+  if (!img) return;
+
+  function num(v, d) { var n = parseFloat(v); return isFinite(n) ? n : d; }
+  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+  // Reproduce CSS object-fit:cover + object-position over the full canvas.
+  // SVG's preserveAspectRatio can't express an arbitrary position, so we scale +
+  // offset the <image> directly using the photo's intrinsic size.
+  function layout(iw, ih) {
+    if (!(iw > 0 && ih > 0)) return;          // headless: keep the declarative cover
+    var zoom = clamp(num(img.dataset.zoom, 100), 100, 400) / 100;
+    var px   = clamp(num(img.dataset.posx, 50), 0, 100) / 100;
+    var py   = clamp(num(img.dataset.posy, 50), 0, 100) / 100;
+    var s  = Math.max(W / iw, H / ih) * zoom;
+    var dw = iw * s, dh = ih * s;
+    img.setAttribute('preserveAspectRatio', 'none');
+    img.setAttribute('width', dw);
+    img.setAttribute('height', dh);
+    img.setAttribute('x', -px * (dw - W));
+    img.setAttribute('y', -py * (dh - H));
+  }
+
+  var href = img.getAttribute('href')
+    || img.getAttributeNS('http://www.w3.org/1999/xlink', 'href') || '';
+  if (!href) return;
+  var cache = (window.__buNatural = window.__buNatural || {});
+  var hit = cache[href];
+  if (hit) { layout(hit.w, hit.h); return; }
+
+  var probe = new Image();
+  function measured() {
+    if (!(probe.naturalWidth > 0)) return;
+    cache[href] = { w: probe.naturalWidth, h: probe.naturalHeight };
+    layout(probe.naturalWidth, probe.naturalHeight);
+  }
+  probe.onload = measured;
+  probe.src = href;
+  if (probe.complete) measured();
+})();
+</script>
+<script>
+/* Auto-fit the canvas to a newly chosen image (native pixel dimensions) — the
+   same convention as the community filter-* tools. Snapping to the image's own
+   size matters more here than in most tools: the whole point of a visit is an
+   image that just came back from the upscaler a lot bigger, and the export
+   size should reflect that without the user hunting for a Width/Height field.
+   IIFE + var: this <script> is re-created and re-run on every paint, so
+   top-level const/let would throw on the second render. */
+(function () {
+  var anchor = document.querySelector('[data-img-key]');
+  if (!anchor) return;
+  var canvas = anchor.closest('#tool-canvas');
+  if (!canvas) return;
+  var key = anchor.getAttribute('data-img-key') || '';
+  if (!('__filterFitKey' in canvas)) { canvas.__filterFitKey = key; return; }
+  if (canvas.__filterFitKey === key) return;
+  if (!key) { canvas.__filterFitKey = ''; return; }
+  var uEl = document.querySelector('[data-action="export-unit"]');
+  if (uEl && uEl.value && uEl.value !== 'px') return;
+  var wEl = document.querySelector('[data-action="export-width"]');
+  var hEl = document.querySelector('[data-action="export-height"]');
+  if (!wEl || !hEl) return;
+
+  var MAX = 8000;
+  function apply(nw, nh) {
+    if (!(nw > 0 && nh > 0)) return;
+    canvas.__filterFitKey = key;
+    var s = Math.min(1, MAX / Math.max(nw, nh));
+    var W = Math.max(1, Math.round(nw * s));
+    var H = Math.max(1, Math.round(nh * s));
+    var changed = false;
+    if (parseFloat(wEl.value) !== W) { wEl.value = String(W); changed = true; }
+    if (parseFloat(hEl.value) !== H) { hEl.value = String(H); changed = true; }
+    if (changed) {
+      wEl.dispatchEvent(new Event('input', { bubbles: true }));
+      hEl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+
+  if (canvas.__filterFitProbe === key) return;
+  canvas.__filterFitProbe = key;
+  var probe = new Image();
+  probe.onload = function () { apply(probe.naturalWidth, probe.naturalHeight); };
+  probe.onerror = function () { if (canvas.__filterFitProbe === key) canvas.__filterFitProbe = null; };
+  probe.src = key;
+  if (probe.complete && probe.naturalWidth > 0) apply(probe.naturalWidth, probe.naturalHeight);
+})();
+</script>

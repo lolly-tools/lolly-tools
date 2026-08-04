@@ -1,0 +1,131 @@
+{
+  "id": "layer-stack",
+  "name": "Layers",
+  "description": "Open a Photoshop or GIMP file as individual layers — lock each one down with exact X/Y coordinates, visibility, opacity and blend mode, then export flat images or a layered PSD.",
+  "version": "1.0.0",
+  "engineVersion": "^1.12.0",
+  "status": "community",
+  "category": "designer",
+  "tags": ["layers", "psd", "photoshop", "xcf", "gimp", "import", "composite", "stack", "blend", "position", "on-device"],
+  "a11yLabel": "A composition of {{layers.length}} layers",
+  "render": {
+    "width": 1080,
+    "height": 1080,
+    "formats": ["png", "webp", "jpg", "tiff", "pdf"],
+    "actions": ["copy", "download", "save", "share"],
+    "layout": "sidebar",
+    "transparentBg": true
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "exportFile": true
+  },
+  "inputs": [
+    {
+      "id": "layers",
+      "label": "Layers",
+      "type": "blocks",
+      "urlKey": "l",
+      "labelledFields": true,
+      "itemLabel": "Layer",
+      "dropToAdd": { "field": "img", "accept": "image/*" },
+      "help": "Bottom to top — later layers paint on top. Drag to restack; drop a PSD or XCF on the canvas (or use the gallery) to import a whole file.",
+      "default": [],
+      "fields": [
+        {
+          "id": "img",
+          "label": "Image",
+          "type": "asset",
+          "assetType": "raster",
+          "allowUpload": true
+        },
+        {
+          "id": "x",
+          "label": "X",
+          "type": "number",
+          "default": 0,
+          "help": "Left edge, in canvas pixels. Negative moves off-canvas."
+        },
+        {
+          "id": "y",
+          "label": "Y",
+          "type": "number",
+          "default": 0,
+          "help": "Top edge, in canvas pixels."
+        },
+        {
+          "id": "o",
+          "label": "Opacity",
+          "type": "number",
+          "display": "slider",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 100
+        },
+        {
+          "id": "v",
+          "label": "Visible",
+          "type": "boolean",
+          "default": true
+        },
+        {
+          "id": "b",
+          "label": "Blend",
+          "type": "select",
+          "default": "",
+          "options": [
+            { "value": "", "label": "Normal" },
+            { "value": "multiply", "label": "Multiply" },
+            { "value": "screen", "label": "Screen" },
+            { "value": "overlay", "label": "Overlay" },
+            { "value": "darken", "label": "Darken" },
+            { "value": "lighten", "label": "Lighten" },
+            { "value": "color-dodge", "label": "Colour dodge" },
+            { "value": "color-burn", "label": "Colour burn" },
+            { "value": "hard-light", "label": "Hard light" },
+            { "value": "soft-light", "label": "Soft light" },
+            { "value": "difference", "label": "Difference" },
+            { "value": "exclusion", "label": "Exclusion" },
+            { "value": "hue", "label": "Hue" },
+            { "value": "saturation", "label": "Saturation" },
+            { "value": "color", "label": "Colour" },
+            { "value": "luminosity", "label": "Luminosity" }
+          ]
+        },
+        {
+          "id": "n",
+          "label": "Name",
+          "type": "text",
+          "default": ""
+        },
+        {
+          "id": "g",
+          "label": "Group",
+          "type": "text",
+          "default": "",
+          "help": "Folder path from the imported file (kept for PSD export)."
+        }
+      ]
+    },
+    {
+      "id": "width",
+      "label": "Width",
+      "type": "number",
+      "group": "export",
+      "min": 16,
+      "max": 8000,
+      "default": 1080
+    },
+    {
+      "id": "height",
+      "label": "Height",
+      "type": "number",
+      "group": "export",
+      "min": 16,
+      "max": 8000,
+      "default": 1080
+    }
+  ]
+}

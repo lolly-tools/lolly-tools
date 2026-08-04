@@ -1,0 +1,23 @@
+<div class="stack" style="width:{{width}}px;height:{{height}}px;">
+  {{#if layers.length}}
+    {{#each layers}}
+      {{#if this.img.url}}
+        <img
+          class="layer"
+          data-canvas-input="layers:{{@index}}"
+          src="{{this.img.url}}"
+          alt="{{default this.n "Layer"}}"
+          style="{{lookup ../view @index}}"
+        >
+      {{/if}}
+    {{/each}}
+  {{else}}
+    <div class="empty" data-export-hide>
+      <div class="empty-title">No layers yet</div>
+      <div class="empty-hint">Drop a Photoshop (.psd) or GIMP (.xcf) file here to explode it into layers — or drop plain images to stack them.</div>
+    </div>
+  {{/if}}
+  {{#if layers.length}}
+    <button type="button" class="psd-download" data-export-file data-export-hide data-busy-label="Building PSD…">Download layered PSD</button>
+  {{/if}}
+</div>
