@@ -71,6 +71,7 @@ var _bakeBusy = false;                         // re-entrancy guard for the .cub
 var _presetLutCache = { id: null, lut: null, error: null }; // parsed preset .cube (keyed 'preset:<id>')
 var _presetInflight = { id: null, promise: null };          // in-flight preset fetch (shared)
 var _presetDlBusy = false;                                  // re-entrancy guard for preset download
+var _deepState = null;                                      // last still render's resolved inputs (for exportStill)
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -1079,42 +1080,257 @@ function applyTexture(out, P) {
     } catch (e) { /* tainted — skip */ }
   }
 
-  // Dust & scratches: seeded specks, fibres, and vertical hairlines drawn as
-  // vector strokes over the raster (soft-light-ish alpha).
-  if (P.dust > 0) {
-    var rng2 = mulberry32((P.seed * 40503 + 977) >>> 0 || 1);
-    var count = Math.round(6 + P.dust * 70);
-    ctx.save();
-    for (var s2 = 0; s2 < count; s2++) {
-      var lightFleck = rng2() < 0.78;
-      ctx.fillStyle = lightFleck ? 'rgba(255,252,240,' + (0.18 + rng2() * 0.4).toFixed(3) + ')'
-        : 'rgba(20,16,12,' + (0.15 + rng2() * 0.3).toFixed(3) + ')';
-      var px2 = rng2() * W, py2 = rng2() * H;
-      var kind = rng2();
-      if (kind < 0.72) { // speck
-        var rad = 0.4 + rng2() * rng2() * Math.min(W, H) * 0.004;
-        ctx.beginPath(); ctx.arc(px2, py2, rad, 0, Math.PI * 2); ctx.fill();
-      } else if (kind < 0.92) { // curled fibre
-        ctx.strokeStyle = ctx.fillStyle;
-        ctx.lineWidth = 0.5 + rng2() * 0.9;
-        ctx.beginPath();
-        ctx.moveTo(px2, py2);
-        var fl = Math.min(W, H) * (0.01 + rng2() * 0.03);
-        var a1 = rng2() * Math.PI * 2, a2 = a1 + (rng2() - 0.5) * 2.2;
-        ctx.quadraticCurveTo(px2 + Math.cos(a1) * fl, py2 + Math.sin(a1) * fl,
-          px2 + Math.cos(a2) * fl * 1.6, py2 + Math.sin(a2) * fl * 1.6);
-        ctx.stroke();
-      } else { // vertical hairline scratch
-        ctx.strokeStyle = 'rgba(255,250,235,' + (0.1 + rng2() * 0.2).toFixed(3) + ')';
-        ctx.lineWidth = 0.5 + rng2() * 0.7;
-        var sl = H * (0.1 + rng2() * 0.5);
-        ctx.beginPath();
-        ctx.moveTo(px2, py2 - sl / 2);
-        ctx.lineTo(px2 + (rng2() - 0.5) * 6, py2 + sl / 2);
-        ctx.stroke();
+  // Dust & scratches (shared with the float export path).
+  if (P.dust > 0) drawDust(ctx, W, H, P);
+}
+
+// Seeded specks, fibres, and vertical hairline scratches drawn as vector strokes
+// (soft-light-ish alpha). Factored out so the still preview (over the composed
+// canvas) and the deep export (over a transparent layer, composited into the
+// float buffer) draw the SAME dust for a given seed.
+function drawDust(ctx, W, H, P) {
+  var rng2 = mulberry32((P.seed * 40503 + 977) >>> 0 || 1);
+  var count = Math.round(6 + P.dust * 70);
+  ctx.save();
+  for (var s2 = 0; s2 < count; s2++) {
+    var lightFleck = rng2() < 0.78;
+    ctx.fillStyle = lightFleck ? 'rgba(255,252,240,' + (0.18 + rng2() * 0.4).toFixed(3) + ')'
+      : 'rgba(20,16,12,' + (0.15 + rng2() * 0.3).toFixed(3) + ')';
+    var px2 = rng2() * W, py2 = rng2() * H;
+    var kind = rng2();
+    if (kind < 0.72) { // speck
+      var rad = 0.4 + rng2() * rng2() * Math.min(W, H) * 0.004;
+      ctx.beginPath(); ctx.arc(px2, py2, rad, 0, Math.PI * 2); ctx.fill();
+    } else if (kind < 0.92) { // curled fibre
+      ctx.strokeStyle = ctx.fillStyle;
+      ctx.lineWidth = 0.5 + rng2() * 0.9;
+      ctx.beginPath();
+      ctx.moveTo(px2, py2);
+      var fl = Math.min(W, H) * (0.01 + rng2() * 0.03);
+      var a1 = rng2() * Math.PI * 2, a2 = a1 + (rng2() - 0.5) * 2.2;
+      ctx.quadraticCurveTo(px2 + Math.cos(a1) * fl, py2 + Math.sin(a1) * fl,
+        px2 + Math.cos(a2) * fl * 1.6, py2 + Math.sin(a2) * fl * 1.6);
+      ctx.stroke();
+    } else { // vertical hairline scratch
+      ctx.strokeStyle = 'rgba(255,250,235,' + (0.1 + rng2() * 0.2).toFixed(3) + ')';
+      ctx.lineWidth = 0.5 + rng2() * 0.7;
+      var sl = H * (0.1 + rng2() * 0.5);
+      ctx.beginPath();
+      ctx.moveTo(px2, py2 - sl / 2);
+      ctx.lineTo(px2 + (rng2() - 0.5) * 6, py2 + sl / 2);
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+// ── float compose (deep export) ──────────────────────────────────────────────
+// The export twin of renderFrame + applyTexture, kept in a Float32 buffer the
+// whole way so a 16-bit / EXR / Radiance master carries REAL precision instead of
+// the 8-bit canvas the interactive preview is capped to. Values stay in the same
+// sRGB-ENCODED 0..255 domain the canvas texture math uses (so the constants are
+// identical and the look matches), and are converted to linear light only at the
+// DeepFrame boundary. Deterministic PER SHELL: it renders at the full export W×H,
+// the noise is seeded, and the blur is the JS separable box (NEVER ctx.filter,
+// whose gaussian is platform-dependent) — so the same params + seed always yield
+// the same master on a given device. It is NOT byte-identical across shells: the
+// source draw (drawCover's ctx.drawImage resampling) and the dust layer (drawDust
+// rasterised on a canvas, then read back) still go through the platform canvas,
+// whose resampling/antialiasing differ — inherent, since this tool's pixels ARE a
+// canvas artefact. So the canonical output is "a pure function of the params on
+// this device". The preview may differ further (accepted, per-device best effort);
+// the export is the canonical result.
+
+// Float tetrahedral apply of a pipeline LUT to an sRGB-0..255 Float32 RGBA buffer.
+function applyPipelineLutFloat(buf, lut) {
+  var tab = lut.data, N = lut.size, N1 = N - 1;
+  for (var i = 0; i < buf.length; i += 4) {
+    var x = (buf[i] / 255) * N1, y = (buf[i + 1] / 255) * N1, z = (buf[i + 2] / 255) * N1;
+    var x0 = x | 0, y0 = y | 0, z0 = z | 0;
+    if (x0 > N - 2) x0 = N - 2; if (y0 > N - 2) y0 = N - 2; if (z0 > N - 2) z0 = N - 2;
+    var fx = x - x0, fy = y - y0, fz = z - z0;
+    var base = ((z0 * N + y0) * N + x0) * 3;
+    var sx = 3, sy = N * 3, sz = N * N * 3;
+    var i000 = base, i111 = base + sx + sy + sz;
+    var w0, w1, w2, w3, ia, ib;
+    if (fx >= fy) {
+      if (fy >= fz) { w0 = 1 - fx; w1 = fx - fy; w2 = fy - fz; w3 = fz; ia = i000 + sx; ib = i000 + sx + sy; }
+      else if (fx >= fz) { w0 = 1 - fx; w1 = fx - fz; w2 = fz - fy; w3 = fy; ia = i000 + sx; ib = i000 + sx + sz; }
+      else { w0 = 1 - fz; w1 = fz - fx; w2 = fx - fy; w3 = fy; ia = i000 + sz; ib = i000 + sx + sz; }
+    } else {
+      if (fz >= fy) { w0 = 1 - fz; w1 = fz - fy; w2 = fy - fx; w3 = fx; ia = i000 + sz; ib = i000 + sy + sz; }
+      else if (fz >= fx) { w0 = 1 - fy; w1 = fy - fz; w2 = fz - fx; w3 = fx; ia = i000 + sy; ib = i000 + sy + sz; }
+      else { w0 = 1 - fy; w1 = fy - fx; w2 = fx - fz; w3 = fz; ia = i000 + sy; ib = i000 + sx + sy; }
+    }
+    buf[i]     = 255 * (w0 * tab[i000]     + w1 * tab[ia]     + w2 * tab[ib]     + w3 * tab[i111]);
+    buf[i + 1] = 255 * (w0 * tab[i000 + 1] + w1 * tab[ia + 1] + w2 * tab[ib + 1] + w3 * tab[i111 + 1]);
+    buf[i + 2] = 255 * (w0 * tab[i000 + 2] + w1 * tab[ia + 2] + w2 * tab[ib + 2] + w3 * tab[i111 + 2]);
+  }
+}
+
+// Separable box blur (two passes ≈ gaussian) over the RGB of a Float32 RGBA
+// buffer. Deterministic replacement for ctx.filter='blur()'. radius in px.
+function boxBlurFloat(src, W, H, radius) {
+  var r = Math.max(1, Math.round(radius));
+  var tmp = new Float32Array(src.length), out = new Float32Array(src.length);
+  var inv = 1 / (2 * r + 1);
+  // Horizontal
+  for (var y = 0; y < H; y++) {
+    for (var c = 0; c < 3; c++) {
+      var row = y * W * 4 + c, sum = 0, k;
+      for (k = -r; k <= r; k++) sum += src[row + 4 * clamp(k, 0, W - 1)];
+      for (var x = 0; x < W; x++) {
+        tmp[row + 4 * x] = sum * inv;
+        var add = row + 4 * clamp(x + r + 1, 0, W - 1);
+        var sub = row + 4 * clamp(x - r, 0, W - 1);
+        sum += src[add] - src[sub];
       }
     }
-    ctx.restore();
+  }
+  // Vertical
+  for (var x2 = 0; x2 < W; x2++) {
+    for (var c2 = 0; c2 < 3; c2++) {
+      var col = x2 * 4 + c2, sum2 = 0, k2;
+      for (k2 = -r; k2 <= r; k2++) sum2 += tmp[col + W * 4 * clamp(k2, 0, H - 1)];
+      for (var y2 = 0; y2 < H; y2++) {
+        out[col + W * 4 * y2] = sum2 * inv;
+        var add2 = col + W * 4 * clamp(y2 + r + 1, 0, H - 1);
+        var sub2 = col + W * 4 * clamp(y2 - r, 0, H - 1);
+        sum2 += tmp[add2] - tmp[sub2];
+      }
+    }
+  }
+  return out;
+}
+
+// Render the full colour + texture pipeline into a Float32 RGBA buffer (sRGB
+// 0..255) at W×H. Mirrors renderFrame+applyTexture but never round-trips through
+// an 8-bit canvas after the source draw. Returns Float32Array(W*H*4) or null.
+function composeFloat(source, iw, ih, W, H, P, stops, userLut) {
+  if (!canRaster()) return null;
+  var framed = document.createElement('canvas'); framed.width = W; framed.height = H;
+  var fctx = framed.getContext('2d', { willReadFrequently: true });
+  if (!fctx) return null;
+  drawCover(fctx, source, iw, ih, W, H, P.zoom, P.px, P.py);
+  var img;
+  try { img = fctx.getImageData(0, 0, W, H); } catch (e) { return null; }
+  var buf = new Float32Array(W * H * 4);
+  for (var i = 0; i < buf.length; i++) buf[i] = img.data[i];
+
+  // Colour: a fine 65³ pipeline LUT (near-exact; negligible interp error) applied
+  // in float — this is where the deep bits are actually earned.
+  if (colorActive(P, userLut)) {
+    var lut = buildPipelineLut(P, stops, userLut, 65);
+    applyPipelineLutFloat(buf, lut);
+  }
+  // Texture, in float, same maths/constants as applyTexture.
+  composeTextureFloat(buf, W, H, P);
+  return buf;
+}
+
+// Float port of the spatial texture pass (fringe → sharpen → bloom/halation →
+// grain/vignette → dust). Dust rides a canvas layer composited back (sparse
+// specks — 8-bit is imperceptible there and reuses the exact vector code).
+function composeTextureFloat(buf, W, H, P) {
+  // Chromatic aberration
+  if (P.fringe > 0) {
+    var src = new Float32Array(buf); var cx = W / 2, cy = H / 2, maxShift = P.fringe * 0.012;
+    var diag = Math.sqrt(cx * cx + cy * cy);
+    function samp(x, y, ch) {
+      x = clamp(x, 0, W - 1.001); y = clamp(y, 0, H - 1.001);
+      var x0 = x | 0, y0 = y | 0, fx = x - x0, fy = y - y0;
+      var x1 = Math.min(x0 + 1, W - 1), y1 = Math.min(y0 + 1, H - 1);
+      var a = src[(y0 * W + x0) * 4 + ch], b = src[(y0 * W + x1) * 4 + ch];
+      var c = src[(y1 * W + x0) * 4 + ch], e = src[(y1 * W + x1) * 4 + ch];
+      return (a * (1 - fx) + b * fx) * (1 - fy) + (c * (1 - fx) + e * fx) * fy;
+    }
+    for (var y = 0; y < H; y++) for (var x = 0; x < W; x++) {
+      var dx = x - cx, dy = y - cy, rr = Math.sqrt(dx * dx + dy * dy) / diag, k = maxShift * rr * rr;
+      if (k < 1e-5) continue;
+      var o = (y * W + x) * 4;
+      buf[o] = samp(x - dx * k, y - dy * k, 0);
+      buf[o + 2] = samp(x + dx * k, y + dy * k, 2);
+    }
+  }
+  // Sharpen (unsharp mask)
+  if (P.sharpen > 0) {
+    var bl = boxBlurFloat(buf, W, H, Math.max(1, Math.round(Math.min(W, H) / 600)) * 1.2);
+    var ks = P.sharpen * 1.1;
+    for (var s = 0; s < buf.length; s += 4) {
+      buf[s] += (buf[s] - bl[s]) * ks; buf[s + 1] += (buf[s + 1] - bl[s + 1]) * ks; buf[s + 2] += (buf[s + 2] - bl[s + 2]) * ks;
+    }
+  }
+  // Bloom + halation: bright-pass → blur → additive (bloom) / red-orange tint (halation)
+  if (P.bloom > 0 || P.halation > 0) {
+    var bp = new Float32Array(buf.length);
+    for (var j = 0; j < buf.length; j += 4) {
+      var lum = (LUM_R * buf[j] + LUM_G * buf[j + 1] + LUM_B * buf[j + 2]) / 255;
+      var wgt = smoothstep(0.68, 0.95, lum);
+      bp[j] = buf[j] * wgt; bp[j + 1] = buf[j + 1] * wgt; bp[j + 2] = buf[j + 2] * wgt; bp[j + 3] = 255;
+    }
+    var soft = boxBlurFloat(bp, W, H, Math.max(2, Math.round(Math.min(W, H) * 0.02)));
+    var hr = 0xff / 255, hg = 0x5a / 255, hb = 0x28 / 255; // #ff5a28 halation tint
+    for (var m = 0; m < buf.length; m += 4) {
+      if (P.bloom > 0) {
+        var ba = P.bloom * 0.55;
+        buf[m] += soft[m] * ba; buf[m + 1] += soft[m + 1] * ba; buf[m + 2] += soft[m + 2] * ba;
+      }
+      if (P.halation > 0) {
+        var ha = P.halation * 0.6;
+        buf[m] += soft[m] * hr * ha; buf[m + 1] += soft[m + 1] * hg * ha; buf[m + 2] += soft[m + 2] * hb * ha;
+      }
+    }
+  }
+  // Grain + vignette (one pass, same lattice + weighting as the canvas path)
+  if (P.grain > 0 || P.vignette > 0) {
+    var cx2 = W / 2, cy2 = H / 2, maxR2 = cx2 * cx2 + cy2 * cy2, cell = P.grainSize;
+    var gw = Math.ceil(W / cell) + 2, gh = Math.ceil(H / cell) + 2, lattice = null;
+    if (P.grain > 0) {
+      lattice = new Float32Array(gw * gh);
+      var rng = mulberry32(P.seed * 2654435761 >>> 0 || 1);
+      for (var li = 0; li < lattice.length; li++) lattice[li] = rng() * 2 - 1;
+    }
+    var gAmt = P.grain * 34, vAmt = P.vignette;
+    for (var yy = 0; yy < H; yy++) {
+      var gy = yy / cell, gy0 = gy | 0, gfy = gy - gy0;
+      for (var xx = 0; xx < W; xx++) {
+        var i5 = (yy * W + xx) * 4, r5 = buf[i5], g5 = buf[i5 + 1], b5 = buf[i5 + 2];
+        if (lattice) {
+          var gx = xx / cell, gx0 = gx | 0, gfx = gx - gx0;
+          var l00 = lattice[gy0 * gw + gx0], l10 = lattice[gy0 * gw + gx0 + 1];
+          var l01 = lattice[(gy0 + 1) * gw + gx0], l11 = lattice[(gy0 + 1) * gw + gx0 + 1];
+          var nv = (l00 * (1 - gfx) + l10 * gfx) * (1 - gfy) + (l01 * (1 - gfx) + l11 * gfx) * gfy;
+          var lum2 = (LUM_R * r5 + LUM_G * g5 + LUM_B * b5) / 255;
+          var gwt = 4 * lum2 * (1 - lum2), add = nv * gAmt * (0.35 + 0.65 * gwt);
+          r5 += add; g5 += add; b5 += add;
+        }
+        if (vAmt > 0) {
+          var dx2 = xx - cx2, dy2 = yy - cy2, vr = (dx2 * dx2 + dy2 * dy2) / maxR2;
+          var vk = 1 - vAmt * smoothstep(0.28, 1.05, vr) * 0.82;
+          r5 *= vk; g5 *= vk; b5 *= vk;
+        }
+        buf[i5] = r5; buf[i5 + 1] = g5; buf[i5 + 2] = b5;
+      }
+    }
+  }
+  // Dust: draw on a transparent canvas with the exact vector code, composite back.
+  if (P.dust > 0) {
+    var dc = document.createElement('canvas'); dc.width = W; dc.height = H;
+    var dctx = dc.getContext('2d', { willReadFrequently: true });
+    if (dctx) {
+      drawDust(dctx, W, H, P);
+      var di;
+      try { di = dctx.getImageData(0, 0, W, H).data; } catch (e) { di = null; }
+      if (di) for (var p = 0; p < buf.length; p += 4) {
+        var da = di[p + 3] / 255;
+        if (da > 0) { buf[p] = buf[p] * (1 - da) + di[p] * da; buf[p + 1] = buf[p + 1] * (1 - da) + di[p + 1] * da; buf[p + 2] = buf[p + 2] * (1 - da) + di[p + 2] * da; }
+      }
+    }
+  }
+  // Clamp to the sRGB byte range the source domain implies (encode boundary
+  // clamps again, but keeping the buffer sane avoids NaNs feeding srgbToLinear).
+  for (var q = 0; q < buf.length; q += 4) {
+    buf[q] = clamp(buf[q], 0, 255); buf[q + 1] = clamp(buf[q + 1], 0, 255); buf[q + 2] = clamp(buf[q + 2], 0, 255); buf[q + 3] = 255;
   }
 }
 
@@ -1305,11 +1521,19 @@ async function compute(model) {
   if (!out) return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
 
   var outSrc;
-  try { outSrc = out.toDataURL('image/jpeg', 0.92); }
+  // Lossless PNG, not JPEG: the preview is the export SOURCE on the ordinary
+  // 8-bit raster path, so a lossy intermediate would bake chroma artefacts into
+  // every PNG/WebP. (Deep formats bypass this via exportStill + composeFloat.)
+  try { outSrc = out.toDataURL('image/png'); }
   catch (e) {
     if (host.log) host.log('warn', 'bitmap-studio: canvas read failed (tainted image?)', { error: String(e) });
     return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
   }
+
+  // Stash everything the deep export needs to re-render at full resolution in
+  // float — exportStill's ctx carries no input model, so the last still render
+  // hands its resolved params/source forward (mirrors _memoResult's lifetime).
+  _deepState = { P: P, source: source, iw: iw, ih: ih, stops: stops, userLut: lutRes.lut };
 
   var histSvg = P.histogram ? buildHistogramSvg(out) : '';
 
@@ -1327,6 +1551,62 @@ async function compute(model) {
 
 function onInit(ctx) { return compute(ctx.model); }
 function onInput(ctx) { return compute(ctx.model); }
+
+// Deep still export (engine 1.100 exportStill + host.codec): OWN the float
+// MASTER formats — OpenEXR and Radiance .hdr — by rendering the whole pipeline in
+// float at the full export size and encoding it directly, instead of letting the
+// shell rasterise the 8-bit preview DOM. These are the formats a grader actually
+// wants (DaVinci/Nuke read EXR), and neither carries a C2PA container, so
+// owning them costs no provenance. Decline (return null) for everything else —
+// including plain and 16-bit PNG — so those keep flowing through the shell's
+// stamped raster path (a tool-owned PNG would silently shed the default-on
+// Content Credential; real-precision 16-bit PNG waits on a stamp-preserving
+// exportStill path). The float compose is DETERMINISTIC per shell: full-res,
+// seeded, and blurred with the JS box (never ctx.filter), so a given params+seed
+// always yields the same master on that device. It is NOT byte-identical across
+// shells — the source draw and the dust layer go through the platform canvas —
+// and this tool's pixels are a browser-canvas artefact, so the CLI (no canvas)
+// declines here and the export is a web/desktop affordance.
+function exportStill(ctx) {
+  var h = (ctx && ctx.host) || host;
+  if (!h || !h.codec) return null;                 // no deep codecs in this shell → 8-bit path
+  var fmt = String((ctx && ctx.format) || '').toLowerCase();
+  var opts = (ctx && ctx.opts) || {};
+  var isExr = fmt === 'exr';
+  var isHdr = fmt === 'hdr' || fmt === 'rgbe';
+  if (!(isExr || isHdr)) return null;              // not a float master we own → shell's path
+  if (!_deepState || !canRaster()) return null;    // nothing rendered yet / headless → decline
+  var st = _deepState;
+
+  var W = clamp(Math.round(n(opts.width, st.P.W)), 1, MAX_EDGE);
+  var Hh = clamp(Math.round(n(opts.height, st.P.H)), 1, MAX_EDGE);
+  var srgb;
+  try {
+    srgb = composeFloat(st.source, st.iw, st.ih, W, Hh, st.P, st.stops, st.userLut);
+  } catch (e) {
+    if (host.log) host.log('warn', 'bitmap-studio: deep compose failed', { error: String(e) });
+    return null;
+  }
+  if (!srgb) return null;
+
+  // sRGB-encoded 0..255 float → linear-light RGBA float (the DeepFrame contract).
+  var lin = new Float32Array(W * Hh * 4);
+  for (var i = 0; i < srgb.length; i += 4) {
+    lin[i] = srgbToLinear(clamp(srgb[i], 0, 255) / 255);
+    lin[i + 1] = srgbToLinear(clamp(srgb[i + 1], 0, 255) / 255);
+    lin[i + 2] = srgbToLinear(clamp(srgb[i + 2], 0, 255) / 255);
+    lin[i + 3] = 1;
+  }
+  var frame = { width: W, height: Hh, data: lin, space: 'srgb-linear' };
+
+  if (isExr) {
+    return Promise.resolve(h.codec.exr(frame, { pixelType: opts.depth === 'float' ? 'float' : 'half' }))
+      .then(function (bytes) { return { bytes: bytes, mime: 'image/x-exr' }; });
+  }
+  // isHdr (the only remaining owned format)
+  return Promise.resolve(h.codec.radiance(frame, {}))
+    .then(function (bytes) { return { bytes: bytes, mime: 'image/vnd.radiance' }; });
+}
 
 // Live camera (engine v1.4): grade every frame through the same pipeline. The
 // pipeline LUT is cached across frames (params rarely change mid-stream), so

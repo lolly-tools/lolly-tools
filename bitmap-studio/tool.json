@@ -27,7 +27,8 @@
   "render": {
     "width": 1080,
     "height": 1080,
-    "formats": ["png", "jpg", "webp", "svg", "webm", "mp4"],
+    "formats": ["png", "jpg", "webp", "svg", "webm", "mp4", "exr", "hdr"],
+    "denseSections": ["Develop", "Texture"],
     "actions": ["copy", "download", "save"],
     "video": { "wait": 0, "duration": 5 },
     "liveMaxEdge": 1280
@@ -35,7 +36,8 @@
   "hooks": {
     "onInit": true,
     "onInput": true,
-    "onFrame": true
+    "onFrame": true,
+    "exportStill": true
   },
   "inputs": [
     {
