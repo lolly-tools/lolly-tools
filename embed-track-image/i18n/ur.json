@@ -2,8 +2,6 @@
   "name": "ایمبیڈ & ٹریک تصویر",
   "description": "شیئر کرنے سے پہلے کسی بھی تصویر میں اپنا مصنف، کاپی رائٹ اور لائسنس شامل کریں - ساتھ ہی ایک پوشیدہ Lolly Imprint اور Content Credentials بھی۔",
   "a11yLabel": "اپنی تصویر میں کریڈینشلز ایمبیڈ کریں",
-  "inputs.source.label": "آپ کی تصویر",
-  "inputs.source.help": "وہ تصویر ڈراپ کریں یا منتخب کریں جسے آپ نشان زد کرنا چاہتے ہیں۔ اسے آپ کی کریڈینشلز کے ساتھ دوبارہ محفوظ کیا جاتا ہے - کچھ بھی سرور پر اپ لوڈ نہیں ہوتا۔ کینوس اور ایکسپورٹ فارمیٹ بطور ڈیفالٹ آپ کی تصویر کے اپنے پکسلز اور قسم کے مطابق ہوتے ہیں۔",
   "inputs.creator.label": "آرٹسٹ / مصنف",
   "inputs.creator.help": "آپ کا نام - تصویر کے مصنف/تخلیق کار کی حیثیت سے شامل کیا گیا (EXIF Artist، XMP dc:creator، اور Content Credential)۔",
   "inputs.creator.section": "کریڈینشلز",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "کریڈینشلز",
   "inputs.title.label": "ٹائٹل / تفصیل",
   "inputs.title.help": "اختیاری - کام کا مختصر عنوان یا تفصیل۔",
-  "inputs.title.section": "کریڈینشلز",
-  "inputs.width.label": "چوڑائی",
-  "inputs.height.label": "اونچائی"
+  "inputs.title.section": "کریڈینشلز"
 }

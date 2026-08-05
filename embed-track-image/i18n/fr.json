@@ -2,8 +2,6 @@
   "name": "Intégrer et suivre une image",
   "description": "Intègre ton auteur, ton copyright et ta licence dans n'importe quelle image - plus un Lolly Imprint invisible et des Content Credentials - avant de la partager.",
   "a11yLabel": "Intègre des identifiants dans ton image",
-  "inputs.source.label": "Ton image",
-  "inputs.source.help": "Dépose ou choisis l'image à marquer. Elle est réenregistrée avec tes identifiants intégrés - rien n'est envoyé à un serveur. Le canevas et le format d'export reprennent par défaut les pixels et le type de ton image.",
   "inputs.creator.label": "Artiste / auteur",
   "inputs.creator.help": "Ton nom - intégré comme auteur/créateur de l'image (EXIF Artist, XMP dc:creator, et le Content Credential).",
   "inputs.creator.section": "Identifiants",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Identifiants",
   "inputs.title.label": "Titre / description",
   "inputs.title.help": "Facultatif - un titre court ou une description de l'œuvre.",
-  "inputs.title.section": "Identifiants",
-  "inputs.width.label": "Largeur",
-  "inputs.height.label": "Hauteur"
+  "inputs.title.section": "Identifiants"
 }

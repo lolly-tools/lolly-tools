@@ -2,8 +2,6 @@
   "name": "Bygg inn og spor bilde",
   "description": "Stemple forfatter, opphavsrett og lisens inn i et hvilket som helst bilde - pluss et usynlig Lolly Imprint og Content Credentials - før du deler det.",
   "a11yLabel": "Bygg inn legitimasjon i bildet ditt",
-  "inputs.source.label": "Bildet ditt",
-  "inputs.source.help": "Slipp eller velg bildet du vil merke. Det lagres på nytt med legitimasjonen din innebygd - ingenting lastes opp til en server. Lerretet og eksportformatet bruker som standard bildets egne piksler og type.",
   "inputs.creator.label": "Artist / forfatter",
   "inputs.creator.help": "Navnet ditt - bygges inn som bildets forfatter/skaper (EXIF Artist, XMP dc:creator og Content Credential).",
   "inputs.creator.section": "Legitimasjon",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Legitimasjon",
   "inputs.title.label": "Tittel / beskrivelse",
   "inputs.title.help": "Valgfritt - en kort tittel eller beskrivelse av verket.",
-  "inputs.title.section": "Legitimasjon",
-  "inputs.width.label": "Bredde",
-  "inputs.height.label": "Høyde"
+  "inputs.title.section": "Legitimasjon"
 }

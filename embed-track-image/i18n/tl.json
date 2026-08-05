@@ -2,8 +2,6 @@
   "name": "Embed & Track Image",
   "description": "I-stamp ang iyong may-akda, copyright, at lisensya sa anumang larawan - kasama ang invisible na Lolly Imprint at Content Credentials - bago mo ito ibahagi.",
   "a11yLabel": "Mag-embed ng mga kredensyal sa iyong larawan",
-  "inputs.source.label": "Ang iyong larawan",
-  "inputs.source.help": "I-drop o piliin ang larawang gusto mong markahan. Muli itong nase-save nang naka-embed ang iyong mga kredensyal - walang ina-upload sa server. Ang canvas at export format ay default sa mismong pixels at uri ng iyong larawan.",
   "inputs.creator.label": "Artista / May-akda",
   "inputs.creator.help": "Ang iyong pangalan - naka-embed bilang author/creator ng larawan (EXIF Artist, XMP dc:creator, at ang Content Credential).",
   "inputs.creator.section": "Mga Kredensyal",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Mga Kredensyal",
   "inputs.title.label": "Pamagat / paglalarawan",
   "inputs.title.help": "Opsyonal - maikling titulo o paglalarawan ng gawa.",
-  "inputs.title.section": "Mga Kredensyal",
-  "inputs.width.label": "Lapad",
-  "inputs.height.label": "Height"
+  "inputs.title.section": "Mga Kredensyal"
 }

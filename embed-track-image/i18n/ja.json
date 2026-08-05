@@ -2,8 +2,6 @@
   "name": "画像を埋め込んで追跡",
   "description": "作者名・著作権・ライセンスを画像に刻印します - さらに目に見えないLolly ImprintとContent Credentialsも - 共有前に。",
   "a11yLabel": "画像に資格情報を埋め込む",
-  "inputs.source.label": "ご自身の画像",
-  "inputs.source.help": "マークしたい画像をドロップまたは選択します。資格情報を埋め込んで再保存されます - サーバーへのアップロードは行われません。キャンバスと書き出し形式は、画像自体のピクセルと種類に既定で合わせられます。",
   "inputs.creator.label": "アーティスト / 作者",
   "inputs.creator.help": "お名前 - 画像の作成者として埋め込まれます(EXIF Artist、XMP dc:creator、Content Credential)。",
   "inputs.creator.section": "資格情報",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "資格情報",
   "inputs.title.label": "タイトル / 説明",
   "inputs.title.help": "任意 - 作品の短いタイトルまたは説明。",
-  "inputs.title.section": "資格情報",
-  "inputs.width.label": "幅",
-  "inputs.height.label": "高さ"
+  "inputs.title.section": "資格情報"
 }

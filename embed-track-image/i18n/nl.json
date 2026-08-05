@@ -2,8 +2,6 @@
   "name": "Afbeelding insluiten & volgen",
   "description": "Stempel je auteur, copyright en licentie in elke afbeelding - plus een onzichtbare Lolly Imprint en Content Credentials - voordat je hem deelt.",
   "a11yLabel": "Credentials insluiten in je afbeelding",
-  "inputs.source.label": "Je afbeelding",
-  "inputs.source.help": "Sleep of kies de afbeelding die je wilt markeren. Deze wordt opnieuw opgeslagen met je credentials ingebed - er wordt niets naar een server geüpload. Het canvas en exportformaat gaan standaard uit van de eigen pixels en het type van je afbeelding.",
   "inputs.creator.label": "Artiest / auteur",
   "inputs.creator.help": "Je naam - ingebed als de auteur/maker van de afbeelding (EXIF Artist, XMP dc:creator, en de Content Credential).",
   "inputs.creator.section": "Credentials",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Credentials",
   "inputs.title.label": "Titel / beschrijving",
   "inputs.title.help": "Optioneel - een korte titel of beschrijving van het werk.",
-  "inputs.title.section": "Credentials",
-  "inputs.width.label": "Breedte",
-  "inputs.height.label": "Hoogte"
+  "inputs.title.section": "Credentials"
 }

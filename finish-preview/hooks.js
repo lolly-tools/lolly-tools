@@ -27,8 +27,14 @@
 
 /* global onInit, onInput, beforeExport, host */
 
-// The viewBox everything lives in — matches render.width/height (a square frame).
+// DEFAULT viewBox edge when the tool has no explicit size yet (a square frame
+// matching render.width/height). Once an image is picked, the auto-fit <script> in
+// template.html snaps the export Width/Height to the artwork's native size, so the
+// canvas takes the photo's own aspect ratio — dimW/dimH read those inputs, and the
+// whole scene is emitted at W×H rather than the old fixed 1000² square.
 var VIEW = 1000;
+var MAX_EDGE = 8000;                 // matches the auto-fit cap in template.html + the width/height input max
+var _lastW = VIEW, _lastH = VIEW;    // most recent canvas size — read by setSheenPhase (export sweep range)
 // The default source image shown until the user picks one (a Lolly tool URL,
 // resolved lazily via host.compose — same convention as the other filter tools).
 var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
@@ -89,16 +95,25 @@ function color(v, fallback) {
   return s ? s : fallback;
 }
 
-function svgOpen() {
+// The canvas size, in viewBox units, from the export-group width/height inputs. Both
+// default to VIEW so a fresh mount (before any image) is the old 1000² square.
+function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_EDGE); }
+function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
+
+// `extra` carries the auto-fit anchor attributes (data-img-key etc.) onto the root
+// <svg> — the template.html <script> reads them. Stamped on the root (not a child)
+// so the single-root-<svg> CLI vector path is preserved, exactly like filter-imperfections.
+function svgOpen(W, H, extra) {
   return '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" '
-    + 'viewBox="0 0 ' + VIEW + ' ' + VIEW + '" '
-    + 'preserveAspectRatio="xMidYMid meet">';
+    + 'viewBox="0 0 ' + W + ' ' + H + '" '
+    + 'preserveAspectRatio="xMidYMid meet"' + (extra || '') + '>';
 }
 
-function placeholder(message) {
-  return svgOpen()
-    + '<rect width="' + VIEW + '" height="' + VIEW + '" fill="#f4f4f5"/>'
-    + '<text x="' + (VIEW / 2) + '" y="' + (VIEW / 2) + '" text-anchor="middle" '
+function placeholder(message, W, H) {
+  W = W || VIEW; H = H || VIEW;
+  return svgOpen(W, H)
+    + '<rect width="' + W + '" height="' + H + '" fill="#f4f4f5"/>'
+    + '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" '
     + 'dominant-baseline="middle" font-family="sans-serif" font-size="34" '
     + 'fill="#9ca3af">' + esc(message) + '</text>'
     + '</svg>';
@@ -108,14 +123,8 @@ function placeholder(message) {
 
 // === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function loadImage(url) {
-  return new Promise(function (resolve, reject) {
-    if (typeof Image === 'undefined') { reject(new Error('no Image')); return; }
-    var im = new Image();
-    im.onload = function () { resolve(im); };
-    im.onerror = function () { reject(new Error('image load failed')); };
-    try { im.crossOrigin = 'anonymous'; } catch (e) { /* ignore */ }
-    im.src = url;
-  });
+  if (!host.raster) return Promise.reject(new Error('no raster'));
+  return host.raster.decode(url);
 }
 // === /lolly:shared loadImage ===
 
@@ -129,9 +138,7 @@ function getImage(url) {
 
 // === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function canRaster() {
-  if (typeof document === 'undefined' || !document.createElement) return false;
-  try { var c = document.createElement('canvas'); return !!(c.getContext && c.getContext('2d')); }
-  catch (e) { return false; }
+  return !!(host.raster && host.raster.canRaster());
 }
 // === /lolly:shared canRaster ===
 
@@ -362,7 +369,7 @@ function gradientStopsMarkup(stops) {
 // sweep angle. Animated with SMIL (additive translate along the gradient axis)
 // only when `animate` is true; otherwise it rests, centred — a still or a
 // reduced-motion preview never shows a mid-sweep pose.
-function sheenGradient(id, angle, opacity, sharp, animate) {
+function sheenGradient(id, angle, opacity, sharp, animate, W, H) {
   var stops = sharp
     ? [{ offset: 0, hex: '#ffffff', opacity: 0 }, { offset: 0.46, hex: '#ffffff', opacity: 0 },
        { offset: 0.5, hex: '#ffffff', opacity: opacity }, { offset: 0.54, hex: '#ffffff', opacity: 0 },
@@ -370,27 +377,37 @@ function sheenGradient(id, angle, opacity, sharp, animate) {
     : [{ offset: 0, hex: '#ffffff', opacity: 0 }, { offset: 0.38, hex: '#ffffff', opacity: 0 },
        { offset: 0.5, hex: '#ffffff', opacity: opacity }, { offset: 0.62, hex: '#ffffff', opacity: 0 },
        { offset: 1, hex: '#ffffff', opacity: 0 }];
-  return '<linearGradient id="' + id + '" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="' + VIEW + '" y2="0" '
-    + 'gradientTransform="rotate(' + f2(angle) + ' ' + (VIEW / 2) + ' ' + (VIEW / 2) + ')">'
+  // Sweep range spans the LONGER edge so the light band crosses the whole frame at any
+  // aspect (matches setSheenPhase, which drives the export sweep off the same max(W,H)).
+  var M = Math.max(W, H);
+  return '<linearGradient id="' + id + '" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="' + W + '" y2="0" '
+    + 'gradientTransform="rotate(' + f2(angle) + ' ' + (W / 2) + ' ' + (H / 2) + ')">'
     + gradientStopsMarkup(stops)
     + (animate
       ? '<animateTransform attributeName="gradientTransform" type="translate" additive="sum" '
-        + 'from="-' + VIEW + ' 0" to="' + VIEW + ' 0" dur="5s" repeatCount="indefinite"/>'
+        + 'from="-' + M + ' 0" to="' + M + ' 0" dur="5s" repeatCount="indefinite"/>'
       : '')
     + '</linearGradient>';
 }
 
 function buildSvg(args) {
+  var W = args.W || VIEW, H = args.H || VIEW;
   var region = args.region;
   var rx = f2(region.x), ry = f2(region.y), rw = f2(region.w), rh = f2(region.h);
   var label = FINISH_LABELS[args.finish] || args.finish;
+  // Auto-fit anchor stamped on the root <svg> — the demo default carries an empty key
+  // (never resizes); the decoded native size rides along for the fast path. See template.html.
+  var rootExtra = args.imgKey != null
+    ? ' data-img-key="' + esc(args.imgKey) + '"'
+      + (args.imgW > 0 && args.imgH > 0 ? ' data-img-w="' + args.imgW + '" data-img-h="' + args.imgH + '"' : '')
+    : '';
 
   // ── plate view: the printer deliverable — pure black mask on white + label ──
   // Filter-free by construction (the plate PNG is already black-on-white), so
   // it survives PDF export and any strict vector path unchanged.
   if (args.plate) {
-    var pl = svgOpen();
-    pl += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="#ffffff"/>';
+    var pl = svgOpen(W, H, rootExtra);
+    pl += '<rect width="' + W + '" height="' + H + '" fill="#ffffff"/>';
     if (args.wholeMask) {
       pl += '<rect x="' + rx + '" y="' + ry + '" width="' + rw + '" height="' + rh + '" fill="#000000"/>';
     } else {
@@ -410,7 +427,7 @@ function buildSvg(args) {
     // label. Solid #000000, no knockout, in a documented strippable group: never
     // paint white over plate geometry.
     pl += '<g id="fp-plate-annotation">'
-      + '<text x="24" y="' + (VIEW - 20) + '" font-family="system-ui, sans-serif" font-size="22" fill="#000000">'
+      + '<text x="24" y="' + (H - 20) + '" font-family="system-ui, sans-serif" font-size="22" fill="#000000">'
       + esc(label + ' · prints as spot plate — overprint') + '</text></g>';
     pl += '</svg>';
     return pl;
@@ -439,7 +456,7 @@ function buildSvg(args) {
 
   var artHref = esc(args.url);
   var artImg = args.cover
-    ? '<image href="' + artHref + '" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '" preserveAspectRatio="xMidYMid slice"/>'
+    ? '<image href="' + artHref + '" x="0" y="0" width="' + W + '" height="' + H + '" preserveAspectRatio="xMidYMid slice"/>'
     : '<image href="' + artHref + '" x="' + rx + '" y="' + ry + '" width="' + rw + '" height="' + rh + '" preserveAspectRatio="none"/>';
   var maskImg = args.wholeMask ? null
     : '<image href="' + esc(args.maskUrl) + '" x="' + rx + '" y="' + ry + '" width="' + rw + '" height="' + rh + '" preserveAspectRatio="none"/>';
@@ -449,7 +466,7 @@ function buildSvg(args) {
 
   var defs = '';
   // The finish mask (luminance × alpha of the white/alpha mask PNG).
-  defs += '<mask id="' + U + 'm" maskUnits="userSpaceOnUse" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '">'
+  defs += '<mask id="' + U + 'm" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">'
     + (args.wholeMask ? regionRect('#ffffff') : maskImg)
     + '</mask>';
 
@@ -458,7 +475,7 @@ function buildSvg(args) {
     // painting the mask black (fp-black keeps alpha, zeroes RGB) over white.
     defs += '<filter id="' + U + 'black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" '
       + 'values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 1 0"/></filter>';
-    defs += '<mask id="' + U + 'mi" maskUnits="userSpaceOnUse" x="0" y="0" width="' + VIEW + '" height="' + VIEW + '">'
+    defs += '<mask id="' + U + 'mi" maskUnits="userSpaceOnUse" x="0" y="0" width="' + W + '" height="' + H + '">'
       + regionRect('#ffffff')
       + (args.wholeMask ? regionRect('#000000')
         : '<g filter="url(#' + U + 'black)">' + maskImg + '</g>')
@@ -487,10 +504,10 @@ function buildSvg(args) {
     var stops = args.finish === 'foil-holographic'
       ? holoStops()
       : rampStops(FOIL_ANCHORS[args.finish] || FOIL_ANCHORS['foil-gold'], 4);
-    defs += '<linearGradient id="' + U + 'metal" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="' + VIEW + '" y2="0" '
-      + 'gradientTransform="rotate(' + f2(angle) + ' ' + (VIEW / 2) + ' ' + (VIEW / 2) + ')">'
+    defs += '<linearGradient id="' + U + 'metal" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="' + W + '" y2="0" '
+      + 'gradientTransform="rotate(' + f2(angle) + ' ' + (W / 2) + ' ' + (H / 2) + ')">'
       + gradientStopsMarkup(stops) + '</linearGradient>';
-    defs += sheenGradient(U + 'sheen', angle, 0.1 + 0.45 * k, false, animate);
+    defs += sheenGradient(U + 'sheen', angle, 0.1 + 0.45 * k, false, animate, W, H);
   }
 
   if (kind === 'uv') {
@@ -502,7 +519,7 @@ function buildSvg(args) {
       + '<feFuncG type="linear" slope="' + f2(1 + 0.1 * k) + '" intercept="' + f2(-0.04 * k) + '"/>'
       + '<feFuncB type="linear" slope="' + f2(1 + 0.1 * k) + '" intercept="' + f2(-0.04 * k) + '"/>'
       + '</feComponentTransfer></filter>';
-    defs += sheenGradient(U + 'sheen', angle, 0.15 + 0.35 * k, true, animate);
+    defs += sheenGradient(U + 'sheen', angle, 0.15 + 0.35 * k, true, animate, W, H);
   }
 
   if (kind === 'bevel') {
@@ -534,9 +551,9 @@ function buildSvg(args) {
       + '</filter>';
   }
 
-  var out = svgOpen();
+  var out = svgOpen(W, H, rootExtra);
   out += '<defs>' + defs + '</defs>';
-  out += '<rect width="' + VIEW + '" height="' + VIEW + '" fill="' + esc(args.bg) + '"/>';
+  out += '<rect width="' + W + '" height="' + H + '" fill="' + esc(args.bg) + '"/>';
   out += artImg;
 
   if (kind === 'matte') {
@@ -588,6 +605,9 @@ async function compute(model) {
   // Resolve the artwork URL: the user's pick, else the demo default (cached).
   var ref = inputs.image;
   var url = ref && typeof ref === 'object' ? ref.url : null;
+  // Only a user-chosen image drives the auto-fit (template.html); the demo default
+  // must never resize the canvas on first load.
+  var isUserPick = !!url;
   if (!url) {
     if (!_defaultUrl) {
       try {
@@ -607,9 +627,12 @@ async function compute(model) {
     ? inputs.maskSource : 'light';
   var maskColorHex = color(inputs.maskColor, '#30ba78');
   var animate = Boolean(inputs.sheen) && !plate && !prefersReducedMotion();
+  // Canvas size from the export-group width/height inputs — the whole scene is emitted
+  // at W×H, so a picked image's aspect (auto-fit) or a manual resize reflows it.
+  var W = dimW(inputs), H = dimH(inputs);
 
   var params = {
-    url: url, plate: plate, bg: bg,
+    url: url, plate: plate, bg: bg, W: W, H: H,
     finish: inputs.finish, strength: inputs.strength, animate: animate,
     angle: inputs.angle, maskSource: maskSource, maskColor: maskColorHex,
     threshold: inputs.threshold, softness: inputs.softness, fit: inputs.fit,
@@ -624,13 +647,18 @@ async function compute(model) {
     var ih = img.naturalHeight || img.height;
     if (!iw || !ih) throw new Error('image has no size');
 
-    // Region the artwork occupies in the square viewBox: 'contain' letterboxes
-    // to the image's aspect; 'cover' fills the frame (centre crop).
+    // Region the artwork occupies in the W×H canvas: 'contain' letterboxes to the
+    // image's aspect (centred); 'cover' fills the frame (centre crop). With auto-fit
+    // on, the canvas already matches the photo, so 'contain' fills it edge-to-edge.
     var cover = inputs.fit === 'cover';
     var region;
-    if (cover) region = { x: 0, y: 0, w: VIEW, h: VIEW };
-    else if (iw >= ih) region = { x: 0, y: (VIEW - VIEW * ih / iw) / 2, w: VIEW, h: VIEW * ih / iw };
-    else region = { x: (VIEW - VIEW * iw / ih) / 2, y: 0, w: VIEW * iw / ih, h: VIEW };
+    if (cover) {
+      region = { x: 0, y: 0, w: W, h: H };
+    } else {
+      var fitS = Math.min(W / iw, H / ih);
+      var frw = iw * fitS, frh = ih * fitS;
+      region = { x: (W - frw) / 2, y: (H - frh) / 2, w: frw, h: frh };
+    }
 
     var wholeMask = maskSource === 'whole';
     var masks = null;
@@ -655,7 +683,9 @@ async function compute(model) {
         // loop and the two PNG encodes have to stay inside the onInput budget on
         // a mid-range phone, and 2048 is ~4× today's detail at ~4× the cost.
         var ar = region.w / region.h;
-        var LONG = Math.max(VIEW, Math.min(MASK_LONG_EDGE, Math.round(Math.max(iw, ih))));
+        // Long edge of the mask grid: the artwork's own resolution, but at least the
+        // canvas long edge (so a small manual size isn't grainy) and at most the cap.
+        var LONG = clamp(Math.round(Math.max(iw, ih)), Math.min(MASK_LONG_EDGE, Math.max(W, H)), MASK_LONG_EDGE);
         var cw = ar >= 1 ? LONG : Math.max(1, Math.round(LONG * ar));
         var ch = ar >= 1 ? Math.max(1, Math.round(LONG / ar)) : LONG;
         var maskLab = hexToOklab(maskColorHex) || hexToOklab('#30ba78');
@@ -669,8 +699,10 @@ async function compute(model) {
       }
     }
 
+    _lastW = W; _lastH = H;   // read by setSheenPhase (export sweep range)
     finishSvg = buildSvg({
       url: url, plate: plate, bg: bg, cover: cover, region: region,
+      W: W, H: H, imgKey: isUserPick ? url : '', imgW: iw, imgH: ih,
       wholeMask: wholeMask,
       maskUrl: masks && masks.maskUrl, plateUrl: masks && masks.plateUrl,
       maskHash: masks && masks.hash,
@@ -679,7 +711,7 @@ async function compute(model) {
     });
   } catch (e) {
     if (host.log) host.log('warn', 'finish-preview: render failed', { error: String(e) });
-    finishSvg = placeholder('Could not read this image');
+    finishSvg = placeholder('Could not read this image', W, H);
   }
 
   _memoKey = memoKey;
@@ -727,10 +759,12 @@ function pinSheen(node) {
   }
 }
 // t ∈ [0,1): normalised loop time from the export frame clock. Reproduces the
-// SMIL sweep exactly — additive translate from -VIEW to +VIEW along the axis.
+// SMIL sweep exactly — additive translate from -max(W,H) to +max(W,H) along the axis.
 function setSheenPhase(t) {
   if (!_sheenPinned) return;
-  var dx = -VIEW + 2 * VIEW * clamp(n(t, 0), 0, 1);
+  // Sweep range spans the longer edge (matches sheenGradient's from/to = ±max(W,H)).
+  var M = Math.max(_lastW, _lastH);
+  var dx = -M + 2 * M * clamp(n(t, 0), 0, 1);
   for (var i = 0; i < _sheenPinned.length; i++) {
     var p = _sheenPinned[i];
     p.el.setAttribute('gradientTransform', p.base + ' translate(' + f2(dx) + ' 0)');

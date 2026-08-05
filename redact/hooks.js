@@ -2334,13 +2334,18 @@ async function patch(ctx) {
 function onInit(ctx) { return patch(ctx); }
 function onInput(ctx) { return patch(ctx); }
 
-// ─── export helpers (browser canvas — guarded, filter-halftone pattern) ─────
-
+// ─── export helpers (raster capability via host.raster — engine v1.105) ─────
+// canRaster was an unmarked, independently-drifted copy of _shared/raster.js's
+// (const vs var); it now routes through host.raster AND is brought under the
+// lolly:shared drift guard, so a future edit to the canonical can't silently
+// re-drift it (plans/86 §6.1). decodeImage below keeps its own bytes+SVG decode
+// for now — its OffscreenCanvas migration (and moving off unguarded `document`)
+// is M2, not M1.
+// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function canRaster() {
-  if (typeof document === 'undefined' || !document.createElement) return false;
-  try { const c = document.createElement('canvas'); return !!(c.getContext && c.getContext('2d')); }
-  catch (e) { return false; }
+  return !!(host.raster && host.raster.canRaster());
 }
+// === /lolly:shared canRaster ===
 
 const HEADLESS_MSG = 'Redacting this file needs a browser canvas. Open this tool in the Lolly web app.';
 

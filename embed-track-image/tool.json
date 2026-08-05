@@ -1,33 +1,32 @@
 {
   "id": "embed-track-image",
-  "name": "Embed & Track Image",
-  "description": "Stamp your author, copyright and licence into any image — plus an invisible Lolly Imprint and Content Credentials — before you share it.",
-  "a11yLabel": "Embed credentials into your image",
-  "version": "1.0.0",
-  "engineVersion": "^1.0.0",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
+  "a11yLabel": "Embed credentials into your files",
+  "version": "2.0.0",
+  "engineVersion": "^1.104.0",
   "status": "official",
   "category": "utility",
-  "tags": ["provenance", "copyright", "licence", "license", "watermark", "imprint", "c2pa", "content credentials", "metadata", "exif", "creative commons", "image", "photo", "artist", "ip", "rights"],
+  "tags": ["provenance", "copyright", "licence", "license", "watermark", "imprint", "durable", "c2pa", "content credentials", "metadata", "exif", "creative commons", "image", "photo", "pdf", "video", "audio", "artist", "ip", "rights", "batch"],
   "render": {
-    "width": 1080,
-    "height": 1080,
-    "formats": ["png", "jpg", "webp", "svg"],
-    "actions": ["download", "save", "copy"],
-    "transparentBg": true
+    "width": 760,
+    "height": 620,
+    "formats": ["png", "jpg", "webp", "avif", "tiff", "gif", "svg", "pdf", "mp4", "webm", "m4a", "mp3", "wav"],
+    "export": false,
+    "actions": []
   },
   "hooks": {
-    "onInit": true,
-    "onInput": true
+    "onInput": true,
+    "exportFile": true
   },
   "inputs": [
     {
-      "id": "source",
-      "label": "Your image",
-      "type": "asset",
-      "assetType": "raster",
-      "allowUpload": true,
-      "matchExportFormat": true,
-      "help": "Drop or pick the image you want to mark. It's re-saved with your credentials embedded — nothing is uploaded to a server. The canvas and export format default to your image's own pixels and type."
+      "id": "files",
+      "label": "Your files",
+      "type": "file",
+      "multiple": true,
+      "accept": ["image/*", "application/pdf", "video/mp4", "video/quicktime", "video/webm", "audio/mpeg", "audio/mp4", "audio/aac", "audio/wav", "audio/x-wav", ".m4a", ".mp4", ".mov", ".webm"],
+      "help": "Drop the finished work you want to claim — photos, a PDF, an MP4, an audio clip. Each file is stamped on your device and handed back; nothing is uploaded. Drop several to stamp them all at once."
     },
     {
       "id": "creator",
@@ -35,7 +34,7 @@
       "type": "text",
       "section": "Credentials",
       "bindToMeta": "author",
-      "help": "Your name — embedded as the image's author/creator (EXIF Artist, XMP dc:creator, and the Content Credential)."
+      "help": "Your name — embedded as the file's author/creator (dc:creator in the Content Credential; EXIF Artist / XMP where the format carries it)."
     },
     {
       "id": "copyright",
@@ -81,7 +80,13 @@
       "bindToMeta": "description",
       "help": "Optional — a short title or description of the work."
     },
-    { "id": "width",  "label": "Width",  "type": "number", "default": 1080, "min": 1, "max": 16384, "group": "export" },
-    { "id": "height", "label": "Height", "type": "number", "default": 1080, "min": 1, "max": 16384, "group": "export" }
+    {
+      "id": "durable",
+      "label": "Add a durable invisible watermark",
+      "type": "boolean",
+      "section": "Marks",
+      "default": false,
+      "help": "Raster images only (JPEG/PNG/WebP). Embeds an imperceptible neural watermark that survives screenshotting and re-encoding — what strips the Content Credential. Ignored for PDF, video and audio."
+    }
   ]
 }

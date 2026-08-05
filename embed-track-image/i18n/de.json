@@ -2,8 +2,6 @@
   "name": "Bild einbetten & verfolgen",
   "description": "Stempelt Ihren Autor, Ihr Copyright und Ihre Lizenz in jedes Bild ein - plus einen unsichtbaren Lolly Imprint und Content Credentials - bevor Sie es teilen.",
   "a11yLabel": "Nachweise in Ihr Bild einbetten",
-  "inputs.source.label": "Ihr Bild",
-  "inputs.source.help": "Legen Sie das Bild ab, das Sie markieren möchten, oder wählen Sie es aus. Es wird mit eingebetteten Credentials neu gespeichert - nichts wird auf einen Server hochgeladen. Canvas und Exportformat richten sich standardmäßig nach den eigenen Pixeln und dem Typ Ihres Bildes.",
   "inputs.creator.label": "Künstler / Autor",
   "inputs.creator.help": "Ihr Name - eingebettet als Autor/Ersteller des Bildes (EXIF Artist, XMP dc:creator und die Content Credential).",
   "inputs.creator.section": "Credentials",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Credentials",
   "inputs.title.label": "Titel/Beschreibung",
   "inputs.title.help": "Optional - ein kurzer Titel oder eine Beschreibung des Werks.",
-  "inputs.title.section": "Credentials",
-  "inputs.width.label": "Breite",
-  "inputs.height.label": "Höhe"
+  "inputs.title.section": "Credentials"
 }

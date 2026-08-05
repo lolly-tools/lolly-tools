@@ -2,8 +2,6 @@
   "name": "Incorporar e Rastrear Imagem",
   "description": "Grave seu autor, direitos autorais e licença em qualquer imagem - além de um Lolly Imprint invisível e Content Credentials - antes de compartilhar.",
   "a11yLabel": "Incorpore credenciais na sua imagem",
-  "inputs.source.label": "Sua imagem",
-  "inputs.source.help": "Solte ou escolha a imagem que você quer marcar. Ela é salva novamente com suas credenciais incorporadas - nada é enviado a um servidor. A tela e o formato de exportação usam por padrão os próprios pixels e tipo da sua imagem.",
   "inputs.creator.label": "Artista / autor",
   "inputs.creator.help": "Seu nome - incorporado como autor/criador da imagem (EXIF Artist, XMP dc:creator e o Content Credential).",
   "inputs.creator.section": "Credenciais",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Credenciais",
   "inputs.title.label": "Título / descrição",
   "inputs.title.help": "Opcional - um título curto ou descrição do trabalho.",
-  "inputs.title.section": "Credenciais",
-  "inputs.width.label": "Largura",
-  "inputs.height.label": "Altura"
+  "inputs.title.section": "Credenciais"
 }

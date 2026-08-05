@@ -2,8 +2,6 @@
   "name": "Benam & Jejak Imej",
   "description": "Cop pengarang, hak cipta dan lesen anda ke atas mana-mana imej - ditambah Lolly Imprint dan Content Credentials yang tidak kelihatan - sebelum anda kongsikannya.",
   "a11yLabel": "Benamkan kelayakan ke dalam imej anda",
-  "inputs.source.label": "Imej anda",
-  "inputs.source.help": "Jatuhkan atau pilih imej yang anda mahu tandakan. Ia disimpan semula dengan kelayakan anda dibenamkan - tiada apa dimuat naik ke pelayan. Kanvas dan format eksport lalai kepada piksel dan jenis imej anda sendiri.",
   "inputs.creator.label": "Artis / pengarang",
   "inputs.creator.help": "Nama anda - dibenamkan sebagai pengarang/pencipta imej (EXIF Artist, XMP dc:creator, dan Content Credential).",
   "inputs.creator.section": "Kelayakan",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Kelayakan",
   "inputs.title.label": "Tajuk / penerangan",
   "inputs.title.help": "Pilihan - tajuk atau penerangan ringkas tentang karya ini.",
-  "inputs.title.section": "Kelayakan",
-  "inputs.width.label": "Lebar",
-  "inputs.height.label": "Tinggi"
+  "inputs.title.section": "Kelayakan"
 }

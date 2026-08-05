@@ -30,3 +30,56 @@
       only the marks are true DeviceCMYK. The PLATE view has no filter or
       gradient, so it takes the real vector path and its <image> plate is placed
       as-is; for a true CMYK plate deliverable, cmyk-tiff converts every pixel. --}}
+{{!-- Single-root <svg> is preserved: hooks.js emits ONE root <svg> (the finish scene),
+      and the auto-fit anchor (data-img-key / data-img-w / data-img-h) is stamped ON that
+      root, not on a sibling — so the CLI's rootSvgOf vector path is unaffected. The
+      trailing <script> is exempt from its drawable-child count. --}}
+<script>
+/* Auto-fit the canvas to a newly chosen image (native pixel dimensions). hooks.js stamps
+   the user-picked image's URL as data-img-key on the root <svg> (empty for the demo
+   default). This <script> re-runs on every paint (runTemplateScripts); when the key
+   changes to a new image we snap the export Width/Height fields to the image's native size
+   (aspect preserved) so the canvas takes the photo's own aspect ratio. The finish then
+   re-fills whatever the user resizes to afterwards, and we don't re-snap until a different
+   image is chosen. Keyed on the #tool-canvas element (recreated per mount → auto-scoped,
+   and absent for the off-screen export canvas → never resizes the bar during an export).
+   Identical to the shared filter-tool auto-fit script. IIFE + var: re-run each render. */
+(function () {
+  var anchor = document.querySelector('[data-img-key]');
+  if (!anchor) return;
+  var canvas = anchor.closest('#tool-canvas');
+  if (!canvas) return;                        // off-screen export canvas → never touch the export bar
+  var key = anchor.getAttribute('data-img-key') || '';
+  if (!('__finishFitKey' in canvas)) {        // FIRST run for this freshly-mounted canvas: adopt whatever
+    canvas.__finishFitKey = key;              // image is already set as the baseline WITHOUT resizing, so a
+    return;                                   // saved/restored file keeps its export size. Only a LATER change
+  }                                           // to the image input triggers a snap.
+  if (canvas.__finishFitKey === key) return;  // image unchanged since mount / last snap → respect manual resize
+  if (!key) { canvas.__finishFitKey = ''; return; } // image cleared → adopt empty baseline, no resize
+  var uEl = document.querySelector('[data-action="export-unit"]');
+  if (uEl && uEl.value && uEl.value !== 'px') return; // a deliberate mm/in page — don't override it
+  var wEl = document.querySelector('[data-action="export-width"]');
+  var hEl = document.querySelector('[data-action="export-height"]');
+  if (!wEl || !hEl) return;
+
+  var MAX = 8000;                             // keep a huge original from blowing up the export
+  function apply(nw, nh) {
+    if (!(nw > 0 && nh > 0)) return;
+    canvas.__finishFitKey = key;              // record BEFORE dispatch so the re-render it triggers is a no-op
+    var s = Math.min(1, MAX / Math.max(nw, nh));
+    var W = Math.max(1, Math.round(nw * s));
+    var H = Math.max(1, Math.round(nh * s));
+    var changed = false;
+    if (parseFloat(wEl.value) !== W) { wEl.value = String(W); changed = true; }
+    if (parseFloat(hEl.value) !== H) { hEl.value = String(H); changed = true; }
+    if (changed) {
+      wEl.dispatchEvent(new Event('input', { bubbles: true }));
+      hEl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+  }
+
+  var nw = parseFloat(anchor.getAttribute('data-img-w'));
+  var nh = parseFloat(anchor.getAttribute('data-img-h'));
+  if (nw > 0 && nh > 0) { apply(nw, nh); return; }  // fast path: the hook already decoded the image
+})();
+</script>

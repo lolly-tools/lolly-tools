@@ -2,8 +2,6 @@
   "name": "Vložit & sledovat obrázek",
   "description": "Vlož autora, copyright a licenci do libovolného obrázku - plus neviditelný Lolly Imprint a Content Credentials - než ho sdílíš.",
   "a11yLabel": "Vlož pověření do svého obrázku",
-  "inputs.source.label": "Tvůj obrázek",
-  "inputs.source.help": "Přetáhni nebo vyber obrázek, který chceš označit. Znovu se uloží s vloženými tvými údaji - nic se neodesílá na server. Plátno a formát exportu ve výchozím nastavení odpovídají pixelům a typu tvého obrázku.",
   "inputs.creator.label": "Umělec / autor",
   "inputs.creator.help": "Tvé jméno - vloží se jako autor/tvůrce obrázku (EXIF Artist, XMP dc:creator a Content Credential).",
   "inputs.creator.section": "Pověření",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Pověření",
   "inputs.title.label": "Nadpis / popis",
   "inputs.title.help": "Volitelné - krátký název nebo popis díla.",
-  "inputs.title.section": "Pověření",
-  "inputs.width.label": "Šířka",
-  "inputs.height.label": "Výška"
+  "inputs.title.section": "Pověření"
 }

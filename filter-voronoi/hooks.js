@@ -405,21 +405,13 @@ function disarmFilterOverlayExport() {
 // ── decode ────────────────────────────────────────────────────────────────────
 // === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function canRaster() {
-  if (typeof document === 'undefined' || !document.createElement) return false;
-  try { var c = document.createElement('canvas'); return !!(c.getContext && c.getContext('2d')); }
-  catch (e) { return false; }
+  return !!(host.raster && host.raster.canRaster());
 }
 // === /lolly:shared canRaster ===
 // === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function loadImage(url) {
-  return new Promise(function (resolve, reject) {
-    if (typeof Image === 'undefined') { reject(new Error('no Image')); return; }
-    var im = new Image();
-    im.onload = function () { resolve(im); };
-    im.onerror = function () { reject(new Error('image load failed')); };
-    try { im.crossOrigin = 'anonymous'; } catch (e) { /* ignore */ }
-    im.src = url;
-  });
+  if (!host.raster) return Promise.reject(new Error('no raster'));
+  return host.raster.decode(url);
 }
 // === /lolly:shared loadImage ===
 function getImage(url) {

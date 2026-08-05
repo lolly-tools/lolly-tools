@@ -2,8 +2,6 @@
   "name": "Încorporează & Urmărește Imagine",
   "description": "Imprimă autorul, drepturile de autor și licența în orice imagine - plus un Lolly Imprint invizibil și Content Credentials - înainte să o distribui.",
   "a11yLabel": "Încorporează acreditări în imaginea ta",
-  "inputs.source.label": "Imaginea ta",
-  "inputs.source.help": "Trage sau alege imaginea pe care vrei să o marchezi. Este resalvată cu acreditările tale încorporate - nimic nu este încărcat pe un server. Canvasul și formatul de export folosesc implicit pixelii și tipul propriu al imaginii tale.",
   "inputs.creator.label": "Artist / autor",
   "inputs.creator.help": "Numele tău - inclus ca autor/creator al imaginii (EXIF Artist, XMP dc:creator și Content Credential).",
   "inputs.creator.section": "Acreditări",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Acreditări",
   "inputs.title.label": "Titlu / descriere",
   "inputs.title.help": "Opțional - un titlu scurt sau o descriere a lucrării.",
-  "inputs.title.section": "Acreditări",
-  "inputs.width.label": "Lățime",
-  "inputs.height.label": "Înălțime"
+  "inputs.title.section": "Acreditări"
 }

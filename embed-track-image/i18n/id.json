@@ -2,8 +2,6 @@
   "name": "Sematkan & Lacak Gambar",
   "description": "Bubuhkan nama pembuat, hak cipta, dan lisensi Anda ke gambar apa pun - plus Lolly Imprint tak terlihat dan Content Credentials - sebelum Anda membagikannya.",
   "a11yLabel": "Sematkan kredensial ke dalam gambar Anda",
-  "inputs.source.label": "Gambar Anda",
-  "inputs.source.help": "Jatuhkan atau pilih gambar yang ingin Anda tandai. Gambar disimpan ulang dengan kredensial Anda tertanam - tidak ada yang diunggah ke server. Kanvas dan format ekspor secara default mengikuti piksel dan jenis gambar Anda sendiri.",
   "inputs.creator.label": "Seniman / penulis",
   "inputs.creator.help": "Nama Anda - disematkan sebagai pembuat/kreator gambar (EXIF Artist, XMP dc:creator, dan Content Credential).",
   "inputs.creator.section": "Kredensial",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Kredensial",
   "inputs.title.label": "Judul / deskripsi",
   "inputs.title.help": "Opsional - judul atau deskripsi singkat karya.",
-  "inputs.title.section": "Kredensial",
-  "inputs.width.label": "Lebar",
-  "inputs.height.label": "Tinggi"
+  "inputs.title.section": "Kredensial"
 }

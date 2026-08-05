@@ -90,9 +90,7 @@ function esc(s) {
 // Only needed by the LIVE path (frame → canvas → data URL); stills are pure SVG.
 // === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function canRaster() {
-  if (typeof document === 'undefined' || !document.createElement) return false;
-  try { var c = document.createElement('canvas'); return !!(c.getContext && c.getContext('2d')); }
-  catch (e) { return false; }
+  return !!(host.raster && host.raster.canRaster());
 }
 // === /lolly:shared canRaster ===
 

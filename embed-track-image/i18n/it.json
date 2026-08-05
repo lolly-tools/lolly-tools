@@ -2,8 +2,6 @@
   "name": "Incorpora & traccia immagine",
   "description": "Imprimi il tuo autore, copyright e licenza in qualsiasi immagine - più un Lolly Imprint invisibile e i Content Credentials - prima di condividerla.",
   "a11yLabel": "Incorpora le credenziali nella tua immagine",
-  "inputs.source.label": "La tua immagine",
-  "inputs.source.help": "Rilascia o scegli l'immagine che vuoi marcare. Viene salvata di nuovo con le tue credenziali incorporate - nulla viene caricato su un server. Il canvas e il formato di esportazione corrispondono di default ai pixel e al tipo della tua immagine.",
   "inputs.creator.label": "Artista / autore",
   "inputs.creator.help": "Il tuo nome - incorporato come autore/creatore dell'immagine (EXIF Artist, XMP dc:creator e la Content Credential).",
   "inputs.creator.section": "Credenziali",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "Credenziali",
   "inputs.title.label": "Titolo / descrizione",
   "inputs.title.help": "Facoltativo - un breve titolo o descrizione dell'opera.",
-  "inputs.title.section": "Credenziali",
-  "inputs.width.label": "Larghezza",
-  "inputs.height.label": "Altezza"
+  "inputs.title.section": "Credenziali"
 }

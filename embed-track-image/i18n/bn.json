@@ -2,8 +2,6 @@
   "name": "এমবেড & ট্র্যাক ইমেজ",
   "description": "শেয়ার করার আগে যেকোনো ছবিতে আপনার লেখক, কপিরাইট ও লাইসেন্স স্ট্যাম্প করুন - সাথে একটি অদৃশ্য Lolly Imprint এবং Content Credentials।",
   "a11yLabel": "আপনার ছবিতে ক্রেডেনশিয়াল এমবেড করুন",
-  "inputs.source.label": "আপনার ছবি",
-  "inputs.source.help": "যে ছবিতে মার্ক করতে চান তা ড্রপ করুন বা বেছে নিন। এটি আপনার ক্রেডেনশিয়াল এমবেড করে পুনরায় সেভ হয় - সার্ভারে কিছুই আপলোড হয় না। ক্যানভাস এবং এক্সপোর্ট ফরম্যাট আপনার ছবির নিজস্ব পিক্সেল এবং টাইপ অনুযায়ী ডিফল্ট হয়।",
   "inputs.creator.label": "শিল্পী / লেখক",
   "inputs.creator.help": "আপনার নাম - ছবির লেখক/নির্মাতা হিসেবে এমবেড করা হয় (EXIF Artist, XMP dc:creator, এবং Content Credential)।",
   "inputs.creator.section": "ক্রেডেনশিয়াল",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "ক্রেডেনশিয়াল",
   "inputs.title.label": "শিরোনাম / বিবরণ",
   "inputs.title.help": "ঐচ্ছিক - কাজটির একটি সংক্ষিপ্ত শিরোনাম বা বিবরণ।",
-  "inputs.title.section": "ক্রেডেনশিয়াল",
-  "inputs.width.label": "প্রস্থ",
-  "inputs.height.label": "উচ্চতা"
+  "inputs.title.section": "ক্রেডেনশিয়াল"
 }

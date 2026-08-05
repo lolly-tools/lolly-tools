@@ -2,8 +2,6 @@
   "name": "嵌入並追蹤圖片",
   "description": "把作者、版權和授權標記進任何圖片 - 並加上隱形的 Lolly Imprint 與 Content Credentials - 然後再分享。",
   "a11yLabel": "將憑證嵌入您的圖片",
-  "inputs.source.label": "你的圖片",
-  "inputs.source.help": "拖放或選取要標記的圖片。系統會重新儲存並嵌入您的憑證 - 不會上傳到伺服器。畫布與匯出格式預設會依照您圖片本身的像素與類型。",
   "inputs.creator.label": "藝術家 / 作者",
   "inputs.creator.help": "你的名稱 - 會嵌入為圖片的作者/建立者(EXIF Artist、XMP dc:creator,以及 Content Credential)。",
   "inputs.creator.section": "憑證",
@@ -27,7 +25,5 @@
   "inputs.contact.section": "憑證",
   "inputs.title.label": "標題 / 描述",
   "inputs.title.help": "選填 - 作品的簡短標題或描述。",
-  "inputs.title.section": "憑證",
-  "inputs.width.label": "寬度",
-  "inputs.height.label": "高度"
+  "inputs.title.section": "憑證"
 }

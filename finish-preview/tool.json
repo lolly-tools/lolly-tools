@@ -143,12 +143,30 @@
       ]
     },
     {
+      "id": "width",
+      "label": "Width",
+      "type": "number",
+      "default": 1000,
+      "min": 1,
+      "max": 8000,
+      "group": "export"
+    },
+    {
+      "id": "height",
+      "label": "Height",
+      "type": "number",
+      "default": 1000,
+      "min": 1,
+      "max": 8000,
+      "group": "export"
+    },
+    {
       "id": "bgColor",
       "label": "Background",
       "section": "Output",
       "type": "color",
       "default": "{color.semantic.surface}",
-      "help": "Fill behind the artwork when it doesn't cover the square frame."
+      "help": "Fill behind the artwork when it doesn't cover the frame."
     },
     {
       "id": "plateView",

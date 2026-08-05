@@ -7,28 +7,27 @@
  * Edit the regions HERE, then run `npm run sync:shared` to rewrite every
  * consumer; `npm run validate:catalog` fails if any consumer drifts.
  *
- * Follow-up (recorded, not done): promote canRaster/loadImage to a
- * `host.raster` bridge API so tools stop probing the platform themselves —
- * that is an engine contract change (new HostV1 surface), out of scope here.
+ * Both regions delegate to the `host.raster` bridge API (engine v1.105,
+ * plans/86-worker-isolation-hooks.md §6.1) instead of probing the DOM directly.
+ * `host` is in lexical scope in every hooks.js (the whole file is one
+ * `new Function('host', ...)` body), so these keep their signatures — 0-arg
+ * `canRaster()`, 1-URL-arg `loadImage(url)` — and NO consumer call site changes.
+ * Asking the host rather than the realm is what keeps them correct once hooks
+ * move into a Worker, where `document`/`Image` are absent even though rastering
+ * (OffscreenCanvas) works. A shell without `host.raster` (the headless CLI) makes
+ * canRaster() false and loadImage() reject — the same degraded path the old
+ * `typeof document === 'undefined'` guard produced.
  */
 
 // === lolly:shared canRaster — canonical source; edit here and run npm run sync:shared ===
 function canRaster() {
-  if (typeof document === 'undefined' || !document.createElement) return false;
-  try { var c = document.createElement('canvas'); return !!(c.getContext && c.getContext('2d')); }
-  catch (e) { return false; }
+  return !!(host.raster && host.raster.canRaster());
 }
 // === /lolly:shared canRaster ===
 
 // === lolly:shared loadImage — canonical source; edit here and run npm run sync:shared ===
 function loadImage(url) {
-  return new Promise(function (resolve, reject) {
-    if (typeof Image === 'undefined') { reject(new Error('no Image')); return; }
-    var im = new Image();
-    im.onload = function () { resolve(im); };
-    im.onerror = function () { reject(new Error('image load failed')); };
-    try { im.crossOrigin = 'anonymous'; } catch (e) { /* ignore */ }
-    im.src = url;
-  });
+  if (!host.raster) return Promise.reject(new Error('no raster'));
+  return host.raster.decode(url);
 }
 // === /lolly:shared loadImage ===
