@@ -10,7 +10,7 @@ var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
 // Resolved URL of the demo default asset, cached so repeated input changes don't
 // re-fetch it. Stays null until the first lookup succeeds.
 var _defaultUrl = null;
-var _lastOv = null, _lastW = null, _lastH = null; // most recent overlay params — read by beforeExport
+// (overlay export state now travels through the DOM via data-ov-params, not module vars)
 
 function hexToChannels(hex) {
   const c = (hex || '#000000').replace('#', '');
@@ -341,12 +341,33 @@ function disarmOverlayClock(canvas) {
 // Formats the clock should arm for — every other export (png/svg/pdf/jpg/webp/…)
 // captures the still, at-rest overlay exactly as before.
 var OV_MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
-// Shared beforeExport/afterExport glue: arms the clock for a motion export using
-// the tool's own _lastOv/_lastW/_lastH (module state set at the end of compute())
-// and disarms it afterwards. Tools with their own beforeExport logic (e.g. alpha
-// background) call this from inside it rather than using it as their whole hook.
+// Serialise the overlay's export state (its box + the FULLY-RESOLVED overlay
+// params, logo/headshot URLs included) for the render patch. The template stamps
+// it onto the clock anchor as data-ov-params; armFilterOverlayExport reads it back
+// from the DOM. This is the isolation-safe channel (plans/86 §18): the render hook
+// — which alone holds the resolved URLs — writes the state into its patch, which
+// reaches the DOM whether the hook ran in this realm or in a Worker, so the
+// in-realm export hook never depends on a module var a Worker-side hook wrote.
+// Empty string when the overlay is inactive, so the attribute costs nothing then.
+function overlayExportParams(W, H, ov) {
+  return (ov && overlayActive(ov)) ? JSON.stringify({ W: W, H: H, ov: ov }) : '';
+}
+// Shared beforeExport/afterExport glue: arms the clock for a motion export.
+// Two call forms:
+//   armFilterOverlayExport(ctx)                 — isolation-safe: recover W/H/ov
+//     from the clock anchor's data-ov-params (written via overlayExportParams).
+//   armFilterOverlayExport(ctx, W, H, lastOv)   — legacy: params from the tool's
+//     own module state (only correct when the render hook ran in THIS realm).
+// The DOM path is preferred; the legacy path stays until every filter migrates.
 var _ovClock = null;
 function armFilterOverlayExport(ctx, W, H, lastOv) {
+  if (W == null && lastOv == null) {
+    var el = ctx.node && ctx.node.querySelector && ctx.node.querySelector('[data-ov-clock]');
+    var raw = el && el.getAttribute && el.getAttribute('data-ov-params');
+    if (!raw) return;
+    var parsed; try { parsed = JSON.parse(raw); } catch (e) { return; }
+    W = parsed.W; H = parsed.H; lastOv = parsed.ov;
+  }
   if (!lastOv || !overlayActive(lastOv) || !OV_MOTION_FORMATS[ctx.format]) return;
   var clipMs = ((ctx.opts && ctx.opts.duration) || 5) * 1000;
   _ovClock = armOverlayClock(ctx.node, W, H, function (t) {
@@ -397,7 +418,9 @@ async function patch({ model }) {
   const d = overlayDims(inputs);
   out.overlaySvg = buildOverlaySvg(d.W, d.H, ov);
   out.noFilter = ovi.noFilter;
-  _lastOv = ov; _lastW = d.W; _lastH = d.H; // read by beforeExport to arm the motion-export overlay clock
+  // Export state travels through the DOM (data-ov-params on the clock anchor), not
+  // module vars — so it's correct even when this render ran in a Worker (plans/86 §18).
+  out.ovParams = overlayExportParams(d.W, d.H, ov);
 
   return out;
 }
@@ -453,10 +476,12 @@ async function onFrame({ frame, model }) {
   const out = Object.assign(buildDuo(inputs), { liveSrc });
   out.overlaySvg = buildOverlaySvg(d.W, d.H, ov);
   out.noFilter = ovi.noFilter;
+  out.ovParams = overlayExportParams(d.W, d.H, ov); // DOM channel for beforeExport (see compute)
   return out;
 }
 
 // gif/apng/webm/mp4 only: replay the overlay's live-mode intro deterministically
-// across the clip instead of holding it at its settled resting pose throughout.
-function beforeExport(ctx) { armFilterOverlayExport(ctx, _lastW, _lastH, _lastOv); }
+// across the clip. beforeExport recovers the box + overlay params from the DOM
+// (data-ov-params), so it is correct whether the render ran here or in a Worker.
+function beforeExport(ctx) { armFilterOverlayExport(ctx); }
 function afterExport() { disarmFilterOverlayExport(); }
