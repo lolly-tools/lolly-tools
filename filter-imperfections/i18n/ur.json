@@ -1,6 +1,6 @@
 {
-  "name": "فلٹر: طباعتی نقائص",
-  "description": "کسی بھی تصویر کے لیے جان بوجھ کر طباعتی نقائص: کھسکی ہوئی سیاہی پلیٹیں، پھیلتی سیاہی، کاغذ کا دانہ اور فوٹو کاپی کی گھساوٹ۔",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "منتخب تصویر کو کھسکی ہوئی سیاہی پلیٹوں، کھردرے کناروں اور کاغذ کے دانے کے ساتھ ناقص طباعت کے طور پر دکھایا گیا ہے",
   "inputs.image.label": "تصویر",
   "inputs.image.help": "کوئی تصویر منتخب کریں یا اپنی تصویر اپ لوڈ کریں۔ یہ آپ کے آلے پر پروسیس ہوتی ہے — پکسلز کبھی براؤزر سے باہر نہیں جاتے۔",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "عہدہ / ذیلی عنوان کی سطر کا فونٹ وزن (100 پتلا → 900 کالا)۔",
   "inputs.ltHeadshot.label": "ہیڈ شاٹ (اختیاری)",
   "inputs.ltHeadshot.section": "اوورلے",
-  "inputs.ltHeadshot.help": "ڈیفالٹ کے طور پر آپ کے پروفائل کا ہیڈ شاٹ استعمال ہوتا ہے۔ تبدیل کرنے کے لیے دوسرا منتخب کریں یا اپ لوڈ کریں۔"
+  "inputs.ltHeadshot.help": "ڈیفالٹ کے طور پر آپ کے پروفائل کا ہیڈ شاٹ استعمال ہوتا ہے۔ تبدیل کرنے کے لیے دوسرا منتخب کریں یا اپ لوڈ کریں۔",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

@@ -1,6 +1,6 @@
 {
-  "name": "Incrustar y rastrear imagen",
-  "description": "Estampa tu autor, derechos de autor y licencia en cualquier imagen - además de un Lolly Imprint invisible y Content Credentials - antes de compartirla.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Incrusta credenciales en tu imagen",
   "inputs.creator.label": "Artista / autor",
   "inputs.creator.help": "Tu nombre - incrustado como autor/creador de la imagen (EXIF Artist, XMP dc:creator y la Content Credential).",

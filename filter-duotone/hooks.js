@@ -29,6 +29,45 @@ function ch(n) {
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 
+// === lolly:shared rasterCanvas — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+// A realm-appropriate 2D drawing surface for an onFrame kernel: a document
+// <canvas> on the main thread (keeps the existing toDataURL fast path
+// byte-identical), an OffscreenCanvas inside a Worker (no document there, but
+// OffscreenCanvas works). getContext('2d')/getImageData/putImageData/drawImage
+// are identical on both, so a kernel that draws through this is realm-agnostic.
+function rasterCanvas(w, h) {
+  if (typeof document !== 'undefined' && document.createElement) {
+    var c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    return c;
+  }
+  return new OffscreenCanvas(w, h);
+}
+// === /lolly:shared rasterCanvas ===
+
+// === lolly:shared canvasToUrl — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+// Encode a rasterCanvas() surface to a `data:` URL. Always returns a Promise so
+// callers `await` it uniformly. Main thread: canvas.toDataURL is synchronous
+// (unchanged shipping behaviour), wrapped resolved. Worker: OffscreenCanvas has
+// no toDataURL, so convertToBlob → bytes → base64 (btoa exists in a Worker;
+// FileReader.readAsDataURL is not relied on). Chunked fromCharCode avoids the
+// call-stack overflow a whole-array apply() hits on a large JPEG.
+function canvasToUrl(canvas, type, quality) {
+  if (typeof canvas.toDataURL === 'function') {
+    return Promise.resolve(canvas.toDataURL(type, quality));
+  }
+  return canvas.convertToBlob({ type: type, quality: quality })
+    .then(function (blob) { return blob.arrayBuffer(); })
+    .then(function (buf) {
+      var bytes = new Uint8Array(buf), bin = '', CH = 0x8000;
+      for (var i = 0; i < bytes.length; i += CH) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
+      }
+      return 'data:' + (type || 'image/jpeg') + ';base64,' + btoa(bin);
+    });
+}
+// === /lolly:shared canvasToUrl ===
+
 function buildDuo(inputs) {
   const fg = hexToChannels(inputs.colorFg);
   const bg = hexToChannels(inputs.colorBg);
@@ -377,17 +416,22 @@ function onInput(ctx) {
 // current colour tables — the browser applies the #duo filter to it (GPU-fast). The
 // template renders it as #duo-live (see template.html), so the framing script skips
 // re-probing a fresh data URL every frame. null = no patch (last frame stays).
-function onFrame({ frame, model }) {
+async function onFrame({ frame, model }) {
   if (!frame || !frame.data || !frame.width || !frame.height) return null;
-  if (typeof document === 'undefined' || typeof ImageData === 'undefined') return null;
+  // Realm-agnostic (plans/86 M3): need ImageData plus SOME canvas — a document
+  // <canvas> on the main thread, an OffscreenCanvas inside a Worker. The old
+  // `typeof document === 'undefined'` guard wrongly returned null in a Worker,
+  // where rastering works fine.
+  if (typeof ImageData === 'undefined') return null;
+  if (typeof document === 'undefined' && typeof OffscreenCanvas === 'undefined') return null;
   const inputs = Object.fromEntries(model.map(i => [i.id, i.value]));
   let liveSrc;
   try {
-    const c = document.createElement('canvas');
-    c.width = frame.width; c.height = frame.height;
+    const c = rasterCanvas(frame.width, frame.height);
     c.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
     // JPEG: cheap to encode and the duotone filter discards colour fidelity anyway.
-    liveSrc = c.toDataURL('image/jpeg', 0.85);
+    // canvasToUrl is sync (toDataURL) on the main thread, async (convertToBlob) in a Worker.
+    liveSrc = await canvasToUrl(c, 'image/jpeg', 0.85);
   } catch (e) { return null; }
 
   // Brand overlay (live): warm caches without awaiting; drive the intro from camera time.

@@ -1,6 +1,6 @@
 {
-  "name": "Filter: Cacat cetak",
-  "description": "Cacat cetak yang disengaja untuk foto apa pun: pelat tinta bergeser, tinta merembes, grain kertas, dan aus fotokopi.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Gambar pilihan ditampilkan sebagai cetakan tak sempurna, dengan pelat tinta bergeser, tepi kasar, dan grain kertas",
   "inputs.image.label": "Gambar",
   "inputs.image.help": "Pilih foto atau unggah foto Anda sendiri. Diproses di perangkat Anda — piksel tidak pernah meninggalkan browser.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Ketebalan font baris peran / subjudul (100 Thin → 900 Black).",
   "inputs.ltHeadshot.label": "Foto profil (opsional)",
   "inputs.ltHeadshot.section": "Overlay",
-  "inputs.ltHeadshot.help": "Secara default menggunakan foto profil Anda. Pilih atau unggah foto lain untuk menggantinya."
+  "inputs.ltHeadshot.help": "Secara default menggunakan foto profil Anda. Pilih atau unggah foto lain untuk menggantinya.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

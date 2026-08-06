@@ -1,6 +1,6 @@
 {
-  "name": "Benam & Jejak Imej",
-  "description": "Cop pengarang, hak cipta dan lesen anda ke atas mana-mana imej - ditambah Lolly Imprint dan Content Credentials yang tidak kelihatan - sebelum anda kongsikannya.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Benamkan kelayakan ke dalam imej anda",
   "inputs.creator.label": "Artis / pengarang",
   "inputs.creator.help": "Nama anda - dibenamkan sebagai pengarang/pencipta imej (EXIF Artist, XMP dc:creator, dan Content Credential).",

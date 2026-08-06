@@ -1,6 +1,6 @@
 {
-  "name": "Bộ lọc: Khiếm khuyết in",
-  "description": "Khiếm khuyết in có chủ ý cho mọi bức ảnh: bản kẽm lệch, mực loang, hạt giấy và hao mòn máy photo.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Ảnh đã chọn được thể hiện như một bản in không hoàn hảo, với bản kẽm lệch, mép sờn và hạt giấy",
   "inputs.image.label": "Ảnh",
   "inputs.image.help": "Chọn một ảnh hoặc tải ảnh của riêng bạn lên. Ảnh được xử lý ngay trên thiết bị của bạn — các pixel không bao giờ rời khỏi trình duyệt.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Độ đậm phông chữ của dòng vai trò / phụ đề (100 Mảnh → 900 Rất đậm).",
   "inputs.ltHeadshot.label": "Ảnh chân dung (tùy chọn)",
   "inputs.ltHeadshot.section": "Lớp phủ",
-  "inputs.ltHeadshot.help": "Mặc định dùng ảnh chân dung trong hồ sơ của bạn. Chọn hoặc tải ảnh khác để thay thế."
+  "inputs.ltHeadshot.help": "Mặc định dùng ảnh chân dung trong hồ sơ của bạn. Chọn hoặc tải ảnh khác để thay thế.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

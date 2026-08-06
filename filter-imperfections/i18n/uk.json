@@ -1,6 +1,6 @@
 {
-  "name": "Фільтр: Недосконалості",
-  "description": "Навмисні друкарські недосконалості для будь-якого фото: зміщені друкарські форми, розтікання фарби, зернистість паперу та зношення копіювального апарата.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Вибране зображення, відтворене як недосконалий відбиток, зі зміщеними друкарськими формами, роз’їденими краями та зернистістю паперу",
   "inputs.image.label": "Зображення",
   "inputs.image.help": "Виберіть фото або завантажте своє. Обробка відбувається на вашому пристрої — пікселі не залишають браузер.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Насиченість шрифту рядка посади / підзаголовка (100 Тонкий → 900 Чорний).",
   "inputs.ltHeadshot.label": "Фото (необов'язково)",
   "inputs.ltHeadshot.section": "Перекриття",
-  "inputs.ltHeadshot.help": "За замовчуванням фото з вашого профілю. Виберіть або завантажте інше, щоб замінити."
+  "inputs.ltHeadshot.help": "За замовчуванням фото з вашого профілю. Виберіть або завантажте інше, щоб замінити.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

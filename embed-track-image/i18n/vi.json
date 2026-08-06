@@ -1,6 +1,6 @@
 {
-  "name": "Nhúng & Theo dõi Ảnh",
-  "description": "Đóng dấu tác giả, bản quyền và giấy phép của bạn vào bất kỳ hình ảnh nào - cùng với Lolly Imprint vô hình và Content Credentials - trước khi bạn chia sẻ.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Nhúng thông tin xác thực vào ảnh của bạn",
   "inputs.creator.label": "Nghệ sĩ / tác giả",
   "inputs.creator.help": "Tên của bạn - được nhúng làm tác giả/người tạo của hình ảnh (EXIF Artist, XMP dc:creator, và Content Credential).",

@@ -1,6 +1,6 @@
 {
   "name": "Prompt to Image",
-  "description": "Mas mura para sa mga AI model ang pagproseso ng larawan kaysa text",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "Prompt to Image - i-paste o i-drop ang teksto sa canvas at ilalagay ito para kumasya sa loob ng isang maliit na larawan",
   "inputs.text.label": "Teksto",
   "inputs.text.help": "I-paste o i-drop kahit saan sa canvas para punan ito.",

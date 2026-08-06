@@ -1,6 +1,6 @@
 {
-  "name": "Филтър: Несъвършенства",
-  "description": "Умишлени печатни несъвършенства за всяка снимка: разместени печатни форми, разтичащо се мастило, зърно на хартията и износване от копирна машина.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Избраното изображение, възпроизведено като несъвършен печат, с разместени печатни форми, разръфани ръбове и зърно на хартията",
   "inputs.image.label": "Изображение",
   "inputs.image.help": "Избери снимка или качи своя. Обработва се на твоето устройство — пикселите никога не напускат браузъра.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Дебелина на шрифта на реда с ролята / подзаглавието (100 Thin → 900 Black).",
   "inputs.ltHeadshot.label": "Портретна снимка (по избор)",
   "inputs.ltHeadshot.section": "Наслагване",
-  "inputs.ltHeadshot.help": "По подразбиране се използва портретът от профила ти. Избери или качи друг, за да го замениш."
+  "inputs.ltHeadshot.help": "По подразбиране се използва портретът от профила ти. Избери или качи друг, за да го замениш.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

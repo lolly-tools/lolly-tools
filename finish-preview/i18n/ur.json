@@ -1,6 +1,6 @@
 {
-  "name": "فنش پیش منظر",
-  "description": "اپنے آرٹ ورک پر فوائل، اسپاٹ UV، ابھار اور سافٹ ٹچ فنش کی نقل دیکھیں اور پرنٹ کے لیے تیار پلیٹ برآمد کریں۔ اسکرین کی چمک صرف پیشکش ہے، اصل ڈیلیوری پلیٹ ہے۔",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "نقل شدہ پرنٹ فنش کے ساتھ آرٹ ورک، یا پلیٹ منظر میں پرنٹ کے لیے تیار پلیٹ",
   "inputs.image.label": "آرٹ ورک",
   "inputs.image.help": "اپنا آرٹ ورک منتخب کریں یا اپنا اپ لوڈ کریں۔ یہ آپ کے آلے پر پروسیس ہوتا ہے، پکسلز کبھی براؤزر سے باہر نہیں جاتے۔",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "جب آرٹ ورک مربع فریم نہ بھرے تو پیچھے کی بھرائی۔",
   "inputs.plateView.label": "پلیٹ منظر (پرنٹ کے لیے تیار)",
   "inputs.plateView.section": "پلیٹ",
-  "inputs.plateView.help": "ڈیلیوری پر جائیں: سفید پر خالص سیاہ میں ماسک، اوور پرنٹ لیبل کے ساتھ۔ یہی اپنے پرنٹ ہاؤس کو بھیجیں، چمکدار پیش منظر صرف پیشکش ہے۔"
+  "inputs.plateView.help": "ڈیلیوری پر جائیں: سفید پر خالص سیاہ میں ماسک، اوور پرنٹ لیبل کے ساتھ۔ یہی اپنے پرنٹ ہاؤس کو بھیجیں، چمکدار پیش منظر صرف پیشکش ہے۔",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

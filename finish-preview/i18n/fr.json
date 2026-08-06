@@ -1,6 +1,6 @@
 {
-  "name": "Aperçu de finitions",
-  "description": "Simulez dorure, vernis UV, gaufrage et soft-touch sur votre visuel puis exportez la plaque prête pour l’imprimeur. Le rendu brillant est une présentation, la plaque est le vrai livrable.",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "Visuel avec une finition d’impression simulée, ou la plaque prête à imprimer en vue plaque",
   "inputs.image.label": "Visuel",
   "inputs.image.help": "Choisissez votre visuel ou téléversez le vôtre. Il est traité sur votre appareil, les pixels ne quittent jamais le navigateur.",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "Remplissage derrière le visuel quand il ne couvre pas le cadre carré.",
   "inputs.plateView.label": "Vue plaque (prête à imprimer)",
   "inputs.plateView.section": "Plaque",
-  "inputs.plateView.help": "Bascule vers le livrable : le masque en noir pur sur blanc avec mention de surimpression. Envoyez CECI à votre imprimeur, l’aperçu brillant n’est que présentation."
+  "inputs.plateView.help": "Bascule vers le livrable : le masque en noir pur sur blanc avec mention de surimpression. Envoyez CECI à votre imprimeur, l’aperçu brillant n’est que présentation.",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

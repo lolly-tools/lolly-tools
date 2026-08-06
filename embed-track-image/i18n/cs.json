@@ -1,6 +1,6 @@
 {
-  "name": "Vložit & sledovat obrázek",
-  "description": "Vlož autora, copyright a licenci do libovolného obrázku - plus neviditelný Lolly Imprint a Content Credentials - než ho sdílíš.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Vlož pověření do svého obrázku",
   "inputs.creator.label": "Umělec / autor",
   "inputs.creator.help": "Tvé jméno - vloží se jako autor/tvůrce obrázku (EXIF Artist, XMP dc:creator a Content Credential).",

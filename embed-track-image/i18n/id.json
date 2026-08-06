@@ -1,6 +1,6 @@
 {
-  "name": "Sematkan & Lacak Gambar",
-  "description": "Bubuhkan nama pembuat, hak cipta, dan lisensi Anda ke gambar apa pun - plus Lolly Imprint tak terlihat dan Content Credentials - sebelum Anda membagikannya.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Sematkan kredensial ke dalam gambar Anda",
   "inputs.creator.label": "Seniman / penulis",
   "inputs.creator.help": "Nama Anda - disematkan sebagai pembuat/kreator gambar (EXIF Artist, XMP dc:creator, dan Content Credential).",

@@ -1,6 +1,6 @@
 {
-  "name": "Filtro: Imperfezioni",
-  "description": "Imperfezioni di stampa volute su qualsiasi foto: lastre fuori registro, inchiostro che sborda, grana della carta e usura da fotocopia.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "L'immagine scelta resa come una stampa imperfetta, con lastre fuori registro, bordi sfrangiati e grana della carta",
   "inputs.image.label": "Immagine",
   "inputs.image.help": "Scegli una foto o caricane una tua. Viene elaborata sul tuo dispositivo: i pixel non lasciano mai il browser.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Spessore del carattere della riga di ruolo/sottotitolo (100 Sottile → 900 Nero).",
   "inputs.ltHeadshot.label": "Foto profilo (opzionale)",
   "inputs.ltHeadshot.section": "Sovrapposizione",
-  "inputs.ltHeadshot.help": "Per impostazione predefinita usa la foto profilo del tuo account. Scegline o caricane un'altra per sostituirla."
+  "inputs.ltHeadshot.help": "Per impostazione predefinita usa la foto profilo del tuo account. Scegline o caricane un'altra per sostituirla.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

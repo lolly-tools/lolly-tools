@@ -1,6 +1,6 @@
 {
-  "name": "Pratonton Kemasan",
-  "description": "Simulasikan foil, UV spot, emboss dan soft-touch pada karya anda dan eksport plat sedia cetak. Kilauan pada skrin hanyalah persembahan, plat itulah hasil sebenar.",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "Karya dengan kemasan cetakan tersimulasi, atau plat sedia cetak dalam paparan plat",
   "inputs.image.label": "Karya",
   "inputs.image.help": "Pilih karya anda atau muat naik sendiri. Diproses pada peranti anda, piksel tidak pernah meninggalkan pelayar.",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "Isian di belakang karya apabila ia tidak meliputi bingkai segi empat.",
   "inputs.plateView.label": "Paparan plat (sedia cetak)",
   "inputs.plateView.section": "Plat",
-  "inputs.plateView.help": "Bertukar kepada hasil: topeng hitam tulen atas putih dengan label cetakan atas. Hantar INI kepada pencetak anda, pratonton berkilat hanyalah persembahan."
+  "inputs.plateView.help": "Bertukar kepada hasil: topeng hitam tulen atas putih dengan label cetakan atas. Hantar INI kepada pencetak anda, pratonton berkilat hanyalah persembahan.",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

@@ -1,6 +1,6 @@
 {
-  "name": "Xem trước hiệu ứng gia công",
-  "description": "Mô phỏng ép kim, phủ UV định hình, dập nổi và soft-touch trên tác phẩm của bạn rồi xuất bản kẽm sẵn sàng in. Độ bóng trên màn hình chỉ là trình bày, bản kẽm mới là sản phẩm bàn giao thật.",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "Tác phẩm với hiệu ứng gia công in mô phỏng, hoặc bản kẽm sẵn sàng in trong chế độ xem bản kẽm",
   "inputs.image.label": "Tác phẩm",
   "inputs.image.help": "Chọn tác phẩm của bạn hoặc tải lên. Được xử lý trên thiết bị của bạn, điểm ảnh không bao giờ rời trình duyệt.",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "Phần lấp phía sau tác phẩm khi nó không phủ kín khung vuông.",
   "inputs.plateView.label": "Chế độ bản kẽm (sẵn sàng in)",
   "inputs.plateView.section": "Bản kẽm",
-  "inputs.plateView.help": "Chuyển sang sản phẩm bàn giao: mặt nạ đen thuần trên nền trắng kèm nhãn in chồng. Gửi CÁI NÀY cho nhà in, bản xem trước bóng bẩy chỉ là trình bày."
+  "inputs.plateView.help": "Chuyển sang sản phẩm bàn giao: mặt nạ đen thuần trên nền trắng kèm nhãn in chồng. Gửi CÁI NÀY cho nhà in, bản xem trước bóng bẩy chỉ là trình bày.",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

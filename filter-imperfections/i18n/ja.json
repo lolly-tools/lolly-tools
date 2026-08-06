@@ -1,6 +1,6 @@
 {
-  "name": "フィルター: 印刷の粗さ",
-  "description": "どんな写真にも意図的な印刷の粗さを加えます。版ズレ、インクのにじみ、紙の粒状感、コピー機の劣化。",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "選択した画像を、版ズレ・荒れたエッジ・紙の粒状感のある不完全な印刷として表現したものです",
   "inputs.image.label": "画像",
   "inputs.image.help": "写真を選ぶか、ご自身の画像をアップロードしてください。処理はすべてお使いの端末上で行われ、ピクセルデータがブラウザの外に送信されることはありません。",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "役職 / サブタイトル部分のフォントウェイトです(100 極細 → 900 極太)。",
   "inputs.ltHeadshot.label": "顔写真(任意)",
   "inputs.ltHeadshot.section": "オーバーレイ",
-  "inputs.ltHeadshot.help": "初期設定ではプロフィールの顔写真が使用されます。別の画像を選択またはアップロードして変更できます。"
+  "inputs.ltHeadshot.help": "初期設定ではプロフィールの顔写真が使用されます。別の画像を選択またはアップロードして変更できます。",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

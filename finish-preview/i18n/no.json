@@ -1,6 +1,6 @@
 {
-  "name": "Forhåndsvisning av finish",
-  "description": "Simuler folie, spot-UV, preging og soft-touch på kunstverket ditt og eksporter den trykkeklare platen. Glansen på skjermen er bare presentasjon, platen er den egentlige leveransen.",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "Kunstverk med en simulert trykkfinish, eller den trykkeklare platen i platevisning",
   "inputs.image.label": "Kunstverk",
   "inputs.image.help": "Velg kunstverket ditt eller last opp ditt eget. Det behandles på enheten din, pikslene forlater aldri nettleseren.",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "Fyll bak kunstverket når det ikke dekker den kvadratiske rammen.",
   "inputs.plateView.label": "Platevisning (trykkeklar)",
   "inputs.plateView.section": "Plate",
-  "inputs.plateView.help": "Bytt til leveransen: masken som rent svart på hvitt med overtrykksetikett. Send DENNE til trykkeriet, den blanke forhåndsvisningen er bare presentasjon."
+  "inputs.plateView.help": "Bytt til leveransen: masken som rent svart på hvitt med overtrykksetikett. Send DENNE til trykkeriet, den blanke forhåndsvisningen er bare presentasjon.",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

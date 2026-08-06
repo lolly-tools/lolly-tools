@@ -1,6 +1,6 @@
 {
-  "name": "Filtre : Imperfections",
-  "description": "Des imperfections d'impression assumées sur n'importe quelle photo : plaques décalées, encre qui bave, grain du papier et usure de photocopie.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "L'image choisie reproduite comme une impression imparfaite, avec des plaques d'encre décalées, des bords rongés et du grain de papier",
   "inputs.image.label": "Image",
   "inputs.image.help": "Choisis une photo ou importe la tienne. Elle est traitée sur ton appareil — les pixels ne quittent jamais le navigateur.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Graisse de la police pour la ligne de fonction / sous-titre (100 Fine → 900 Noire).",
   "inputs.ltHeadshot.label": "Photo de profil (facultatif)",
   "inputs.ltHeadshot.section": "Incrustation",
-  "inputs.ltHeadshot.help": "Utilise par défaut la photo de ton profil. Choisis-en une autre ou importe-la pour la remplacer."
+  "inputs.ltHeadshot.help": "Utilise par défaut la photo de ton profil. Choisis-en une autre ou importe-la pour la remplacer.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

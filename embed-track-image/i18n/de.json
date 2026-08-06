@@ -1,6 +1,6 @@
 {
-  "name": "Bild einbetten & verfolgen",
-  "description": "Stempelt Ihren Autor, Ihr Copyright und Ihre Lizenz in jedes Bild ein - plus einen unsichtbaren Lolly Imprint und Content Credentials - bevor Sie es teilen.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Nachweise in Ihr Bild einbetten",
   "inputs.creator.label": "Künstler / Autor",
   "inputs.creator.help": "Ihr Name - eingebettet als Autor/Ersteller des Bildes (EXIF Artist, XMP dc:creator und die Content Credential).",

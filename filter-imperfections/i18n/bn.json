@@ -1,6 +1,6 @@
 {
-  "name": "ফিল্টার: ছাপার খুঁত",
-  "description": "যেকোনো ছবিতে ইচ্ছাকৃত ছাপার খুঁত: সরে যাওয়া কালির প্লেট, কালি ছড়ানো, কাগজের গ্রেইন ও ফটোকপির ক্ষয়।",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "নির্বাচিত ছবিটি সরে যাওয়া কালির প্লেট, খসখসে কিনারা ও কাগজের গ্রেইনসহ অসম্পূর্ণ ছাপ হিসেবে দেখানো হয়েছে",
   "inputs.image.label": "ছবি",
   "inputs.image.help": "একটি ছবি বেছে নিন বা নিজেরটি আপলোড করুন। প্রসেসিং আপনার ডিভাইসেই হয় — পিক্সেল কখনও ব্রাউজারের বাইরে যায় না।",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "ভূমিকা / সাবটাইটেল লাইনের ফন্ট ওয়েট (100 Thin → 900 Black)।",
   "inputs.ltHeadshot.label": "হেডশট (ঐচ্ছিক)",
   "inputs.ltHeadshot.section": "ওভারলে",
-  "inputs.ltHeadshot.help": "ডিফল্ট হিসেবে আপনার প্রোফাইলের হেডশট ব্যবহার হয়। বদলাতে অন্য একটি বেছে নিন বা আপলোড করুন।"
+  "inputs.ltHeadshot.help": "ডিফল্ট হিসেবে আপনার প্রোফাইলের হেডশট ব্যবহার হয়। বদলাতে অন্য একটি বেছে নিন বা আপলোড করুন।",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

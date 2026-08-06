@@ -1,6 +1,6 @@
 {
-  "name": "फ़िल्टर: प्रिंट खामियाँ",
-  "description": "किसी भी फ़ोटो के लिए जानबूझकर दी गई प्रिंट खामियाँ: खिसकी हुई इंक प्लेटें, फैलती इंक, कागज़ का ग्रेन और फ़ोटोकॉपी की घिसाई।",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "चुनी गई छवि को खिसकी हुई इंक प्लेटों, खुरदरे किनारों और कागज़ के ग्रेन वाले अपूर्ण प्रिंट के रूप में दिखाया गया है",
   "inputs.image.label": "छवि",
   "inputs.image.help": "कोई फ़ोटो चुनें या अपनी खुद की अपलोड करें। प्रोसेसिंग आपके डिवाइस पर होती है — पिक्सेल कभी ब्राउज़र से बाहर नहीं जाते।",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "भूमिका / उपशीर्षक पंक्ति का फ़ॉन्ट वेट (100 Thin → 900 Black)।",
   "inputs.ltHeadshot.label": "हेडशॉट (वैकल्पिक)",
   "inputs.ltHeadshot.section": "ओवरले",
-  "inputs.ltHeadshot.help": "डिफ़ॉल्ट रूप से आपकी प्रोफ़ाइल का हेडशॉट। बदलने के लिए कोई दूसरा चुनें या अपलोड करें।"
+  "inputs.ltHeadshot.help": "डिफ़ॉल्ट रूप से आपकी प्रोफ़ाइल का हेडशॉट। बदलने के लिए कोई दूसरा चुनें या अपलोड करें।",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

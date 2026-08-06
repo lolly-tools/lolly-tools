@@ -1,6 +1,6 @@
 {
   "name": "Prompt zu Bild",
-  "description": "KI-Modelle sind beim Verarbeiten von Bildern günstiger als bei Text.",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "Prompt zu Bild - Text auf dem Canvas einfügen oder ablegen, und er wird so angeordnet, dass er in ein kleines Bild passt",
   "inputs.text.label": "Text",
   "inputs.text.help": "Zum Füllen an beliebiger Stelle auf dem Canvas einfügen oder ablegen.",

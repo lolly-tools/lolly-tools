@@ -1,6 +1,6 @@
 {
   "name": "Prompt na obrázek",
-  "description": "AI modely zpracovávají obrázky levněji než text",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "Prompt na obrázek - vlož nebo přetáhni text na plátno a rozvrhne se tak, aby se vešel do jednoho malého obrázku",
   "inputs.text.label": "Text",
   "inputs.text.help": "Vlož nebo přetáhni kamkoli na plátno pro vyplnění.",

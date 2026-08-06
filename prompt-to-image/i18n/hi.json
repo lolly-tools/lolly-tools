@@ -1,6 +1,6 @@
 {
   "name": "Prompt to Image",
-  "description": "AI मॉडल टेक्स्ट की तुलना में इमेज प्रोसेस करने में सस्ते होते हैं",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "Prompt to Image - कैनवास पर टेक्स्ट पेस्ट करें या ड्रॉप करें और इसे एक छोटी इमेज में फ़िट करने के लिए व्यवस्थित किया जाता है",
   "inputs.text.label": "टेक्स्ट",
   "inputs.text.help": "इसे भरने के लिए कैनवास पर कहीं भी पेस्ट करें या ड्रॉप करें।",

@@ -1,6 +1,6 @@
 {
   "name": "프롬프트를 이미지로",
-  "description": "AI 모델은 텍스트보다 이미지를 처리하는 비용이 더 저렴해요",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "프롬프트를 이미지로 - 캔버스에 텍스트를 붙여넣거나 드롭하면 작은 이미지 하나에 맞게 배치돼요.",
   "inputs.text.label": "텍스트",
   "inputs.text.help": "캔버스 어디에나 붙여넣거나 드롭하면 채워져요.",

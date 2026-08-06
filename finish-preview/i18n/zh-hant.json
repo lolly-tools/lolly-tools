@@ -1,6 +1,6 @@
 {
-  "name": "印後加工預覽",
-  "description": "在作品上模擬燙金、局部UV、擊凸與觸感膜等加工，並匯出可直接交付印刷廠的版面。螢幕上的光澤只是展示，版面才是真正的交付物。",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "帶有模擬印刷加工的作品，或版面檢視中可交付印刷廠的版面",
   "inputs.image.label": "作品",
   "inputs.image.help": "選擇作品或上傳自己的圖片。全部在你的裝置上處理，像素絕不會離開瀏覽器。",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "作品未覆蓋方形畫框時背後的填色。",
   "inputs.plateView.label": "版面檢視(可交付印刷廠)",
   "inputs.plateView.section": "版面",
-  "inputs.plateView.help": "切換到交付物: 白底純黑的遮罩加疊印標籤。把這個交給印刷廠，閃亮的預覽只是展示。"
+  "inputs.plateView.help": "切換到交付物: 白底純黑的遮罩加疊印標籤。把這個交給印刷廠，閃亮的預覽只是展示。",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

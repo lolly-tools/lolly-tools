@@ -1,6 +1,6 @@
 {
-  "name": "이미지 삽입 & 추적",
-  "description": "공유하기 전에 이미지에 작성자, 저작권, 라이선스를 새겨요 - 보이지 않는 Lolly Imprint와 Content Credentials도 함께 넣어요.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "이미지에 자격 증명 삽입",
   "inputs.creator.label": "아티스트 / 작성자",
   "inputs.creator.help": "내 이름 - 이미지의 작성자/제작자로 삽입돼요 (EXIF Artist, XMP dc:creator, Content Credential).",

@@ -1,6 +1,6 @@
 {
-  "name": "Filtre: Kusurlar",
-  "description": "Her fotoğraf için bilinçli baskı kusurları: kayık mürekkep kalıpları, dağılan mürekkep, kağıt tanesi ve fotokopi aşınması.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Seçilen görsel, kayık mürekkep kalıpları, pürüzlenmiş kenarlar ve kağıt tanesiyle kusurlu bir baskı olarak yorumlanır",
   "inputs.image.label": "Görsel",
   "inputs.image.help": "Bir fotoğraf seç ya da kendininkini yükle. Cihazında işlenir — pikseller tarayıcıdan asla çıkmaz.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Rol / alt başlık satırının yazı tipi kalınlığı (100 Thin → 900 Black).",
   "inputs.ltHeadshot.label": "Vesikalık fotoğraf (isteğe bağlı)",
   "inputs.ltHeadshot.section": "Kaplama",
-  "inputs.ltHeadshot.help": "Varsayılan olarak profil vesikalık fotoğrafın kullanılır. Değiştirmek için başka birini seç veya yükle."
+  "inputs.ltHeadshot.help": "Varsayılan olarak profil vesikalık fotoğrafın kullanılır. Değiştirmek için başka birini seç veya yükle.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

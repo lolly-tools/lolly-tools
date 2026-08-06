@@ -1,6 +1,6 @@
 {
-  "name": "फ़िनिश पूर्वावलोकन",
-  "description": "अपनी आर्टवर्क पर फ़ॉइल, स्पॉट UV, एम्बॉस और सॉफ़्ट-टच फ़िनिश का सिमुलेशन देखें और प्रिंट-तैयार प्लेट निर्यात करें। स्क्रीन की चमक सिर्फ़ प्रस्तुति है, असली डिलिवरेबल प्लेट है।",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "सिमुलेटेड प्रिंट फ़िनिश वाली आर्टवर्क, या प्लेट दृश्य में प्रिंट-तैयार प्लेट",
   "inputs.image.label": "आर्टवर्क",
   "inputs.image.help": "अपनी आर्टवर्क चुनें या अपनी अपलोड करें। यह आपके डिवाइस पर प्रोसेस होती है, पिक्सेल कभी ब्राउज़र से बाहर नहीं जाते।",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "जब आर्टवर्क वर्गाकार फ़्रेम को न भरे तो पीछे की भराई।",
   "inputs.plateView.label": "प्लेट दृश्य (प्रिंट-तैयार)",
   "inputs.plateView.section": "प्लेट",
-  "inputs.plateView.help": "डिलिवरेबल पर स्विच करें: सफ़ेद पर शुद्ध काले में मास्क, ओवरप्रिंट लेबल के साथ। यही अपने प्रिंट हाउस को भेजें, चमकदार पूर्वावलोकन सिर्फ़ प्रस्तुति है।"
+  "inputs.plateView.help": "डिलिवरेबल पर स्विच करें: सफ़ेद पर शुद्ध काले में मास्क, ओवरप्रिंट लेबल के साथ। यही अपने प्रिंट हाउस को भेजें, चमकदार पूर्वावलोकन सिर्फ़ प्रस्तुति है।",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

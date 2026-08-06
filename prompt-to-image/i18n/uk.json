@@ -1,6 +1,6 @@
 {
   "name": "Промпт → зображення",
-  "description": "ШІ-моделям дешевше обробляти зображення, ніж текст",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "Промпт → зображення - вставте або перетягніть текст на полотно, і він буде розташований так, щоб вміститися в одному невеликому зображенні",
   "inputs.text.label": "Текст",
   "inputs.text.help": "Вставте або перетягніть будь-де на полотні, щоб заповнити це.",

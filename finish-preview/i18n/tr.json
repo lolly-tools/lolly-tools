@@ -1,6 +1,6 @@
 {
-  "name": "Kaplama Önizleme",
-  "description": "Yaldız, spot UV lak, kabartma ve soft-touch kaplamaları çalışmanız üzerinde simüle edin ve baskıya hazır kalıbı dışa aktarın. Ekrandaki parlaklık yalnızca sunumdur, kalıp asıl teslim edilecek dosyadır.",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "Simüle edilmiş bir baskı kaplamalı çalışma, veya kalıp görünümünde baskıya hazır kalıp",
   "inputs.image.label": "Çalışma",
   "inputs.image.help": "Çalışmanızı seçin veya kendi görselinizi yükleyin. Cihazınızda işlenir, pikseller tarayıcıdan asla çıkmaz.",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "Çalışma kare çerçeveyi kaplamadığında arkasındaki dolgu.",
   "inputs.plateView.label": "Kalıp görünümü (baskıya hazır)",
   "inputs.plateView.section": "Kalıp",
-  "inputs.plateView.help": "Teslim dosyasına geçer: maske beyaz üzerine saf siyah, üst baskı etiketiyle. BUNU matbaanıza gönderin, parlak önizleme yalnızca sunumdur."
+  "inputs.plateView.help": "Teslim dosyasına geçer: maske beyaz üzerine saf siyah, üst baskı etiketiyle. BUNU matbaanıza gönderin, parlak önizleme yalnızca sunumdur.",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

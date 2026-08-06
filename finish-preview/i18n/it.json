@@ -1,6 +1,6 @@
 {
-  "name": "Anteprima finiture",
-  "description": "Simula lamina, UV spot, rilievo e soft-touch sul tuo artwork ed esporta la lastra pronta per la stampa. La lucentezza a schermo è solo presentazione, la lastra è il vero deliverable.",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "Artwork con una finitura di stampa simulata, o la lastra pronta per la stampa nella vista lastra",
   "inputs.image.label": "Artwork",
   "inputs.image.help": "Scegli il tuo artwork o caricane uno. Viene elaborato sul tuo dispositivo, i pixel non lasciano mai il browser.",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "Riempimento dietro l’artwork quando non copre il riquadro quadrato.",
   "inputs.plateView.label": "Vista lastra (pronta stampa)",
   "inputs.plateView.section": "Lastra",
-  "inputs.plateView.help": "Passa al deliverable: la maschera in nero pieno su bianco con etichetta di sovrastampa. Invia QUESTA alla tipografia, l’anteprima lucida è solo presentazione."
+  "inputs.plateView.help": "Passa al deliverable: la maschera in nero pieno su bianco con etichetta di sovrastampa. Invia QUESTA alla tipografia, l’anteprima lucida è solo presentazione.",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

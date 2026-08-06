@@ -1,6 +1,6 @@
 {
-  "name": "Embed & Track Image",
-  "description": "I-stamp ang iyong may-akda, copyright, at lisensya sa anumang larawan - kasama ang invisible na Lolly Imprint at Content Credentials - bago mo ito ibahagi.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Mag-embed ng mga kredensyal sa iyong larawan",
   "inputs.creator.label": "Artista / May-akda",
   "inputs.creator.help": "Ang iyong pangalan - naka-embed bilang author/creator ng larawan (EXIF Artist, XMP dc:creator, at ang Content Credential).",

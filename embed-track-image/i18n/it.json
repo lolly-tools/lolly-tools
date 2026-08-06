@@ -1,6 +1,6 @@
 {
-  "name": "Incorpora & traccia immagine",
-  "description": "Imprimi il tuo autore, copyright e licenza in qualsiasi immagine - più un Lolly Imprint invisibile e i Content Credentials - prima di condividerla.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Incorpora le credenziali nella tua immagine",
   "inputs.creator.label": "Artista / autore",
   "inputs.creator.help": "Il tuo nome - incorporato come autore/creatore dell'immagine (EXIF Artist, XMP dc:creator e la Content Credential).",

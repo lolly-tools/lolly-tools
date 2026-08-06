@@ -1,6 +1,6 @@
 {
-  "name": "Filtro: Imperfecciones",
-  "description": "Imperfecciones de impresión intencionadas para cualquier foto: planchas desalineadas, tinta que se corre, grano de papel y desgaste de fotocopia.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "La imagen elegida reproducida como una impresión imperfecta, con planchas de tinta desalineadas, bordes rasgados y grano de papel",
   "inputs.image.label": "Imagen",
   "inputs.image.help": "Elige una foto o sube la tuya. Se procesa en tu dispositivo: los píxeles nunca salen del navegador.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Grosor de la fuente de la línea de cargo o subtítulo (100 Fino → 900 Negro).",
   "inputs.ltHeadshot.label": "Foto de perfil (opcional)",
   "inputs.ltHeadshot.section": "Superposición",
-  "inputs.ltHeadshot.help": "Usa la foto de perfil de tu cuenta de forma predeterminada. Elige o sube otra para sustituirla."
+  "inputs.ltHeadshot.help": "Usa la foto de perfil de tu cuenta de forma predeterminada. Elige o sube otra para sustituirla.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

@@ -1,6 +1,6 @@
 {
-  "name": "Filter: Tryckfel",
-  "description": "Medvetna tryckfel för vilket foto som helst: förskjutna tryckplåtar, blödande färg, papperskorn och kopiatorslitage.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Den valda bilden återgiven som ett ojämnt tryck, med förskjutna tryckplåtar, uppfransade kanter och papperskorn",
   "inputs.image.label": "Bild",
   "inputs.image.help": "Välj ett foto eller ladda upp ditt eget. Det bearbetas på din enhet – pixlarna lämnar aldrig webbläsaren.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Typsnittsvikt för roll-/undertitelraden (100 Tunn → 900 Svart).",
   "inputs.ltHeadshot.label": "Profilbild (valfritt)",
   "inputs.ltHeadshot.section": "Överlagring",
-  "inputs.ltHeadshot.help": "Använder din profilbild som standard. Välj eller ladda upp en annan för att åsidosätta den."
+  "inputs.ltHeadshot.help": "Använder din profilbild som standard. Välj eller ladda upp en annan för att åsidosätta den.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

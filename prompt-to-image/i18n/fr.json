@@ -1,6 +1,6 @@
 {
   "name": "Prompt vers image",
-  "description": "Les modèles d'IA coûtent moins cher pour traiter des images que du texte.",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "Prompt vers image - colle ou dépose du texte sur le canevas, et il est mis en page pour tenir dans une seule petite image",
   "inputs.text.label": "Texte",
   "inputs.text.help": "Colle ou dépose n'importe où sur le canevas pour remplir ceci.",

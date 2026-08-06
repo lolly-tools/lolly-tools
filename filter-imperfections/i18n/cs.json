@@ -1,6 +1,6 @@
 {
-  "name": "Filtr: Nedokonalosti",
-  "description": "Záměrné tiskové nedokonalosti pro jakoukoli fotku: posunuté tiskové desky, roztékající se barva, zrnění papíru a opotřebení kopírky.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Zvolený obrázek podaný jako nedokonalý tisk, s posunutými tiskovými deskami, roztřepenými hranami a zrněním papíru",
   "inputs.image.label": "Obrázek",
   "inputs.image.help": "Vyber fotku nebo nahraj vlastní. Zpracovává se přímo v tvém zařízení — pixely nikdy neopustí prohlížeč.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Tloušťka písma řádku role / podtitulku (100 tenké → 900 nejtučnější).",
   "inputs.ltHeadshot.label": "Fotka (volitelné)",
   "inputs.ltHeadshot.section": "Překryv",
-  "inputs.ltHeadshot.help": "Ve výchozím stavu se použije fotka z tvého profilu. Vyber nebo nahraj jinou, pokud ji chceš nahradit."
+  "inputs.ltHeadshot.help": "Ve výchozím stavu se použije fotka z tvého profilu. Vyber nebo nahraj jinou, pokud ji chceš nahradit.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

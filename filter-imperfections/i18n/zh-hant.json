@@ -1,6 +1,6 @@
 {
-  "name": "濾鏡：印刷瑕疵",
-  "description": "為任何照片加上刻意的印刷瑕疵：套印偏移、油墨暈開、紙張顆粒與影印磨損。",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "所選圖片呈現為帶有套印偏移、毛邊與紙張顆粒的不完美印刷效果",
   "inputs.image.label": "圖片",
   "inputs.image.help": "選擇一張相片，或上傳你自己的圖片。處理過程在你的裝置上進行——像素資料不會離開瀏覽器。",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "職稱／副標題列的字體粗細（100 極細 → 900 特黑）。",
   "inputs.ltHeadshot.label": "大頭照（選填）",
   "inputs.ltHeadshot.section": "疊加",
-  "inputs.ltHeadshot.help": "預設使用你個人資料中的大頭照，可選擇或上傳其他照片來覆蓋。"
+  "inputs.ltHeadshot.help": "預設使用你個人資料中的大頭照，可選擇或上傳其他照片來覆蓋。",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

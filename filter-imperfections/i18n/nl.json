@@ -1,6 +1,6 @@
 {
-  "name": "Filter: Imperfecties",
-  "description": "Bewuste drukfouten voor elke foto: verschoven inktplaten, uitlopende inkt, papierkorrel en kopieerslijtage.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "De gekozen afbeelding weergegeven als een onzuivere druk, met verschoven inktplaten, gerafelde randen en papierkorrel",
   "inputs.image.label": "Afbeelding",
   "inputs.image.help": "Kies een foto of upload je eigen afbeelding. Deze wordt op je eigen apparaat verwerkt — de pixels verlaten de browser nooit.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Lettergewicht van de functie-/ondertitelregel (100 Thin → 900 Black).",
   "inputs.ltHeadshot.label": "Profielfoto (optioneel)",
   "inputs.ltHeadshot.section": "Overlay",
-  "inputs.ltHeadshot.help": "Standaard je profielfoto. Kies of upload een andere om deze te overschrijven."
+  "inputs.ltHeadshot.help": "Standaard je profielfoto. Kies of upload een andere om deze te overschrijven.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

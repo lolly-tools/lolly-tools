@@ -1,6 +1,6 @@
 {
   "name": "提示轉圖片",
-  "description": "AI 模型處理圖片比處理文字更便宜",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "提示轉圖片 - 在畫布上貼上或拖放文字,即可排版成一張小圖片",
   "inputs.text.label": "文字",
   "inputs.text.help": "在畫布任何位置貼上或拖放即可填入。",

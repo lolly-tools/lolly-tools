@@ -1,6 +1,6 @@
 {
-  "name": "Filter: Mga imperpeksiyon",
-  "description": "Sinadyang mga imperpeksiyon sa print para sa kahit anong larawan: naka-offset na ink plates, tumatagos na tinta, grain ng papel at pagkaluma ng photocopy.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Ang piniling larawan na ipinakita bilang imperpektong print, may naka-offset na ink plates, magaspang na gilid at grain ng papel",
   "inputs.image.label": "Larawan",
   "inputs.image.help": "Pumili ng larawan o mag-upload ng sarili mo. Pinoproseso ito sa mismong device mo — hindi umaalis ang mga pixel sa browser.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Font weight ng linya ng role / subtitle (100 Thin → 900 Black).",
   "inputs.ltHeadshot.label": "Headshot (opsyonal)",
   "inputs.ltHeadshot.section": "Overlay",
-  "inputs.ltHeadshot.help": "Default ay ang headshot mula sa iyong profile. Pumili o mag-upload ng iba para palitan ito."
+  "inputs.ltHeadshot.help": "Default ay ang headshot mula sa iyong profile. Pumili o mag-upload ng iba para palitan ito.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

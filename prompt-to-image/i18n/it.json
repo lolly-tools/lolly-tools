@@ -1,6 +1,6 @@
 {
   "name": "Prompt a immagine",
-  "description": "I modelli IA costano meno per elaborare immagini che testo",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "Prompt a immagine - incolla o trascina del testo sulla tela e viene disposto per stare dentro una piccola immagine",
   "inputs.text.label": "Testo",
   "inputs.text.help": "Incolla o trascina in un punto qualsiasi della tela per compilarlo.",

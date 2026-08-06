@@ -1,6 +1,6 @@
 {
   "name": "پرامپٹ سے تصویر",
-  "description": "AI ماڈلز کے لیے متن کے مقابلے تصاویر پروسیس کرنا سستا ہے",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "پرامپٹ سے تصویر - کینوس پر متن پیسٹ کریں یا ڈراپ کریں اور اسے ایک چھوٹی تصویر کے اندر فٹ ہونے کے لیے ترتیب دیا جاتا ہے",
   "inputs.text.label": "ٹیکسٹ",
   "inputs.text.help": "اسے بھرنے کے لیے کینوس پر کہیں بھی پیسٹ کریں یا ڈراپ کریں۔",

@@ -1,6 +1,6 @@
 {
-  "name": "Bädda in & spåra bild",
-  "description": "Stämpla in upphovsperson, upphovsrätt och licens i valfri bild - plus en osynlig Lolly Imprint och Content Credentials - innan du delar den.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Bädda in uppgifter i din bild",
   "inputs.creator.label": "Konstnär / författare",
   "inputs.creator.help": "Ditt namn - bäddas in som bildens upphovsperson/skapare (EXIF Artist, XMP dc:creator och Content Credential).",

@@ -1,6 +1,6 @@
 {
   "name": "プロンプトから画像",
-  "description": "AIモデルはテキストより画像の処理の方が低コストです",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "プロンプトから画像 - キャンバスにテキストを貼り付けるかドロップすると、1枚の小さな画像に収まるようレイアウトされます。",
   "inputs.text.label": "テキスト",
   "inputs.text.help": "キャンバスの任意の場所に貼り付けるかドロップしてこれを埋めます。",

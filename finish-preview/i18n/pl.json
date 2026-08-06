@@ -1,6 +1,6 @@
 {
-  "name": "Podgląd uszlachetnień",
-  "description": "Symuluj folię, lakier UV, tłoczenie i soft-touch na swojej grafice i eksportuj gotową do druku matrycę. Połysk na ekranie to tylko prezentacja, matryca jest właściwym plikiem produkcyjnym.",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "Grafika z symulowanym uszlachetnieniem druku, lub gotowa do druku matryca w widoku matrycy",
   "inputs.image.label": "Grafika",
   "inputs.image.help": "Wybierz grafikę lub prześlij własną. Jest przetwarzana na Twoim urządzeniu, piksele nigdy nie opuszczają przeglądarki.",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "Wypełnienie za grafiką, gdy nie pokrywa kwadratowej ramki.",
   "inputs.plateView.label": "Widok matrycy (do druku)",
   "inputs.plateView.section": "Matryca",
-  "inputs.plateView.help": "Przełącza na plik produkcyjny: maskę jako czystą czerń na bieli z etykietą nadruku. Wyślij TO do drukarni, błyszczący podgląd to tylko prezentacja."
+  "inputs.plateView.help": "Przełącza na plik produkcyjny: maskę jako czystą czerń na bieli z etykietą nadruku. Wyślij TO do drukarni, błyszczący podgląd to tylko prezentacja.",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

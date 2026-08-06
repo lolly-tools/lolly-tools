@@ -1,6 +1,6 @@
 {
-  "name": "Bygg inn og spor bilde",
-  "description": "Stemple forfatter, opphavsrett og lisens inn i et hvilket som helst bilde - pluss et usynlig Lolly Imprint og Content Credentials - før du deler det.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Bygg inn legitimasjon i bildet ditt",
   "inputs.creator.label": "Artist / forfatter",
   "inputs.creator.help": "Navnet ditt - bygges inn som bildets forfatter/skaper (EXIF Artist, XMP dc:creator og Content Credential).",

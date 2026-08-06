@@ -1,6 +1,6 @@
 {
   "name": "Prompt till bild",
-  "description": "AI-modeller är billigare på att bearbeta bilder än text",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "Prompt till bild - klistra in eller släpp text på duken så läggs den ut för att passa in i en liten bild",
   "inputs.text.label": "Text",
   "inputs.text.help": "Klistra in eller släpp var som helst på duken för att fylla i detta.",

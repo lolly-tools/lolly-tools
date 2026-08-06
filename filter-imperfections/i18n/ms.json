@@ -1,6 +1,6 @@
 {
-  "name": "Penapis: Kecacatan cetak",
-  "description": "Kecacatan cetakan yang disengajakan untuk mana-mana foto: plat dakwat terpesong, dakwat meresap, butiran kertas dan haus fotokopi.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Imej pilihan dipaparkan sebagai cetakan tidak sempurna, dengan plat dakwat terpesong, tepi kasar dan butiran kertas",
   "inputs.image.label": "Imej",
   "inputs.image.help": "Pilih foto atau muat naik foto anda sendiri. Ia diproses pada peranti anda — piksel tidak sesekali meninggalkan pelayar.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Ketebalan fon bagi baris peranan / tajuk kecil (100 Nipis → 900 Hitam).",
   "inputs.ltHeadshot.label": "Gambar wajah (pilihan)",
   "inputs.ltHeadshot.section": "Lapisan",
-  "inputs.ltHeadshot.help": "Lalai menggunakan gambar wajah profil anda. Pilih atau muat naik gambar lain untuk menggantikannya."
+  "inputs.ltHeadshot.help": "Lalai menggunakan gambar wajah profil anda. Pilih atau muat naik gambar lain untuk menggantikannya.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

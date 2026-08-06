@@ -1,6 +1,6 @@
 {
-  "name": "Preview ng Finish",
-  "description": "I-simulate ang foil, spot UV, emboss at soft-touch sa iyong artwork at i-export ang print-ready na plate. Ang kinang sa screen ay presentasyon lamang, ang plate ang tunay na deliverable.",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "Artwork na may simulated na print finish, o ang print-ready na plate sa plate view",
   "inputs.image.label": "Artwork",
   "inputs.image.help": "Piliin ang iyong artwork o mag-upload ng sarili. Pinoproseso ito sa iyong device, hindi kailanman umaalis sa browser ang mga pixel.",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "Pampuno sa likod ng artwork kapag hindi nito natatakpan ang parisukat na frame.",
   "inputs.plateView.label": "Plate view (print-ready)",
   "inputs.plateView.section": "Plate",
-  "inputs.plateView.help": "Lumipat sa deliverable: ang mask bilang purong itim sa puti na may overprint na label. Ipadala ITO sa iyong imprenta, ang makintab na preview ay presentasyon lamang."
+  "inputs.plateView.help": "Lumipat sa deliverable: ang mask bilang purong itim sa puti na may overprint na label. Ipadala ITO sa iyong imprenta, ang makintab na preview ay presentasyon lamang.",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

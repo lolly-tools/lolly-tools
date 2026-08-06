@@ -1,5 +1,5 @@
 {
-  "name": "ビットマップスタジオ",
-  "description": "プロ仕様のフォトグレーディング暗室：フィルムルック、サードパーティ製 .cube LUT、ブランドカラーに基づくカラートリートメント、仕上げのテクスチャ。さらに、どのエディタでも使える LUT としてルックを書き出せます。",
-  "featured.blurb": "フィルムルック、LUT、ブランドカラーで写真をグレーディング"
+  "name": "Bitmap Studio",
+  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
+  "featured.blurb": "Grade photos with film looks, LUTs and your brand colours"
 }

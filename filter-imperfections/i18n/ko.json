@@ -1,6 +1,6 @@
 {
-  "name": "필터: 인쇄 결함",
-  "description": "어떤 사진에도 의도적인 인쇄 결함을 더해요. 판 어긋남, 잉크 번짐, 종이 결, 복사기 마모.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "선택한 이미지를 판 어긋남과 거친 가장자리, 종이 결이 있는 불완전한 인쇄물로 표현한 것이에요",
   "inputs.image.label": "이미지",
   "inputs.image.help": "사진을 선택하거나 직접 업로드하세요. 처리는 기기에서 이루어지며, 픽셀 데이터가 브라우저 밖으로 나가지 않아요.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "역할 / 부제목 줄의 글자 굵기예요(100 얇게 → 900 매우 굵게).",
   "inputs.ltHeadshot.label": "프로필 사진(선택)",
   "inputs.ltHeadshot.section": "오버레이",
-  "inputs.ltHeadshot.help": "기본적으로 프로필 사진을 사용해요. 다른 사진을 선택하거나 업로드해서 바꿀 수 있어요."
+  "inputs.ltHeadshot.help": "기본적으로 프로필 사진을 사용해요. 다른 사진을 선택하거나 업로드해서 바꿀 수 있어요.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

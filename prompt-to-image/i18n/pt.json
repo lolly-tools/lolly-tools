@@ -1,6 +1,6 @@
 {
   "name": "Prompt para Imagem",
-  "description": "Modelos de IA são mais baratos para processar imagens do que texto",
+  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
   "a11yLabel": "Prompt para Imagem - cole ou solte texto na tela e ele é organizado para caber dentro de uma imagem pequena",
   "inputs.text.label": "Texto",
   "inputs.text.help": "Cole ou solte em qualquer lugar da tela para preencher isto.",

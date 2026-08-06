@@ -1,6 +1,6 @@
 {
-  "name": "Filtru: Imperfecțiuni",
-  "description": "Imperfecțiuni de tipar intenționate pentru orice fotografie: plăci decalate, cerneală care se întinde, granulație de hârtie și uzură de fotocopiator.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Imaginea aleasă redată ca un tipar imperfect, cu plăci de cerneală decalate, margini zdrențuite și granulație de hârtie",
   "inputs.image.label": "Imagine",
   "inputs.image.help": "Alege o fotografie sau încarcă-o pe a ta. Este procesată pe dispozitivul tău — pixelii nu ies din browser.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Grosimea fontului liniei de rol / subtitlu (100 Fin → 900 Extra gros).",
   "inputs.ltHeadshot.label": "Poză de profil (opțional)",
   "inputs.ltHeadshot.section": "Acoperire",
-  "inputs.ltHeadshot.help": "Implicit se folosește poza ta de profil. Alege sau încarcă alta pentru a o înlocui."
+  "inputs.ltHeadshot.help": "Implicit se folosește poza ta de profil. Alege sau încarcă alta pentru a o înlocui.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

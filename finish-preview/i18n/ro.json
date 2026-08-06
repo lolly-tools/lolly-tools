@@ -1,6 +1,6 @@
 {
-  "name": "Previzualizare finisaje",
-  "description": "Simulează folio, lac UV selectiv, embosare și soft-touch pe grafica ta și exportă placa gata de tipar. Strălucirea de pe ecran e doar prezentare, placa este livrabilul real.",
+  "name": "Finish Preview",
+  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
   "a11yLabel": "Grafică cu un finisaj de tipar simulat, sau placa gata de tipar în vizualizarea plăcii",
   "inputs.image.label": "Grafică",
   "inputs.image.help": "Alege grafica sau încarcă una proprie. Este procesată pe dispozitivul tău, pixelii nu părăsesc niciodată browserul.",
@@ -48,5 +48,6 @@
   "inputs.bgColor.help": "Umplere în spatele graficii când nu acoperă cadrul pătrat.",
   "inputs.plateView.label": "Vizualizare placă (gata de tipar)",
   "inputs.plateView.section": "Placă",
-  "inputs.plateView.help": "Comută pe livrabil: masca în negru pur pe alb cu etichetă de supratipar. Trimite ASTA tipografiei, previzualizarea lucioasă e doar prezentare."
+  "inputs.plateView.help": "Comută pe livrabil: masca în negru pur pe alb cu etichetă de supratipar. Trimite ASTA tipografiei, previzualizarea lucioasă e doar prezentare.",
+  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
 }

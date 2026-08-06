@@ -1,6 +1,6 @@
 {
-  "name": "Filtr: Niedoskonałości",
-  "description": "Zamierzone niedoskonałości druku dla każdego zdjęcia: przesunięte formy drukowe, rozlewająca się farba, ziarno papieru i zużycie kserokopii.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Wybrany obraz oddany jako niedokładny druk, z przesuniętymi formami drukowymi, postrzępionymi krawędziami i ziarnem papieru",
   "inputs.image.label": "Obraz",
   "inputs.image.help": "Wybierz zdjęcie lub wgraj własne. Jest przetwarzane na Twoim urządzeniu — piksele nigdy nie opuszczają przeglądarki.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Grubość czcionki linii z rolą / podtytułem (100 Thin → 900 Black).",
   "inputs.ltHeadshot.label": "Zdjęcie profilowe (opcjonalnie)",
   "inputs.ltHeadshot.section": "Nakładka",
-  "inputs.ltHeadshot.help": "Domyślnie zdjęcie z profilu. Wybierz lub wgraj inne, aby je zastąpić."
+  "inputs.ltHeadshot.help": "Domyślnie zdjęcie z profilu. Wybierz lub wgraj inne, aby je zastąpić.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

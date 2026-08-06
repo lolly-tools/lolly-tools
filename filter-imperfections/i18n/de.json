@@ -1,6 +1,6 @@
 {
-  "name": "Filter: Druckfehler",
-  "description": "Gewollte Druckfehler für jedes Foto: versetzte Druckplatten, ausblutende Farbe, Papierkorn und Kopierer-Abnutzung.",
+  "name": "Filter: Imperfections",
+  "description": "Deliberate print imperfections for any photo — offset ink plates, ink bleed, paper grain and photocopy wear.",
   "a11yLabel": "Das gewählte Bild als unsauberer Druck wiedergegeben, mit versetzten Druckplatten, ausgefransten Kanten und Papierkorn",
   "inputs.image.label": "Bild",
   "inputs.image.help": "Wählen Sie ein Foto aus oder laden Sie ein eigenes hoch. Es wird auf Ihrem Gerät verarbeitet – die Pixel verlassen niemals den Browser.",
@@ -133,5 +133,6 @@
   "inputs.subtitleWeight.help": "Schriftgewicht der Rollen-/Untertitelzeile (100 Dünn → 900 Extrafett).",
   "inputs.ltHeadshot.label": "Profilfoto (optional)",
   "inputs.ltHeadshot.section": "Überlagerung",
-  "inputs.ltHeadshot.help": "Verwendet standardmäßig Ihr Profilfoto. Wählen Sie ein anderes aus oder laden Sie eines hoch, um es zu überschreiben."
+  "inputs.ltHeadshot.help": "Verwendet standardmäßig Ihr Profilfoto. Wählen Sie ein anderes aus oder laden Sie eines hoch, um es zu überschreiben.",
+  "featured.blurb": "Risograph, misregistration and photocopy wear, on purpose"
 }

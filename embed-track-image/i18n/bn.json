@@ -1,6 +1,6 @@
 {
-  "name": "এমবেড & ট্র্যাক ইমেজ",
-  "description": "শেয়ার করার আগে যেকোনো ছবিতে আপনার লেখক, কপিরাইট ও লাইসেন্স স্ট্যাম্প করুন - সাথে একটি অদৃশ্য Lolly Imprint এবং Content Credentials।",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "আপনার ছবিতে ক্রেডেনশিয়াল এমবেড করুন",
   "inputs.creator.label": "শিল্পী / লেখক",
   "inputs.creator.help": "আপনার নাম - ছবির লেখক/নির্মাতা হিসেবে এমবেড করা হয় (EXIF Artist, XMP dc:creator, এবং Content Credential)।",

@@ -1,6 +1,6 @@
 {
-  "name": "Вграждане и проследяване на изображение",
-  "description": "Впечатай автор, авторски права и лиценз във всяко изображение - плюс невидим Lolly Imprint и Content Credentials - преди да го споделиш.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Вгради удостоверения в изображението си",
   "inputs.creator.label": "Артист / автор",
   "inputs.creator.help": "Твоето име - вградено като автор/създател на изображението (EXIF Artist, XMP dc:creator и Content Credential).",

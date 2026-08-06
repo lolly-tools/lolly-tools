@@ -1,6 +1,6 @@
 {
-  "name": "Вбудувати та відстежувати зображення",
-  "description": "Впишіть автора, авторське право та ліцензію в будь-яке зображення - а також невидимий Lolly Imprint і Content Credentials - перш ніж поділитися ним.",
+  "name": "Embed, Imprint & Track",
+  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
   "a11yLabel": "Вбудуйте посвідчення у своє зображення",
   "inputs.creator.label": "Артист / автор",
   "inputs.creator.help": "Ваше ім'я - вбудовується як автор/творець зображення (EXIF Artist, XMP dc:creator і Content Credential).",
