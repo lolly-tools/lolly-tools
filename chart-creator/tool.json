@@ -2,11 +2,12 @@
   "id": "chart-creator",
   "name": "Chart Creator",
   "description": "On-brand charts from your data — bar, donut, pie or stacked.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
   "tags": ["chart", "data", "visualization", "bar", "pie", "donut", "infographic", "svg"],
+  "isolate": true,
   "featured": {
     "order": 5,
     "blurb": "On-brand charts from your data, any shape"

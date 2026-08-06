@@ -193,6 +193,7 @@
       "urlKey": "d",
       "label": "Paste your table",
       "type": "longtext",
+      "dataSource": {},
       "rows": 9,
       "placeholder": "Quarter,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
       "help": "Copy cells straight from Excel, Google Sheets or Numbers and paste here — they come across as a clean table (no fiddling with commas). Or type/paste CSV or TSV. First row = column headers; the first text column becomes the labels and every numeric column a series. The chart rebuilds automatically.",
