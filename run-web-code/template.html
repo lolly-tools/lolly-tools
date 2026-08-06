@@ -1,0 +1,796 @@
+<div class="rwc" data-rwc>
+  <header class="rwc-bar">
+    <!-- Controls hug the right: the top-left is left clear for the shell's fixed
+         back pill (position:fixed, z-index 99999) whose label width is unbounded. -->
+    <span class="rwc-flex"></span>
+    <button class="rwc-about-btn" type="button" data-rwc-about-open aria-haspopup="dialog" aria-label="About Run Web Code">i</button>
+    <label class="rwc-auto" title="Re-run automatically as you type">
+      <input type="checkbox" data-rwc-auto checked> Auto-run
+    </label>
+    <button class="rwc-btn rwc-ghost" type="button" data-rwc-layout aria-label="Toggle layout" title="Side-by-side / stacked">⊞</button>
+    <button class="rwc-btn rwc-ghost" type="button" data-rwc-fullscreen aria-label="Toggle fullscreen" aria-pressed="false" title="Fullscreen">⛶</button>
+    <button class="rwc-btn rwc-ghost" type="button" data-rwc-reset title="Load the starter example">Reset</button>
+    <button class="rwc-btn rwc-run" type="button" data-rwc-run>Run <kbd class="rwc-kbd">⌘⏎</kbd></button>
+  </header>
+
+  <div class="rwc-body" data-rwc-body>
+    <section class="rwc-editor" aria-label="Code editor">
+      <div class="rwc-tabs" role="tablist" aria-label="Code language">
+        <button class="rwc-tab is-active" type="button" role="tab" aria-selected="true" data-pane="html">HTML<span class="rwc-tab-dot" data-dot="html" hidden></span></button>
+        <button class="rwc-tab" type="button" role="tab" aria-selected="false" data-pane="css">CSS<span class="rwc-tab-dot" data-dot="css" hidden></span></button>
+        <button class="rwc-tab" type="button" role="tab" aria-selected="false" data-pane="js">JS<span class="rwc-tab-dot" data-dot="js" hidden></span></button>
+      </div>
+      <div class="rwc-panes">
+        <textarea class="rwc-code is-active" data-pane="html" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Paste your HTML here — a full page or just a snippet…" aria-label="HTML"></textarea>
+        <textarea class="rwc-code" data-pane="css" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional CSS — or keep it inside your HTML…" aria-label="CSS"></textarea>
+        <textarea class="rwc-code" data-pane="js" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional JavaScript — or keep it inside your HTML…" aria-label="JavaScript"></textarea>
+      </div>
+    </section>
+
+    <div class="rwc-split" data-rwc-split role="separator" aria-orientation="vertical" aria-label="Drag to resize"></div>
+
+    <section class="rwc-preview" aria-label="Live preview">
+      <div class="rwc-preview-head">
+        <span class="rwc-live" data-rwc-live aria-hidden="true"></span>
+        <span class="rwc-preview-label">Preview</span>
+        <span class="rwc-status" data-rwc-status role="status" aria-live="polite"></span>
+        <span class="rwc-flex"></span>
+        <button class="rwc-icbtn" type="button" data-rwc-reload title="Reload preview" aria-label="Reload preview">⟳</button>
+      </div>
+
+      <div class="rwc-banner" data-rwc-banner hidden></div>
+
+      <div class="rwc-stage">
+        <iframe class="rwc-frame" data-rwc-frame title="Code preview" sandbox="allow-scripts allow-modals allow-popups allow-forms allow-pointer-lock allow-downloads allow-presentation"></iframe>
+      </div>
+
+      <div class="rwc-console" data-rwc-console>
+        <div class="rwc-console-grip" data-rwc-console-grip role="separator" aria-orientation="horizontal" aria-label="Drag to resize the console"></div>
+        <div class="rwc-console-head" data-rwc-console-toggle role="button" tabindex="0" aria-expanded="true" aria-label="Toggle console">
+          <span class="rwc-chevron">▾</span>
+          <span class="rwc-console-title">Console</span>
+          <span class="rwc-console-count" data-rwc-count></span>
+          <span class="rwc-flex"></span>
+          <button class="rwc-linkbtn" type="button" data-rwc-console-clear>Clear</button>
+        </div>
+        <div class="rwc-console-body" data-rwc-console-body role="log" aria-live="polite" aria-label="Console output"></div>
+      </div>
+    </section>
+  </div>
+
+  <div class="rwc-about-overlay" data-rwc-about hidden>
+    <div class="rwc-about" role="dialog" aria-modal="true" aria-labelledby="rwc-about-title" aria-describedby="rwc-about-desc">
+      <button class="rwc-about-close" type="button" data-rwc-about-close aria-label="Close">&times;</button>
+      <div class="rwc-about-icon" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="M2.5 8.5h19"/><path d="M9.8 11.4l4.4 2.6-4.4 2.6z"/></svg>
+      </div>
+      <h2 class="rwc-about-title" id="rwc-about-title">Run Web Code</h2>
+      <p class="rwc-about-desc" id="rwc-about-desc">Paste HTML, CSS and JavaScript — say, a snippet an AI assistant handed you — and see it run instantly.</p>
+      <ul class="rwc-about-points">
+        <li><strong>Private &amp; offline.</strong> Your code runs in a locked-down sandbox right here in your browser. Nothing is uploaded, and it works with no connection.</li>
+        <li><strong>Isolated.</strong> The preview can't reach your saved work, this app, or your other tabs — it runs on its own throwaway origin.</li>
+        <li><strong>External libraries.</strong> To keep things private and offline, scripts and styles loaded from the web are blocked by default. When your code references one, you can choose to <em>fetch &amp; inline</em> it — trusted sources like Google Fonts work out of the box; others may be blocked by the app's security policy.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<style>
+/* Colours follow the app's core theme switcher (light / dark / suse). Every hue is
+   sourced from the app design tokens on <html data-theme> (tokens.css), which inherit
+   into this tool, so it restyles the instant the theme changes. Light-theme fallbacks
+   keep it valid where the tokens aren't loaded (CLI). */
+.rwc {
+  --rwc-bg:      var(--background, 0 0% 98%);
+  --rwc-fg:      var(--foreground, 224 71% 4%);
+  --rwc-muted:   var(--muted-foreground, 215 20% 38%);
+  --rwc-card:    var(--card, 0 0% 100%);
+  --rwc-bd:      var(--border, 214 28% 84%);
+  --rwc-fill:    var(--muted, 210 40% 96%);
+  --rwc-brand:   var(--primary, 171 62% 12%);
+  --rwc-brandfg: var(--primary-foreground, 0 0% 100%);
+  --rwc-warn:    var(--destructive, 0 72% 51%);
+  --rwc-ok:      151 55% 38%;
+  --rwc-info:    220 60% 52%;
+
+  box-sizing: border-box;
+  position: relative;
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-brand, "SUSE", system-ui, sans-serif);
+  color: hsl(var(--rwc-fg));
+  background: hsl(var(--rwc-bg));
+}
+.rwc * { box-sizing: border-box; }
+.rwc-flex { flex: 1 1 auto; }
+
+/* ── Top bar ─────────────────────────────────────────────────────────────── */
+.rwc-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 16px; flex: 0 0 auto;
+  /* Tall enough to contain the shell's fixed back pill (top --chrome-top, height
+     --chrome-h) so it floats within the empty left of the bar, never over the
+     editor/preview headers below. */
+  min-height: calc(var(--chrome-top, 0.5rem) + var(--chrome-h, 2.6rem) + 0.4rem);
+  border-bottom: 1px solid hsl(var(--rwc-bd));
+  background: hsl(var(--rwc-card));
+}
+.rwc-about-btn {
+  width: 26px; height: 26px; flex: 0 0 auto; border-radius: 999px;
+  border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-fill));
+  color: hsl(var(--rwc-muted)); font-weight: 800; font-style: italic; font-size: 13px;
+  cursor: pointer; line-height: 1; display: inline-flex; align-items: center; justify-content: center;
+}
+.rwc-about-btn:hover { color: hsl(var(--rwc-brand)); border-color: hsl(var(--rwc-brand) / .5); }
+.rwc-auto {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-size: 12.5px; font-weight: 600; color: hsl(var(--rwc-muted)); cursor: pointer; user-select: none;
+}
+.rwc-auto input { width: 15px; height: 15px; accent-color: hsl(var(--rwc-brand)); }
+.rwc-btn {
+  appearance: none; border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card));
+  color: hsl(var(--rwc-fg)); font: inherit; font-size: 13px; font-weight: 700;
+  padding: 8px 14px; border-radius: 9px; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 7px; transition: background .12s, border-color .12s, transform .06s;
+}
+.rwc-btn:hover { border-color: hsl(var(--rwc-brand) / .55); }
+.rwc-btn:active { transform: translateY(1px); }
+.rwc-ghost { color: hsl(var(--rwc-muted)); font-weight: 600; }
+.rwc-btn.is-on { color: hsl(var(--rwc-brand)); border-color: hsl(var(--rwc-brand) / .5); background: hsl(var(--rwc-brand) / .1); }
+/* When the tool itself is the fullscreen element it must fill the screen (the
+   min-height:100% chain has no positioned/definite ancestor in that mode). */
+.rwc:fullscreen, .rwc:-webkit-full-screen { width: 100%; height: 100%; }
+.rwc-run { background: hsl(var(--rwc-brand)); color: hsl(var(--rwc-brandfg)); border-color: transparent; }
+.rwc-run:hover { background: hsl(var(--rwc-brand) / .9); border-color: transparent; }
+.rwc-run.is-dirty { box-shadow: 0 0 0 3px hsl(var(--rwc-brand) / .22); }
+.rwc-kbd {
+  font-family: var(--font-mono, ui-monospace, monospace); font-size: 10.5px; font-weight: 600;
+  padding: 1px 5px; border-radius: 5px; background: hsl(var(--rwc-brandfg) / .18); line-height: 1.4;
+}
+.rwc-btn:focus-visible, .rwc-about-btn:focus-visible, .rwc-tab:focus-visible,
+.rwc-icbtn:focus-visible, .rwc-linkbtn:focus-visible { outline: 2px solid hsl(var(--rwc-brand)); outline-offset: 2px; }
+
+/* ── Body split ──────────────────────────────────────────────────────────── */
+/* min-height floor keeps the split usable even when the tool canvas hands us an
+   indefinite height (#tool-content is min-height:100%, not a definite height); it
+   still grows to fill a definite/tall canvas via flex:1. */
+.rwc-body { flex: 1 1 auto; display: flex; min-height: 540px; }
+.rwc-editor { flex: 0 0 var(--rwc-left, 44%); display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.rwc-preview { flex: 1 1 0; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: hsl(var(--rwc-fill) / .5); }
+
+.rwc-split { flex: 0 0 8px; cursor: col-resize; touch-action: none; position: relative; }
+.rwc-split::before {
+  content: ''; position: absolute; inset: 0; margin: auto; width: 1px; background: hsl(var(--rwc-bd));
+  transition: background .12s, width .12s;
+}
+.rwc-split:hover::before, .rwc-split.is-drag::before { width: 3px; background: hsl(var(--rwc-brand)); }
+
+/* ── Editor ──────────────────────────────────────────────────────────────── */
+.rwc-tabs { display: flex; gap: 2px; flex: 0 0 auto; padding: 8px 10px 0; background: hsl(var(--rwc-card)); border-bottom: 1px solid hsl(var(--rwc-bd)); }
+.rwc-tab {
+  appearance: none; border: none; background: transparent; color: hsl(var(--rwc-muted));
+  font: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: .02em;
+  padding: 8px 14px 9px; cursor: pointer; border-radius: 8px 8px 0 0; position: relative; top: 1px;
+  border: 1px solid transparent; border-bottom: none;
+}
+.rwc-tab:hover { color: hsl(var(--rwc-fg)); }
+.rwc-tab.is-active { color: hsl(var(--rwc-brand)); background: hsl(var(--rwc-bg)); border-color: hsl(var(--rwc-bd)); }
+.rwc-tab-dot { display: inline-block; width: 6px; height: 6px; margin-left: 6px; border-radius: 999px; background: hsl(var(--rwc-brand) / .55); vertical-align: middle; }
+.rwc-panes { flex: 1 1 auto; min-height: 160px; position: relative; background: hsl(var(--rwc-bg)); }
+.rwc-code {
+  position: absolute; inset: 0; width: 100%; height: 100%; display: none; resize: none; border: 0;
+  padding: 14px 16px; background: transparent; color: hsl(var(--rwc-fg));
+  font-family: var(--font-mono, "SUSE Mono", ui-monospace, "SF Mono", Menlo, monospace);
+  font-size: 13px; line-height: 1.6; tab-size: 2; white-space: pre; overflow: auto;
+}
+.rwc-code.is-active { display: block; }
+.rwc-code:focus { outline: none; }
+.rwc-code::placeholder { color: hsl(var(--rwc-muted) / .65); }
+
+/* ── Preview ─────────────────────────────────────────────────────────────── */
+.rwc-preview-head {
+  display: flex; align-items: center; gap: 9px; flex: 0 0 auto;
+  padding: 9px 12px; background: hsl(var(--rwc-card)); border-bottom: 1px solid hsl(var(--rwc-bd));
+}
+.rwc-preview-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: hsl(var(--rwc-muted) / .9); }
+.rwc-live { width: 8px; height: 8px; border-radius: 999px; background: hsl(var(--rwc-bd)); flex: 0 0 auto; transition: background .2s; }
+.rwc-live.is-live { background: hsl(var(--rwc-ok)); box-shadow: 0 0 0 3px hsl(var(--rwc-ok) / .18); }
+.rwc-status { font-size: 12px; color: hsl(var(--rwc-muted)); font-family: var(--font-mono, ui-monospace, monospace); }
+.rwc-icbtn {
+  appearance: none; border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card)); color: hsl(var(--rwc-muted));
+  width: 30px; height: 30px; border-radius: 8px; cursor: pointer; font-size: 15px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.rwc-icbtn:hover { color: hsl(var(--rwc-brand)); border-color: hsl(var(--rwc-brand) / .5); }
+
+.rwc-stage { flex: 1 1 auto; min-height: 200px; position: relative; }
+.rwc-frame { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: #fff; }
+
+/* ── External-resources banner ───────────────────────────────────────────── */
+.rwc-banner { flex: 0 0 auto; padding: 11px 14px; border-bottom: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-info) / .08); font-size: 12.5px; line-height: 1.5; }
+.rwc-banner[hidden] { display: none; }
+.rwc-banner.is-warn { background: hsl(var(--rwc-warn) / .08); }
+.rwc-banner-row { display: flex; align-items: flex-start; gap: 10px; }
+.rwc-banner-txt { flex: 1 1 auto; min-width: 0; color: hsl(var(--rwc-fg)); }
+.rwc-banner-txt b { font-weight: 800; }
+.rwc-banner-list { margin: 6px 0 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 3px; }
+.rwc-banner-list li { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono, ui-monospace, monospace); font-size: 11.5px; color: hsl(var(--rwc-muted)); min-width: 0; }
+.rwc-ext-host { color: hsl(var(--rwc-fg)); font-weight: 600; flex: 0 0 auto; }
+.rwc-ext-path { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rwc-ext-tag { flex: 0 0 auto; font-size: 9.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em; padding: 1px 6px; border-radius: 999px; margin-left: auto; }
+.rwc-ext-ok { background: hsl(var(--rwc-ok) / .16); color: color-mix(in oklab, hsl(var(--rwc-ok)), hsl(var(--rwc-fg)) 26%); }
+.rwc-ext-blocked { background: hsl(var(--rwc-warn) / .14); color: color-mix(in oklab, hsl(var(--rwc-warn)), hsl(var(--rwc-fg)) 30%); }
+.rwc-ext-trusted { background: hsl(var(--rwc-info) / .16); color: color-mix(in oklab, hsl(var(--rwc-info)), hsl(var(--rwc-fg)) 26%); }
+.rwc-banner-actions { flex: 0 0 auto; display: flex; flex-direction: column; gap: 6px; align-items: flex-end; }
+.rwc-banner-btn {
+  appearance: none; border: 1px solid hsl(var(--rwc-brand) / .4); background: hsl(var(--rwc-brand)); color: hsl(var(--rwc-brandfg));
+  font: inherit; font-size: 12px; font-weight: 700; padding: 7px 13px; border-radius: 8px; cursor: pointer; white-space: nowrap;
+}
+.rwc-banner-btn:hover { background: hsl(var(--rwc-brand) / .9); }
+.rwc-banner-btn.rwc-ghost { background: transparent; color: hsl(var(--rwc-muted)); border-color: hsl(var(--rwc-bd)); }
+.rwc-banner-dismiss { appearance: none; border: 0; background: transparent; color: hsl(var(--rwc-muted)); font-size: 11px; cursor: pointer; text-decoration: underline; padding: 0; }
+
+/* ── Console ─────────────────────────────────────────────────────────────── */
+.rwc-console { flex: 0 0 auto; display: flex; flex-direction: column; border-top: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card)); height: var(--rwc-console-h, 172px); min-height: 0; }
+.rwc-console.is-collapsed { height: auto; }
+.rwc-console.is-collapsed .rwc-console-body,
+.rwc-console.is-collapsed .rwc-console-grip { display: none; }
+.rwc-console.is-collapsed .rwc-chevron { transform: rotate(-90deg); }
+/* Drag strip sitting on the console's top border to set its height. */
+.rwc-console-grip { flex: 0 0 6px; margin: -3px 0 -3px; cursor: row-resize; touch-action: none; position: relative; z-index: 1; }
+.rwc-console-grip::before { content: ''; position: absolute; inset: 0; margin: auto; height: 3px; transition: background .12s; }
+.rwc-console-grip:hover::before, .rwc-console-grip.is-drag::before { background: hsl(var(--rwc-brand)); }
+.rwc-console-head { display: flex; align-items: center; gap: 8px; padding: 7px 12px; cursor: pointer; flex: 0 0 auto; user-select: none; }
+.rwc-chevron { display: inline-block; font-size: 10px; color: hsl(var(--rwc-muted)); transition: transform .14s; }
+.rwc-console-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: hsl(var(--rwc-muted) / .9); }
+.rwc-console-count { font-size: 11px; font-weight: 700; color: hsl(var(--rwc-muted)); font-family: var(--font-mono, ui-monospace, monospace); }
+.rwc-console-count.has-err { color: color-mix(in oklab, hsl(var(--rwc-warn)), hsl(var(--rwc-fg)) 20%); }
+.rwc-linkbtn { appearance: none; border: 0; background: transparent; color: hsl(var(--rwc-muted)); font: inherit; font-size: 11.5px; cursor: pointer; text-decoration: underline; padding: 2px 4px; }
+.rwc-linkbtn:hover { color: hsl(var(--rwc-brand)); }
+.rwc-console-body { flex: 1 1 auto; min-height: 40px; overflow: auto; padding: 4px 0; font-family: var(--font-mono, ui-monospace, monospace); font-size: 12px; line-height: 1.5; }
+.rwc-log { padding: 3px 14px 3px 30px; border-bottom: 1px solid hsl(var(--rwc-bd) / .5); white-space: pre-wrap; word-break: break-word; position: relative; }
+.rwc-log::before { content: '›'; position: absolute; left: 12px; color: hsl(var(--rwc-muted) / .6); }
+.rwc-log.lvl-error { background: hsl(var(--rwc-warn) / .08); color: color-mix(in oklab, hsl(var(--rwc-warn)), hsl(var(--rwc-fg)) 24%); }
+.rwc-log.lvl-error::before { content: '✕'; color: hsl(var(--rwc-warn)); }
+.rwc-log.lvl-warn { background: hsl(38 92% 50% / .09); color: color-mix(in oklab, hsl(38 92% 42%), hsl(var(--rwc-fg)) 24%); }
+.rwc-log.lvl-warn::before { content: '!'; color: hsl(38 92% 46%); }
+.rwc-console-empty { padding: 12px 14px; color: hsl(var(--rwc-muted) / .7); font-size: 11.5px; font-style: italic; }
+
+/* ── About dialog ────────────────────────────────────────────────────────── */
+.rwc-about-overlay { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; background: hsl(var(--rwc-fg) / .45); }
+.rwc-about-overlay[hidden] { display: none; }
+.rwc-about { position: relative; width: 100%; max-width: 440px; background: hsl(var(--rwc-card)); border: 1px solid hsl(var(--rwc-bd)); border-radius: 16px; padding: 28px 26px 24px; box-shadow: 0 20px 50px hsl(var(--rwc-fg) / .25); }
+.rwc-about-close { position: absolute; top: 10px; right: 12px; appearance: none; border: 0; background: transparent; color: hsl(var(--rwc-muted)); font-size: 22px; line-height: 1; width: 30px; height: 30px; border-radius: 999px; cursor: pointer; }
+.rwc-about-close:hover { background: hsl(var(--rwc-fill)); color: hsl(var(--rwc-fg)); }
+.rwc-about-icon { width: 52px; height: 52px; margin: 0 0 14px; display: flex; align-items: center; justify-content: center; border-radius: 14px; background: hsl(var(--rwc-brand) / .12); color: hsl(var(--rwc-brand)); }
+.rwc-about-icon svg { width: 28px; height: 28px; }
+.rwc-about-title { margin: 0 0 6px; font-size: 19px; font-weight: 800; letter-spacing: -0.01em; }
+.rwc-about-desc { margin: 0 0 14px; font-size: 13.5px; line-height: 1.5; color: hsl(var(--rwc-muted)); }
+.rwc-about-points { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.rwc-about-points li { font-size: 13px; line-height: 1.5; color: hsl(var(--rwc-fg)); padding-left: 22px; position: relative; }
+.rwc-about-points li::before { content: ''; position: absolute; left: 2px; top: 6px; width: 8px; height: 8px; border-radius: 999px; background: hsl(var(--rwc-brand) / .5); }
+.rwc-about-points strong { font-weight: 800; }
+
+/* ── Responsive: stack editor over preview ───────────────────────────────── */
+.rwc-body.is-stack, .rwc-body.is-narrow { flex-direction: column; }
+.rwc-body.is-stack .rwc-editor, .rwc-body.is-narrow .rwc-editor { flex: 0 0 var(--rwc-top, 46%); }
+.rwc-body.is-stack .rwc-preview, .rwc-body.is-narrow .rwc-preview { flex: 1 1 0; }
+.rwc-body.is-stack .rwc-split, .rwc-body.is-narrow .rwc-split { display: none; }
+@media (max-width: 720px) {
+  /* Narrow: no room to keep the whole control row right of the fixed back pill,
+     so drop it below the pill instead. */
+  .rwc-bar { flex-wrap: wrap; justify-content: flex-end; padding-top: calc(var(--chrome-top, 0.5rem) + var(--chrome-h, 2.6rem)); }
+  .rwc-kbd { display: none; }
+  .rwc-body { flex-direction: column; }
+  .rwc-editor { flex: 0 0 46%; }
+  .rwc-split { display: none; }
+}
+</style>
+
+<script>
+(function () {
+  var root = document.querySelector('[data-rwc]');
+  if (!root || root.dataset.rwcReady) return;
+  root.dataset.rwcReady = '1';
+
+  var $ = function (s) { return root.querySelector(s); };
+  var frame = $('[data-rwc-frame]');
+  var body = $('[data-rwc-body]');
+  var statusEl = $('[data-rwc-status]');
+  var liveEl = $('[data-rwc-live]');
+  var runBtn = $('[data-rwc-run]');
+  var autoEl = $('[data-rwc-auto]');
+  var bannerEl = $('[data-rwc-banner]');
+  var consoleEl = $('[data-rwc-console]');
+  var consoleBody = $('[data-rwc-console-body]');
+  var countEl = $('[data-rwc-count]');
+  var codeEls = {};
+  Array.prototype.forEach.call(root.querySelectorAll('.rwc-code'), function (el) { codeEls[el.dataset.pane] = el; });
+  var tabEls = Array.prototype.slice.call(root.querySelectorAll('.rwc-tab'));
+
+  // Fetched external resources are cached so re-runs (and auto-run) never re-hit
+  // the network for the same URL.
+  var netCache = {};
+  var allowNet = false;          // user consent to fetch & inline external resources
+  var bannerDismissed = false;
+  var runSeq = 0;
+  var debounceTimer = null;
+  var lastRunSig = null;
+
+  // ── Starter example ────────────────────────────────────────────────────────
+  // A clean, unpolluted start: a tiny standalone HTML greeting, with the CSS and
+  // JS panes left empty for the user to fill (or paste over). Lines are kept short
+  // so the no-wrap editor never opens needing a horizontal scroll.
+  var STARTER = {
+    html: [
+      '<h1>Hello 👋</h1>',
+      '<p>Paste your code here —</p>',
+      '<p>it runs live on the right.</p>',
+      '<ul>',
+      '  <li>HTML in this tab</li>',
+      '  <li>CSS &amp; JS in the others</li>',
+      '</ul>'
+    ].join('\n'),
+    css: '',
+    js: ''
+  };
+
+  function readFiles() {
+    return { html: codeEls.html.value, css: codeEls.css.value, js: codeEls.js.value };
+  }
+  function sig(f) { return f.html + ' ' + f.css + ' ' + f.js; }
+
+  // ── Injected sandbox shim: console + error forwarding, storage polyfill ─────
+  // Kept free of a literal script-closing sequence so it embeds safely in the srcdoc.
+  var SHIM = [
+    '(function(){',
+    'try{window.localStorage.length;}catch(e){',
+    ' var mk=function(){var m={};return{getItem:function(k){k=String(k);return Object.prototype.hasOwnProperty.call(m,k)?m[k]:null;},setItem:function(k,v){m[String(k)]=String(v);},removeItem:function(k){delete m[String(k)];},clear:function(){m={};},key:function(i){var ks=Object.keys(m);return i<ks.length?ks[i]:null;},get length(){return Object.keys(m).length;}};};',
+    ' try{Object.defineProperty(window,"localStorage",{value:mk(),configurable:true});}catch(_){}',
+    ' try{Object.defineProperty(window,"sessionStorage",{value:mk(),configurable:true});}catch(_){}',
+    '}',
+    'function fmt(v){if(v===undefined)return "undefined";if(v===null)return "null";try{if(typeof v==="string")return v;if(typeof v==="number"||typeof v==="boolean")return String(v);if(v instanceof Error)return v.stack||(v.name+": "+v.message);if(typeof v==="function")return "[Function "+(v.name||"anonymous")+"]";var seen=[];return JSON.stringify(v,function(k,val){if(typeof val==="object"&&val!==null){if(seen.indexOf(val)>-1)return "[Circular]";seen.push(val);}if(typeof val==="function")return "[Function]";if(typeof val==="undefined")return "undefined";return val;},2);}catch(e){return String(v);}}',
+    'function send(level,args){try{parent.postMessage({__rwc:1,level:level,text:Array.prototype.map.call(args,fmt).join(" ")},"*");}catch(e){}}',
+    'var C=window.console||{};["log","info","debug","warn","error"].forEach(function(k){var o=typeof C[k]==="function"?C[k].bind(C):function(){};C[k]=function(){send(k==="debug"||k==="info"?"log":k,arguments);o.apply(C,arguments);};});window.console=C;',
+    'window.addEventListener("error",function(e){if(e.error&&e.error.stack)send("error",[String(e.error.stack).replace(/about:srcdoc/g,"preview")]);else send("error",[(e.message||"Error")+(e.filename?" ("+String(e.filename).replace(/about:srcdoc/,"preview")+":"+e.lineno+")":"")]);});',
+    'window.addEventListener("unhandledrejection",function(e){var r=e.reason;send("error",["Uncaught (in promise) "+(r&&(r.stack||r.message)||fmt(r))]);});',
+    'parent.postMessage({__rwc:1,level:"__ready__"},"*");',
+    '})();'
+  ].join('\n');
+
+  function guardScript(js) { return String(js).replace(/<\/(script)/gi, '<\\/$1'); }
+  function isFullDoc(html) { return /<!doctype\s+html|<html[\s>]/i.test(html); }
+
+  function injectAfterHeadOpen(doc, frag) {
+    var m = /<head[^>]*>/i.exec(doc);
+    if (m) return doc.slice(0, m.index + m[0].length) + frag + doc.slice(m.index + m[0].length);
+    m = /<html[^>]*>/i.exec(doc);
+    if (m) return doc.slice(0, m.index + m[0].length) + '<head>' + frag + '</head>' + doc.slice(m.index + m[0].length);
+    return frag + doc;
+  }
+  function injectBeforeBodyClose(doc, frag) {
+    var i = doc.search(/<\/body>/i);
+    if (i >= 0) return doc.slice(0, i) + frag + doc.slice(i);
+    i = doc.search(/<\/html>/i);
+    if (i >= 0) return doc.slice(0, i) + frag + doc.slice(i);
+    return doc + frag;
+  }
+  function injectBeforeHeadClose(doc, frag) {
+    var i = doc.search(/<\/head>/i);
+    if (i >= 0) return doc.slice(0, i) + frag + doc.slice(i);
+    return injectBeforeBodyClose(doc, frag);
+  }
+
+  function buildDoc(files) {
+    var shimTag = '<script>' + SHIM + '\n<\/script>';
+    var css = files.css || '', js = files.js || '', html = files.html || '';
+    var styleTag = css.trim() ? '<style>' + css + '</style>' : '';
+    var jsTag = js.trim() ? '<script>' + guardScript(js) + '\n<\/script>' : '';
+    if (isFullDoc(html)) {
+      var doc = injectAfterHeadOpen(html, shimTag);
+      if (styleTag) doc = injectBeforeHeadClose(doc, styleTag);
+      if (jsTag) doc = injectBeforeBodyClose(doc, jsTag);
+      return doc;
+    }
+    var reset = 'html{color-scheme:light dark}*{box-sizing:border-box}body{margin:16px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;color:#111}';
+    return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
+      + shimTag + '<style>' + reset + '</style>' + styleTag
+      + '</head><body>' + html + jsTag + '</body></html>';
+  }
+
+  // ── External-resource detection ─────────────────────────────────────────────
+  function hostOf(u) { try { return new URL(u).host; } catch (e) { return u; } }
+  function pathOf(u) { try { var p = new URL(u); return p.pathname + p.search; } catch (e) { return ''; } }
+  function isTrusted(u) { var h = hostOf(u); return h === 'fonts.googleapis.com' || h === 'fonts.gstatic.com'; }
+
+  function findExternals(files) {
+    var out = [], seen = {};
+    function add(u, kind) {
+      if (!u || !/^https?:\/\//i.test(u) || seen[u]) return;
+      seen[u] = 1; out.push({ url: u, kind: kind });
+    }
+    var html = files.html || '', css = files.css || '', m, re;
+    re = /<link\b[^>]*>/gi;
+    while ((m = re.exec(html))) { if (/stylesheet/i.test(m[0])) { var h = /href\s*=\s*["']([^"']+)["']/i.exec(m[0]); if (h) add(h[1], 'style'); } }
+    re = /<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi;
+    while ((m = re.exec(html))) add(m[1], 'script');
+    var all = css + '\n' + html;
+    re = /@import\s+(?:url\()?["']?(https?:\/\/[^"')\s]+)["']?\)?/gi;
+    while ((m = re.exec(all))) add(m[1], 'style');
+    re = /url\(\s*["']?(https?:\/\/[^"')]+)["']?\s*\)/gi;
+    while ((m = re.exec(all))) add(m[1], 'asset');
+    re = /<(?:img|source|video|audio)\b[^>]*\bsrc\s*=\s*["'](https?:\/\/[^"']+)["']/gi;
+    while ((m = re.exec(html))) add(m[1], 'asset');
+    return out;
+  }
+
+  // ── Inline engine: fetch what the app's security policy permits, embed it ────
+  function readAsDataURL(blob) {
+    return new Promise(function (res, rej) {
+      var fr = new FileReader();
+      fr.onload = function () { res(fr.result); };
+      fr.onerror = function () { rej(new Error('read failed')); };
+      fr.readAsDataURL(blob);
+    });
+  }
+  function grabText(u) {
+    if (netCache[u] != null) return Promise.resolve(netCache[u]);
+    return fetch(u, { mode: 'cors', credentials: 'omit' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.text();
+    }).then(function (t) { netCache[u] = t; return t; });
+  }
+  function grabDataURL(u) {
+    var key = 'D:' + u;
+    if (netCache[key] != null) return Promise.resolve(netCache[key]);
+    return fetch(u, { mode: 'cors', credentials: 'omit' }).then(function (r) {
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.blob();
+    }).then(readAsDataURL).then(function (d) { netCache[key] = d; return d; });
+  }
+  function abs(u, base) { try { return new URL(u, base).href; } catch (e) { return u; } }
+  function reason(e) {
+    var msg = (e && e.message) || String(e);
+    if (/failed to fetch|networkerror|load failed/i.test(msg)) return 'blocked (security policy, offline or CORS)';
+    return msg;
+  }
+
+  function inlineCss(cssText, baseUrl, depth, report) {
+    var imports = [], m, re = /@import\s+(?:url\()?["']?([^"')\s]+)["']?\)?\s*;?/gi;
+    while ((m = re.exec(cssText))) imports.push({ whole: m[0], url: abs(m[1], baseUrl) });
+    var chain = Promise.resolve(cssText);
+    imports.forEach(function (imp) {
+      chain = chain.then(function (txt) {
+        if (depth > 4) return txt;
+        return grabText(imp.url)
+          .then(function (t) { return inlineCss(t, imp.url, depth + 1, report); })
+          .then(function (t) { report.inlined.push(imp.url); return txt.split(imp.whole).join(t); })
+          .catch(function (e) { report.blocked.push({ url: imp.url, reason: reason(e) }); return txt; });
+      });
+    });
+    return chain.then(function (txt) {
+      var assets = [], mm, rr = /url\(\s*["']?(https?:\/\/[^"')]+)["']?\s*\)/gi;
+      while ((mm = rr.exec(txt))) assets.push({ whole: mm[0], url: mm[1] });
+      var c2 = Promise.resolve(txt);
+      assets.forEach(function (a) {
+        c2 = c2.then(function (t) {
+          return grabDataURL(a.url)
+            .then(function (d) { report.inlined.push(a.url); return t.split(a.whole).join('url(' + d + ')'); })
+            .catch(function (e) { report.blocked.push({ url: a.url, reason: reason(e) }); return t; });
+        });
+      });
+      return c2;
+    });
+  }
+
+  function inlineExternals(files) {
+    var report = { inlined: [], blocked: [] };
+    var html = files.html || '', css = files.css || '';
+    var steps = Promise.resolve();
+
+    // <link rel=stylesheet>
+    var links = [], m, re = /<link\b[^>]*>/gi;
+    while ((m = re.exec(html))) { if (/stylesheet/i.test(m[0])) { var h = /href\s*=\s*["']([^"']+)["']/i.exec(m[0]); if (h && /^https?:/i.test(h[1])) links.push({ whole: m[0], url: h[1] }); } }
+    links.forEach(function (lk) {
+      steps = steps.then(function () {
+        return grabText(lk.url)
+          .then(function (t) { return inlineCss(t, lk.url, 0, report); })
+          .then(function (t) { report.inlined.push(lk.url); html = html.split(lk.whole).join('<style>' + t + '</style>'); })
+          .catch(function (e) { report.blocked.push({ url: lk.url, reason: reason(e) }); });
+      });
+    });
+
+    // <script src>
+    var scripts = [], re2 = /<script\b([^>]*?)\ssrc\s*=\s*["']([^"']+)["']([^>]*)>\s*<\/script>/gi;
+    while ((m = re2.exec(html))) { if (/^https?:/i.test(m[2])) scripts.push({ whole: m[0], attrs: m[1] + ' ' + m[3], url: m[2] }); }
+    scripts.forEach(function (sc) {
+      steps = steps.then(function () {
+        return grabText(sc.url).then(function (code) {
+          var typeAttr = /type\s*=\s*["']module["']/i.test(sc.attrs) ? ' type="module"' : '';
+          report.inlined.push(sc.url);
+          html = html.split(sc.whole).join('<script' + typeAttr + '>' + guardScript(code) + '\n<\/script>');
+        }).catch(function (e) { report.blocked.push({ url: sc.url, reason: reason(e) }); });
+      });
+    });
+
+    // external media -> data URI
+    var media = [], re3 = /(<(?:img|source|video|audio)\b[^>]*?\bsrc\s*=\s*["'])(https?:\/\/[^"']+)(["'])/gi;
+    while ((m = re3.exec(html))) media.push({ whole: m[0], pre: m[1], url: m[2], post: m[3] });
+    media.forEach(function (md) {
+      steps = steps.then(function () {
+        return grabDataURL(md.url)
+          .then(function (d) { report.inlined.push(md.url); html = html.split(md.whole).join(md.pre + d + md.post); })
+          .catch(function (e) { report.blocked.push({ url: md.url, reason: reason(e) }); });
+      });
+    });
+
+    // @import / url() inside the CSS pane
+    steps = steps.then(function () { return inlineCss(css, location.href, 0, report); }).then(function (t) { css = t; });
+
+    return steps.then(function () { return { files: { html: html, css: css, js: files.js }, report: report }; });
+  }
+
+  // ── Run ─────────────────────────────────────────────────────────────────────
+  function run() {
+    var my = ++runSeq;
+    var files = readFiles();
+    lastRunSig = sig(files);
+    runBtn.classList.remove('is-dirty');
+    clearConsole();
+    liveEl.classList.remove('is-live');
+
+    var externals = findExternals(files);
+    var proceed;
+    if (allowNet && externals.length) {
+      setStatus('Fetching ' + externals.length + ' external resource' + (externals.length > 1 ? 's' : '') + '…');
+      proceed = inlineExternals(files).then(function (r) {
+        if (my !== runSeq) return null;
+        renderBanner(externals, r.report);
+        return r.files;
+      }).catch(function () { renderBanner(externals, null); return files; });
+    } else {
+      renderBanner(externals, null);
+      proceed = Promise.resolve(files);
+    }
+
+    proceed.then(function (use) {
+      if (use == null || my !== runSeq) return;
+      setStatus('');
+      frame.srcdoc = buildDoc(use);
+    });
+  }
+
+  function scheduleRun() {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(run, 550);
+  }
+
+  // ── External banner ─────────────────────────────────────────────────────────
+  function extRow(url, tagCls, tagTxt) {
+    return '<li><span class="rwc-ext-host">' + esc(hostOf(url)) + '</span>'
+      + '<span class="rwc-ext-path">' + esc(pathOf(url)) + '</span>'
+      + '<span class="rwc-ext-tag ' + tagCls + '">' + tagTxt + '</span></li>';
+  }
+  function renderBanner(externals, report) {
+    if (!externals.length || bannerDismissed) { bannerEl.hidden = true; bannerEl.innerHTML = ''; return; }
+    var n = externals.length;
+    var html = '';
+    if (report) {
+      // Post-inline summary.
+      var done = {}; report.inlined.forEach(function (u) { done[u] = 1; });
+      var blocked = {}; report.blocked.forEach(function (b) { blocked[b.url] = b.reason; });
+      var items = externals.map(function (e) {
+        if (done[e.url]) return extRow(e.url, 'rwc-ext-ok', 'inlined');
+        if (blocked[e.url]) return extRow(e.url, 'rwc-ext-blocked', 'blocked');
+        return extRow(e.url, 'rwc-ext-blocked', 'blocked');
+      }).join('');
+      var nOk = report.inlined.length, nNo = report.blocked.length;
+      bannerEl.classList.toggle('is-warn', nNo > 0);
+      html = '<div class="rwc-banner-row"><div class="rwc-banner-txt">'
+        + '<b>External resources inlined into the sandbox.</b> '
+        + (nNo === 0 ? 'All fetched and embedded — this now runs offline too.'
+                     : nOk + ' embedded, ' + nNo + ' could not be reached (they stay unavailable in the private sandbox).')
+        + '<ul class="rwc-banner-list">' + items + '</ul>'
+        + '</div><div class="rwc-banner-actions">'
+        + '<button class="rwc-banner-btn rwc-ghost" type="button" data-rwc-stopnet>Stop inlining</button>'
+        + '</div></div>';
+    } else {
+      // Consent prompt.
+      var anyTrusted = externals.some(function (e) { return isTrusted(e.url); });
+      var items2 = externals.map(function (e) {
+        return extRow(e.url, isTrusted(e.url) ? 'rwc-ext-trusted' : 'rwc-ext-blocked', isTrusted(e.url) ? 'trusted' : 'external');
+      }).join('');
+      bannerEl.classList.remove('is-warn');
+      html = '<div class="rwc-banner-row"><div class="rwc-banner-txt">'
+        + '<b>This code loads ' + n + ' resource' + (n > 1 ? 's' : '') + ' from the web.</b> '
+        + 'They’re blocked so your preview stays private and works offline. '
+        + (anyTrusted ? 'Trusted sources like Google Fonts can be fetched and embedded.' : 'You can try to fetch and embed them.')
+        + ' Fetching reaches out to those servers.'
+        + '<ul class="rwc-banner-list">' + items2 + '</ul>'
+        + '</div><div class="rwc-banner-actions">'
+        + '<button class="rwc-banner-btn" type="button" data-rwc-inline>Fetch &amp; inline</button>'
+        + '<button class="rwc-banner-dismiss" type="button" data-rwc-dismiss>Keep them off</button>'
+        + '</div></div>';
+    }
+    bannerEl.innerHTML = html;
+    bannerEl.hidden = false;
+  }
+
+  // ── Console ─────────────────────────────────────────────────────────────────
+  var logCount = 0, errCount = 0;
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function clearConsole() {
+    logCount = 0; errCount = 0;
+    consoleBody.innerHTML = '<div class="rwc-console-empty">Console output from your code appears here.</div>';
+    updateCount();
+  }
+  function updateCount() {
+    countEl.textContent = logCount ? (logCount + (errCount ? ' · ' + errCount + ' error' + (errCount > 1 ? 's' : '') : '')) : '';
+    countEl.classList.toggle('has-err', errCount > 0);
+  }
+  function addLog(level, text) {
+    if (logCount === 0) consoleBody.innerHTML = '';
+    logCount++;
+    if (level === 'error') errCount++;
+    var atBottom = consoleBody.scrollHeight - consoleBody.scrollTop - consoleBody.clientHeight < 24;
+    var div = document.createElement('div');
+    div.className = 'rwc-log lvl-' + level;
+    div.textContent = text;
+    consoleBody.appendChild(div);
+    if (logCount > 600) consoleBody.removeChild(consoleBody.firstChild);
+    if (atBottom) consoleBody.scrollTop = consoleBody.scrollHeight;
+    updateCount();
+  }
+
+  function setStatus(t) { statusEl.textContent = t; }
+
+  // ── Tabs ────────────────────────────────────────────────────────────────────
+  function selectTab(pane) {
+    tabEls.forEach(function (t) {
+      var on = t.dataset.pane === pane;
+      t.classList.toggle('is-active', on);
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    Object.keys(codeEls).forEach(function (k) { codeEls[k].classList.toggle('is-active', k === pane); });
+    codeEls[pane].focus();
+  }
+  function updateDots() {
+    ['html', 'css', 'js'].forEach(function (k) {
+      var dot = root.querySelector('[data-dot="' + k + '"]');
+      if (dot) dot.hidden = !codeEls[k].value.trim();
+    });
+  }
+
+  // ── Wire up ─────────────────────────────────────────────────────────────────
+  tabEls.forEach(function (t) { t.addEventListener('click', function () { selectTab(t.dataset.pane); }); });
+
+  Object.keys(codeEls).forEach(function (k) {
+    codeEls[k].addEventListener('input', function () {
+      updateDots();
+      var dirty = sig(readFiles()) !== lastRunSig;
+      runBtn.classList.toggle('is-dirty', dirty);
+      if (autoEl.checked) scheduleRun();
+    });
+    codeEls[k].addEventListener('keydown', function (e) {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'Enter' || e.keyCode === 13)) { e.preventDefault(); run(); }
+    });
+  });
+
+  runBtn.addEventListener('click', run);
+  $('[data-rwc-reload]').addEventListener('click', run);
+  autoEl.addEventListener('change', function () { if (autoEl.checked) run(); });
+
+  // Reset — two-click confirm to avoid clobbering pasted work.
+  var resetBtn = $('[data-rwc-reset]'), resetArmed = false, resetTimer = null;
+  resetBtn.addEventListener('click', function () {
+    if (!resetArmed) {
+      resetArmed = true; resetBtn.textContent = 'Replace?';
+      resetTimer = setTimeout(function () { resetArmed = false; resetBtn.textContent = 'Reset'; }, 2600);
+      return;
+    }
+    clearTimeout(resetTimer); resetArmed = false; resetBtn.textContent = 'Reset';
+    codeEls.html.value = STARTER.html; codeEls.css.value = STARTER.css; codeEls.js.value = STARTER.js;
+    bannerDismissed = false; updateDots(); selectTab('html'); run();
+  });
+
+  // Layout toggle (side-by-side / stacked).
+  $('[data-rwc-layout]').addEventListener('click', function () { body.classList.toggle('is-stack'); });
+
+  // Console collapse.
+  var consoleHead = $('[data-rwc-console-toggle]');
+  function toggleConsole() {
+    var collapsed = consoleEl.classList.toggle('is-collapsed');
+    consoleHead.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+  }
+  consoleHead.addEventListener('click', function (e) { if (e.target.closest('[data-rwc-console-clear]')) return; toggleConsole(); });
+  consoleHead.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleConsole(); } });
+  $('[data-rwc-console-clear]').addEventListener('click', function (e) { e.stopPropagation(); clearConsole(); });
+
+  // Banner actions (delegated).
+  bannerEl.addEventListener('click', function (e) {
+    if (e.target.closest('[data-rwc-inline]')) { allowNet = true; run(); }
+    else if (e.target.closest('[data-rwc-stopnet]')) { allowNet = false; run(); }
+    else if (e.target.closest('[data-rwc-dismiss]')) { bannerDismissed = true; bannerEl.hidden = true; }
+  });
+
+  // About dialog.
+  var aboutOverlay = $('[data-rwc-about]');
+  function openAbout() { aboutOverlay.hidden = false; }
+  function closeAbout() { aboutOverlay.hidden = true; }
+  $('[data-rwc-about-open]').addEventListener('click', openAbout);
+  $('[data-rwc-about-close]').addEventListener('click', closeAbout);
+  aboutOverlay.addEventListener('click', function (e) { if (e.target === aboutOverlay) closeAbout(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !aboutOverlay.hidden) closeAbout(); });
+
+  // Split drag.
+  var split = $('[data-rwc-split]');
+  var dragging = false;
+  split.addEventListener('pointerdown', function (e) { dragging = true; split.classList.add('is-drag'); split.setPointerCapture(e.pointerId); });
+  split.addEventListener('pointermove', function (e) {
+    if (!dragging) return;
+    var r = body.getBoundingClientRect();
+    var pct = ((e.clientX - r.left) / r.width) * 100;
+    pct = Math.max(20, Math.min(80, pct));
+    root.style.setProperty('--rwc-left', pct + '%');
+  });
+  function endDrag(e) { if (!dragging) return; dragging = false; split.classList.remove('is-drag'); try { split.releasePointerCapture(e.pointerId); } catch (_) {} }
+  split.addEventListener('pointerup', endDrag);
+  split.addEventListener('pointercancel', endDrag);
+
+  // Console height resize — drag the grip on the console's top border.
+  var cgrip = $('[data-rwc-console-grip]');
+  var previewEl = consoleEl.parentNode;
+  var cDrag = false;
+  cgrip.addEventListener('pointerdown', function (e) { cDrag = true; cgrip.classList.add('is-drag'); cgrip.setPointerCapture(e.pointerId); e.preventDefault(); });
+  cgrip.addEventListener('pointermove', function (e) {
+    if (!cDrag) return;
+    var pr = previewEl.getBoundingClientRect();
+    var h = Math.max(64, Math.min(pr.height - 140, pr.bottom - e.clientY));
+    root.style.setProperty('--rwc-console-h', h + 'px');
+  });
+  function cEnd(e) { if (!cDrag) return; cDrag = false; cgrip.classList.remove('is-drag'); try { cgrip.releasePointerCapture(e.pointerId); } catch (_) {} }
+  cgrip.addEventListener('pointerup', cEnd);
+  cgrip.addEventListener('pointercancel', cEnd);
+
+  // Fullscreen — the tool root becomes the fullscreen element.
+  var fsBtn = $('[data-rwc-fullscreen]');
+  function fsActive() { return (document.fullscreenElement || document.webkitFullscreenElement) === root; }
+  fsBtn.addEventListener('click', function () {
+    try {
+      if (fsActive()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
+      else if (root.requestFullscreen) { root.requestFullscreen(); }
+      else if (root.webkitRequestFullscreen) { root.webkitRequestFullscreen(); }
+    } catch (e) { /* fullscreen may be blocked by policy — ignore */ }
+  });
+  function syncFs() { var on = fsActive(); fsBtn.classList.toggle('is-on', on); fsBtn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  document.addEventListener('fullscreenchange', syncFs);
+  document.addEventListener('webkitfullscreenchange', syncFs);
+
+  // Narrow container -> stack (independent of viewport media query).
+  if (typeof ResizeObserver === 'function') {
+    new ResizeObserver(function (entries) {
+      var w = entries[0].contentRect.width;
+      body.classList.toggle('is-narrow', w < 720);
+    }).observe(root);
+  }
+
+  // Receive console / lifecycle messages from the sandbox.
+  window.addEventListener('message', function (e) {
+    if (!frame || e.source !== frame.contentWindow) return;
+    var d = e.data;
+    if (!d || d.__rwc !== 1) return;
+    if (d.level === '__ready__') { setStatus(''); liveEl.classList.add('is-live'); return; }
+    addLog(d.level === 'error' ? 'error' : (d.level === 'warn' ? 'warn' : 'log'), d.text);
+  });
+
+  // ── First paint ─────────────────────────────────────────────────────────────
+  codeEls.html.value = STARTER.html;
+  codeEls.css.value = STARTER.css;
+  codeEls.js.value = STARTER.js;
+  clearConsole();
+  updateDots();
+  run();
+})();
+</script>
