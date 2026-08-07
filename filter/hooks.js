@@ -21,38 +21,6 @@ function _num(v, d) { var n = Number(v); return isFinite(n) ? n : d; }
 function _esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 function _rename(i, id) { var o = {}; for (var k in i) o[k] = i[k]; o.id = id; return o; }
 
-// Worker-isolation raster helpers (plans/86 §20.1), top-level so every effect
-// IIFE sees them via closure (only the duotone module carries its own copies).
-// rasterCanvas: a document <canvas> on the main thread, an OffscreenCanvas in a
-// Worker — same 2D API, so an effect kernel is realm-agnostic. canvasToUrl: sync
-// toDataURL on the main thread (byte-identical to before), async convertToBlob →
-// base64 in a Worker (btoa, chunked to avoid the big-JPEG apply() stack overflow).
-function rasterCanvas(w, h) {
-  if (typeof document !== 'undefined' && document.createElement) {
-    var c = document.createElement('canvas');
-    if (w != null) { c.width = w; c.height = h; }
-    return c;
-  }
-  // OffscreenCanvas needs dimensions at construction; default 1×1 and let the
-  // caller resize via .width/.height (both are settable), so rasterCanvas() is a
-  // drop-in for rasterCanvas().
-  return new OffscreenCanvas(w != null ? w : 1, h != null ? h : 1);
-}
-function canvasToUrl(canvas, type, quality) {
-  if (typeof canvas.toDataURL === 'function') {
-    return Promise.resolve(canvas.toDataURL(type, quality));
-  }
-  return canvas.convertToBlob({ type: type, quality: quality })
-    .then(function (blob) { return blob.arrayBuffer(); })
-    .then(function (buf) {
-      var bytes = new Uint8Array(buf), bin = '', CH = 0x8000;
-      for (var i = 0; i < bytes.length; i += CH) {
-        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
-      }
-      return 'data:' + (type || 'image/jpeg') + ';base64,' + btoa(bin);
-    });
-}
-
 var _activeEffect = 'halftone';
 
 // Rasterise pixel-stretch's already-composed bitmap into a self-contained <svg> so it
@@ -267,7 +235,7 @@ function canRaster() {
 // Returns null when there's no usable 2D canvas (headless shells).
 function sampleGrid(img, cols, rows, fit) {
   if (typeof document === 'undefined' || !document.createElement) return null;
-  var c = rasterCanvas();
+  var c = document.createElement('canvas');
   c.width = cols; c.height = rows;
   var ctx = c.getContext && c.getContext('2d', { willReadFrequently: true });
   if (!ctx) return null;
@@ -1012,7 +980,7 @@ function onInput(ctx) { return compute(ctx.model); }
 // through the SAME tone/blur/dither/dot path as a still, and the dots track motion.
 // No memo (every frame is new pixels) and no URL load; degrades to null (no patch,
 // last frame stays) on a headless shell or a malformed frame.
-async function onFrame(ctx) {
+function onFrame(ctx) {
   var frame = ctx.frame;
   if (!frame || !frame.data || !frame.width || !frame.height) return null;
   if (!canRaster() || typeof ImageData === 'undefined') return null;
@@ -1025,7 +993,7 @@ async function onFrame(ctx) {
 
   var src;
   try {
-    src = rasterCanvas();
+    src = document.createElement('canvas');
     src.width = frame.width;
     src.height = frame.height;
     var sctx = src.getContext('2d');
@@ -1045,7 +1013,7 @@ async function onFrame(ctx) {
   });
 
   var svg = buildSvg({
-    img: src, W: W, H: H, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? await canvasToUrl(src, 'image/jpeg', 0.85) : null, _ov: ov,
+    img: src, W: W, H: H, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? src.toDataURL('image/jpeg', 0.85) : null, _ov: ov,
     gridSize: inputs.gridSize, dotScale: inputs.dotScale, shape: inputs.shape,
     fgColor: inputs.fgColor, bgColor: inputs.bgColor, invert: inputs.invert, fit: inputs.fit,
     brightness: inputs.brightness, contrast: inputs.contrast, gamma: inputs.gamma,
@@ -1255,7 +1223,7 @@ function treatHex(baseHex, t) {
 // Downsample to a cols×rows grid of luminance (0..255). null on headless/tainted.
 function sampleGrid(img, cols, rows, fit, hueDeg, sat, light) {
   if (typeof document === 'undefined') return null;
-  var c = rasterCanvas();
+  var c = document.createElement('canvas');
   c.width = cols; c.height = rows;
   var ctx = c.getContext && c.getContext('2d', { willReadFrequently: true });
   if (!ctx) return null;
@@ -1737,7 +1705,7 @@ function onInput(ctx) { return compute(ctx.model); }
 // pixels. Wrap the frame in a canvas the existing buildSvg pipeline samples like a
 // decoded image, so a live frame runs the SAME tone-bucket + scanline path and the
 // bands track motion. No URL load, no memo (every frame is new). null = no patch.
-async function onFrame(ctx) {
+function onFrame(ctx) {
   var frame = ctx.frame;
   if (!frame || !frame.data || !frame.width || !frame.height) return null;
   if (!canRaster() || typeof ImageData === 'undefined') return null;
@@ -1747,7 +1715,7 @@ async function onFrame(ctx) {
   _lastW = W; _lastH = H;
   var src;
   try {
-    src = rasterCanvas();
+    src = document.createElement('canvas');
     src.width = frame.width; src.height = frame.height;
     src.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
   } catch (e) { return null; }
@@ -1765,7 +1733,7 @@ async function onFrame(ctx) {
   });
 
   var svg = buildSvg({
-    img: src, W: W, H: H, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? await canvasToUrl(src, 'image/jpeg', 0.85) : null, _ov: ov,
+    img: src, W: W, H: H, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? src.toDataURL('image/jpeg', 0.85) : null, _ov: ov,
     lineSize: inputs.lineSize, gapSize: inputs.gapSize, separatePixels: inputs.separatePixels,
     everyLine: inputs.everyLine, fit: inputs.fit, highlight: inputs.highlight, light: inputs.light,
     mid: inputs.mid, shade: inputs.shade, shadow: inputs.shadow, background: inputs.background,
@@ -2283,7 +2251,7 @@ function sampleRGBA(url, img, cols, rows) {
   var key = url + '|' + cols + 'x' + rows;
   if (_sampleCache[key]) return _sampleCache[key];
   if (typeof document === 'undefined' || !document.createElement) return null;
-  var c = rasterCanvas();
+  var c = document.createElement('canvas');
   c.width = cols; c.height = rows;
   var ctx = c.getContext && c.getContext('2d', { willReadFrequently: true });
   if (!ctx) return null;
@@ -2797,9 +2765,9 @@ function gridFromFrame(frame, maxDetail) {
   var fw = frame.width, fh = frame.height;
   var scale = Math.min(1, maxDetail / Math.max(fw, fh));
   var cols = Math.max(1, Math.round(fw * scale)), rows = Math.max(1, Math.round(fh * scale));
-  var src = rasterCanvas(); src.width = fw; src.height = fh;
+  var src = document.createElement('canvas'); src.width = fw; src.height = fh;
   src.getContext('2d').putImageData(new ImageData(frame.data, fw, fh), 0, 0);
-  var c = rasterCanvas(); c.width = cols; c.height = rows;
+  var c = document.createElement('canvas'); c.width = cols; c.height = rows;
   var ctx = c.getContext('2d', { willReadFrequently: true });
   ctx.imageSmoothingEnabled = true;
   ctx.drawImage(src, 0, 0, cols, rows);
@@ -2829,7 +2797,7 @@ function liveDetailFor(tp, passes) {
   return clamp(Math.round(tp.detail * factor), LIVE_MIN, LIVE_MAX);
 }
 
-async function onFrame(ctx) {
+function onFrame(ctx) {
   var frame = ctx.frame;
   if (!frame || !frame.data || !frame.width || !frame.height) return null;
   if (!canRaster() || typeof ImageData === 'undefined') return null;
@@ -2902,9 +2870,9 @@ async function onFrame(ctx) {
   var rawSrc = null;
   if (ovi.noFilter) {
     try {
-      var fc = rasterCanvas(); fc.width = frame.width; fc.height = frame.height;
+      var fc = document.createElement('canvas'); fc.width = frame.width; fc.height = frame.height;
       fc.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
-      rawSrc = await canvasToUrl(fc, 'image/jpeg', 0.85);
+      rawSrc = fc.toDataURL('image/jpeg', 0.85);
     } catch (e) { rawSrc = null; }
   }
 
@@ -3390,7 +3358,7 @@ function sampleRGBA(url, img, cols, rows) {
   var key = url + '|' + cols + 'x' + rows;
   if (_sampleCache[key]) return _sampleCache[key];
   if (typeof document === 'undefined' || !document.createElement) return null;
-  var c = rasterCanvas();
+  var c = document.createElement('canvas');
   c.width = cols; c.height = rows;
   var ctx = c.getContext && c.getContext('2d', { willReadFrequently: true });
   if (!ctx) return null;
@@ -3706,9 +3674,9 @@ function gridFromFrame(frame, maxDetail) {
   var fw = frame.width, fh = frame.height;
   var scale = Math.min(1, maxDetail / Math.max(fw, fh));
   var cols = Math.max(1, Math.round(fw * scale)), rows = Math.max(1, Math.round(fh * scale));
-  var src = rasterCanvas(); src.width = fw; src.height = fh;
+  var src = document.createElement('canvas'); src.width = fw; src.height = fh;
   src.getContext('2d').putImageData(new ImageData(frame.data, fw, fh), 0, 0);
-  var c = rasterCanvas(); c.width = cols; c.height = rows;
+  var c = document.createElement('canvas'); c.width = cols; c.height = rows;
   var ctx = c.getContext('2d', { willReadFrequently: true });
   ctx.imageSmoothingEnabled = true;
   ctx.drawImage(src, 0, 0, cols, rows);
@@ -3723,7 +3691,7 @@ function gridFromFrame(frame, maxDetail) {
   return { lum: lum, alpha: alpha, r: r, g: g, b: b, cols: cols, rows: rows };
 }
 
-async function onFrame(ctx) {
+function onFrame(ctx) {
   var frame = ctx.frame;
   if (!frame || !frame.data || !frame.width || !frame.height) return null;
   if (!canRaster() || typeof ImageData === 'undefined') return null;
@@ -3752,9 +3720,9 @@ async function onFrame(ctx) {
   var rawSrc = null;
   if (ovi.noFilter) {
     try {
-      var fc = rasterCanvas(); fc.width = frame.width; fc.height = frame.height;
+      var fc = document.createElement('canvas'); fc.width = frame.width; fc.height = frame.height;
       fc.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
-      rawSrc = await canvasToUrl(fc, 'image/jpeg', 0.85);
+      rawSrc = fc.toDataURL('image/jpeg', 0.85);
     } catch (e) { rawSrc = null; }
   }
 
@@ -4505,7 +4473,7 @@ function applyHsl(ctx, W, H, p) {
 
 // The base layer: cover-frame the source into W×H and apply the colour shift.
 function makeSrc(source, iw, ih, W, H, p) {
-  var src = rasterCanvas(); src.width = W; src.height = H;
+  var src = document.createElement('canvas'); src.width = W; src.height = H;
   var sctx = src.getContext('2d', { willReadFrequently: true }); if (!sctx) return null;
   drawCover(sctx, source, iw, ih, W, H, p.zoom, p.px, p.py);
   applyHsl(sctx, W, H, p);
@@ -4526,7 +4494,7 @@ function makeSrc(source, iw, ih, W, H, p) {
 // byte-identical). spread=0 ⇒ identity. Mirrored for left/up. Feather math is unchanged;
 // its far seam cross-fades the smear into the tail (both are real photo, both keyed at `t`).
 function composeSmear(src, W, H, p) {
-  var out = rasterCanvas(); out.width = W; out.height = H;
+  var out = document.createElement('canvas'); out.width = W; out.height = H;
   var octx = out.getContext('2d'); if (!octx) return null;
   octx.drawImage(src, 0, 0); // base = framed, colour-adjusted photo (this IS the untouched HEAD)
   if (p.spread <= 0) return out;
@@ -4561,7 +4529,7 @@ function composeSmear(src, W, H, p) {
 
   if (len <= 0) return out;
 
-  var layer = rasterCanvas(); layer.width = W; layer.height = H;
+  var layer = document.createElement('canvas'); layer.width = W; layer.height = H;
   var lctx = layer.getContext('2d'); if (!lctx) return out;
   lctx.imageSmoothingEnabled = false;
   if (horiz) lctx.drawImage(src, t, 0, 1, H, a, 0, len, H);   // stretch the column at t across [a,b)
@@ -4940,10 +4908,10 @@ async function compute(model) {
     // No-filter: show the raw cover-framed source (overlay composites over it via the
     // template child); otherwise apply the pixel-stretch smear.
     if (ovi.noFilter) {
-      outSrc = await canvasToUrl(src, 'image/jpeg', 0.9);
+      outSrc = src.toDataURL('image/jpeg', 0.9);
     } else {
       var cv = composeSmear(src, dims.w, dims.h, p);
-      outSrc = cv ? await canvasToUrl(cv, 'image/jpeg', 0.9) : null;
+      outSrc = cv ? cv.toDataURL('image/jpeg', 0.9) : null;
     }
   } catch (e) {
     if (host.log) host.log('warn', 'filter-pixel-stretch: render failed', { error: String(e) });
@@ -4972,7 +4940,7 @@ function afterExport() { disarmFilterOverlayExport(); }
 // Live camera (engine v1.4): the runtime calls this once per frame with raw RGBA
 // pixels. Run the SAME compose pipeline so the smear, feather and colour shift track
 // motion. No URL load, no caching (every frame is new). null = keep last frame.
-async function onFrame(ctx) {
+function onFrame(ctx) {
   var frame = ctx.frame;
   if (!frame || !frame.data || !frame.width || !frame.height) return null;
   if (!canRaster() || typeof ImageData === 'undefined') return null;
@@ -4981,7 +4949,7 @@ async function onFrame(ctx) {
   var dims = workDims(p.W, p.H, LIVE_MAX);
   var srcFrame;
   try {
-    srcFrame = rasterCanvas();
+    srcFrame = document.createElement('canvas');
     srcFrame.width = frame.width; srcFrame.height = frame.height;
     srcFrame.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
   } catch (e) { return null; }
@@ -5012,7 +4980,7 @@ async function onFrame(ctx) {
   }
   _memoKey = null; _srcCache = { key: null, canvas: null }; // a live frame supersedes the still caches
   var outSrc;
-  try { outSrc = await canvasToUrl(outCanvas, 'image/jpeg', 0.82); } catch (e) { return null; }
+  try { outSrc = outCanvas.toDataURL('image/jpeg', 0.82); } catch (e) { return null; }
   // No prevSrc base in live mode — frames are continuous, so a per-frame buffer would
   // just double the DOM each tick; keep _lastOutSrc current so the next still render
   // (e.g. on stop) buffers cleanly against the last live frame.
@@ -5855,7 +5823,7 @@ function onInput(ctx) { return compute(ctx.model); }
 // through a canvas → JPEG data URL; the SAME buildSvg then misprints it. This is
 // the only place the tool touches a canvas — stills stay fully declarative.
 // Degrades to null (no patch, last frame stays) on a headless shell.
-async function onFrame(ctx) {
+function onFrame(ctx) {
   var frame = ctx.frame;
   if (!frame || !frame.data || !frame.width || !frame.height) return null;
   if (!canRaster() || typeof ImageData === 'undefined') return null;
@@ -5864,12 +5832,12 @@ async function onFrame(ctx) {
 
   var url;
   try {
-    var src = rasterCanvas();
+    var src = document.createElement('canvas');
     src.width = frame.width;
     src.height = frame.height;
     var sctx = src.getContext('2d');
     sctx.putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
-    url = await canvasToUrl(src, 'image/jpeg', 0.85);
+    url = src.toDataURL('image/jpeg', 0.85);
   } catch (e) { return null; }
 
   // Brand overlay (live): warm caches without awaiting; intro runs on camera time.

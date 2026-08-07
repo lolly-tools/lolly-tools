@@ -7,7 +7,6 @@
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
-  "isolate": true,
   "tags": [
     "filter",
     "effect",
