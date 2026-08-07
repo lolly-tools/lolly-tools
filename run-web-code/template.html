@@ -3,6 +3,12 @@
     <!-- Controls hug the right: the top-left is left clear for the shell's fixed
          back pill (position:fixed, z-index 99999) whose label width is unbounded. -->
     <span class="rwc-flex"></span>
+    <select class="rwc-mode" data-rwc-mode aria-label="Language for the JS pane" title="Language / preprocessor for the JS pane">
+      <option value="none">Plain JS</option>
+      <option value="jsx">JSX (React)</option>
+      <option value="ts">TypeScript</option>
+      <option value="tsx">TSX (React + TS)</option>
+    </select>
     <button class="rwc-about-btn" type="button" data-rwc-about-open aria-haspopup="dialog" aria-label="About Run Web Code">i</button>
     <label class="rwc-auto" title="Re-run automatically as you type">
       <input type="checkbox" data-rwc-auto checked> Auto-run
@@ -18,12 +24,16 @@
       <div class="rwc-tabs" role="tablist" aria-label="Code language">
         <button class="rwc-tab is-active" type="button" role="tab" aria-selected="true" data-pane="html">HTML<span class="rwc-tab-dot" data-dot="html" hidden></span></button>
         <button class="rwc-tab" type="button" role="tab" aria-selected="false" data-pane="css">CSS<span class="rwc-tab-dot" data-dot="css" hidden></span></button>
-        <button class="rwc-tab" type="button" role="tab" aria-selected="false" data-pane="js">JS<span class="rwc-tab-dot" data-dot="js" hidden></span></button>
+        <button class="rwc-tab" type="button" role="tab" aria-selected="false" data-pane="js"><span data-js-label>JS</span><span class="rwc-tab-dot" data-dot="js" hidden></span></button>
+        <span class="rwc-saved" data-rwc-saved role="status" aria-live="polite"></span>
+        <span class="rwc-tabs-gap"></span>
+        <button class="rwc-tab rwc-tab-head" type="button" role="tab" aria-selected="false" data-pane="head" title="Persistent <head> — saved on this device and added to every preview">Head<span class="rwc-tab-dot" data-dot="head" hidden></span></button>
       </div>
       <div class="rwc-panes">
         <textarea class="rwc-code is-active" data-pane="html" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Paste your HTML here — a full page or just a snippet…" aria-label="HTML"></textarea>
         <textarea class="rwc-code" data-pane="css" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional CSS — or keep it inside your HTML…" aria-label="CSS"></textarea>
         <textarea class="rwc-code" data-pane="js" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional JavaScript — or keep it inside your HTML…" aria-label="JavaScript"></textarea>
+        <textarea class="rwc-code" data-pane="head" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Persistent &lt;head&gt; — meta, fonts, base styles, library &lt;script&gt;/&lt;link&gt;. Saved on this device and added to every preview." aria-label="Persistent head"></textarea>
       </div>
     </section>
 
@@ -69,6 +79,7 @@
       <ul class="rwc-about-points">
         <li><strong>Private &amp; offline.</strong> Your code runs in a locked-down sandbox right here in your browser. Nothing is uploaded, and it works with no connection.</li>
         <li><strong>Isolated.</strong> The preview can't reach your saved work, this app, or your other tabs — it runs on its own throwaway origin.</li>
+        <li><strong>Frameworks.</strong> Switch the JS language to JSX, TypeScript or TSX and paste a component — it's transpiled and, for React, mounted into <code>#root</code> for you. React is bundled in, so it all works offline. Name your component <code>App</code> for auto-mounting, or render it yourself.</li>
         <li><strong>External libraries.</strong> To keep things private and offline, scripts and styles loaded from the web are blocked by default. When your code references one, you can choose to <em>fetch &amp; inline</em> it — trusted sources like Google Fonts work out of the box; others may be blocked by the app's security policy.</li>
       </ul>
     </div>
@@ -129,6 +140,12 @@
   font-size: 12.5px; font-weight: 600; color: hsl(var(--rwc-muted)); cursor: pointer; user-select: none;
 }
 .rwc-auto input { width: 15px; height: 15px; accent-color: hsl(var(--rwc-brand)); }
+.rwc-mode {
+  appearance: auto; border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card));
+  color: hsl(var(--rwc-fg)); font: inherit; font-size: 12.5px; font-weight: 600;
+  padding: 6px 8px; border-radius: 8px; cursor: pointer;
+}
+.rwc-mode:hover { border-color: hsl(var(--rwc-brand) / .55); }
 .rwc-btn {
   appearance: none; border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card));
   color: hsl(var(--rwc-fg)); font: inherit; font-size: 13px; font-weight: 700;
@@ -168,7 +185,13 @@
 .rwc-split:hover::before, .rwc-split.is-drag::before { width: 3px; background: hsl(var(--rwc-brand)); }
 
 /* ── Editor ──────────────────────────────────────────────────────────────── */
-.rwc-tabs { display: flex; gap: 2px; flex: 0 0 auto; padding: 8px 10px 0; background: hsl(var(--rwc-card)); border-bottom: 1px solid hsl(var(--rwc-bd)); }
+.rwc-tabs { display: flex; align-items: center; gap: 2px; flex: 0 0 auto; padding: 8px 10px 0; background: hsl(var(--rwc-card)); border-bottom: 1px solid hsl(var(--rwc-bd)); }
+.rwc-tabs-gap { flex: 1 1 auto; }
+/* The persistent-head tab is global config, not per-pen content — set it apart. */
+.rwc-tab-head { color: hsl(var(--rwc-muted) / .8); font-weight: 600; }
+.rwc-tab-head::before { content: '⚙'; margin-right: 5px; font-size: 11px; opacity: .8; }
+.rwc-saved { font-size: 11px; font-weight: 700; color: hsl(var(--rwc-ok)); opacity: 0; transition: opacity .2s; align-self: center; padding: 0 6px; white-space: nowrap; }
+.rwc-saved.is-on { opacity: 1; }
 .rwc-tab {
   appearance: none; border: none; background: transparent; color: hsl(var(--rwc-muted));
   font: inherit; font-size: 12.5px; font-weight: 700; letter-spacing: .02em;
@@ -338,9 +361,9 @@
   };
 
   function readFiles() {
-    return { html: codeEls.html.value, css: codeEls.css.value, js: codeEls.js.value };
+    return { html: codeEls.html.value, css: codeEls.css.value, js: codeEls.js.value, head: codeEls.head.value };
   }
-  function sig(f) { return f.html + ' ' + f.css + ' ' + f.js; }
+  function sig(f) { return f.html + ' ' + f.css + ' ' + f.js + ' ' + f.head; }
 
   // ── Injected sandbox shim: console + error forwarding, storage polyfill ─────
   // Kept free of a literal script-closing sequence so it embeds safely in the srcdoc.
@@ -386,17 +409,21 @@
   function buildDoc(files) {
     var shimTag = '<script>' + SHIM + '\n<\/script>';
     var css = files.css || '', js = files.js || '', html = files.html || '';
+    var headExtra = (files.head || '').trim() ? files.head : '';   // persistent <head>
     var styleTag = css.trim() ? '<style>' + css + '</style>' : '';
     var jsTag = js.trim() ? '<script>' + guardScript(js) + '\n<\/script>' : '';
     if (isFullDoc(html)) {
       var doc = injectAfterHeadOpen(html, shimTag);
+      // Inject in reverse-of-desired order — each lands right before </head>, so the
+      // last inserted sits closest to </head>: head config, then the pen's own CSS.
+      if (headExtra) doc = injectBeforeHeadClose(doc, headExtra);
       if (styleTag) doc = injectBeforeHeadClose(doc, styleTag);
       if (jsTag) doc = injectBeforeBodyClose(doc, jsTag);
       return doc;
     }
     var reset = 'html{color-scheme:light dark}*{box-sizing:border-box}body{margin:16px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;color:#111}';
     return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
-      + shimTag + '<style>' + reset + '</style>' + styleTag
+      + shimTag + '<style>' + reset + '</style>' + headExtra + styleTag
       + '</head><body>' + html + jsTag + '</body></html>';
   }
 
@@ -411,7 +438,8 @@
       if (!u || !/^https?:\/\//i.test(u) || seen[u]) return;
       seen[u] = 1; out.push({ url: u, kind: kind });
     }
-    var html = files.html || '', css = files.css || '', m, re;
+    // Scan the HTML pane AND the persistent <head> for external references.
+    var html = (files.html || '') + '\n' + (files.head || ''), css = files.css || '', m, re;
     re = /<link\b[^>]*>/gi;
     while ((m = re.exec(html))) { if (/stylesheet/i.test(m[0])) { var h = /href\s*=\s*["']([^"']+)["']/i.exec(m[0]); if (h) add(h[1], 'style'); } }
     re = /<script\b[^>]*\bsrc\s*=\s*["']([^"']+)["'][^>]*>/gi;
@@ -487,49 +515,114 @@
 
   function inlineExternals(files) {
     var report = { inlined: [], blocked: [] };
-    var html = files.html || '', css = files.css || '';
+    var htmlH = { str: files.html || '' };
+    var headH = { str: files.head || '' };
+    var css = files.css || '';
     var steps = Promise.resolve();
 
-    // <link rel=stylesheet>
-    var links = [], m, re = /<link\b[^>]*>/gi;
-    while ((m = re.exec(html))) { if (/stylesheet/i.test(m[0])) { var h = /href\s*=\s*["']([^"']+)["']/i.exec(m[0]); if (h && /^https?:/i.test(h[1])) links.push({ whole: m[0], url: h[1] }); } }
-    links.forEach(function (lk) {
-      steps = steps.then(function () {
-        return grabText(lk.url)
-          .then(function (t) { return inlineCss(t, lk.url, 0, report); })
-          .then(function (t) { report.inlined.push(lk.url); html = html.split(lk.whole).join('<style>' + t + '</style>'); })
-          .catch(function (e) { report.blocked.push({ url: lk.url, reason: reason(e) }); });
+    // Rewrite external <link rel=stylesheet>, <script src> and media in an HTML-ish
+    // fragment. Used for both the HTML pane and the persistent <head>; matches are
+    // collected up front and replaced by value (split/join), so later mutations of
+    // h.str don't invalidate earlier finds.
+    function queueHtmlish(h) {
+      var m;
+      var links = [], re = /<link\b[^>]*>/gi;
+      while ((m = re.exec(h.str))) { if (/stylesheet/i.test(m[0])) { var hr = /href\s*=\s*["']([^"']+)["']/i.exec(m[0]); if (hr && /^https?:/i.test(hr[1])) links.push({ whole: m[0], url: hr[1] }); } }
+      links.forEach(function (lk) {
+        steps = steps.then(function () {
+          return grabText(lk.url).then(function (t) { return inlineCss(t, lk.url, 0, report); })
+            .then(function (t) { report.inlined.push(lk.url); h.str = h.str.split(lk.whole).join('<style>' + t + '</style>'); })
+            .catch(function (e) { report.blocked.push({ url: lk.url, reason: reason(e) }); });
+        });
       });
-    });
+      var scripts = [], re2 = /<script\b([^>]*?)\ssrc\s*=\s*["']([^"']+)["']([^>]*)>\s*<\/script>/gi;
+      while ((m = re2.exec(h.str))) { if (/^https?:/i.test(m[2])) scripts.push({ whole: m[0], attrs: m[1] + ' ' + m[3], url: m[2] }); }
+      scripts.forEach(function (sc) {
+        steps = steps.then(function () {
+          return grabText(sc.url).then(function (code) {
+            var typeAttr = /type\s*=\s*["']module["']/i.test(sc.attrs) ? ' type="module"' : '';
+            report.inlined.push(sc.url);
+            h.str = h.str.split(sc.whole).join('<script' + typeAttr + '>' + guardScript(code) + '\n<\/script>');
+          }).catch(function (e) { report.blocked.push({ url: sc.url, reason: reason(e) }); });
+        });
+      });
+      var media = [], re3 = /(<(?:img|source|video|audio)\b[^>]*?\bsrc\s*=\s*["'])(https?:\/\/[^"']+)(["'])/gi;
+      while ((m = re3.exec(h.str))) media.push({ whole: m[0], pre: m[1], url: m[2], post: m[3] });
+      media.forEach(function (md) {
+        steps = steps.then(function () {
+          return grabDataURL(md.url).then(function (d) { report.inlined.push(md.url); h.str = h.str.split(md.whole).join(md.pre + d + md.post); })
+            .catch(function (e) { report.blocked.push({ url: md.url, reason: reason(e) }); });
+        });
+      });
+    }
 
-    // <script src>
-    var scripts = [], re2 = /<script\b([^>]*?)\ssrc\s*=\s*["']([^"']+)["']([^>]*)>\s*<\/script>/gi;
-    while ((m = re2.exec(html))) { if (/^https?:/i.test(m[2])) scripts.push({ whole: m[0], attrs: m[1] + ' ' + m[3], url: m[2] }); }
-    scripts.forEach(function (sc) {
-      steps = steps.then(function () {
-        return grabText(sc.url).then(function (code) {
-          var typeAttr = /type\s*=\s*["']module["']/i.test(sc.attrs) ? ' type="module"' : '';
-          report.inlined.push(sc.url);
-          html = html.split(sc.whole).join('<script' + typeAttr + '>' + guardScript(code) + '\n<\/script>');
-        }).catch(function (e) { report.blocked.push({ url: sc.url, reason: reason(e) }); });
-      });
-    });
-
-    // external media -> data URI
-    var media = [], re3 = /(<(?:img|source|video|audio)\b[^>]*?\bsrc\s*=\s*["'])(https?:\/\/[^"']+)(["'])/gi;
-    while ((m = re3.exec(html))) media.push({ whole: m[0], pre: m[1], url: m[2], post: m[3] });
-    media.forEach(function (md) {
-      steps = steps.then(function () {
-        return grabDataURL(md.url)
-          .then(function (d) { report.inlined.push(md.url); html = html.split(md.whole).join(md.pre + d + md.post); })
-          .catch(function (e) { report.blocked.push({ url: md.url, reason: reason(e) }); });
-      });
-    });
+    queueHtmlish(headH);
+    queueHtmlish(htmlH);
 
     // @import / url() inside the CSS pane
     steps = steps.then(function () { return inlineCss(css, location.href, 0, report); }).then(function (t) { css = t; });
 
-    return steps.then(function () { return { files: { html: html, css: css, js: files.js }, report: report }; });
+    return steps.then(function () {
+      return { files: { html: htmlH.str, css: css, js: files.js, head: headH.str }, report: report };
+    });
+  }
+
+  // ── JSX / TypeScript (offline, vendored under the tool's lib/) ───────────────
+  var LIB = '/tools/run-web-code/lib/';
+  var REACT_URL = LIB + 'react.production.min.js';
+  var REACTDOM_URL = LIB + 'react-dom.production.min.js';
+  // Runs in the sandbox after the user's component code — auto-mounts an `App`
+  // (or `Main`) into #root, unless the user already rendered into it themselves.
+  var MOUNT_SHIM = [
+    ';(function(){',
+    'if(typeof ReactDOM==="undefined"||typeof React==="undefined")return;',
+    'var el=document.getElementById("root");',
+    'if(!el||el.childNodes.length)return;',
+    'var C=(typeof App!=="undefined"&&App)||(typeof Main!=="undefined"&&Main)||null;',
+    'if(typeof C!=="function")return;',
+    'try{ReactDOM.createRoot?ReactDOM.createRoot(el).render(React.createElement(C)):ReactDOM.render(React.createElement(C),el);}',
+    'catch(e){console.error(e);}',
+    '})();'
+  ].join('\n');
+
+  // Babel Standalone loads once into THIS page (not the sandbox), so the 2.5 MB
+  // compiler is never re-parsed per preview — only its small output is injected.
+  function loadBabel() {
+    if (window.Babel && window.Babel.transform) return Promise.resolve(window.Babel);
+    window.__rwcBabel = window.__rwcBabel || new Promise(function (res, rej) {
+      var s = document.createElement('script');
+      s.src = LIB + 'babel.min.js';
+      s.onload = function () { (window.Babel && window.Babel.transform) ? res(window.Babel) : rej(new Error('transpiler global missing')); };
+      s.onerror = function () { s.remove(); window.__rwcBabel = null; rej(new Error('transpiler failed to load')); };
+      document.head.appendChild(s);
+    });
+    return window.__rwcBabel;
+  }
+  function presetsFor(mode) {
+    if (mode === 'jsx') return [['react', { runtime: 'classic' }]];
+    if (mode === 'ts') return [['typescript']];
+    if (mode === 'tsx') return [['react', { runtime: 'classic' }], ['typescript']];
+    return [];
+  }
+  function isReactMode(mode) { return mode === 'jsx' || mode === 'tsx'; }
+
+  // Transpile the JS pane for the current mode; for React modes prepend the
+  // vendored React runtime and append the auto-mount shim, and guarantee a #root.
+  // Returns modified files, or null when transpiling failed (error already logged).
+  function prepareJs(files, mode, my) {
+    if (mode === 'none' || !files.js.trim()) return Promise.resolve(files);
+    return loadBabel().then(function (Babel) {
+      var out;
+      try { out = Babel.transform(files.js, { presets: presetsFor(mode), filename: 'user.' + (mode === 'ts' ? 'ts' : mode === 'tsx' ? 'tsx' : 'jsx') }).code; }
+      catch (e) { if (my === runSeq) { addLog('error', mode.toUpperCase() + ': ' + (e && e.message || e)); setStatus(''); } return null; }
+      if (!isReactMode(mode)) return { html: files.html, css: files.css, head: files.head, js: out };
+      return Promise.all([grabText(REACT_URL), grabText(REACTDOM_URL)]).then(function (libs) {
+        var combined = libs[0] + '\n' + libs[1] + '\n' + out + '\n' + MOUNT_SHIM;
+        var html = files.html;
+        if (!isFullDoc(html) && !/id\s*=\s*["']root["']/.test(html + ' ' + (files.head || ''))) html = '<div id="root"></div>\n' + html;
+        return { html: html, css: files.css, head: files.head, js: combined };
+      }).catch(function (e) { if (my === runSeq) { addLog('error', 'Could not load React: ' + reason(e)); setStatus(''); } return null; });
+    }).catch(function (e) { if (my === runSeq) { addLog('error', reason(e)); setStatus(''); } return null; });
   }
 
   // ── Run ─────────────────────────────────────────────────────────────────────
@@ -540,25 +633,28 @@
     runBtn.classList.remove('is-dirty');
     clearConsole();
     liveEl.classList.remove('is-live');
+    var mode = modeSel ? modeSel.value : 'none';
 
-    var externals = findExternals(files);
-    var proceed;
-    if (allowNet && externals.length) {
-      setStatus('Fetching ' + externals.length + ' external resource' + (externals.length > 1 ? 's' : '') + '…');
-      proceed = inlineExternals(files).then(function (r) {
-        if (my !== runSeq) return null;
-        renderBanner(externals, r.report);
-        return r.files;
-      }).catch(function () { renderBanner(externals, null); return files; });
-    } else {
-      renderBanner(externals, null);
-      proceed = Promise.resolve(files);
-    }
-
-    proceed.then(function (use) {
-      if (use == null || my !== runSeq) return;
-      setStatus('');
-      frame.srcdoc = buildDoc(use);
+    prepareJs(files, mode, my).then(function (prepared) {
+      if (prepared == null || my !== runSeq) return;   // transpile/lib error (logged) or superseded
+      var externals = findExternals(prepared);
+      var proceed;
+      if (allowNet && externals.length) {
+        setStatus('Fetching ' + externals.length + ' external resource' + (externals.length > 1 ? 's' : '') + '…');
+        proceed = inlineExternals(prepared).then(function (r) {
+          if (my !== runSeq) return null;
+          renderBanner(externals, r.report);
+          return r.files;
+        }).catch(function () { renderBanner(externals, null); return prepared; });
+      } else {
+        renderBanner(externals, null);
+        proceed = Promise.resolve(prepared);
+      }
+      return proceed.then(function (use) {
+        if (use == null || my !== runSeq) return;
+        setStatus('');
+        frame.srcdoc = buildDoc(use);
+      });
     });
   }
 
@@ -646,6 +742,60 @@
 
   function setStatus(t) { statusEl.textContent = t; }
 
+  // ── On-device persistence (IndexedDB) ───────────────────────────────────────
+  // The persistent <head> and a draft of the current pen, so nothing is lost on
+  // reload. Fully guarded: a missing/blocked IndexedDB just means it runs
+  // ephemerally. (Deliberately NOT host.state — this tool is self-contained and
+  // browser-only, so it stores directly. See the tool's README/notes.)
+  var savedEl = $('[data-rwc-saved]');
+  var _db = null, _dbTry = null;
+  function idbOpen() {
+    if (_db) return Promise.resolve(_db);
+    if (_dbTry) return _dbTry;
+    _dbTry = new Promise(function (res, rej) {
+      if (!('indexedDB' in window)) { rej(new Error('no idb')); return; }
+      var req;
+      try { req = indexedDB.open('rwc-store', 1); } catch (e) { rej(e); return; }
+      req.onupgradeneeded = function () { try { req.result.createObjectStore('kv'); } catch (e) {} };
+      req.onsuccess = function () { _db = req.result; res(_db); };
+      req.onerror = function () { rej(req.error || new Error('idb open failed')); };
+    });
+    return _dbTry;
+  }
+  function idbGet(key) {
+    return idbOpen().then(function (db) {
+      return new Promise(function (res, rej) {
+        try { var r = db.transaction('kv', 'readonly').objectStore('kv').get(key); r.onsuccess = function () { res(r.result); }; r.onerror = function () { rej(r.error); }; }
+        catch (e) { rej(e); }
+      });
+    });
+  }
+  function idbSet(key, val) {
+    return idbOpen().then(function (db) {
+      return new Promise(function (res, rej) {
+        try { var tx = db.transaction('kv', 'readwrite'); tx.objectStore('kv').put(val, key); tx.oncomplete = function () { res(); }; tx.onerror = function () { rej(tx.error); }; }
+        catch (e) { rej(e); }
+      });
+    });
+  }
+  var savedTimer = null;
+  function flashSaved() {
+    if (!savedEl) return;
+    savedEl.textContent = 'Saved';
+    savedEl.classList.add('is-on');
+    if (savedTimer) clearTimeout(savedTimer);
+    savedTimer = setTimeout(function () { savedEl.classList.remove('is-on'); }, 1400);
+  }
+  var persistTimer = null;
+  function schedulePersist() {
+    if (persistTimer) clearTimeout(persistTimer);
+    persistTimer = setTimeout(function () {
+      var f = readFiles();
+      idbSet('draft', { html: f.html, css: f.css, js: f.js, mode: modeSel ? modeSel.value : 'none' }).catch(function () {});
+      idbSet('head', f.head).then(flashSaved, function () {});
+    }, 700);
+  }
+
   // ── Tabs ────────────────────────────────────────────────────────────────────
   function selectTab(pane) {
     tabEls.forEach(function (t) {
@@ -657,9 +807,9 @@
     codeEls[pane].focus();
   }
   function updateDots() {
-    ['html', 'css', 'js'].forEach(function (k) {
+    ['html', 'css', 'js', 'head'].forEach(function (k) {
       var dot = root.querySelector('[data-dot="' + k + '"]');
-      if (dot) dot.hidden = !codeEls[k].value.trim();
+      if (dot && codeEls[k]) dot.hidden = !codeEls[k].value.trim();
     });
   }
 
@@ -671,6 +821,7 @@
       updateDots();
       var dirty = sig(readFiles()) !== lastRunSig;
       runBtn.classList.toggle('is-dirty', dirty);
+      schedulePersist();
       if (autoEl.checked) scheduleRun();
     });
     codeEls[k].addEventListener('keydown', function (e) {
@@ -682,6 +833,16 @@
   $('[data-rwc-reload]').addEventListener('click', run);
   autoEl.addEventListener('change', function () { if (autoEl.checked) run(); });
 
+  // JS language / preprocessor (Plain JS / JSX / TypeScript / TSX).
+  var modeSel = $('[data-rwc-mode]');
+  var jsLabel = root.querySelector('[data-js-label]');
+  function relabelJs() {
+    if (!jsLabel) return;
+    var m = modeSel ? modeSel.value : 'none';
+    jsLabel.textContent = m === 'jsx' ? 'JSX' : m === 'ts' ? 'TS' : m === 'tsx' ? 'TSX' : 'JS';
+  }
+  if (modeSel) modeSel.addEventListener('change', function () { relabelJs(); schedulePersist(); run(); });
+
   // Reset — two-click confirm to avoid clobbering pasted work.
   var resetBtn = $('[data-rwc-reset]'), resetArmed = false, resetTimer = null;
   resetBtn.addEventListener('click', function () {
@@ -692,6 +853,8 @@
     }
     clearTimeout(resetTimer); resetArmed = false; resetBtn.textContent = 'Reset';
     codeEls.html.value = STARTER.html; codeEls.css.value = STARTER.css; codeEls.js.value = STARTER.js;
+    if (modeSel) modeSel.value = 'none'; relabelJs();
+    idbSet('draft', null).catch(function () {});   // forget the saved pen; the persistent <head> stays
     bannerDismissed = false; updateDots(); selectTab('html'); run();
   });
 
@@ -785,12 +948,31 @@
     addLog(d.level === 'error' ? 'error' : (d.level === 'warn' ? 'warn' : 'log'), d.text);
   });
 
-  // ── First paint ─────────────────────────────────────────────────────────────
-  codeEls.html.value = STARTER.html;
-  codeEls.css.value = STARTER.css;
-  codeEls.js.value = STARTER.js;
-  clearConsole();
-  updateDots();
-  run();
+  // ── First paint — restore the persistent <head> + last pen draft, else starter ─
+  (function bootstrap() {
+    var done = false;
+    function apply(head, draft) {
+      if (done) return; done = true;
+      codeEls.head.value = head || '';
+      if (draft && (draft.html || draft.css || draft.js)) {
+        codeEls.html.value = draft.html || '';
+        codeEls.css.value = draft.css || '';
+        codeEls.js.value = draft.js || '';
+      } else {
+        codeEls.html.value = STARTER.html;
+        codeEls.css.value = STARTER.css;
+        codeEls.js.value = STARTER.js;
+      }
+      if (draft && draft.mode && modeSel) modeSel.value = draft.mode;
+      relabelJs();
+      clearConsole(); updateDots(); run();
+    }
+    var head = '', draft = null;
+    var t = setTimeout(function () { apply(head, draft); }, 1200);   // safety if IndexedDB stalls
+    idbGet('head').then(function (h) { head = h || ''; }, function () {})
+      .then(function () { return idbGet('draft'); })
+      .then(function (d) { draft = d || null; clearTimeout(t); apply(head, draft); },
+            function () { clearTimeout(t); apply(head, draft); });
+  })();
 })();
 </script>

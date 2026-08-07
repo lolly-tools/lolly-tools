@@ -1,12 +1,12 @@
 {
   "id": "run-web-code",
   "name": "Run Web Code",
-  "description": "Paste HTML, CSS and JavaScript and watch it run in a private, offline sandbox — perfect for previewing code from an AI assistant.",
-  "version": "1.0.0",
+  "description": "Paste HTML, CSS, JS — or a JSX/TypeScript component — and watch it run in a private, offline sandbox. Perfect for previewing code from an AI assistant.",
+  "version": "1.2.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "utility",
-  "tags": ["code", "html", "css", "javascript", "js", "playground", "sandbox", "preview", "codepen", "developer", "run", "paste", "snippet", "ai", "chatgpt", "gemini", "offline"],
+  "tags": ["code", "html", "css", "javascript", "js", "jsx", "typescript", "tsx", "react", "component", "playground", "sandbox", "preview", "codepen", "developer", "run", "paste", "snippet", "ai", "chatgpt", "gemini", "offline"],
   "a11yLabel": "Run Web Code — a private, offline HTML / CSS / JavaScript sandbox",
   "render": {
     "width": 1200,
