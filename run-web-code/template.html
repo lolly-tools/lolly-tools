@@ -1,5 +1,5 @@
 <div class="rwc" data-rwc>
-  <header class="rwc-bar">
+  <header class="rwc-bar" data-export-hide>
     <!-- Controls hug the right: the top-left is left clear for the shell's fixed
          back pill (position:fixed, z-index 99999) whose label width is unbounded. -->
     <span class="rwc-flex"></span>
@@ -9,17 +9,38 @@
       <option value="ts">TypeScript</option>
       <option value="tsx">TSX (React + TS)</option>
     </select>
+    <!-- The real Lolly app theme switcher (light → dark → brand) — the shell injects
+         createThemeToggle() here (tool.ts mountToolbarSlots). The tool palette follows
+         --background/--primary, so this re-themes the whole editor. Syntax colours now
+         follow the brand theme automatically (the old syntax-only dropdown was removed;
+         its handler was already null-guarded). -->
+    <span class="rwc-theme-slot" data-shell-slot="theme"></span>
     <button class="rwc-about-btn" type="button" data-rwc-about-open aria-haspopup="dialog" aria-label="About Run Web Code">i</button>
     <label class="rwc-auto" title="Re-run automatically as you type">
       <input type="checkbox" data-rwc-auto checked> Auto-run
     </label>
     <button class="rwc-btn rwc-ghost" type="button" data-rwc-layout aria-label="Toggle layout" title="Side-by-side / stacked">⊞</button>
     <button class="rwc-btn rwc-ghost" type="button" data-rwc-fullscreen aria-label="Toggle fullscreen" aria-pressed="false" title="Fullscreen">⛶</button>
+    <div class="rwc-sess" data-rwc-sess>
+      <span class="rwc-sess-name" data-rwc-sess-name hidden></span>
+      <button class="rwc-btn rwc-ghost" type="button" data-rwc-save title="Save the current code (updates the open session, or names a new one)">Save</button>
+      <button class="rwc-btn rwc-ghost" type="button" data-rwc-sess-open aria-haspopup="menu" aria-expanded="false" title="Open a saved session">Sessions ▾</button>
+      <div class="rwc-sess-panel" data-rwc-sess-panel hidden role="menu" aria-label="Saved sessions">
+        <div class="rwc-sess-saverow">
+          <input class="rwc-sess-input" data-rwc-sess-newname type="text" placeholder="Name this session…" aria-label="New session name" spellcheck="false" autocomplete="off">
+          <button class="rwc-banner-btn" type="button" data-rwc-sess-saveas>Save</button>
+        </div>
+        <div class="rwc-sess-list" data-rwc-sess-list></div>
+      </div>
+    </div>
     <button class="rwc-btn rwc-ghost" type="button" data-rwc-reset title="Load the starter example">Reset</button>
+    <!-- The shell relocates its render/export pill here (tool.ts placeActions →
+         [data-shell-slot="export"]) instead of floating it over the stage. -->
+    <span class="rwc-export-slot" data-shell-slot="export"></span>
     <button class="rwc-btn rwc-run" type="button" data-rwc-run>Run <kbd class="rwc-kbd">⌘⏎</kbd></button>
   </header>
 
-  <div class="rwc-body" data-rwc-body>
+  <div class="rwc-body" data-rwc-body data-export-hide>
     <section class="rwc-editor" aria-label="Code editor">
       <div class="rwc-tabs" role="tablist" aria-label="Code language">
         <button class="rwc-tab is-active" type="button" role="tab" aria-selected="true" data-pane="html">HTML<span class="rwc-tab-dot" data-dot="html" hidden></span></button>
@@ -68,7 +89,8 @@
     </section>
   </div>
 
-  <div class="rwc-about-overlay" data-rwc-about hidden>
+  <div class="rwc-shot" data-rwc-shot data-export-root aria-hidden="true"></div>
+  <div class="rwc-about-overlay" data-rwc-about data-export-hide hidden>
     <div class="rwc-about" role="dialog" aria-modal="true" aria-labelledby="rwc-about-title" aria-describedby="rwc-about-desc">
       <button class="rwc-about-close" type="button" data-rwc-about-close aria-label="Close">&times;</button>
       <div class="rwc-about-icon" aria-hidden="true">
@@ -143,13 +165,13 @@
 .rwc-mode {
   appearance: auto; border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card));
   color: hsl(var(--rwc-fg)); font: inherit; font-size: 12.5px; font-weight: 600;
-  padding: 6px 8px; border-radius: 8px; cursor: pointer;
+  padding: 6px 8px; border-radius: var(--radius, 8px); cursor: pointer;
 }
 .rwc-mode:hover { border-color: hsl(var(--rwc-brand) / .55); }
 .rwc-btn {
   appearance: none; border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card));
   color: hsl(var(--rwc-fg)); font: inherit; font-size: 13px; font-weight: 700;
-  padding: 8px 14px; border-radius: 9px; cursor: pointer;
+  padding: 8px 14px; border-radius: var(--radius, 9px); cursor: pointer;
   display: inline-flex; align-items: center; gap: 7px; transition: background .12s, border-color .12s, transform .06s;
 }
 .rwc-btn:hover { border-color: hsl(var(--rwc-brand) / .55); }
@@ -168,6 +190,35 @@
 }
 .rwc-btn:focus-visible, .rwc-about-btn:focus-visible, .rwc-tab:focus-visible,
 .rwc-icbtn:focus-visible, .rwc-linkbtn:focus-visible { outline: 2px solid hsl(var(--rwc-brand)); outline-offset: 2px; }
+
+/* ── Shell-injected toolbar controls ─────────────────────────────────────────
+   The shell drops its real theme toggle into [data-shell-slot="theme"] and its
+   render/export pill into [data-shell-slot="export"] (tool.ts mountToolbarSlots /
+   placeActions). Restyle both to sit in this toolbar as ghost buttons matching
+   .rwc-btn — same border, same --radius from the theme — rather than the HUD
+   icon / floating green pill they wear elsewhere. Scoped under #tool-content at
+   build time, so these beat the shell's own .stage-nav-btn / .render-pill rules. */
+.rwc-theme-slot, .rwc-export-slot { display: inline-flex; align-items: center; flex: 0 0 auto; }
+.shell-slot-theme {
+  appearance: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 34px; height: 34px; padding: 0; flex: 0 0 auto;
+  border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card));
+  color: hsl(var(--rwc-muted)); border-radius: var(--radius, 9px); cursor: pointer;
+  transition: background .12s, border-color .12s, color .12s;
+}
+.shell-slot-theme:hover { color: hsl(var(--rwc-brand)); border-color: hsl(var(--rwc-brand) / .55); }
+.shell-slot-theme svg { width: 16px; height: 16px; }
+/* The relocated render pill → a ghost button (Run stays the sole primary green). */
+.rwc-export-slot .render-pill {
+  display: inline-flex; box-shadow: none; overflow: hidden;
+  border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card));
+  color: hsl(var(--rwc-fg)); border-radius: var(--radius, 9px);
+}
+.rwc-export-slot .render-pill-btn {
+  padding: 8px 14px; gap: 7px; font-size: 13px; font-weight: 700; color: hsl(var(--rwc-muted));
+}
+.rwc-export-slot .render-pill-btn:hover { background: hsl(var(--rwc-brand) / .1); color: hsl(var(--rwc-brand)); }
+.rwc-export-slot .render-pill-icon { width: 16px; height: 16px; }
 
 /* ── Body split ──────────────────────────────────────────────────────────── */
 /* min-height floor keeps the split usable even when the tool canvas hands us an
@@ -211,6 +262,29 @@
 .rwc-code.is-active { display: block; }
 .rwc-code:focus { outline: none; }
 .rwc-code::placeholder { color: hsl(var(--rwc-muted) / .65); }
+/* Syntax highlight overlay: a coloured <pre> behind each transparent <textarea>.
+   The transparent-text rule is GATED on .rwc-hl-on (added by JS only after the
+   overlay mounts) so a script failure can never hide the code — it just stays
+   plainly coloured. Token colours are CSS vars the theme select swaps. */
+.rwc-panes {
+  --rwc-ed-bg: hsl(var(--rwc-bg)); --rwc-ed-fg: hsl(var(--rwc-fg)); --rwc-ed-sel: hsl(var(--rwc-brand) / .28);
+  --tk-kw: hsl(var(--rwc-brand)); --tk-str:#2e9e6b; --tk-com: hsl(var(--rwc-muted));
+  --tk-num:#d2661a; --tk-fn:#7b61c9; --tk-type:#1f8fb0; --tk-op: hsl(var(--rwc-muted));
+  --tk-tag: hsl(var(--rwc-brand)); --tk-atr:#d2661a;
+  background: var(--rwc-ed-bg);
+}
+.rwc-hl {
+  position:absolute; inset:0; margin:0; display:none; z-index:0; pointer-events:none; overflow:hidden;
+  padding:14px 16px; font-family: var(--font-mono,"SUSE Mono",ui-monospace,"SF Mono",Menlo,monospace);
+  font-size:13px; line-height:1.6; tab-size:2; white-space:pre; word-wrap:normal; color: var(--rwc-ed-fg);
+}
+.rwc-hl.is-active { display:block; }
+.rwc-hl-on .rwc-code { color:transparent; caret-color: var(--rwc-ed-fg); }
+.rwc-code::selection { background: var(--rwc-ed-sel); }
+.rwc-hl .tk-kw{color:var(--tk-kw)} .rwc-hl .tk-str{color:var(--tk-str)}
+.rwc-hl .tk-com{color:var(--tk-com);font-style:italic} .rwc-hl .tk-num{color:var(--tk-num)}
+.rwc-hl .tk-fn{color:var(--tk-fn)} .rwc-hl .tk-type{color:var(--tk-type)}
+.rwc-hl .tk-op{color:var(--tk-op)} .rwc-hl .tk-tag{color:var(--tk-tag)} .rwc-hl .tk-atr{color:var(--tk-atr)}
 
 /* ── Preview ─────────────────────────────────────────────────────────────── */
 .rwc-preview-head {
@@ -282,6 +356,38 @@
 .rwc-console-empty { padding: 12px 14px; color: hsl(var(--rwc-muted) / .7); font-size: 11.5px; font-style: italic; }
 
 /* ── About dialog ────────────────────────────────────────────────────────── */
+/* Same-origin mirror of the sandbox preview — the shell export walker rasterises
+   THIS (it carries data-export-root) since it can't read the opaque-origin iframe.
+   Lives OFF-SCREEN: as a later absolutely-positioned sibling it painted a white box
+   OVER the editor (not behind it), so park it out of view. It stays laid out with a
+   real px size (set by JS in mountShot) so the walker still gets true geometry —
+   the shell's standard hidden-export-stage approach. Click-through, hidden from AT. */
+.rwc-shot { position: absolute; left: -100000px; top: 0; width: 1px; height: 1px; overflow: hidden; background: #fff; pointer-events: none; }
+.rwc-shot-body { all: initial; display: block; width: 100%; height: 100%; }
+/* Saved sessions */
+.rwc-sess { position: relative; display: inline-flex; align-items: center; gap: 8px; }
+.rwc-sess-name { display: inline-flex; align-items: center; gap: 6px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 700; color: hsl(var(--rwc-muted)); }
+.rwc-sess-name[hidden] { display: none; }
+.rwc-sess-name::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: hsl(var(--rwc-ok)); flex: 0 0 auto; }
+.rwc-sess-name.is-dirty { color: hsl(var(--rwc-fg)); }
+.rwc-sess-name.is-dirty::before { background: hsl(38 92% 50%); }
+.rwc-sess-panel { position: absolute; top: calc(100% + 8px); right: 0; z-index: 60; width: 320px; max-width: 78vw; padding: 12px; background: hsl(var(--rwc-card)); border: 1px solid hsl(var(--rwc-bd)); border-radius: 12px; box-shadow: 0 16px 40px hsl(var(--rwc-fg) / .22); }
+.rwc-sess-panel[hidden] { display: none; }
+.rwc-sess-saverow { display: flex; gap: 8px; margin-bottom: 10px; }
+.rwc-sess-input { flex: 1 1 auto; min-width: 0; padding: 7px 10px; border: 1px solid hsl(var(--rwc-bd)); border-radius: 8px; background: hsl(var(--rwc-bg)); color: hsl(var(--rwc-fg)); font: inherit; font-size: 12.5px; }
+.rwc-sess-input:focus { outline: none; border-color: hsl(var(--rwc-brand) / .6); }
+.rwc-sess-list { display: flex; flex-direction: column; gap: 2px; max-height: 320px; overflow: auto; }
+.rwc-sess-empty { padding: 10px 6px; font-size: 12px; font-style: italic; color: hsl(var(--rwc-muted) / .8); }
+.rwc-sess-row { display: flex; align-items: center; gap: 6px; padding: 7px 8px; border-radius: 8px; }
+.rwc-sess-row:hover { background: hsl(var(--rwc-fill)); }
+.rwc-sess-open { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 1px; padding: 0; text-align: left; appearance: none; border: 0; background: transparent; color: hsl(var(--rwc-fg)); font: inherit; cursor: pointer; }
+.rwc-sess-open:hover .rwc-sess-row-name { color: hsl(var(--rwc-brand)); }
+.rwc-sess-row-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; font-weight: 700; }
+.rwc-sess-row.is-open .rwc-sess-row-name::after { content: ' · open'; color: hsl(var(--rwc-ok)); font-weight: 600; }
+.rwc-sess-row-meta { font-size: 10.5px; color: hsl(var(--rwc-muted) / .85); font-family: var(--font-mono, ui-monospace, monospace); }
+.rwc-sess-ic { flex: 0 0 auto; width: 24px; height: 24px; display: inline-flex; align-items: center; justify-content: center; appearance: none; border: 0; border-radius: 6px; background: transparent; color: hsl(var(--rwc-muted)); font-size: 13px; line-height: 1; cursor: pointer; }
+.rwc-sess-ic:hover { background: hsl(var(--rwc-bd) / .5); color: hsl(var(--rwc-fg)); }
+.rwc-sess-ic.rwc-sess-del:hover { color: hsl(var(--rwc-warn)); }
 .rwc-about-overlay { position: fixed; inset: 0; z-index: 200; display: flex; align-items: center; justify-content: center; padding: 24px; background: hsl(var(--rwc-fg) / .45); }
 .rwc-about-overlay[hidden] { display: none; }
 .rwc-about { position: relative; width: 100%; max-width: 440px; background: hsl(var(--rwc-card)); border: 1px solid hsl(var(--rwc-bd)); border-radius: 16px; padding: 28px 26px 24px; box-shadow: 0 20px 50px hsl(var(--rwc-fg) / .25); }
@@ -329,6 +435,7 @@
   var consoleEl = $('[data-rwc-console]');
   var consoleBody = $('[data-rwc-console-body]');
   var countEl = $('[data-rwc-count]');
+  var shotEl = $('[data-rwc-shot]');
   var codeEls = {};
   Array.prototype.forEach.call(root.querySelectorAll('.rwc-code'), function (el) { codeEls[el.dataset.pane] = el; });
   var tabEls = Array.prototype.slice.call(root.querySelectorAll('.rwc-tab'));
@@ -380,6 +487,9 @@
     'window.addEventListener("error",function(e){if(e.error&&e.error.stack)send("error",[String(e.error.stack).replace(/about:srcdoc/g,"preview")]);else send("error",[(e.message||"Error")+(e.filename?" ("+String(e.filename).replace(/about:srcdoc/,"preview")+":"+e.lineno+")":"")]);});',
     'window.addEventListener("unhandledrejection",function(e){var r=e.reason;send("error",["Uncaught (in promise) "+(r&&(r.stack||r.message)||fmt(r))]);});',
     'parent.postMessage({__rwc:1,level:"__ready__"},"*");',
+    'function snap(){try{var d=document,de=d.documentElement,b=d.body;var w=Math.max(de.scrollWidth,b?b.scrollWidth:0)||de.clientWidth||1280;var h=Math.max(de.scrollHeight,b?b.scrollHeight:0)||de.clientHeight||800;parent.postMessage({__rwc:1,level:"__snapshot__",html:"<!doctype html>"+de.outerHTML,w:w,h:h},"*");}catch(e){}}',
+    'window.addEventListener("message",function(e){try{if(e.source===parent&&e.data&&e.data.__rwcCmd==="snap")snap();}catch(_){}});',
+    'if(document.readyState==="complete")requestAnimationFrame(snap);else window.addEventListener("load",function(){requestAnimationFrame(snap);});',
     '})();'
   ].join('\n');
 
@@ -841,7 +951,122 @@
     var m = modeSel ? modeSel.value : 'none';
     jsLabel.textContent = m === 'jsx' ? 'JSX' : m === 'ts' ? 'TS' : m === 'tsx' ? 'TSX' : 'JS';
   }
-  if (modeSel) modeSel.addEventListener('change', function () { relabelJs(); schedulePersist(); run(); });
+  if (modeSel) modeSel.addEventListener('change', function () { relabelJs(); schedulePersist(); run(); if (typeof hl !== 'undefined') hl.paint('js'); });
+
+  // ── Syntax highlighting overlay + themes ─────────────────────────────────────
+  // A coloured <pre> behind each transparent <textarea>. Themes are a CSS-var swap
+  // (5 hand-picked + an "auto/Brand" theme that takes the app --rwc-brand HUE). The
+  // whole init is guarded: the .rwc-hl-on class (which makes the textarea text
+  // transparent) is only added once the overlay actually mounts, so any failure here
+  // leaves the code plainly visible rather than blank.
+  var hl = (function () {
+    var THEMES = {
+      'suse-dark':{bg:'#0c322c',fg:'#d4ede1',sel:'rgba(48,186,120,.28)',kw:'#30ba78',str:'#7dd3a8',com:'#3d7a58',num:'#fe7c3f',fn:'#5ecf94',type:'#8be9fd',op:'#30ba78',tag:'#30ba78',atr:'#fe7c3f'},
+      'github-dark':{bg:'#0d1117',fg:'#c9d1d9',sel:'rgba(56,139,253,.28)',kw:'#ff7b72',str:'#a5d6ff',com:'#8b949e',num:'#79c0ff',fn:'#d2a8ff',type:'#ffa657',op:'#ff7b72',tag:'#7ee787',atr:'#79c0ff'},
+      'nord':{bg:'#2e3440',fg:'#d8dee9',sel:'rgba(136,192,208,.28)',kw:'#81a1c1',str:'#a3be8c',com:'#4c566a',num:'#b48ead',fn:'#88c0d0',type:'#8fbcbb',op:'#81a1c1',tag:'#81a1c1',atr:'#d08770'},
+      'suse-light':{bg:'#ffffff',fg:'#0c322c',sel:'rgba(48,186,120,.22)',kw:'#0c8c5c',str:'#1a6e40',com:'#7aaa90',num:'#d45c00',fn:'#147a52',type:'#006b8c',op:'#0c8c5c',tag:'#0c8c5c',atr:'#d45c00'},
+      'github-light':{bg:'#ffffff',fg:'#24292f',sel:'rgba(84,174,255,.25)',kw:'#cf222e',str:'#0a3069',com:'#6e7781',num:'#0550ae',fn:'#8250df',type:'#953800',op:'#cf222e',tag:'#116329',atr:'#0550ae'}
+    };
+    function triple(name){ var v=getComputedStyle(root).getPropertyValue(name).trim().split(/\s+/); return isNaN(parseFloat(v[0]))?null:v; }
+    function brandHue(){ var v=triple('--rwc-brand'); return v?parseFloat(v[0]):171; }
+    function edDark(){ var v=triple('--rwc-bg'); return v?parseFloat(String(v[2]))<50:true; }
+    function resolve(name){
+      if(name==='auto'){
+        var H=brandHue(), dark=edDark(), base=dark?THEMES['suse-dark']:THEMES['suse-light'];
+        var acc=dark?('hsl('+H+' 58% 62%)'):('hsl('+H+' 52% 34%)');
+        return Object.assign({},base,{kw:acc,tag:acc,op:acc});
+      }
+      return THEMES[name]||THEMES['suse-dark'];
+    }
+    function applyTheme(name){
+      var t=resolve(name), s=root.style;
+      s.setProperty('--rwc-ed-bg',t.bg); s.setProperty('--rwc-ed-fg',t.fg); s.setProperty('--rwc-ed-sel',t.sel);
+      s.setProperty('--tk-kw',t.kw); s.setProperty('--tk-str',t.str); s.setProperty('--tk-com',t.com);
+      s.setProperty('--tk-num',t.num); s.setProperty('--tk-fn',t.fn); s.setProperty('--tk-type',t.type);
+      s.setProperty('--tk-op',t.op); s.setProperty('--tk-tag',t.tag||t.kw); s.setProperty('--tk-atr',t.atr||t.num);
+    }
+    var KW={
+      javascript:'const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|new|delete|typeof|instanceof|in|of|class|extends|import|export|default|from|async|await|try|catch|finally|throw|this|super|true|false|null|undefined|void|yield|static',
+      typescript:'const|let|var|function|return|if|else|for|while|do|switch|case|break|continue|new|delete|typeof|instanceof|in|of|class|extends|import|export|default|from|async|await|try|catch|finally|throw|this|super|true|false|null|undefined|void|yield|static|type|interface|enum|implements|abstract|readonly|private|public|protected|namespace|declare|as|keyof|infer|never|unknown|any|string|number|boolean|object',
+      css:'important|media|keyframes|charset|import|supports|font-face|root|hover|focus|active|before|after|not|nth-child'
+    };
+    function jsLang(){ var m=modeSel?modeSel.value:'none'; return (m==='ts'||m==='tsx')?'typescript':'javascript'; }
+    function langOf(p){ return p==='css'?'css':(p==='js'?jsLang():'html'); }
+    function span(cls,val){ return '<span class="tk-'+cls+'">'+esc(val)+'</span>'; }
+    function htmlSeg(seg){
+      var m=/^<\/?[a-zA-Z][\w-]*/.exec(seg);
+      if(!m) return span('op',seg);
+      var out=span('tag',m[0]), rest=seg.slice(m[0].length);
+      var re=/([a-zA-Z_:][\w:.-]*)(\s*=\s*)("[^"]*"|'[^']*')|(\/?>)|([^]+?)(?=[a-zA-Z_:]|\/?>|$)/g, mm;
+      while((mm=re.exec(rest))){
+        if(mm[1]) out+=span('atr',mm[1])+esc(mm[2])+span('str',mm[3]||'');
+        else if(mm[4]) out+=span('tag',mm[4]);
+        else out+=esc(mm[5]||'');
+      }
+      return out;
+    }
+    function tokenize(src,lang){
+      var kw={}, ks=KW[lang]||KW.javascript; if(ks) ks.split('|').forEach(function(k){kw[k]=1;});
+      var out='', i=0, n=src.length;
+      function peek(o){ return src[i+(o||0)]||''; }
+      while(i<n){
+        var c=src[i], j;
+        if(lang==='html'&&c==='<'){
+          if(src.substr(i,4)==='<!--'){ var e=src.indexOf('-->',i); e=e<0?n:e+3; out+=span('com',src.slice(i,e)); i=e; continue; }
+          j=i+1; while(j<n&&src[j]!=='>'){ if(src[j]==='"'||src[j]==="'"){ var q=src[j++]; while(j<n&&src[j]!==q)j++; } j++; }
+          j=Math.min(j+1,n); out+=htmlSeg(src.slice(i,j)); i=j; continue;
+        }
+        if(lang==='html'&&c==='&'){ j=i+1; while(j<n&&src[j]!==';'&&j-i<12)j++; if(src[j]===';')j++; out+=span('str',src.slice(i,j)); i=j; continue; }
+        if(c==='/'&&peek(1)==='/'&&lang!=='css'&&lang!=='html'){ j=i; while(j<n&&src[j]!=='\n')j++; out+=span('com',src.slice(i,j)); i=j; continue; }
+        if(c==='/'&&peek(1)==='*'){ j=i+2; while(j<n&&!(src[j]==='*'&&src[j+1]==='/'))j++; j=Math.min(j+2,n); out+=span('com',src.slice(i,j)); i=j; continue; }
+        if(c==='`'&&(lang==='javascript'||lang==='typescript')){ j=i+1; while(j<n&&src[j]!=='`'){ if(src[j]==='\\')j++; j++; } j=Math.min(j+1,n); out+=span('str',src.slice(i,j)); i=j; continue; }
+        if(c==='"'||c==="'"){ var qq=c; j=i+1; while(j<n&&src[j]!==qq&&src[j]!=='\n'){ if(src[j]==='\\')j++; j++; } j=Math.min(j+1,n); out+=span('str',src.slice(i,j)); i=j; continue; }
+        if(/[0-9]/.test(c)||(c==='.'&&/[0-9]/.test(peek(1)))){ j=i; while(j<n&&/[0-9a-fA-FxX._%]/.test(src[j]))j++; out+=span('num',src.slice(i,j)); i=j; continue; }
+        if(/[a-zA-Z_$#.-]/.test(c)){ j=i; while(j<n&&/[a-zA-Z0-9_$#.-]/.test(src[j]))j++; var w=src.slice(i,j), k=j; while(k<n&&src[k]===' ')k++; var isFn=src[k]==='(';
+          if(kw[w]||kw[w.replace(/^[#.@-]+/,'')]) out+=span('kw',w);
+          else if(isFn) out+=span('fn',w);
+          else if(/^[A-Z]/.test(w)) out+=span('type',w);
+          else out+=esc(w);
+          i=j; continue; }
+        if(/[+\-*/%=!<>&|^~?:@{}();,]/.test(c)){ out+=span('op',c); i++; continue; }
+        out+=esc(c); i++;
+      }
+      return out;
+    }
+    var pres={}, raf={};
+    function paint(pane){
+      var ta=codeEls[pane], pre=pres[pane]; if(!ta||!pre) return;
+      var src=ta.value, o=tokenize(src,langOf(pane));
+      if(src.slice(-1)==='\n') o+=' ';
+      pre.innerHTML=o; pre.scrollTop=ta.scrollTop; pre.scrollLeft=ta.scrollLeft;
+    }
+    function schedule(pane){ if(raf[pane])return; raf[pane]=requestAnimationFrame(function(){ raf[pane]=0; paint(pane); }); }
+    function paintAll(){ Object.keys(codeEls).forEach(paint); }
+    function ensure(){
+      Object.keys(codeEls).forEach(function(pane){
+        var ta=codeEls[pane];
+        var pre=ta.parentNode.querySelector('.rwc-hl[data-pane="'+pane+'"]');
+        if(!pre){ pre=document.createElement('pre'); pre.className='rwc-hl'; pre.setAttribute('data-pane',pane); pre.setAttribute('aria-hidden','true'); ta.parentNode.insertBefore(pre,ta); }
+        pres[pane]=pre; pre.classList.toggle('is-active', ta.classList.contains('is-active'));
+        if(!ta.dataset.hlWired){
+          ta.dataset.hlWired='1';
+          ta.addEventListener('input',function(){ schedule(pane); });
+          ta.addEventListener('scroll',function(){ pre.scrollTop=ta.scrollTop; pre.scrollLeft=ta.scrollLeft; });
+          if(typeof MutationObserver==='function') new MutationObserver(function(){ pre.classList.toggle('is-active', ta.classList.contains('is-active')); }).observe(ta,{attributes:true,attributeFilter:['class']});
+        }
+      });
+      paintAll();
+      root.classList.add('rwc-hl-on');   // only now hide the textarea text (overlay is live)
+    }
+    return { ensure:ensure, paint:schedule, paintAll:paintAll, applyTheme:applyTheme };
+  })();
+
+  var themeSel = $('[data-rwc-theme]');
+  try {
+    hl.ensure(); hl.applyTheme('auto');
+    if (themeSel) themeSel.addEventListener('change', function(){ hl.applyTheme(themeSel.value); idbSet('theme', themeSel.value).catch(function(){}); });
+    idbGet('theme').then(function(v){ if(v){ if(themeSel) themeSel.value=v; hl.applyTheme(v); } }, function(){});
+  } catch (e) { /* highlighting is progressive enhancement — the plain textareas still work */ }
 
   // Reset — two-click confirm to avoid clobbering pasted work.
   var resetBtn = $('[data-rwc-reset]'), resetArmed = false, resetTimer = null;
@@ -856,6 +1081,8 @@
     if (modeSel) modeSel.value = 'none'; relabelJs();
     idbSet('draft', null).catch(function () {});   // forget the saved pen; the persistent <head> stays
     bannerDismissed = false; updateDots(); selectTab('html'); run();
+    openSessionId = null; openSessionName = ''; openSessionSig = null; updateSessBadge();
+    if (typeof hl !== 'undefined' && hl) hl.paintAll();
   });
 
   // Layout toggle (side-by-side / stacked).
@@ -945,8 +1172,36 @@
     var d = e.data;
     if (!d || d.__rwc !== 1) return;
     if (d.level === '__ready__') { setStatus(''); liveEl.classList.add('is-live'); return; }
+    if (d.level === '__snapshot__') { mountShot(d.html, d.w, d.h); return; }
     addLog(d.level === 'error' ? 'error' : (d.level === 'warn' ? 'warn' : 'log'), d.text);
   });
+
+  // Transplant the rendered preview into a same-origin mirror node so the shell's
+  // export walker (which can't read the opaque-origin sandbox iframe) can rasterise
+  // it. The mirror carries [data-export-root], so tool-actions' exportTargetNode
+  // retargets export/thumbnail to it. Scripts are stripped (inert here anyway);
+  // html/body-scoped rules are re-scoped onto .rwc-shot-body so the reset still bites.
+  function mountShot(html, w, h) {
+    if (!shotEl || !html) return;
+    try {
+      var doc = new DOMParser().parseFromString(String(html), 'text/html');
+      Array.prototype.forEach.call(doc.querySelectorAll('script'), function (s) { s.remove(); });
+      shotEl.textContent = '';
+      Array.prototype.forEach.call(doc.head ? doc.head.querySelectorAll('style') : [], function (st) {
+        var css = (st.textContent || '').replace(/(^|\})\s*(html|body)\b/gi, '$1 .rwc-shot-body');
+        var s2 = document.createElement('style'); s2.textContent = css; shotEl.appendChild(s2);
+      });
+      var wrap = document.createElement('div');
+      wrap.className = 'rwc-shot-body';
+      var bstyle = doc.body && doc.body.getAttribute('style');
+      if (bstyle) wrap.setAttribute('style', bstyle);
+      wrap.innerHTML = doc.body ? doc.body.innerHTML : '';
+      shotEl.appendChild(wrap);
+      var W = Math.max(1, Math.round(+w || 0)) || 1280, H = Math.max(1, Math.round(+h || 0)) || 800;
+      shotEl.style.width = W + 'px';
+      shotEl.style.height = H + 'px';
+    } catch (e) { /* keep the last good snapshot */ }
+  }
 
   // ── First paint — restore the persistent <head> + last pen draft, else starter ─
   (function bootstrap() {
@@ -966,6 +1221,7 @@
       if (draft && draft.mode && modeSel) modeSel.value = draft.mode;
       relabelJs();
       clearConsole(); updateDots(); run();
+      if (typeof hl !== 'undefined' && hl) hl.paintAll();
     }
     var head = '', draft = null;
     var t = setTimeout(function () { apply(head, draft); }, 1200);   // safety if IndexedDB stalls
@@ -974,5 +1230,134 @@
       .then(function (d) { draft = d || null; clearTimeout(t); apply(head, draft); },
             function () { clearTimeout(t); apply(head, draft); });
   })();
+
+  // ── Saved sessions (named, multiple) ────────────────────────────────────────
+  // Stored as a single 'sessions' array in the existing 'kv' store (idbGet/idbSet),
+  // so no DB version bump and the hardcoded-'kv' helpers are reused unchanged. The
+  // anonymous 'draft' auto-save stays as the working copy; sessions layer on top.
+  var sessPanel   = $('[data-rwc-sess-panel]');
+  var sessListEl  = $('[data-rwc-sess-list]');
+  var sessNameEl  = $('[data-rwc-sess-name]');
+  var sessNewName = $('[data-rwc-sess-newname]');
+  var sessOpenBtn = $('[data-rwc-sess-open]');
+  var sessSaveBtn = $('[data-rwc-save]');
+  var openSessionId = null, openSessionName = '', openSessionSig = null;
+
+  function loadSessions() { return idbGet('sessions').then(function (a) { return Array.isArray(a) ? a : []; }, function () { return []; }); }
+  function saveSessions(a) { return idbSet('sessions', a).catch(function () {}); }
+  function genId() { return 'rwc-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7); }
+  function snapshot() { var f = readFiles(); return { html: f.html, css: f.css, js: f.js, head: f.head, mode: modeSel ? modeSel.value : 'none' }; }
+  function sessSig() { return sig(readFiles()) + ' mode=' + (modeSel ? modeSel.value : 'none'); }
+  function isPristine() { var f = readFiles(); return f.html === STARTER.html && !f.css.trim() && !f.js.trim(); }
+  function relTime(ts) {
+    if (!ts) return '';
+    var s = Math.max(0, (Date.now() - ts) / 1000);
+    if (s < 60) return 'just now';
+    if (s < 3600) return Math.floor(s / 60) + 'm ago';
+    if (s < 86400) return Math.floor(s / 3600) + 'h ago';
+    return Math.floor(s / 86400) + 'd ago';
+  }
+  function updateSessBadge() {
+    if (!sessNameEl) return;
+    if (!openSessionId) { sessNameEl.hidden = true; sessNameEl.textContent = ''; sessNameEl.classList.remove('is-dirty'); return; }
+    sessNameEl.hidden = false;
+    sessNameEl.textContent = openSessionName || 'Session';
+    sessNameEl.classList.toggle('is-dirty', sessSig() !== openSessionSig);
+  }
+  function renderSessList() {
+    return loadSessions().then(function (arr) {
+      arr.sort(function (a, b) { return (b.savedAt || 0) - (a.savedAt || 0); });
+      if (!arr.length) { sessListEl.innerHTML = '<div class="rwc-sess-empty">No saved sessions yet. Name one above to save the current code.</div>'; return; }
+      sessListEl.innerHTML = arr.map(function (s) {
+        var meta = (s.mode && s.mode !== 'none' ? s.mode.toUpperCase() + ' · ' : '') + relTime(s.savedAt);
+        return '<div class="rwc-sess-row' + (s.id === openSessionId ? ' is-open' : '') + '">'
+          + '<button class="rwc-sess-open" type="button" data-rwc-sess-load="' + esc(s.id) + '">'
+          + '<span class="rwc-sess-row-name">' + esc(s.name) + '</span>'
+          + '<span class="rwc-sess-row-meta">' + esc(meta) + '</span></button>'
+          + '<button class="rwc-sess-ic rwc-sess-ren" type="button" data-rwc-sess-rename="' + esc(s.id) + '" title="Rename" aria-label="Rename session">✎</button>'
+          + '<button class="rwc-sess-ic rwc-sess-del" type="button" data-rwc-sess-delete="' + esc(s.id) + '" title="Delete" aria-label="Delete session">✕</button>'
+          + '</div>';
+      }).join('');
+    });
+  }
+  function openSessPanel() { renderSessList(); sessPanel.hidden = false; sessOpenBtn.setAttribute('aria-expanded', 'true'); if (sessNewName) { sessNewName.value = ''; setTimeout(function () { sessNewName.focus(); }, 0); } }
+  function closeSessPanel() { sessPanel.hidden = true; sessOpenBtn.setAttribute('aria-expanded', 'false'); }
+  function toggleSessPanel() { if (sessPanel.hidden) openSessPanel(); else closeSessPanel(); }
+
+  function saveAsNew() {
+    var name = (sessNewName.value || '').trim();
+    if (!name) { sessNewName.focus(); return; }
+    loadSessions().then(function (arr) {
+      var s = snapshot(); s.id = genId(); s.name = name; s.savedAt = Date.now();
+      arr.push(s);
+      return saveSessions(arr).then(function () {
+        openSessionId = s.id; openSessionName = s.name; openSessionSig = sessSig();
+        sessNewName.value = ''; flashSaved(); updateSessBadge(); return renderSessList();
+      });
+    });
+  }
+  function saveQuick() {
+    if (!openSessionId) { openSessPanel(); return; }
+    loadSessions().then(function (arr) {
+      var snap = snapshot(), found = false;
+      arr.forEach(function (s) { if (s.id === openSessionId) { s.html = snap.html; s.css = snap.css; s.js = snap.js; s.head = snap.head; s.mode = snap.mode; s.savedAt = Date.now(); found = true; } });
+      if (!found) { openSessionId = null; updateSessBadge(); openSessPanel(); return; }
+      return saveSessions(arr).then(function () { openSessionSig = sessSig(); flashSaved(); updateSessBadge(); });
+    });
+  }
+  function openSession(id) {
+    loadSessions().then(function (arr) {
+      var s = null; arr.forEach(function (x) { if (x.id === id) s = x; });
+      if (!s) { renderSessList(); return; }
+      var dirty = openSessionId ? (sessSig() !== openSessionSig) : !isPristine();
+      if (dirty && !window.confirm('Replace the current code with "' + s.name + '"? Unsaved changes will be lost.')) return;
+      codeEls.html.value = s.html || ''; codeEls.css.value = s.css || '';
+      codeEls.js.value = s.js || ''; codeEls.head.value = s.head || '';
+      if (modeSel) modeSel.value = s.mode || 'none';
+      relabelJs();
+      openSessionId = s.id; openSessionName = s.name; openSessionSig = sessSig();
+      bannerDismissed = false; updateDots(); updateSessBadge(); closeSessPanel();
+      schedulePersist();
+      selectTab('html'); run();
+      if (typeof hl !== 'undefined' && hl) hl.paintAll();
+    });
+  }
+  function renameSession(id) {
+    loadSessions().then(function (arr) {
+      var s = null; arr.forEach(function (x) { if (x.id === id) s = x; });
+      if (!s) return;
+      var name = window.prompt('Rename session', s.name);
+      if (name == null) return; name = name.trim(); if (!name) return;
+      s.name = name;
+      return saveSessions(arr).then(function () { if (openSessionId === id) { openSessionName = name; updateSessBadge(); } return renderSessList(); });
+    });
+  }
+  function deleteSession(id) {
+    loadSessions().then(function (arr) {
+      var s = null; arr.forEach(function (x) { if (x.id === id) s = x; });
+      if (!s) return;
+      if (!window.confirm('Delete session "' + s.name + '"? This cannot be undone.')) return;
+      arr = arr.filter(function (x) { return x.id !== id; });
+      return saveSessions(arr).then(function () { if (openSessionId === id) { openSessionId = null; openSessionName = ''; openSessionSig = null; updateSessBadge(); } return renderSessList(); });
+    });
+  }
+
+  if (sessOpenBtn) sessOpenBtn.addEventListener('click', function (e) { e.stopPropagation(); toggleSessPanel(); });
+  if (sessSaveBtn) sessSaveBtn.addEventListener('click', function (e) { e.stopPropagation(); saveQuick(); });
+  var saveAsBtn = $('[data-rwc-sess-saveas]');
+  if (saveAsBtn) saveAsBtn.addEventListener('click', saveAsNew);
+  if (sessNewName) sessNewName.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); saveAsNew(); } });
+  if (sessListEl) sessListEl.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-rwc-sess-load],[data-rwc-sess-rename],[data-rwc-sess-delete]');
+    if (!t) return;
+    if (t.hasAttribute('data-rwc-sess-load')) openSession(t.getAttribute('data-rwc-sess-load'));
+    else if (t.hasAttribute('data-rwc-sess-rename')) renameSession(t.getAttribute('data-rwc-sess-rename'));
+    else if (t.hasAttribute('data-rwc-sess-delete')) deleteSession(t.getAttribute('data-rwc-sess-delete'));
+  });
+  if (sessPanel) sessPanel.addEventListener('click', function (e) { e.stopPropagation(); });
+  document.addEventListener('click', function () { if (sessPanel && !sessPanel.hidden) closeSessPanel(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && sessPanel && !sessPanel.hidden) closeSessPanel(); });
+  ['input', 'change'].forEach(function (ev) { root.addEventListener(ev, function () { if (openSessionId) updateSessBadge(); }); });
+  updateSessBadge();
 })();
 </script>

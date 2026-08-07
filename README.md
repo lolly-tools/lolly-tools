@@ -32,12 +32,7 @@ own). Each tool is a directory of *data, not code*:
 | `text-helper` | Text transforms and helpers |
 | `countdown-timer` | Countdown timer graphics |
 | `url-shot` | Rasterise a live URL (requires the `capture` capability) |
-| `filter-duotone` | Duotone photo filter |
-| `filter-halftone` | Halftone photo filter |
-| `filter-pixel-stretch` | Pixel-stretch photo filter |
-| `filter-posterize` | Posterize photo filter |
-| `filter-scanline` | Scanline photo filter |
-| `filter-voronoi` | Voronoi photo filter |
+| `filter` | Photo effects in one tool — pick an effect (halftone, scanline, posterize, voronoi as vector; duotone, pixel-stretch, imperfections as raster) |
 
 Tool `id`s are permanent contracts — never renamed or reused.
 
