@@ -7,6 +7,7 @@
   "status": "official",
   "category": "designer",
   "tags": ["photo", "filter", "duotone", "color", "effect"],
+  "isolate": true,
   "examples": [
     { "label": "Midnight duo", "values": { "colorFg": "#1a1a2e", "colorBg": "#93c5fd" } },
     { "label": "Forest print", "values": { "colorFg": "#0f3d2e", "colorBg": "#e7f4ec" } },
