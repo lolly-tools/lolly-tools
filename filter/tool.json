@@ -1,0 +1,1611 @@
+{
+  "id": "filter",
+  "name": "Filter",
+  "description": "One tool for photo effects: pick halftone, scanline, posterize or voronoi (vector) or duotone, pixel-stretch or print imperfections (raster). Brand overlays, live camera, and exports to as many formats as each effect supports.",
+  "a11yLabel": "{{effect}} filter of the chosen image",
+  "version": "1.0.0",
+  "engineVersion": "^1.0.0",
+  "status": "official",
+  "category": "designer",
+  "tags": [
+    "filter",
+    "effect",
+    "photo",
+    "image",
+    "vector",
+    "raster",
+    "halftone",
+    "duotone",
+    "scanline",
+    "posterize",
+    "voronoi",
+    "pixel",
+    "glitch",
+    "risograph",
+    "on-device"
+  ],
+  "featured": {
+    "order": 7,
+    "blurb": "Seven photo effects, vector or raster, in one tool"
+  },
+  "render": {
+    "width": 1080,
+    "height": 1080,
+    "formats": [
+      "svg",
+      "pdf",
+      "pdf-cmyk",
+      "emf",
+      "png",
+      "jpg",
+      "webp",
+      "avif",
+      "tiff",
+      "cmyk-tiff",
+      "gif",
+      "apng",
+      "webp-anim",
+      "webm",
+      "mp4"
+    ],
+    "actions": [
+      "copy",
+      "download",
+      "save"
+    ],
+    "video": {
+      "wait": 0,
+      "duration": 5
+    },
+    "convertPaths": false,
+    "liveMaxEdge": 1280,
+    "liveMaxEdgeInput": "liveRes"
+  },
+  "inputs": [
+    {
+      "id": "effect",
+      "label": "Effect",
+      "type": "select",
+      "default": "halftone",
+      "help": "The effect to apply. Vector effects export crisp SVG/PDF; raster effects export images.",
+      "options": [
+        {
+          "value": "halftone",
+          "label": "Halftone",
+          "badge": "vector",
+          "formats": [
+            "svg",
+            "pdf",
+            "pdf-cmyk",
+            "emf",
+            "png",
+            "webp",
+            "avif",
+            "gif",
+            "apng",
+            "webm",
+            "mp4"
+          ]
+        },
+        {
+          "value": "scanline",
+          "label": "Scanline",
+          "badge": "vector",
+          "formats": [
+            "svg",
+            "png",
+            "webp",
+            "avif",
+            "gif",
+            "apng",
+            "webm",
+            "mp4"
+          ]
+        },
+        {
+          "value": "posterize",
+          "label": "Posterize",
+          "badge": "vector",
+          "formats": [
+            "png",
+            "svg",
+            "pdf",
+            "jpg",
+            "webp",
+            "gif",
+            "apng",
+            "webm",
+            "mp4"
+          ]
+        },
+        {
+          "value": "voronoi",
+          "label": "Voronoi cells",
+          "badge": "vector",
+          "formats": [
+            "png",
+            "svg",
+            "pdf",
+            "jpg",
+            "webp",
+            "gif",
+            "apng",
+            "webm",
+            "mp4"
+          ]
+        },
+        {
+          "value": "duotone",
+          "label": "Duotone",
+          "badge": "raster",
+          "formats": [
+            "png",
+            "jpg",
+            "webp",
+            "svg",
+            "gif",
+            "apng",
+            "webm",
+            "mp4"
+          ]
+        },
+        {
+          "value": "pixel-stretch",
+          "label": "Pixel stretch",
+          "badge": "raster",
+          "formats": [
+            "png",
+            "jpg",
+            "webp",
+            "svg",
+            "gif",
+            "apng",
+            "webm",
+            "mp4"
+          ]
+        },
+        {
+          "value": "imperfections",
+          "label": "Imperfections",
+          "badge": "raster",
+          "formats": [
+            "svg",
+            "pdf",
+            "pdf-cmyk",
+            "png",
+            "jpg",
+            "webp",
+            "avif",
+            "tiff",
+            "cmyk-tiff",
+            "gif",
+            "apng",
+            "webp-anim",
+            "webm",
+            "mp4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "image",
+      "label": "Image",
+      "type": "asset",
+      "assetType": "raster",
+      "allowUpload": true,
+      "help": "Pick a photo or upload your own. It's processed on your device — the pixels never leave the browser."
+    },
+    {
+      "id": "ht_gridSize",
+      "label": "Grid size",
+      "type": "number",
+      "display": "slider",
+      "default": 24,
+      "min": 1,
+      "max": 70,
+      "step": 1,
+      "help": "Spacing between dots. Smaller = finer detail and more dots; larger = a bolder, coarser screen.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_dotScale",
+      "label": "Dot size",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0.2,
+      "max": 3,
+      "step": 0.02,
+      "help": "Scales every dot. Below 1 opens up the screen; above 1 fattens the dots so darks fill in.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_shape",
+      "label": "Dot shape",
+      "type": "select",
+      "default": "circle",
+      "options": [
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "diamond",
+          "label": "Diamond"
+        }
+      ],
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_colorSource",
+      "label": "Colour source",
+      "type": "select",
+      "default": "image",
+      "options": [
+        {
+          "value": "image",
+          "label": "From image"
+        },
+        {
+          "value": "solid",
+          "label": "Solid colour"
+        }
+      ],
+      "help": "Colour the dots from the photo underneath, or a single ink.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_colorLevels",
+      "label": "Colour levels",
+      "type": "select",
+      "default": "0",
+      "showIf": {
+        "effect": "halftone",
+        "ht_colorSource": "image"
+      },
+      "options": [
+        {
+          "value": "0",
+          "label": "Full colour"
+        },
+        {
+          "value": "8",
+          "label": "8 levels"
+        },
+        {
+          "value": "6",
+          "label": "6 levels"
+        },
+        {
+          "value": "4",
+          "label": "4 levels"
+        },
+        {
+          "value": "3",
+          "label": "3 levels"
+        },
+        {
+          "value": "2",
+          "label": "2 levels"
+        }
+      ],
+      "help": "Reduce the dot colours to a limited palette (levels per channel). Full keeps the photo's colours."
+    },
+    {
+      "id": "ht_fgColor",
+      "label": "Dot colour",
+      "type": "color",
+      "default": "{color.semantic.text}",
+      "showIf": {
+        "effect": "halftone",
+        "ht_colorSource": "solid"
+      },
+      "help": "Dot colour when Colour source is Solid."
+    },
+    {
+      "id": "ht_bgColor",
+      "label": "Background",
+      "type": "color",
+      "default": "{color.semantic.surface}",
+      "help": "Fill behind the dots. Turn on “No BG” in the export options for a transparent background instead.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_invert",
+      "label": "Invert",
+      "type": "boolean",
+      "default": false,
+      "help": "Grow dots for the light areas instead of the dark — ideal for a light colour on a dark background.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_fit",
+      "label": "Image fit",
+      "type": "select",
+      "default": "contain",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Contain (whole image)"
+        },
+        {
+          "value": "cover",
+          "label": "Cover (fill, crop edges)"
+        }
+      ],
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_brightness",
+      "label": "Brightness",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_gamma",
+      "label": "Gamma",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "help": "Mid-tone weighting. Below 1 darkens mid-tones (denser dots); above 1 lightens them.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_smoothing",
+      "label": "Smoothing",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "help": "Softens the dot grid by blurring neighbouring cells. Tames noisy photos.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_dither",
+      "label": "Texture",
+      "type": "select",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "Smooth (none)"
+        },
+        {
+          "value": "floyd",
+          "label": "Diffused (Floyd–Steinberg)"
+        },
+        {
+          "value": "ordered",
+          "label": "Patterned (ordered)"
+        },
+        {
+          "value": "noise",
+          "label": "Grainy (noise)"
+        }
+      ],
+      "help": "Adds a newspaper-style 1-bit texture by snapping cells to full or empty dots.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "sc_lineSize",
+      "label": "Line height",
+      "type": "number",
+      "display": "slider",
+      "default": 14,
+      "min": 1,
+      "max": 48,
+      "step": 1,
+      "help": "Height of each scanline and the size of each cell, so smaller means thinner lines and finer detail.",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_gapSize",
+      "label": "Gap height",
+      "type": "number",
+      "display": "slider",
+      "default": 12,
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "help": "Size of the blank gap below each scanline, relative to the line. Larger = thinner lines with more space between them; 0 makes a solid image with no gaps. Doesn't change the detail or position of the image.",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_separatePixels",
+      "label": "Separate pixels",
+      "type": "boolean",
+      "default": false,
+      "help": "Add a gap between cells too, so each one is a distinct square — an LED/pixel-matrix look instead of solid scanline bars.",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_everyLine",
+      "label": "Fill every line",
+      "type": "boolean",
+      "default": false,
+      "help": "Draw every line with no gaps — the same as setting the gap height to zero. Off = classic scanlines; on = a solid posterised image.",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_fit",
+      "label": "Image fit",
+      "type": "select",
+      "default": "cover",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Contain (whole image)"
+        },
+        {
+          "value": "cover",
+          "label": "Cover (fill, crop edges)"
+        }
+      ],
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_highlight",
+      "label": "Highlight",
+      "type": "color",
+      "default": "#ffffff",
+      "help": "Brightest tone.",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_light",
+      "label": "Light",
+      "type": "color",
+      "default": "#bff1ea",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_mid",
+      "label": "Mid",
+      "type": "color",
+      "default": "#008878",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_shade",
+      "label": "Shade",
+      "type": "color",
+      "default": "#01564a",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_shadow",
+      "label": "Shadow",
+      "type": "color",
+      "default": "#000000",
+      "help": "Darkest tone.",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_background",
+      "label": "Background",
+      "type": "color",
+      "default": "",
+      "help": "Fills the blank lines and gaps. Leave empty for a transparent background (PNG/WebP/AVIF/SVG keep the transparency).",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_brightness",
+      "label": "Brightness",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "pz_steps",
+      "label": "Colour steps",
+      "type": "number",
+      "display": "slider",
+      "min": 2,
+      "max": 12,
+      "step": 1,
+      "default": 8,
+      "showIf": {
+        "effect": "posterize",
+        "pz_threshold": false
+      },
+      "help": "How many tonal separations to trace. Changing this re-samples the colours from the photo."
+    },
+    {
+      "id": "pz_threshold",
+      "label": "Threshold (1 ink)",
+      "type": "boolean",
+      "default": false,
+      "help": "Collapse the photo to a single ink over paper — one hard cut between dark and light instead of graded separations. Pair with Transparent background for ink on nothing.",
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
+      "id": "pz_thresholdLevel",
+      "label": "Threshold level",
+      "type": "number",
+      "display": "slider",
+      "min": 1,
+      "max": 99,
+      "step": 1,
+      "default": 50,
+      "showIf": {
+        "effect": "posterize",
+        "pz_threshold": true
+      },
+      "help": "Where the cut between ink and paper falls. Higher turns more of the photo into ink; lower keeps only the deepest shadows."
+    },
+    {
+      "id": "pz_brightness",
+      "label": "Brightness",
+      "type": "number",
+      "display": "slider",
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "help": "Lighten or darken the photo before it is separated — shifts every tone up or down, moving detail between the light and dark separations.",
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
+      "id": "pz_quality",
+      "label": "Quality",
+      "type": "number",
+      "display": "slider",
+      "min": 90,
+      "max": 200,
+      "step": 1,
+      "default": 95,
+      "help": "Tracing resolution — higher samples the photo at a finer grid and captures more detail. Above 100 pushes into very fine, slower traces.",
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
+      "id": "pz_smoothing",
+      "label": "Smoothing",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "default": 60,
+      "help": "How much the traced outlines round into curves. Low keeps edges faithful and crisp; high flows them into smooth Bézier curves.",
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
+      "id": "pz_invert",
+      "label": "Invert tones",
+      "type": "boolean",
+      "default": false,
+      "help": "Trace from inverted tones — the photo's bright areas become the foreground separations (a tonal negative). Useful for a light subject on a dark background.",
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
+      "id": "pz_colors",
+      "label": "Separation colours",
+      "type": "blocks",
+      "labelledFields": true,
+      "help": "One swatch per tone, darkest first and the lightest (paper) last. Auto-sampled from your photo — edit any swatch to recolour that separation.",
+      "fields": [
+        {
+          "id": "color",
+          "label": "Colour",
+          "type": "color",
+          "default": "#808080"
+        }
+      ],
+      "default": [],
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
+      "id": "pz_resample",
+      "label": "Re-sample colours from photo",
+      "type": "boolean",
+      "default": false,
+      "help": "Discard manual edits and re-derive every separation colour from the current photo.",
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
+      "id": "pz_transparentBg",
+      "label": "Transparent background",
+      "type": "boolean",
+      "default": false,
+      "help": "Drop the lightest 'paper' separation so the background is transparent (PNG / SVG).",
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
+      "id": "vo_cells",
+      "label": "Cells",
+      "type": "number",
+      "display": "slider",
+      "min": 10,
+      "max": 1000,
+      "step": 10,
+      "default": 60,
+      "help": "How many Voronoi cells to shatter the image into. More cells = finer, more faithful; fewer = bold, chunky facets.",
+      "showIf": {
+        "effect": "voronoi"
+      }
+    },
+    {
+      "id": "vo_jitter",
+      "label": "Irregularity",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 70,
+      "help": "0 = a regular grid of cells · 100 = fully scattered, organic cell shapes.",
+      "showIf": {
+        "effect": "voronoi"
+      }
+    },
+    {
+      "id": "vo_relax",
+      "label": "Relax (even out)",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 5,
+      "step": 0.1,
+      "default": 1,
+      "help": "Lloyd relaxation — nudges cells toward equal size and rounder shapes. Higher is calmer and more uniform.",
+      "showIf": {
+        "effect": "voronoi"
+      }
+    },
+    {
+      "id": "vo_seed",
+      "label": "Seed (reroll)",
+      "type": "number",
+      "display": "slider",
+      "min": 1,
+      "max": 999,
+      "step": 1,
+      "default": 7,
+      "help": "Reroll the random cell layout. Same seed = same cells every time.",
+      "showIf": {
+        "effect": "voronoi"
+      }
+    },
+    {
+      "id": "vo_edgeWidth",
+      "label": "Edge width",
+      "type": "number",
+      "display": "slider",
+      "min": 0,
+      "max": 10,
+      "step": 0.2,
+      "default": 0,
+      "help": "Mortar between cells. 0 = a seamless colour mesh; higher draws a gap in the edge colour for a stained-glass look.",
+      "showIf": {
+        "effect": "voronoi"
+      }
+    },
+    {
+      "id": "vo_edgeColor",
+      "label": "Edge colour",
+      "type": "color",
+      "default": "{color.semantic.text}",
+      "showIf": {
+        "effect": "voronoi",
+        "vo_edgeWidth": true
+      },
+      "help": "The colour of the gaps between cells (and the outer border)."
+    },
+    {
+      "id": "vo_transparentBg",
+      "label": "Transparent background",
+      "type": "boolean",
+      "default": false,
+      "help": "Drop the background so any gaps / border are transparent (PNG / SVG).",
+      "showIf": {
+        "effect": "voronoi"
+      }
+    },
+    {
+      "id": "du_colorFg",
+      "label": "Shadow color",
+      "type": "color",
+      "default": "{color.semantic.text}",
+      "showIf": {
+        "effect": "duotone"
+      }
+    },
+    {
+      "id": "du_colorBg",
+      "label": "Highlight color",
+      "type": "color",
+      "default": "#ffd3bd",
+      "showIf": {
+        "effect": "duotone"
+      }
+    },
+    {
+      "id": "du_imageFraming",
+      "label": "Zoom & Position",
+      "section": "Position",
+      "help": "Zoom scales the photo up; X / Y pan it within the frame (like object-position). Drag a label or type a value.",
+      "type": "vector",
+      "fields": [
+        {
+          "id": "zoom",
+          "label": "Zoom",
+          "min": 100,
+          "max": 400,
+          "step": 1,
+          "default": 100
+        },
+        {
+          "id": "x",
+          "label": "X",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "id": "y",
+          "label": "Y",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        }
+      ],
+      "showIf": {
+        "effect": "duotone"
+      }
+    },
+    {
+      "id": "px_direction",
+      "label": "Direction",
+      "type": "select",
+      "default": "right",
+      "options": [
+        {
+          "value": "right",
+          "label": "Stretch right →"
+        },
+        {
+          "value": "left",
+          "label": "Stretch left ←"
+        },
+        {
+          "value": "down",
+          "label": "Stretch down ↓"
+        },
+        {
+          "value": "up",
+          "label": "Stretch up ↑"
+        }
+      ],
+      "help": "Which way the frozen column of pixels smears across the frame.",
+      "showIf": {
+        "effect": "pixel-stretch"
+      }
+    },
+    {
+      "id": "px_threshold",
+      "label": "Threshold start",
+      "type": "number",
+      "display": "slider",
+      "default": 42,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Where the photo freezes. Past this line the frozen column stretches, then the rest of the photo continues at its natural proportions, clipped at the far edge.",
+      "showIf": {
+        "effect": "pixel-stretch"
+      }
+    },
+    {
+      "id": "px_spread",
+      "label": "Spread",
+      "type": "number",
+      "display": "slider",
+      "default": 100,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "How much of the space past the threshold the frozen column fills. The rest of the photo slides in after it at its natural proportions (clipped at the edge). 0 = untouched photo; 100 = the column stretches all the way to the edge.",
+      "showIf": {
+        "effect": "pixel-stretch"
+      }
+    },
+    {
+      "id": "px_feather",
+      "label": "Feather",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Softens the seam where the photo meets the frozen column. The far end, where the column hands off to the sliding remainder, is already colour-continuous, so this mainly affects the start seam. 0 keeps a hard edge.",
+      "showIf": {
+        "effect": "pixel-stretch"
+      }
+    },
+    {
+      "id": "px_imageFraming",
+      "label": "Zoom & Position",
+      "section": "Position",
+      "help": "Zoom scales the photo up; X / Y pan it within the frame (like object-position). Drag a label or type a value.",
+      "type": "vector",
+      "fields": [
+        {
+          "id": "zoom",
+          "label": "Zoom",
+          "min": 100,
+          "max": 400,
+          "step": 1,
+          "default": 100
+        },
+        {
+          "id": "x",
+          "label": "X",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "id": "y",
+          "label": "Y",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        }
+      ],
+      "showIf": {
+        "effect": "pixel-stretch"
+      }
+    },
+    {
+      "id": "im_preset",
+      "label": "Press character",
+      "type": "select",
+      "default": "subtle",
+      "options": [
+        {
+          "value": "subtle",
+          "label": "Subtle press"
+        },
+        {
+          "value": "riso",
+          "label": "Risograph"
+        },
+        {
+          "value": "photocopy",
+          "label": "Photocopy"
+        },
+        {
+          "value": "worn",
+          "label": "Worn print"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "help": "A ready-made recipe of misregistration, ink bleed and wear. Pick Custom to fine-tune each imperfection yourself.",
+      "showIf": {
+        "effect": "imperfections"
+      }
+    },
+    {
+      "id": "im_strength",
+      "label": "Strength",
+      "type": "number",
+      "display": "slider",
+      "default": 100,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Scales every imperfection at once. 0 is a clean print; 100 is the full recipe.",
+      "showIf": {
+        "effect": "imperfections"
+      }
+    },
+    {
+      "id": "im_seed",
+      "label": "Seed",
+      "type": "number",
+      "display": "slider",
+      "default": 7,
+      "min": 1,
+      "max": 200,
+      "step": 1,
+      "help": "Changes the plate jitter and textures. The same seed always gives the same result.",
+      "showIf": {
+        "effect": "imperfections"
+      }
+    },
+    {
+      "id": "im_ink1",
+      "label": "Ink 1",
+      "type": "color",
+      "default": "{color.semantic.primary}",
+      "help": "First ink for the two-ink looks (the Risograph preset, or Custom with Two inks). Defaults to the brand's primary.",
+      "showIf": {
+        "effect": "imperfections"
+      }
+    },
+    {
+      "id": "im_ink2",
+      "label": "Ink 2",
+      "type": "color",
+      "default": "{color.semantic.secondary}",
+      "help": "Second ink for the two-ink looks. Defaults to the brand's secondary.",
+      "showIf": {
+        "effect": "imperfections"
+      }
+    },
+    {
+      "id": "im_fit",
+      "label": "Image fit",
+      "type": "select",
+      "default": "cover",
+      "options": [
+        {
+          "value": "contain",
+          "label": "Contain (whole image)"
+        },
+        {
+          "value": "cover",
+          "label": "Cover (fill, crop edges)"
+        }
+      ],
+      "showIf": {
+        "effect": "imperfections"
+      }
+    },
+    {
+      "id": "im_plates",
+      "label": "Ink plates",
+      "section": "Fine-tune",
+      "type": "select",
+      "default": "cmy",
+      "showIf": {
+        "effect": "imperfections",
+        "im_preset": "custom"
+      },
+      "options": [
+        {
+          "value": "cmy",
+          "label": "Three inks (CMY)"
+        },
+        {
+          "value": "duo",
+          "label": "Two inks"
+        },
+        {
+          "value": "mono",
+          "label": "One ink (mono)"
+        }
+      ],
+      "help": "How the artwork is separated into printing plates before they are misprinted."
+    },
+    {
+      "id": "im_misregAmount",
+      "label": "Misregistration",
+      "section": "Fine-tune",
+      "type": "number",
+      "display": "slider",
+      "default": 2,
+      "min": 0,
+      "max": 12,
+      "step": 0.1,
+      "showIf": {
+        "effect": "imperfections",
+        "im_preset": "custom"
+      },
+      "help": "How far the ink plates drift out of alignment, in canvas units."
+    },
+    {
+      "id": "im_bleedAmount",
+      "label": "Ink bleed",
+      "section": "Fine-tune",
+      "type": "number",
+      "display": "slider",
+      "default": 1.5,
+      "min": 0,
+      "max": 8,
+      "step": 0.1,
+      "showIf": {
+        "effect": "imperfections",
+        "im_preset": "custom"
+      },
+      "help": "Softens and roughens edges as if the ink soaked into the paper."
+    },
+    {
+      "id": "im_degradeAmount",
+      "label": "Photocopy wear",
+      "section": "Fine-tune",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "showIf": {
+        "effect": "imperfections",
+        "im_preset": "custom"
+      },
+      "help": "Washes out colour, hardens the tones and adds copier streaks."
+    },
+    {
+      "id": "im_paperTint",
+      "label": "Paper tint",
+      "section": "Paper",
+      "type": "color",
+      "default": "#f2ead9",
+      "help": "The colour of the paper stock the print sits on.",
+      "showIf": {
+        "effect": "imperfections"
+      }
+    },
+    {
+      "id": "im_paperTintStrength",
+      "label": "Tint strength",
+      "section": "Paper",
+      "type": "number",
+      "display": "slider",
+      "default": 60,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "How far the paper shifts from bright white toward the tint. Blended perceptually, so mid-strengths stay clean.",
+      "showIf": {
+        "effect": "imperfections"
+      }
+    },
+    {
+      "id": "im_grainAmount",
+      "label": "Paper grain",
+      "section": "Paper",
+      "type": "number",
+      "display": "slider",
+      "default": 25,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Speckle of the paper tooth showing through the ink.",
+      "showIf": {
+        "effect": "imperfections"
+      }
+    },
+    {
+      "id": "contrast",
+      "label": "Contrast",
+      "section": "Colour",
+      "type": "number",
+      "display": "slider",
+      "default": 10,
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "showIf": {
+        "effect": [
+          "halftone",
+          "scanline",
+          "posterize",
+          "voronoi",
+          "pixel-stretch",
+          "imperfections"
+        ]
+      }
+    },
+    {
+      "id": "hue",
+      "label": "Hue",
+      "section": "Colour",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "help": "Rotate every colour around the wheel."
+    },
+    {
+      "id": "saturation",
+      "label": "Saturation",
+      "section": "Colour",
+      "type": "number",
+      "display": "slider",
+      "default": 100,
+      "min": 0,
+      "max": 200,
+      "step": 1,
+      "help": "0 = greyscale · 100 = original · 200 = vivid."
+    },
+    {
+      "id": "lightness",
+      "label": "Lightness",
+      "section": "Colour",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "help": "Lift toward white or sink toward black."
+    },
+    {
+      "id": "treatmentColor",
+      "label": "Colour treatment",
+      "section": "Colour",
+      "type": "color",
+      "default": "",
+      "help": "Blend a colour over the result. Leave empty for none."
+    },
+    {
+      "id": "blendMode",
+      "label": "Blend mode",
+      "section": "Colour",
+      "type": "select",
+      "default": "multiply",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "multiply",
+          "label": "Multiply"
+        },
+        {
+          "value": "screen",
+          "label": "Screen"
+        },
+        {
+          "value": "overlay",
+          "label": "Overlay"
+        },
+        {
+          "value": "darken",
+          "label": "Darken"
+        },
+        {
+          "value": "lighten",
+          "label": "Lighten"
+        },
+        {
+          "value": "color-dodge",
+          "label": "Colour dodge"
+        },
+        {
+          "value": "color-burn",
+          "label": "Colour burn"
+        },
+        {
+          "value": "hard-light",
+          "label": "Hard light"
+        },
+        {
+          "value": "soft-light",
+          "label": "Soft light"
+        },
+        {
+          "value": "difference",
+          "label": "Difference"
+        },
+        {
+          "value": "exclusion",
+          "label": "Exclusion"
+        },
+        {
+          "value": "hue",
+          "label": "Hue"
+        },
+        {
+          "value": "saturation",
+          "label": "Saturation"
+        },
+        {
+          "value": "color",
+          "label": "Colour"
+        },
+        {
+          "value": "luminosity",
+          "label": "Luminosity"
+        }
+      ],
+      "help": "How the treatment colour mixes with the image."
+    },
+    {
+      "id": "treatmentIntensity",
+      "label": "Intensity",
+      "section": "Colour",
+      "type": "number",
+      "display": "slider",
+      "default": 20,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Opacity of the colour overlay."
+    },
+    {
+      "id": "noFilter",
+      "label": "No filter (show raw)",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "Show the original photo or live camera feed untouched — handy for placing just a logo / lower-third over the raw footage."
+    },
+    {
+      "id": "showLogo",
+      "label": "SUSE logo overlay",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "Overlay the SUSE logo on the result. Off by default."
+    },
+    {
+      "id": "logoPosition",
+      "label": "Logo position",
+      "section": "Overlay",
+      "type": "select",
+      "default": "top-right",
+      "showIf": {
+        "showLogo": true
+      },
+      "options": [
+        {
+          "value": "top-left",
+          "label": "Top left"
+        },
+        {
+          "value": "top-right",
+          "label": "Top right"
+        },
+        {
+          "value": "bottom-left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "bottom-right",
+          "label": "Bottom right"
+        },
+        {
+          "value": "top",
+          "label": "Top centre"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom centre"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        },
+        {
+          "value": "full",
+          "label": "Full (watermark)"
+        }
+      ]
+    },
+    {
+      "id": "logoStyle",
+      "label": "Logo colour",
+      "section": "Overlay",
+      "type": "select",
+      "default": "white",
+      "showIf": {
+        "showLogo": true
+      },
+      "options": [
+        {
+          "value": "white",
+          "label": "White"
+        },
+        {
+          "value": "green",
+          "label": "Green"
+        },
+        {
+          "value": "black",
+          "label": "Black"
+        }
+      ],
+      "help": "White and green read on dark or busy footage; black suits light backgrounds."
+    },
+    {
+      "id": "logoScale",
+      "label": "Logo size",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0.25,
+      "max": 3,
+      "step": 0.05,
+      "showIf": {
+        "showLogo": true
+      },
+      "help": "Scale the logo up or down."
+    },
+    {
+      "id": "lowerThird",
+      "label": "Lower-third name card",
+      "section": "Overlay",
+      "type": "boolean",
+      "default": false,
+      "help": "A gently-animated name card that draws in over the footage. Uses your profile name & headshot."
+    },
+    {
+      "id": "ltTheme",
+      "label": "Card style",
+      "section": "Overlay",
+      "type": "select",
+      "default": "bar",
+      "showIf": {
+        "lowerThird": true
+      },
+      "options": [
+        {
+          "value": "bar",
+          "label": "SUSE brand bar"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        },
+        {
+          "value": "glass",
+          "label": "Glass"
+        }
+      ]
+    },
+    {
+      "id": "ltPosition",
+      "label": "Card position",
+      "section": "Overlay",
+      "type": "select",
+      "default": "left",
+      "showIf": {
+        "lowerThird": true
+      },
+      "options": [
+        {
+          "value": "left",
+          "label": "Bottom left"
+        },
+        {
+          "value": "center",
+          "label": "Bottom centre"
+        },
+        {
+          "value": "right",
+          "label": "Bottom right"
+        }
+      ]
+    },
+    {
+      "id": "firstname",
+      "label": "First name",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "bindToProfile": "firstname",
+      "showIf": {
+        "lowerThird": true
+      }
+    },
+    {
+      "id": "lastname",
+      "label": "Last name",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "bindToProfile": "lastname",
+      "showIf": {
+        "lowerThird": true
+      }
+    },
+    {
+      "id": "title",
+      "label": "Role / subtitle",
+      "section": "Overlay",
+      "type": "text",
+      "default": "",
+      "showIf": {
+        "lowerThird": true
+      },
+      "help": "Optional line below the name — e.g. a role or event."
+    },
+    {
+      "id": "nameWeight",
+      "label": "Name weight",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "showIf": {
+        "lowerThird": true
+      },
+      "help": "Font weight of the name line (100 Thin → 900 Black)."
+    },
+    {
+      "id": "subtitleWeight",
+      "label": "Subtitle weight",
+      "section": "Overlay",
+      "type": "number",
+      "display": "slider",
+      "min": 100,
+      "max": 900,
+      "step": 100,
+      "default": 500,
+      "showIf": {
+        "lowerThird": true
+      },
+      "help": "Font weight of the role / subtitle line (100 Thin → 900 Black)."
+    },
+    {
+      "id": "ltHeadshot",
+      "label": "Headshot (optional)",
+      "section": "Overlay",
+      "type": "asset",
+      "assetType": "raster",
+      "allowUpload": true,
+      "showIf": {
+        "lowerThird": true
+      },
+      "help": "Defaults to your profile headshot. Pick or upload another to override."
+    },
+    {
+      "id": "liveRes",
+      "label": "Camera resolution",
+      "type": "number",
+      "display": "slider",
+      "min": 480,
+      "max": 1920,
+      "step": 80,
+      "default": 960,
+      "help": "Working resolution for live-camera mode (Go live). Higher is sharper but heavier; no effect on a still image."
+    },
+    {
+      "id": "width",
+      "label": "Width",
+      "type": "number",
+      "default": 1000,
+      "min": 1,
+      "max": 8000,
+      "group": "export"
+    },
+    {
+      "id": "height",
+      "label": "Height",
+      "type": "number",
+      "default": 1000,
+      "min": 1,
+      "max": 8000,
+      "group": "export"
+    }
+  ],
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "onFrame": true,
+    "beforeExport": true,
+    "afterExport": true
+  },
+  "examples": [
+    {
+      "label": "Halftone dots",
+      "values": {
+        "effect": "halftone",
+        "ht_shape": "circle"
+      }
+    },
+    {
+      "label": "Duotone",
+      "values": {
+        "effect": "duotone"
+      }
+    },
+    {
+      "label": "Scanline CRT",
+      "values": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "label": "Voronoi cells",
+      "values": {
+        "effect": "voronoi",
+        "vo_cells": 220
+      }
+    },
+    {
+      "label": "Print imperfections",
+      "values": {
+        "effect": "imperfections"
+      }
+    }
+  ]
+}
