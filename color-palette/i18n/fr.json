@@ -28,5 +28,9 @@
   "inputs.contrastCurve.options.text": "Text-first",
   "inputs.contrastCurve.options.ui": "UI states",
   "inputs.lcTargets.label": "Custom Lc targets",
-  "inputs.lcTargets.help": "Optional comma list of APCA Lc targets, one per step (e.g. 15,30,45,60,75,90). Overrides the curve when set."
+  "inputs.lcTargets.help": "Optional comma list of APCA Lc targets, one per step (e.g. 15,30,45,60,75,90). Overrides the curve when set.",
+  "inputs.cssStyle.label": "CSS export style",
+  "inputs.cssStyle.help": "How the CSS download is shaped. Variables emit :root custom properties; Classes emit bg/text/border utility classes. Only affects the CSS export.",
+  "inputs.cssStyle.options.variables": "Custom properties",
+  "inputs.cssStyle.options.classes": "Utility classes"
 }

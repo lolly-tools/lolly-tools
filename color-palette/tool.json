@@ -2,7 +2,7 @@
   "id": "color-palette",
   "name": "Palette Lab",
   "description": "Grow a palette from one seed colour — harmony accents, perceptual OKLab ramps and WCAG/APCA readability badges, with DTCG tokens and CSV export.",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "utility",
@@ -21,7 +21,12 @@
       "png",
       "jpg",
       "webp",
-      "csv"
+      "csv",
+      "json",
+      "css",
+      "scss",
+      "gpl",
+      "ase"
     ],
     "actions": [
       "copy",
@@ -31,7 +36,8 @@
   },
   "hooks": {
     "onInit": true,
-    "onInput": true
+    "onInput": true,
+    "exportStill": true
   },
   "inputs": [
     {
@@ -151,6 +157,24 @@
       "type": "text",
       "default": "",
       "help": "Optional comma list of APCA Lc targets, one per step (e.g. 15,30,45,60,75,90). Overrides the curve when set."
+    },
+    {
+      "id": "cssStyle",
+      "urlKey": "cs",
+      "label": "CSS export style",
+      "type": "select",
+      "default": "variables",
+      "help": "How the CSS download is shaped. Variables emit :root custom properties; Classes emit bg/text/border utility classes. Only affects the CSS export.",
+      "options": [
+        {
+          "value": "variables",
+          "label": "Custom properties"
+        },
+        {
+          "value": "classes",
+          "label": "Utility classes"
+        }
+      ]
     }
   ],
   "examples": [

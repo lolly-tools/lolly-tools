@@ -9,10 +9,14 @@
  *
  * The whole sheet is data: compute() emits positioned swatch/ramp extras the
  * logic-less SVG template iterates (a native <svg> root so the CLI's DOM-free
- * svg export works), the same palette flattened as csvRows (template.csv),
- * and a DTCG tokens fragment (tokensJson) for the copyable on-canvas panel —
- * the engine has no sibling template.json data format (only ics/vcf/csv/md),
- * hence the panel + CSV instead of a tokens *file* export.
+ * svg export works), the same palette flattened as csvRows (template.csv), a
+ * DTCG tokens fragment (tokensJson) for the copyable on-canvas panel AND the
+ * template.json export, and a flat paletteSwatches list that host.color turns
+ * into palette-exchange files (engine >= 1.108): CSS variables/classes
+ * (template.css), SCSS (template.scss), a GIMP palette (template.gpl) and a
+ * binary Adobe .ase (via the exportStill hook). Parity with the catalog view's
+ * Swatches download — all six formats from one seed. Older shells (no
+ * host.color.paletteExport) degrade to empty CSS/SCSS/GPL and decline .ase.
  */
 
 // Sheet geometry (matches the template's fixed viewBox).
@@ -242,6 +246,10 @@ function _level(ratio) {
 
 var _memoKey = null;
 var _memoResult = null;
+// The last computed flat swatch list, stashed for the exportStill hook — whose
+// ctx carries { node, format, opts, host } but NOT the input model, so it can't
+// recompute. onInit/onInput always run before any export, so this is current.
+var _lastSwatches = [];
 
 function compute(model) {
   var a = Object.fromEntries(model.map(function (i) { return [i.id, i.value]; }));
@@ -262,8 +270,11 @@ function compute(model) {
   var curveKey = (a.contrastCurve && CURVES[a.contrastCurve]) ? a.contrastCurve : 'even';
   var lcCustom = (a.lcTargets == null ? '' : String(a.lcTargets)).trim();
   var targets = contrast ? _targets(curveKey, steps, lcCustom) : null;
+  // 'classes' emits bg/text/border utility classes, else CSS custom properties.
+  var cssStyle = a.cssStyle === 'classes' ? 'classes' : 'variables';
 
-  var key = JSON.stringify([seed, kind, steps, withNeutrals, contrast, bg, curveKey, lcCustom]);
+  // cssStyle is in the key so flipping variables↔classes re-emits the CSS export.
+  var key = JSON.stringify([seed, kind, steps, withNeutrals, contrast, bg, curveKey, lcCustom, cssStyle]);
   if (key === _memoKey) return _memoResult;
 
   // Seed-tinted near-black / near-white anchors: paper & ink for the sheet
@@ -296,6 +307,10 @@ function compute(model) {
   var perceptual = Boolean(_api() && _api().ramp);
   var swatches = [];
   var csvRows = [];
+  // Flat swatch rows for host.color palette exchange. The keys mirror the DTCG
+  // tokens tree below EXACTLY (base 'color.<key>', ramp 'color.ramp.<key>.<step>')
+  // so the CSS/SCSS/GIMP/ASE files and the tokens JSON describe the same palette.
+  var paletteSwatches = [];
   var tokenColors = { $type: 'color' };
   var tokenRamps = {};
 
@@ -350,6 +365,7 @@ function compute(model) {
       target: '',
       reach: '',
     });
+    paletteSwatches.push({ key: 'color.' + e.key, name: e.name, group: 'Palette', hex: e.hex });
 
     var cells = hexes.map(function (hx, j) {
       var x = RAMP_X + j * (cellW + CELL_GAP);
@@ -371,6 +387,7 @@ function compute(model) {
         target: meta ? String(Math.round(meta.target)) : '',
         reach: meta ? (meta.reachable ? 'yes' : 'no') : '',
       });
+      paletteSwatches.push({ key: 'color.ramp.' + e.key + '.' + (j + 1) * 100, name: e.name + ' ' + (j + 1) * 100, group: e.name + ' ramp', hex: hx });
       return { hex: hx, on: cOn, x: _r1(x), w: _r1(cellW), cx: _r1(x + cellW / 2) };
     });
 
@@ -412,6 +429,24 @@ function compute(model) {
   tokenColors.ramp = tokenRamps;
   var tokensJson = JSON.stringify({ $description: 'Palette Lab — ' + subtitle, color: tokenColors }, null, 2);
 
+  // Palette-exchange files, from the flat swatch list via host.color (engine
+  // >= 1.108). css-vars vs css-classes follows the cssStyle input. Feature-
+  // detected: on an older shell these stay empty (the CSS/SCSS/GIMP exports
+  // download blank rather than fail), and .ase is declined in exportStill.
+  var paletteName = 'Palette Lab';
+  var paletteCss = '';
+  var paletteScss = '';
+  var paletteGpl = '';
+  var capi = _api();
+  if (capi && capi.paletteExport) {
+    try {
+      paletteCss = capi.paletteExport(paletteSwatches, cssStyle === 'classes' ? 'css-classes' : 'css-vars', { paletteName: paletteName }) || '';
+      paletteScss = capi.paletteExport(paletteSwatches, 'scss', { paletteName: paletteName }) || '';
+      paletteGpl = capi.paletteExport(paletteSwatches, 'gpl', { paletteName: paletteName }) || '';
+    } catch (e) { /* degrade to empty */ }
+  }
+  _lastSwatches = paletteSwatches;
+
   _memoKey = key;
   _memoResult = {
     paper: paper,
@@ -421,9 +456,28 @@ function compute(model) {
     swatches: swatches,
     csvRows: csvRows,
     tokensJson: tokensJson,
+    paletteSwatches: paletteSwatches,
+    paletteCss: paletteCss,
+    paletteScss: paletteScss,
+    paletteGpl: paletteGpl,
   };
   return _memoResult;
 }
 
 function onInit(ctx) { return compute(ctx.model); }
 function onInput(ctx) { return compute(ctx.model); }
+
+// Own the binary Adobe .ase export: build the swatch file from the last computed
+// palette via host.color.paletteExportBytes (engine >= 1.108) and return its
+// bytes, short-circuiting the DOM raster path. Every other format (svg/png/csv/
+// json/css/scss/gpl) declines (null) and falls through unchanged. Guarded on the
+// host primitive so an older shell simply doesn't offer a working .ase.
+function exportStill(ctx) {
+  if (!ctx || ctx.format !== 'ase') return null;
+  var capi = (ctx.host && ctx.host.color) || _api();
+  if (!capi || !capi.paletteExportBytes || !_lastSwatches.length) return null;
+  try {
+    var bytes = capi.paletteExportBytes(_lastSwatches, 'ase');
+    return bytes && bytes.length ? { bytes: bytes, mime: 'application/octet-stream' } : null;
+  } catch (e) { return null; }
+}
