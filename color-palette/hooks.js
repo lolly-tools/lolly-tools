@@ -39,9 +39,64 @@ var SCHEMES = {
   'free-4': { label: 'Free (4)', rot: [90, 180, 270] },
 };
 
+// Contrast-mode curves — each is a [lowLc, highLc] span that gets sampled to one
+// target APCA Lc per ramp step (dark end … light end). 'even' spreads the whole
+// legibility range; 'text' keeps every step body-readable; 'ui' stays in the
+// non-text/large-text band for borders, fills and disabled states.
+var CURVES = {
+  even: [15, 90],
+  text: [45, 100],
+  ui: [8, 66],
+};
+
 function _num(v, d) { var n = Number(v); return Number.isFinite(n) ? n : d; }
 function _clamp(n, lo, hi) { return Math.min(hi, Math.max(lo, n)); }
 function _r1(n) { return Math.round(n * 10) / 10; }
+
+// A comma list of Lc magnitudes → a clean numeric array (blank/junk dropped).
+function _parseLc(s) {
+  if (s == null) return [];
+  // Trim + drop EMPTY entries before Number(): '' would coerce to 0, so a blank
+  // lcTargets (the default) must yield [] here — not [0] — or it would zero every
+  // target and shadow the contrastCurve preset. Also drops empties in '15,,45'.
+  return String(s).split(',')
+    .map(function (x) { return String(x).trim(); })
+    .filter(function (x) { return x !== ''; })
+    .map(Number)
+    .filter(function (n) { return Number.isFinite(n) && n >= 0; });
+}
+// Resample an arbitrary target list to exactly `steps` entries by linear
+// interpolation, so a user's `lcTargets` need not match the ramp length. An
+// exact-length list round-trips unchanged; a single value fills every step.
+function _fitTargets(list, steps) {
+  if (list.length === 1) {
+    var flat = [];
+    for (var i = 0; i < steps; i++) flat.push(list[0]);
+    return flat;
+  }
+  var out = [];
+  for (var j = 0; j < steps; j++) {
+    var t = steps <= 1 ? 0 : j / (steps - 1);
+    var pos = t * (list.length - 1);
+    var lo = Math.floor(pos);
+    var hi = Math.min(list.length - 1, lo + 1);
+    out.push(_r1(list[lo] + (list[hi] - list[lo]) * (pos - lo)));
+  }
+  return out;
+}
+// The per-step target Lc array: a custom list wins, else the named curve sampled
+// dark→light across `steps`.
+function _targets(curveKey, steps, custom) {
+  var list = _parseLc(custom);
+  if (list.length) return _fitTargets(list, steps);
+  var ends = CURVES[curveKey] || CURVES.even;
+  var out = [];
+  for (var i = 0; i < steps; i++) {
+    var t = steps <= 1 ? 0 : i / (steps - 1);
+    out.push(_r1(ends[0] + (ends[1] - ends[0]) * t));
+  }
+  return out;
+}
 
 // Colour values can arrive via URL params and land raw inside SVG attributes —
 // accept only a real hex form (an unresolved token alias flattens to '').
@@ -142,6 +197,28 @@ function _apca(text, bg) {
   }
   return null; // no local APCA — the badge just omits Lc on old shells
 }
+// Read a colour's OKLCH axes (engine >= 1.69). Null on older shells / bad input;
+// callers supply their own neutral fallback so Contrast mode still degrades.
+function _oklch(hex) {
+  var c = _api();
+  if (c && c.oklch) {
+    try { var o = c.oklch(hex); if (o) return o; } catch (e) { /* fall through */ }
+  }
+  return null;
+}
+// Inverse APCA (engine >= 1.107): the tone of a given hue/chroma that reads at
+// `targetLc` on `bg`. Returns the solver result ({ hex, lc, target, reachable })
+// or null when the host can't solve — the caller then falls back to _ramp.
+function _solve(hue, chroma, targetLc, bg) {
+  var c = _api();
+  if (c && c.solveApca) {
+    try {
+      var r = c.solveApca(hue, chroma, targetLc, bg);
+      if (r && typeof r.hex === 'string' && r.hex) return r;
+    } catch (e) { /* fall through */ }
+  }
+  return null;
+}
 function _accents(seed, kind) {
   var c = _api();
   if (c && c.schemes) {
@@ -176,7 +253,17 @@ function compute(model) {
   var steps = _clamp(Math.round(_num(a.steps, 7)), 3, 11);
   var withNeutrals = !(a.neutrals === false || a.neutrals === 'false' || a.neutrals === 0);
 
-  var key = JSON.stringify([seed, kind, steps, withNeutrals]);
+  // Contrast mode: solve every ramp step to a target APCA Lc against `bg`. Only
+  // taken when the host actually carries the inverse solver (engine >= 1.107) —
+  // older shells fall back to the perceptual OKLab ramp. `bg` defaults to white
+  // when its {color.semantic.surface} token doesn't resolve (neutral brands).
+  var contrast = (a.mode === 'contrast') && Boolean(_api() && _api().solveApca);
+  var bg = _hex(a.bg, '#ffffff');
+  var curveKey = (a.contrastCurve && CURVES[a.contrastCurve]) ? a.contrastCurve : 'even';
+  var lcCustom = (a.lcTargets == null ? '' : String(a.lcTargets)).trim();
+  var targets = contrast ? _targets(curveKey, steps, lcCustom) : null;
+
+  var key = JSON.stringify([seed, kind, steps, withNeutrals, contrast, bg, curveKey, lcCustom]);
   if (key === _memoKey) return _memoResult;
 
   // Seed-tinted near-black / near-white anchors: paper & ink for the sheet
@@ -217,9 +304,42 @@ function compute(model) {
     var on = _pickOn(e.hex);
     var ratio = _contrast(e.hex, on);
     var lc = _apca(on, e.hex);
-    var badges = ratio.toFixed(1) + ':1 ' + _level(ratio) + (lc == null ? '' : ' · Lc ' + Math.round(Math.abs(lc)));
+
+    // Build this entry's ramp. Contrast mode reads the entry's hue+chroma and
+    // solves each step to its target Lc against `bg` (recording achieved Lc + a
+    // reachability flag); otherwise it's the perceptual OKLab tonal ramp (a
+    // neutrals entry brings its own pre-built ramp).
+    var hexes;
+    var cellMeta = null;
+    if (contrast) {
+      var base = _oklch(e.hex) || { l: 0.5, c: 0.08, h: 0 };
+      cellMeta = targets.map(function (tg) {
+        var r = _solve(base.h, base.c, tg, bg);
+        var hx = r ? _hex(r.hex, e.hex) : e.hex;
+        var achieved = r && Number.isFinite(r.lc) ? Math.abs(r.lc) : null;
+        return { hex: hx, target: Math.abs(tg), achieved: achieved, reachable: r ? !!r.reachable : false };
+      });
+      hexes = cellMeta.map(function (m) { return m.hex; });
+    } else {
+      hexes = e.ramp || _ramp([_mix(e.hex, '#0b0c0e', 0.85), e.hex, _mix(e.hex, '#ffffff', 0.9)], steps);
+    }
+
+    // Row badge: OKLab shows the swatch's own WCAG ratio + APCA Lc; Contrast
+    // summarises the ramp's target span and how many steps had to be capped
+    // (target beyond what this hue can carry against the background).
+    var badges;
+    if (contrast) {
+      var capped = cellMeta.filter(function (m) { return !m.reachable; }).length;
+      var tlo = Math.round(Math.min.apply(null, cellMeta.map(function (m) { return m.target; })));
+      var thi = Math.round(Math.max.apply(null, cellMeta.map(function (m) { return m.target; })));
+      badges = 'APCA on ' + bg + ' · Lc ' + tlo + '-' + thi + (capped ? ' · ' + capped + ' capped' : ' · all reached');
+    } else {
+      badges = ratio.toFixed(1) + ':1 ' + _level(ratio) + (lc == null ? '' : ' · Lc ' + Math.round(Math.abs(lc)));
+    }
 
     // Base row first so each colour groups with its own ramp cells in the CSV.
+    // The base swatch describes its own-label legibility in both modes; the
+    // target/reach columns belong to the solved ramp cells below.
     csvRows.push({
       name: e.key,
       hex: e.hex,
@@ -227,29 +347,48 @@ function compute(model) {
       wcag: ratio.toFixed(2),
       level: _level(ratio),
       apca: lc == null ? '' : String(Math.round(Math.abs(lc))),
+      target: '',
+      reach: '',
     });
 
-    // Dark -> light tonal ramp through the colour (neutrals bring their own).
-    var hexes = e.ramp || _ramp([_mix(e.hex, '#0b0c0e', 0.85), e.hex, _mix(e.hex, '#ffffff', 0.9)], steps);
     var cells = hexes.map(function (hx, j) {
       var x = RAMP_X + j * (cellW + CELL_GAP);
       var cOn = _pickOn(hx);
       var cRatio = _contrast(hx, cOn);
-      var cLc = _apca(cOn, hx);
+      var meta = cellMeta ? cellMeta[j] : null;
+      // Contrast: the meaningful Lc is against the BACKGROUND (what was targeted),
+      // from the solver; OKLab: against the cell's own label, as before.
+      var cLc;
+      if (meta) { cLc = meta.achieved; }
+      else { var raw = _apca(cOn, hx); cLc = raw == null ? null : Math.abs(raw); }
       csvRows.push({
         name: e.key + '-' + (j + 1) * 100,
         hex: hx,
         on: cOn,
         wcag: cRatio.toFixed(2),
         level: _level(cRatio),
-        apca: cLc == null ? '' : String(Math.round(Math.abs(cLc))),
+        apca: cLc == null ? '' : String(Math.round(cLc)),
+        target: meta ? String(Math.round(meta.target)) : '',
+        reach: meta ? (meta.reachable ? 'yes' : 'no') : '',
       });
       return { hex: hx, on: cOn, x: _r1(x), w: _r1(cellW), cx: _r1(x + cellW / 2) };
     });
 
     tokenColors[e.key] = { $value: e.hex };
     var group = {};
-    hexes.forEach(function (hx, j) { group[String((j + 1) * 100)] = { $value: hx }; });
+    hexes.forEach(function (hx, j) {
+      var tok = { $value: hx };
+      // Contrast mode carries the per-step solve as a namespaced DTCG extension so
+      // the copied tokens record what each tone was solved to reach, and whether
+      // it did (a capped step is the closest achievable, flagged not the target).
+      if (cellMeta) {
+        var m = cellMeta[j];
+        tok.$extensions = {
+          'org.lolly.apca': { targetLc: m.target, achievedLc: m.achieved, reachable: m.reachable, bg: bg },
+        };
+      }
+      group[String((j + 1) * 100)] = tok;
+    });
     tokenRamps[e.key] = group;
 
     swatches.push({
@@ -267,7 +406,9 @@ function compute(model) {
     });
   });
 
-  var subtitle = 'Seed ' + seed + ' · ' + SCHEMES[kind].label + ' · ' + steps + '-step ' + (perceptual ? 'OKLab ramps' : 'ramps');
+  var subtitle = contrast
+    ? 'Seed ' + seed + ' · ' + SCHEMES[kind].label + ' · Contrast (APCA) on ' + bg + ' · ' + steps + '-step'
+    : 'Seed ' + seed + ' · ' + SCHEMES[kind].label + ' · ' + steps + '-step ' + (perceptual ? 'OKLab ramps' : 'ramps');
   tokenColors.ramp = tokenRamps;
   var tokensJson = JSON.stringify({ $description: 'Palette Lab — ' + subtitle, color: tokenColors }, null, 2);
 

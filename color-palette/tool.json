@@ -2,7 +2,7 @@
   "id": "color-palette",
   "name": "Palette Lab",
   "description": "Grow a palette from one seed colour — harmony accents, perceptual OKLab ramps and WCAG/APCA readability badges, with DTCG tokens and CSV export.",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "utility",
@@ -95,6 +95,62 @@
       "type": "boolean",
       "default": true,
       "help": "Adds a seed-tinted grey ramp for text and surfaces."
+    },
+    {
+      "id": "mode",
+      "urlKey": "m",
+      "label": "Ramp mode",
+      "type": "select",
+      "default": "oklab",
+      "help": "Perceptual grows each ramp as even OKLab tones. Contrast solves every step to a target APCA readability level against the background.",
+      "options": [
+        {
+          "value": "oklab",
+          "label": "Perceptual (OKLab)"
+        },
+        {
+          "value": "contrast",
+          "label": "Contrast (APCA)"
+        }
+      ]
+    },
+    {
+      "id": "bg",
+      "urlKey": "b",
+      "label": "Background",
+      "type": "color",
+      "default": "{color.semantic.surface}",
+      "help": "The surface the palette sits on. In Contrast mode every step is solved for readability against it — defaults to your brand surface (white in a neutral brand)."
+    },
+    {
+      "id": "contrastCurve",
+      "urlKey": "cc",
+      "label": "Contrast curve",
+      "type": "select",
+      "default": "even",
+      "help": "How the target APCA Lc is spread across the ramp in Contrast mode.",
+      "options": [
+        {
+          "value": "even",
+          "label": "Even"
+        },
+        {
+          "value": "text",
+          "label": "Text-first"
+        },
+        {
+          "value": "ui",
+          "label": "UI states"
+        }
+      ]
+    },
+    {
+      "id": "lcTargets",
+      "urlKey": "lc",
+      "label": "Custom Lc targets",
+      "type": "text",
+      "default": "",
+      "help": "Optional comma list of APCA Lc targets, one per step (e.g. 15,30,45,60,75,90). Overrides the curve when set."
     }
   ],
   "examples": [
@@ -141,6 +197,42 @@
         "harmony": "free-4",
         "steps": 11,
         "neutrals": true
+      }
+    },
+    {
+      "label": "Contrast ramp on white",
+      "values": {
+        "seed": "#2563eb",
+        "harmony": "triad-3",
+        "steps": 6,
+        "neutrals": true,
+        "mode": "contrast",
+        "bg": "#ffffff",
+        "contrastCurve": "even"
+      }
+    },
+    {
+      "label": "Text-first on ink",
+      "values": {
+        "seed": "#22d3ee",
+        "harmony": "adjacent-3",
+        "steps": 5,
+        "neutrals": false,
+        "mode": "contrast",
+        "bg": "#0b1220",
+        "contrastCurve": "text"
+      }
+    },
+    {
+      "label": "Custom Lc steps",
+      "values": {
+        "seed": "#16a34a",
+        "harmony": "complement",
+        "steps": 6,
+        "neutrals": true,
+        "mode": "contrast",
+        "bg": "#f8fafc",
+        "lcTargets": "15,30,45,60,75,90"
       }
     }
   ]

@@ -1,6 +1,6 @@
 {
-  "name": "Color Picker",
-  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
+  "name": "Palette Lab",
+  "description": "Grow a palette from one seed colour — harmony accents, perceptual OKLab ramps and WCAG/APCA readability badges, with DTCG tokens and CSV export.",
   "inputs.seed.label": "সিড রং",
   "inputs.seed.help": "যে রং থেকে পুরো প্যালেট তৈরি হয় - ডিফল্টরূপে আপনার ব্র্যান্ড প্রাইমারি।",
   "inputs.harmony.label": "হারমনি",
@@ -15,5 +15,18 @@
   "inputs.steps.label": "র‌্যাম্প ধাপ",
   "inputs.steps.help": "প্রতি র‍্যাম্পে টোন, গাঢ় থেকে হালকা।",
   "inputs.neutrals.label": "নিউট্রাল অন্তর্ভুক্ত করুন",
-  "inputs.neutrals.help": "টেক্সট ও সারফেসের জন্য সিড-টিন্টেড ধূসর র‍্যাম্প যোগ করে।"
+  "inputs.neutrals.help": "টেক্সট ও সারফেসের জন্য সিড-টিন্টেড ধূসর র‍্যাম্প যোগ করে।",
+  "inputs.mode.label": "Ramp mode",
+  "inputs.mode.help": "Perceptual grows each ramp as even OKLab tones. Contrast solves every step to a target APCA readability level against the background.",
+  "inputs.mode.options.oklab": "Perceptual (OKLab)",
+  "inputs.mode.options.contrast": "Contrast (APCA)",
+  "inputs.bg.label": "Background",
+  "inputs.bg.help": "The surface the palette sits on. In Contrast mode every step is solved for readability against it — defaults to your brand surface (white in a neutral brand).",
+  "inputs.contrastCurve.label": "Contrast curve",
+  "inputs.contrastCurve.help": "How the target APCA Lc is spread across the ramp in Contrast mode.",
+  "inputs.contrastCurve.options.even": "Even",
+  "inputs.contrastCurve.options.text": "Text-first",
+  "inputs.contrastCurve.options.ui": "UI states",
+  "inputs.lcTargets.label": "Custom Lc targets",
+  "inputs.lcTargets.help": "Optional comma list of APCA Lc targets, one per step (e.g. 15,30,45,60,75,90). Overrides the curve when set."
 }
