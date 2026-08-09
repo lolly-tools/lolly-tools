@@ -9,10 +9,9 @@
  * collisions (e.g. threshold is a number in pixel-stretch but a boolean in posterize),
  * and unifies the source image to `image`; viewFor() undoes that per effect.
  *
- * Output contract: the template is one {{{svgContent}}} root (+ a guarded duotone
- * block). Five effects return svgContent already; posterize's posterSvg is aliased;
- * pixel-stretch's pre-baked bitmap is wrapped by psSvg(); duotone renders in the
- * template (its filter needs the {{asset}} helper), flagged with __duo.
+ * Output contract: the template is one {{{svgContent}}} root. Five effects return
+ * svgContent already; posterize's posterSvg/voronoi's voronoiSvg are aliased;
+ * pixel-stretch's and duotone's pre-baked bitmaps are each wrapped by psSvg().
  */
 /* global onInit, onInput, onFrame, beforeExport, afterExport, host */
 
@@ -23,11 +22,16 @@ function _rename(i, id) { var o = {}; for (var k in i) o[k] = i[k]; o.id = id; r
 
 var _activeEffect = 'halftone';
 
-// Rasterise pixel-stretch's already-composed bitmap into a self-contained <svg> so it
-// fits the one-template contract. The smear + cover framing are baked into outSrc by
-// the effect, so a 1:1 image map is faithful.
+// Rasterise an already-composed bitmap (pixel-stretch's smear, duotone's colour
+// treatment) into a self-contained <svg> so it fits the one-template contract. The
+// framing + effect are baked into outSrc, so a 1:1 image map is faithful. When the
+// effect supplies imgKey/imgW/imgH they're stamped on the root so the template's
+// auto-fit script snaps the export canvas to a freshly-chosen image's native size.
 function _psSvg(p, W, H) {
-  var head = '<svg xmlns="http://www.w3.org/2000/svg" id="ps-svg" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">';
+  var keyAttr = p && p.imgKey
+    ? ' data-img-key="' + _esc(p.imgKey) + '" data-img-w="' + (p.imgW || '') + '" data-img-h="' + (p.imgH || '') + '"'
+    : '';
+  var head = '<svg xmlns="http://www.w3.org/2000/svg" id="ps-svg"' + keyAttr + ' viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">';
   if (!p || !p.outSrc) {
     return head + '<rect width="' + W + '" height="' + H + '" fill="#0f0f12"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, sans-serif" font-size="34" fill="#9ca3af">' + _esc(p && p.note ? p.note : 'Choose an image to stretch') + '</text></svg>';
   }
@@ -42,11 +46,11 @@ function _psSvg(p, W, H) {
 // {{{svgContent}}}, so alias them. halftone/scanline/imperfections already use svgContent.
 var _SVG_KEY = { posterize: 'posterSvg', voronoi: 'voronoiSvg' };
 
-// Normalise an effect's patch to the { svgContent } / __duo contract.
+// Normalise an effect's patch to the { svgContent } contract. pixel-stretch and
+// duotone both bake a bitmap and get wrapped in an <svg> by _psSvg.
 function _finalizeOne(effect, p, W, H) {
   if (!p) return p;
-  if (effect === 'pixel-stretch') { p.svgContent = _psSvg(p, W, H); return p; }
-  if (effect === 'duotone') { p.__duo = true; return p; }
+  if (effect === 'pixel-stretch' || effect === 'duotone') { p.svgContent = _psSvg(p, W, H); return p; }
   var k = _SVG_KEY[effect];
   if (k && p[k] && !p.svgContent) p.svgContent = p[k];
   return p;
@@ -61,7 +65,7 @@ var EFFECT_META = {
   "scanline": { prefix: "sc_", img: "image" },
   "posterize": { prefix: "pz_", img: "photo" },
   "voronoi": { prefix: "vo_", img: "image" },
-  "duotone": { prefix: "du_", img: "bgImage" },
+  "duotone": { prefix: "du_", img: "image" },
   "pixel-stretch": { prefix: "px_", img: "image" },
   "imperfections": { prefix: "im_", img: "image" }
 };
@@ -3755,132 +3759,374 @@ return {
 
 // ===== effect module: duotone (from community/filter-duotone/hooks.js) =====
 var FX_duotone = (function () {
-/* global onInit, onInput, onFrame, beforeExport, afterExport, host */
+/**
+ * Colour-treatment Filter (effect value "duotone") — hooks.
+ *
+ * Grades a photo and recolours it through a brand colour treatment: a Colour
+ * wash (tint), a two-tone Duotone, a three-stop Gradient map, or a Split tone.
+ * The treatment is a per-pixel OKLab remap (ported from Bitmap Studio), so it is
+ * NOT expressible as a static SVG feColorMatrix — the effect decodes the source
+ * via host.raster, cover-frames + grades + treats it on a <canvas> in one pass,
+ * bakes to a JPEG data URL, and emits it wrapped in a single <svg> via the shared
+ * _psSvg() helper (the same svgContent path pixel-stretch uses). Live camera runs
+ * the identical pass per frame. Pixel work needs a real 2D canvas (host.raster);
+ * a headless shell (CLI/jsdom) has none, so the hook degrades to a note card.
+ *
+ * The three treatment stops (shadow / mid / highlight) are seeded from the
+ * brand's palette (host.tokens: darkest / most-chromatic / lightest swatch) and
+ * can be overridden per stop; a neutral fallback covers a shell without tokens.
+ * The shared hue/sat/lightness/contrast grade and the global treatmentColor
+ * flood-overlay still compose, in that order: grade -> brand treatment -> overlay.
+ */
 
-// A raster library asset shown when the user hasn't picked an image yet, so the
-// tool demonstrates the effect on load. Same default as filter-scanline /
-// filter-halftone, kept in sync deliberately.
-// A Lolly tool URL (bag-video → PNG), resolved via host.compose. A plain catalog
-// id still works (the resolver below branches on whether this is a URL).
+var STILL_MAX = 1440; // working-canvas long edge for stills — the SVG <image> scales up
+var LIVE_MAX = 960;   // live: OKLab per-pixel is heavier than a smear, so trade a little
+                      // sharpness for frame rate (overlapping frames are dropped anyway).
+
+// Default source image until the user picks one: a Lolly tool URL (bag-video -> PNG),
+// resolved via host.compose. Same default as the sibling effects, kept in sync.
 var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
 
-// Resolved URL of the demo default asset, cached so repeated input changes don't
-// re-fetch it. Stays null until the first lookup succeeds.
+var _imgCache = { url: null, promise: null };
 var _defaultUrl = null;
-// (overlay export state now travels through the DOM via data-ov-params, not module vars)
+var _memoKey = null;
+var _memoResult = null;
+var _lastOutSrc = null; // previous composed bitmap, sent as prevSrc for seamless swaps
+var _brandStops = null; // resolved brand treatment seeds (once per mount)
+var _lastOv = null, _lastW = null, _lastH = null; // most recent overlay params — read by beforeExport
 
-function hexToChannels(hex) {
-  const c = (hex || '#000000').replace('#', '');
-  return {
-    r: parseInt(c.slice(0, 2), 16) / 255,
-    g: parseInt(c.slice(2, 4), 16) / 255,
-    b: parseInt(c.slice(4, 6), 16) / 255,
-  };
-}
+// ── helpers ──────────────────────────────────────────────────────────────────
 
-function ch(n) {
-  return parseFloat(n.toFixed(4));
-}
-
+function inputsFrom(model) { var o = {}; model.forEach(function (i) { o[i.id] = i.value; }); return o; }
+function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
 // === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 
-// === lolly:shared rasterCanvas — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
-// A realm-appropriate 2D drawing surface for an onFrame kernel: a document
-// <canvas> on the main thread (keeps the existing toDataURL fast path
-// byte-identical), an OffscreenCanvas inside a Worker (no document there, but
-// OffscreenCanvas works). getContext('2d')/getImageData/putImageData/drawImage
-// are identical on both, so a kernel that draws through this is realm-agnostic.
-function rasterCanvas(w, h) {
-  if (typeof document !== 'undefined' && document.createElement) {
-    var c = document.createElement('canvas');
-    c.width = w; c.height = h;
-    return c;
-  }
-  return new OffscreenCanvas(w, h);
+// ── OKLab colour space (Björn Ottosson) — ported verbatim from Bitmap Studio ────
+function srgbToLinear(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+function linearToSrgb(c) { return c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055; }
+function hexToRgb01(hex) {
+  var h = (typeof hex === 'string' ? hex : '').trim().replace(/^#/, '');
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  if (h.length === 8) h = h.slice(0, 6); // ignore alpha
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+  var v = parseInt(h, 16);
+  return [((v >> 16) & 255) / 255, ((v >> 8) & 255) / 255, (v & 255) / 255];
 }
-// === /lolly:shared rasterCanvas ===
+function rgb01ToOklab(r, g, b) {
+  r = srgbToLinear(r); g = srgbToLinear(g); b = srgbToLinear(b);
+  var l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  var m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  var s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ];
+}
+function oklabToRgb01(L, a, b) {
+  var l = Math.pow(L + 0.3963377774 * a + 0.2158037573 * b, 3);
+  var m = Math.pow(L - 0.1055613458 * a - 0.0638541728 * b, 3);
+  var s = Math.pow(L - 0.0894841775 * a - 1.291485548 * b, 3);
+  return [
+    clamp(linearToSrgb(4.0767416621 * l - 3.3077115913 * m + 0.2309699292 * s), 0, 1),
+    clamp(linearToSrgb(-1.2684380046 * l + 2.6097574011 * m - 0.3413193965 * s), 0, 1),
+    clamp(linearToSrgb(-0.0041960863 * l - 0.7034186147 * m + 1.707614701 * s), 0, 1),
+  ];
+}
+function smoothstep(a, b, x) {
+  var t = clamp((x - a) / (b - a), 0, 1);
+  return t * t * (3 - 2 * t);
+}
 
-// === lolly:shared canvasToUrl — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
-// Encode a rasterCanvas() surface to a `data:` URL. Always returns a Promise so
-// callers `await` it uniformly. Main thread: canvas.toDataURL is synchronous
-// (unchanged shipping behaviour), wrapped resolved. Worker: OffscreenCanvas has
-// no toDataURL, so convertToBlob → bytes → base64 (btoa exists in a Worker;
-// FileReader.readAsDataURL is not relied on). Chunked fromCharCode avoids the
-// call-stack overflow a whole-array apply() hits on a large JPEG.
-function canvasToUrl(canvas, type, quality) {
-  if (typeof canvas.toDataURL === 'function') {
-    return Promise.resolve(canvas.toDataURL(type, quality));
-  }
-  return canvas.convertToBlob({ type: type, quality: quality })
-    .then(function (blob) { return blob.arrayBuffer(); })
-    .then(function (buf) {
-      var bytes = new Uint8Array(buf), bin = '', CH = 0x8000;
-      for (var i = 0; i < bytes.length; i += CH) {
-        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + CH));
-      }
-      return 'data:' + (type || 'image/jpeg') + ';base64,' + btoa(bin);
+// Resolve the brand's three treatment seeds ONCE per mount from host.tokens:
+//   shadow = darkest swatch, highlight = lightest, mid = most chromatic (OKLab).
+// Neutral fallback when tokens are unavailable (or a shell without a palette).
+function resolveBrandStops() {
+  if (_brandStops) return Promise.resolve(_brandStops);
+  var fallback = { shadow: '#1c2230', mid: '#5c7cfa', highlight: '#f4f2ec' };
+  if (!host.tokens || !host.tokens.colors) return Promise.resolve((_brandStops = fallback));
+  return host.tokens.colors().then(function (swatches) {
+    var best = { shadow: null, mid: null, highlight: null };
+    var minL = 2, maxL = -1, maxC = -1;
+    (swatches || []).forEach(function (sw) {
+      var rgb = hexToRgb01(sw && sw.value);
+      if (!rgb) return;
+      var lab = rgb01ToOklab(rgb[0], rgb[1], rgb[2]);
+      var C = Math.sqrt(lab[1] * lab[1] + lab[2] * lab[2]);
+      if (lab[0] < minL) { minL = lab[0]; best.shadow = sw.value; }
+      if (lab[0] > maxL) { maxL = lab[0]; best.highlight = sw.value; }
+      if (C > maxC) { maxC = C; best.mid = sw.value; }
     });
+    _brandStops = {
+      shadow: best.shadow || fallback.shadow,
+      mid: best.mid || fallback.mid,
+      highlight: best.highlight || fallback.highlight,
+    };
+    return _brandStops;
+  }).catch(function () { return (_brandStops = fallback); });
 }
-// === /lolly:shared canvasToUrl ===
 
-function buildDuo(inputs) {
-  const fg = hexToChannels(inputs.colorFg);
-  const bg = hexToChannels(inputs.colorBg);
-
-  // Colour grade — applied as SVG filter primitives upstream of the duotone table
-  // (hueRotate → saturate → lightness), then a colour-treatment overlay after it.
-  // Defaults are a strict no-op: hue 0, saturation 100, lightness 0, no treatment.
-  var hueDeg = clamp(parseFloat(inputs.hue) || 0, -180, 180);
-  var sat = clamp(parseFloat(inputs.saturation == null ? 100 : inputs.saturation) || 0, 0, 200) / 100;
-  var lightV = clamp(parseFloat(inputs.lightness) || 0, -100, 100) / 100;
-  var liteSlope = lightV >= 0 ? (1 - lightV) : (1 + lightV);
-  var liteIntercept = lightV >= 0 ? lightV : 0;
-  // treatment: feFlood + feBlend after the duotone table, opacity = intensity.
-  // Off (empty / invalid colour) ⇒ amt 0, so the overlay contributes nothing.
-  var tc = (typeof inputs.treatmentColor === 'string' ? inputs.treatmentColor.trim() : '');
-  var tOn = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(tc);
-  var treatAmt = tOn ? clamp(parseFloat(inputs.treatmentIntensity == null ? 20 : inputs.treatmentIntensity) || 0, 0, 100) / 100 : 0;
-  var treatColor = tOn ? tc : '#000000';
-  var blendMode = (typeof inputs.blendMode === 'string' && inputs.blendMode) ? inputs.blendMode : 'multiply';
-
+// Override-or-brand stop colours -> OKLab triples (null when unusable).
+function treatLabStops(p, brand) {
+  var sh = hexToRgb01(p.treatShadow || brand.shadow);
+  var md = hexToRgb01(p.treatMid || brand.mid);
+  var hi = hexToRgb01(p.treatHighlight || brand.highlight);
   return {
-    tableR: `${ch(fg.r)} ${ch(bg.r)}`,
-    tableG: `${ch(fg.g)} ${ch(bg.g)}`,
-    tableB: `${ch(fg.b)} ${ch(bg.b)}`,
-    hueDeg: String(hueDeg),
-    satFrac: String(sat),
-    liteSlope: String(liteSlope),
-    liteIntercept: String(liteIntercept),
-    treatColor: treatColor,
-    // Returned as `treatBlend` (NOT `blendMode`) on purpose: a patch key equal to a
-    // declared input id is treated by the runtime as a write-back to that input
-    // (mergePatch), which is redundant and opens a stale-overwrite window. Keep it
-    // an extra so the template reads a computed value, never the input echoed back.
-    treatBlend: blendMode,
-    treatAmt: String(treatAmt),
+    sh: sh ? rgb01ToOklab(sh[0], sh[1], sh[2]) : null,
+    md: md ? rgb01ToOklab(md[0], md[1], md[2]) : null,
+    hi: hi ? rgb01ToOklab(hi[0], hi[1], hi[2]) : null,
   };
 }
 
-// ══════════════════════════════════════════════════════════════════════════════
-// Brand overlay — optional SUSE logo + gently-animated "lower third" name card.
-//
-// Synced from community/_shared/overlay.js (npm run sync:shared). Emits SVG children
-// so the overlay survives ALL export paths — raster (png/webp/jpg), motion
-// (gif/webm/mp4) AND vector (svg/pdf). Everything is OFF by default → overlayActive()
-// is false → buildOverlaySvg() returns '' (zero markup / zero cost).
-//
-// Animation is ATTRIBUTE-BAKED (computed transform/opacity per render), never CSS
-// @keyframes or SMIL: the tool's whole SVG is replaced on every paint / every live
-// camera frame, which would reset a CSS/SMIL animation to t=0 each frame. Baking the
-// pose means it looks identical in the live preview, in each captured video frame,
-// and in a static vector snapshot. In live mode the gentle intro is driven by the
-// camera clock (elapsed since the overlay first appeared).
-//
-// Module state used: _logoCache, _profileHeadshotUrl, _liveOvStart. Depends on `host`
-// (host.assets.get / host.profile.get) being in scope.
-// ══════════════════════════════════════════════════════════════════════════════
+// ── image decode + raster plumbing ───────────────────────────────────────────
+// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+function canRaster() {
+  return !!(host.raster && host.raster.canRaster());
+}
+// === /lolly:shared canRaster ===
+// === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+function loadImage(url) {
+  if (!host.raster) return Promise.reject(new Error('no raster'));
+  return host.raster.decode(url);
+}
+// === /lolly:shared loadImage ===
+function getImage(url) {
+  if (_imgCache.url === url && _imgCache.promise) return _imgCache.promise;
+  var promise = loadImage(url);
+  _imgCache = { url: url, promise: promise };
+  promise.catch(function () { if (_imgCache.url === url) _imgCache = { url: null, promise: null }; });
+  return promise;
+}
+function workDims(W, H, maxEdge) {
+  W = clamp(Math.round(W), 1, 8000); H = clamp(Math.round(H), 1, 8000);
+  var longest = Math.max(W, H);
+  if (longest <= maxEdge) return { w: W, h: H };
+  var k = maxEdge / longest;
+  return { w: Math.max(1, Math.round(W * k)), h: Math.max(1, Math.round(H * k)) };
+}
+function drawCover(ctx, source, iw, ih, W, H, zoom, px, py) {
+  var s = Math.max(W / iw, H / ih) * zoom;
+  var dw = iw * s, dh = ih * s;
+  ctx.imageSmoothingEnabled = true;
+  if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = 'high';
+  ctx.drawImage(source, -px * (dw - W), -py * (dh - H), dw, dh);
+}
+
+// ── colour grade (HSL/contrast matrices + separable/non-separable blends) ──────
+function mul3(a, b) {
+  var o = new Array(9);
+  for (var r = 0; r < 3; r++) for (var c = 0; c < 3; c++) {
+    o[r * 3 + c] = a[r * 3] * b[c] + a[r * 3 + 1] * b[3 + c] + a[r * 3 + 2] * b[6 + c];
+  }
+  return o;
+}
+function hueSatMatrix(hueDeg, sat) {
+  var h = hueDeg * Math.PI / 180, c = Math.cos(h), s = Math.sin(h);
+  var hueM = [
+    0.213 + c * 0.787 - s * 0.213, 0.715 - c * 0.715 - s * 0.715, 0.072 - c * 0.072 + s * 0.928,
+    0.213 - c * 0.213 + s * 0.143, 0.715 + c * 0.285 + s * 0.140, 0.072 - c * 0.072 - s * 0.283,
+    0.213 - c * 0.213 - s * 0.787, 0.715 - c * 0.715 + s * 0.715, 0.072 + c * 0.928 + s * 0.072,
+  ];
+  var satM = [
+    0.213 + 0.787 * sat, 0.715 - 0.715 * sat, 0.072 - 0.072 * sat,
+    0.213 - 0.213 * sat, 0.715 + 0.285 * sat, 0.072 - 0.072 * sat,
+    0.213 - 0.213 * sat, 0.715 - 0.715 * sat, 0.072 + 0.928 * sat,
+  ];
+  return mul3(satM, hueM); // hue first, then saturation
+}
+function _bl(mode, b, s) {
+  switch (mode) {
+    case 'multiply': return b * s;
+    case 'screen': return b + s - b * s;
+    case 'overlay': return b < 0.5 ? 2 * b * s : 1 - 2 * (1 - b) * (1 - s);
+    case 'hard-light': return s < 0.5 ? 2 * b * s : 1 - 2 * (1 - b) * (1 - s);
+    case 'soft-light': return s <= 0.5 ? b - (1 - 2 * s) * b * (1 - b)
+      : b + (2 * s - 1) * ((b <= 0.25 ? ((16 * b - 12) * b + 4) * b : Math.sqrt(b)) - b);
+    case 'darken': return b < s ? b : s;
+    case 'lighten': return b > s ? b : s;
+    case 'color-dodge': return s >= 1 ? 1 : Math.min(1, b / (1 - s));
+    case 'color-burn': return s <= 0 ? 0 : Math.max(0, 1 - (1 - b) / s);
+    case 'difference': return b > s ? b - s : s - b;
+    case 'exclusion': return b + s - 2 * b * s;
+    default: return s; // normal
+  }
+}
+function _hex2rgb(hex) {
+  var s = (typeof hex === 'string' ? hex : '').trim().replace(/^#/, '');
+  if (s.length === 3) s = s[0]+s[0]+s[1]+s[1]+s[2]+s[2];
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+  return { r: parseInt(s.slice(0,2),16), g: parseInt(s.slice(2,4),16), b: parseInt(s.slice(4,6),16) };
+}
+function _lum(c) { return 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]; }
+function _clipColor(c) {
+  var l = _lum(c), mn = Math.min(c[0], c[1], c[2]), mx = Math.max(c[0], c[1], c[2]), o = [c[0], c[1], c[2]], i;
+  if (mn < 0) for (i = 0; i < 3; i++) o[i] = l + (o[i] - l) * l / (l - mn);
+  if (mx > 1) for (i = 0; i < 3; i++) o[i] = l + (o[i] - l) * (1 - l) / (mx - l);
+  return o;
+}
+function _setLum(c, l) { var d = l - _lum(c); return _clipColor([c[0] + d, c[1] + d, c[2] + d]); }
+function _sat(c) { return Math.max(c[0], c[1], c[2]) - Math.min(c[0], c[1], c[2]); }
+function _setSat(c, s) {
+  var ix = [0, 1, 2].sort(function (a, b) { return c[a] - c[b]; }), lo = ix[0], mid = ix[1], hi = ix[2], o = [0, 0, 0];
+  if (c[hi] > c[lo]) { o[mid] = (c[mid] - c[lo]) * s / (c[hi] - c[lo]); o[hi] = s; }
+  return o;
+}
+function _blendNonSep(mode, Cb, Cs) {
+  switch (mode) {
+    case 'hue':        return _setLum(_setSat(Cs, _sat(Cb)), _lum(Cb));
+    case 'saturation': return _setLum(_setSat(Cb, _sat(Cs)), _lum(Cb));
+    case 'color':      return _setLum(Cs, _lum(Cb));
+    case 'luminosity': return _setLum(Cb, _lum(Cs));
+    default:           return null;
+  }
+}
+function treatmentFrom(inputs) {
+  var ov = _hex2rgb(inputs.treatmentColor);
+  var amt = clamp(n(inputs.treatmentIntensity, 20), 0, 100) / 100;
+  var mode = typeof inputs.blendMode === 'string' ? inputs.blendMode : 'multiply';
+  return { ov: ov, amt: amt, mode: mode, on: !!(ov && amt > 0) };
+}
+
+// ── grade + brand treatment in one pass ───────────────────────────────────────
+// Order matches the old declarative duotone chain: contrast -> hue/sat -> lightness
+// (grade), then the brand OKLab treatment, then the global treatmentColor overlay.
+// lab is the resolved { sh, md, hi } OKLab stops (null when the treatment is off).
+function applyGradeAndTreat(ctx, W, H, p, lab) {
+  var treatOn = p.treatment !== 'none' && p.treatmentAmount > 0 && !!(lab && lab.sh && lab.hi);
+  var gradeOn = !(p.hue === 0 && p.sat === 1 && p.light === 0 && p.contrast === 0);
+  var tov = (p.treat && p.treat.on) ? p.treat : null;
+  if (!treatOn && !gradeOn && !tov) return;
+  var image;
+  try { image = ctx.getImageData(0, 0, W, H); } catch (e) { return; }
+  var d = image.data, light = p.light;
+  var m = hueSatMatrix(p.hue, p.sat);
+  var m00 = m[0], m01 = m[1], m02 = m[2], m10 = m[3], m11 = m[4], m12 = m[5], m20 = m[6], m21 = m[7], m22 = m[8];
+  var cf = (259 * (p.contrast + 255)) / (255 * (259 - p.contrast));
+  var clut = new Uint8ClampedArray(256);
+  for (var v = 0; v < 256; v++) clut[v] = cf * (v - 128) + 128;
+
+  var mode = p.treatment, ta = p.treatmentAmount;
+  var labSh = treatOn ? lab.sh : null, labMd = lab && lab.md, labHi = treatOn ? lab.hi : null;
+  // duotone / gradient outputs depend only on L, so bake a 256-entry L->sRGB LUT
+  // once and skip the per-pixel OKLab INVERSE (the expensive half). tint / split
+  // read each pixel's own chroma, so they run the full inverse per pixel.
+  var tlut = null, gradientNoMid = false;
+  if (treatOn && mode === 'duotone') tlut = buildToneLut('duotone', labSh, labMd, labHi);
+  else if (treatOn && mode === 'gradient') {
+    if (labMd) tlut = buildToneLut('gradient', labSh, labMd, labHi);
+    else gradientNoMid = true; // no mid stop -> degrade to a shadow<->highlight duotone
+  }
+  var ovr = tov ? tov.ov.r / 255 : 0, ovg = tov ? tov.ov.g / 255 : 0, ovb = tov ? tov.ov.b / 255 : 0;
+  var ovm = tov ? tov.mode : 'multiply', ova = tov ? tov.amt : 0;
+
+  for (var i = 0; i < d.length; i += 4) {
+    var r = clut[d[i]], g = clut[d[i + 1]], b = clut[d[i + 2]];
+    var nr = m00 * r + m01 * g + m02 * b;
+    var ng = m10 * r + m11 * g + m12 * b;
+    var nb = m20 * r + m21 * g + m22 * b;
+    if (light > 0) { nr += (255 - nr) * light; ng += (255 - ng) * light; nb += (255 - nb) * light; }
+    else if (light < 0) { var k = 1 + light; nr *= k; ng *= k; nb *= k; }
+    if (treatOn) {
+      var r01 = nr / 255, g01 = ng / 255, b01 = nb / 255;
+      r01 = r01 < 0 ? 0 : r01 > 1 ? 1 : r01;
+      g01 = g01 < 0 ? 0 : g01 > 1 ? 1 : g01;
+      b01 = b01 < 0 ? 0 : b01 > 1 ? 1 : b01;
+      var labp = rgb01ToOklab(r01, g01, b01);
+      var Lp = labp[0], tr, tg, tb;
+      if (tlut) {
+        // Linear-interpolate between the two nearest L bins so the 256-entry table
+        // tracks the exact curve (quantized lookup alone drifts ~1.5/255).
+        var lf = Lp <= 0 ? 0 : Lp >= 1 ? 255 : Lp * 255;
+        var i0 = lf | 0, fr = lf - i0, i1 = i0 < 255 ? i0 + 1 : i0, a0 = i0 * 3, a1 = i1 * 3, ifr = 1 - fr;
+        tr = tlut[a0] * ifr + tlut[a1] * fr;
+        tg = tlut[a0 + 1] * ifr + tlut[a1 + 1] * fr;
+        tb = tlut[a0 + 2] * ifr + tlut[a1 + 2] * fr;
+      } else if (gradientNoMid) {
+        var gr = oklabToRgb01(labSh[0] + (labHi[0] - labSh[0]) * Lp, labSh[1] + (labHi[1] - labSh[1]) * Lp, labSh[2] + (labHi[2] - labSh[2]) * Lp);
+        tr = gr[0]; tg = gr[1]; tb = gr[2];
+      } else if (mode === 'split') {
+        var shW = 1 - smoothstep(0.2, 0.65, Lp), hiW = smoothstep(0.45, 0.9, Lp);
+        var sr = oklabToRgb01(Lp,
+          labp[1] + (labSh[1] - labp[1]) * shW * 0.6 + (labHi[1] - labp[1]) * hiW * 0.6,
+          labp[2] + (labSh[2] - labp[2]) * shW * 0.6 + (labHi[2] - labp[2]) * hiW * 0.6);
+        tr = sr[0]; tg = sr[1]; tb = sr[2];
+      } else { // tint: pull chroma toward the shadow stop, keep L
+        var nrgb = oklabToRgb01(Lp, labp[1] + (labSh[1] - labp[1]) * 0.75, labp[2] + (labSh[2] - labp[2]) * 0.75);
+        tr = nrgb[0]; tg = nrgb[1]; tb = nrgb[2];
+      }
+      nr = (r01 + (tr - r01) * ta) * 255;
+      ng = (g01 + (tg - g01) * ta) * 255;
+      nb = (b01 + (tb - b01) * ta) * 255;
+    }
+    if (tov) {
+      var Cb0 = nr / 255, Cb1 = ng / 255, Cb2 = nb / 255;
+      var ns = _blendNonSep(ovm, [Cb0, Cb1, Cb2], [ovr, ovg, ovb]);
+      nr = (Cb0 * (1 - ova) + (ns ? ns[0] : _bl(ovm, Cb0, ovr)) * ova) * 255;
+      ng = (Cb1 * (1 - ova) + (ns ? ns[1] : _bl(ovm, Cb1, ovg)) * ova) * 255;
+      nb = (Cb2 * (1 - ova) + (ns ? ns[2] : _bl(ovm, Cb2, ovb)) * ova) * 255;
+    }
+    d[i]     = nr < 0 ? 0 : nr > 255 ? 255 : nr;
+    d[i + 1] = ng < 0 ? 0 : ng > 255 ? 255 : ng;
+    d[i + 2] = nb < 0 ? 0 : nb > 255 ? 255 : nb;
+  }
+  ctx.putImageData(image, 0, 0);
+}
+
+// A 256-entry L->sRGB table for the L-only treatments (values BEFORE the amount blend).
+function buildToneLut(mode, labSh, labMd, labHi) {
+  var lut = new Float32Array(768);
+  for (var li = 0; li < 256; li++) {
+    var L = li / 255, o0, o1, o2;
+    if (mode === 'gradient') {
+      if (L < 0.5) { var u = L * 2; o0 = labSh[0] + (labMd[0] - labSh[0]) * u; o1 = labSh[1] + (labMd[1] - labSh[1]) * u; o2 = labSh[2] + (labMd[2] - labSh[2]) * u; }
+      else { var w = L * 2 - 1; o0 = labMd[0] + (labHi[0] - labMd[0]) * w; o1 = labMd[1] + (labHi[1] - labMd[1]) * w; o2 = labMd[2] + (labHi[2] - labMd[2]) * w; }
+    } else {
+      o0 = labSh[0] + (labHi[0] - labSh[0]) * L; o1 = labSh[1] + (labHi[1] - labSh[1]) * L; o2 = labSh[2] + (labHi[2] - labSh[2]) * L;
+    }
+    var rgb = oklabToRgb01(o0, o1, o2);
+    lut[li * 3] = rgb[0]; lut[li * 3 + 1] = rgb[1]; lut[li * 3 + 2] = rgb[2];
+  }
+  return lut;
+}
+
+// Cover-frame the source into W×H, then grade + treat it (or leave it raw for noFilter).
+function makeSrc(source, iw, ih, W, H, p, lab) {
+  var src = document.createElement('canvas'); src.width = W; src.height = H;
+  var sctx = src.getContext('2d', { willReadFrequently: true }); if (!sctx) return null;
+  drawCover(sctx, source, iw, ih, W, H, p.zoom, p.px, p.py);
+  applyGradeAndTreat(sctx, W, H, p, lab);
+  return src;
+}
+
+function paramsFrom(inputs) {
+  var fr = inputs.imageFraming || {};
+  var t = inputs.treatment;
+  return {
+    treatment: (t === 'tint' || t === 'duotone' || t === 'gradient' || t === 'split') ? t : 'none',
+    treatmentAmount: clamp(n(inputs.treatmentAmount, 80), 0, 100) / 100,
+    treatShadow: hexToRgb01(inputs.treatShadow) ? inputs.treatShadow : '',
+    treatMid: hexToRgb01(inputs.treatMid) ? inputs.treatMid : '',
+    treatHighlight: hexToRgb01(inputs.treatHighlight) ? inputs.treatHighlight : '',
+    contrast: clamp(n(inputs.contrast, 0), -100, 100),
+    hue: clamp(n(inputs.hue, 0), -180, 180),
+    sat: clamp(n(inputs.saturation, 100), 0, 200) / 100,
+    light: clamp(n(inputs.lightness, 0), -100, 100) / 100,
+    treat: treatmentFrom(inputs),
+    zoom: clamp(n(fr.zoom, 100), 100, 800) / 100,
+    px: clamp(n(fr.x, 50), 0, 100) / 100,
+    py: clamp(n(fr.y, 50), 0, 100) / 100,
+    W: clamp(Math.round(n(inputs.width, 1080)), 1, 8000),
+    H: clamp(Math.round(n(inputs.height, 1080)), 1, 8000),
+  };
+}
+
+// A "no filter" params object — raw cover-framed source, no grade / treatment / overlay.
+function rawParams(p) {
+  return Object.assign({}, p, { treatment: 'none', hue: 0, sat: 1, light: 0, contrast: 0, treat: { on: false } });
+}
+
 // === lolly:shared overlay — generated from community/_shared/overlay.js; edit there and run npm run sync:shared ===
 var LOGO_ASPECT = 210.179 / 37.666;   // SUSE horizontal lockup, from its own viewBox
 var _logoCache = {};                  // variantId -> url | null (resolved once per variant)
@@ -4137,111 +4383,113 @@ function disarmFilterOverlayExport() {
 }
 // === /lolly:shared overlay ===
 
-// Overlay geometry uses the export canvas size (width/height inputs, default 1080).
-function overlayDims(inputs) {
-  var W = Number(inputs.width) > 0 ? Number(inputs.width) : 1080;
-  var H = Number(inputs.height) > 0 ? Number(inputs.height) : 1080;
-  return { W: W, H: H };
-}
+// ── lifecycle ────────────────────────────────────────────────────────────────
 
-async function patch({ model }) {
-  const inputs = Object.fromEntries(model.map(i => [i.id, i.value]));
-  const out = buildDuo(inputs);
+async function compute(model) {
+  if (!canRaster()) return { outSrc: null, note: 'Preview renders in the browser' };
+  var inputs = inputsFrom(model);
 
-  // No image picked → fall back to the shared demo image (resolved once), exposed
-  // to the template as an extra. The template uses {{asset bgImage}} for the
-  // user's own pick and {{defaultImageUrl}} for this fallback.
-  if (!inputs.bgImage) {
+  var ref = inputs.image;
+  var url = ref && typeof ref === 'object' ? ref.url : null;
+  if (!url) {
     if (!_defaultUrl) {
       try {
-        // Tool URL → render via compose; plain catalog id → host.assets.
-        const def = (DEFAULT_IMAGE_ID.indexOf('://') !== -1)
+        var def = (DEFAULT_IMAGE_ID.indexOf('://') !== -1)
           ? (host.compose && host.compose.renderUrl ? await host.compose.renderUrl(DEFAULT_IMAGE_ID) : null)
           : await host.assets.get(DEFAULT_IMAGE_ID);
         _defaultUrl = def && def.url;
-      }
-      catch (e) { if (host.log) host.log('warn', 'filter-duotone: default image unavailable', { error: String(e) }); }
+      } catch (e) { if (host.log) host.log('warn', 'filter colour-treatment: default image unavailable', { error: String(e) }); }
     }
-    if (_defaultUrl) out.defaultImageUrl = _defaultUrl;
+    url = _defaultUrl;
   }
+  if (!url) return { outSrc: null, note: 'Choose an image' };
 
-  // Brand overlay (still) — resolve logo + headshot URLs (cached) before building so
-  // the render already carries them. Off by default → buildOverlaySvg returns ''.
-  const ovi = overlayInputs(inputs);
+  var p = paramsFrom(inputs);
+  var dims = workDims(p.W, p.H, STILL_MAX);
+  var brand = await resolveBrandStops();
+  var lab = treatLabStops(p, brand);
+
+  var ovi = overlayInputs(inputs);
   if (ovi.showLogo) await resolveLogoUrl(ovi.logoStyle);
-  let headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || '';
+  var headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || '';
   if (ovi.lowerThird && !headUrl) headUrl = (await resolveProfileHeadshot()) || '';
-  const ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: 'still' });
-  const d = overlayDims(inputs);
-  out.overlaySvg = buildOverlaySvg(d.W, d.H, ov);
-  out.noFilter = ovi.noFilter;
-  // Export state travels through the DOM (data-ov-params on the clock anchor), not
-  // module vars — so it's correct even when this render ran in a Worker (plans/86 §18).
-  out.ovParams = overlayExportParams(d.W, d.H, ov);
+  var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: 'still' });
+  _lastOv = ov; _lastW = p.W; _lastH = p.H;
 
-  return out;
-}
+  var memoKey = JSON.stringify({ url: url, p: p, d: dims, ov: ov, lab: lab });
+  if (memoKey === _memoKey) return _memoResult;
 
-function onInit(ctx) {
-  return patch(ctx);
-}
+  var overlaySvg = buildOverlaySvg(p.W, p.H, ov);
 
-function onInput(ctx) {
-  return patch(ctx);
-}
-
-// Live camera (engine v1.4): the runtime calls this once per frame with raw RGBA
-// pixels. Unlike the pixel-tracing filters, duotone is a browser SVG filter on an
-// <image>, so we just hand the frame back as the image source (a data URL) plus the
-// current colour tables — the browser applies the #duo filter to it (GPU-fast). The
-// template renders it as #duo-live (see template.html), so the framing script skips
-// re-probing a fresh data URL every frame. null = no patch (last frame stays).
-async function onFrame({ frame, model }) {
-  if (!frame || !frame.data || !frame.width || !frame.height) return null;
-  // Realm-agnostic (plans/86 M3): need ImageData plus SOME canvas — a document
-  // <canvas> on the main thread, an OffscreenCanvas inside a Worker. The old
-  // `typeof document === 'undefined'` guard wrongly returned null in a Worker,
-  // where rastering works fine.
-  if (typeof ImageData === 'undefined') return null;
-  if (typeof document === 'undefined' && typeof OffscreenCanvas === 'undefined') return null;
-  const inputs = Object.fromEntries(model.map(i => [i.id, i.value]));
-  let liveSrc;
+  var outSrc, iw, ih;
   try {
-    const c = rasterCanvas(frame.width, frame.height);
-    c.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
-    // JPEG: cheap to encode and the duotone filter discards colour fidelity anyway.
-    // canvasToUrl is sync (toDataURL) on the main thread, async (convertToBlob) in a Worker.
-    liveSrc = await canvasToUrl(c, 'image/jpeg', 0.85);
-  } catch (e) { return null; }
+    var img = await getImage(url);
+    iw = img.naturalWidth || img.width; ih = img.naturalHeight || img.height;
+    if (!iw || !ih) return { outSrc: null, note: 'Could not read this image' };
+    var src = makeSrc(img, iw, ih, dims.w, dims.h, ovi.noFilter ? rawParams(p) : p, ovi.noFilter ? null : lab);
+    if (!src) return { outSrc: null, note: 'Preview renders in the browser' };
+    outSrc = src.toDataURL('image/jpeg', 0.9);
+  } catch (e) {
+    if (host.log) host.log('warn', 'filter colour-treatment: render failed', { error: String(e) });
+    return { outSrc: null, note: 'Could not read this image' };
+  }
+  if (!outSrc) return { outSrc: null, note: 'Preview renders in the browser' };
 
-  // Brand overlay (live): warm caches without awaiting; drive the intro from camera time.
-  const ovi = overlayInputs(inputs);
-  if (overlayActive(ovi)) { if (_liveOvStart == null) _liveOvStart = frame.t; }
-  else _liveOvStart = null;
+  var prev = (_lastOutSrc && _lastOutSrc !== outSrc) ? _lastOutSrc : null;
+  _lastOutSrc = outSrc;
+  _memoKey = memoKey;
+  // imgKey/W/H → _psSvg stamps data-img-* on the root so the template's auto-fit
+  // script snaps the export canvas to a freshly-chosen image's native size.
+  _memoResult = { outSrc: outSrc, prevSrc: prev, overlaySvg: overlaySvg, imgKey: url, imgW: iw, imgH: ih };
+  return _memoResult;
+}
+
+function onInit(ctx) { return compute(ctx.model); }
+function onInput(ctx) { return compute(ctx.model); }
+
+// gif/apng/webm/mp4 only: replay the overlay's live-mode intro across the clip.
+function beforeExport(ctx) { armFilterOverlayExport(ctx, _lastW, _lastH, _lastOv); }
+function afterExport() { disarmFilterOverlayExport(); }
+
+// Live camera (engine v1.4): run the SAME grade+treat pass per frame so the
+// treatment tracks motion. No URL load, no memo. null = keep the last frame.
+function onFrame(ctx) {
+  var frame = ctx.frame;
+  if (!frame || !frame.data || !frame.width || !frame.height) return null;
+  if (!canRaster() || typeof ImageData === 'undefined') return null;
+  var inputs = inputsFrom(ctx.model);
+  var p = paramsFrom(inputs);
+  var dims = workDims(p.W, p.H, LIVE_MAX);
+  var brand = _brandStops || { shadow: '#1c2230', mid: '#5c7cfa', highlight: '#f4f2ec' };
+  if (!_brandStops) resolveBrandStops(); // warm for later frames
+  var ovi = overlayInputs(inputs);
+  var lab = ovi.noFilter ? null : treatLabStops(p, brand);
+
+  var srcFrame;
+  try {
+    srcFrame = document.createElement('canvas');
+    srcFrame.width = frame.width; srcFrame.height = frame.height;
+    srcFrame.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
+  } catch (e) { return null; }
+  var outCanvas = makeSrc(srcFrame, frame.width, frame.height, dims.w, dims.h, ovi.noFilter ? rawParams(p) : p, lab);
+  if (!outCanvas) return null;
+
+  if (overlayActive(ovi)) { if (_liveOvStart == null) _liveOvStart = frame.t; } else _liveOvStart = null;
   if (ovi.showLogo && _logoCache[logoVariantId(ovi.logoStyle)] === undefined) resolveLogoUrl(ovi.logoStyle);
   if (ovi.lowerThird && _profileHeadshotUrl === undefined) resolveProfileHeadshot();
-  const headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || _profileHeadshotUrl || '';
-  const ov = Object.assign({}, ovi, {
+  var headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || _profileHeadshotUrl || '';
+  var ov = Object.assign({}, ovi, {
     logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl,
     mode: 'live', elapsed: frame.t - (_liveOvStart == null ? frame.t : _liveOvStart),
   });
-  const d = overlayDims(inputs);
+  var overlaySvg = buildOverlaySvg(p.W, p.H, ov);
 
-  // The live frame IS the source <image> (id duo-live); the #duo filter is removed by
-  // the template's {{#unless noFilter}} when No-filter is on, so noFilter needs no
-  // separate rawSrc here — just carry the boolean + the overlay children.
-  const out = Object.assign(buildDuo(inputs), { liveSrc });
-  out.overlaySvg = buildOverlaySvg(d.W, d.H, ov);
-  out.noFilter = ovi.noFilter;
-  out.ovParams = overlayExportParams(d.W, d.H, ov); // DOM channel for beforeExport (see compute)
-  return out;
+  _memoKey = null; // a live frame supersedes the still memo
+  var outSrc;
+  try { outSrc = outCanvas.toDataURL('image/jpeg', 0.82); } catch (e) { return null; }
+  _lastOutSrc = outSrc;
+  return { outSrc: outSrc, prevSrc: null, overlaySvg: overlaySvg };
 }
-
-// gif/apng/webm/mp4 only: replay the overlay's live-mode intro deterministically
-// across the clip. beforeExport recovers the box + overlay params from the DOM
-// (data-ov-params), so it is correct whether the render ran here or in a Worker.
-function beforeExport(ctx) { armFilterOverlayExport(ctx); }
-function afterExport() { disarmFilterOverlayExport(); }
 
 return {
   compute:      typeof compute      !== 'undefined' ? compute      : null,

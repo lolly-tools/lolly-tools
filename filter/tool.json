@@ -136,7 +136,7 @@
         },
         {
           "value": "duotone",
-          "label": "Duotone",
+          "label": "Colour treatment",
           "badge": "raster",
           "formats": [
             "png",
@@ -782,21 +782,73 @@
       }
     },
     {
-      "id": "du_colorFg",
-      "label": "Shadow color",
-      "type": "color",
-      "default": "{color.semantic.text}",
+      "id": "du_treatment",
+      "label": "Treatment",
+      "section": "Treatment",
+      "type": "select",
+      "default": "duotone",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "tint", "label": "Colour wash" },
+        { "value": "duotone", "label": "Duotone" },
+        { "value": "gradient", "label": "Gradient map (3 stops)" },
+        { "value": "split", "label": "Split tone" }
+      ],
+      "help": "Recolour the photo through your brand palette in OKLab. Leave the colours below empty to auto-pick from the brand's tokens; set them to override.",
       "showIf": {
         "effect": "duotone"
       }
     },
     {
-      "id": "du_colorBg",
-      "label": "Highlight color",
-      "type": "color",
-      "default": "#ffd3bd",
+      "id": "du_treatmentAmount",
+      "label": "Treatment amount",
+      "section": "Treatment",
+      "type": "number",
+      "display": "slider",
+      "default": 80,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Blend between the untreated photo (0) and the full treatment (100).",
       "showIf": {
-        "effect": "duotone"
+        "effect": "duotone",
+        "du_treatment": ["tint", "duotone", "gradient", "split"]
+      }
+    },
+    {
+      "id": "du_treatShadow",
+      "label": "Shadow colour",
+      "section": "Treatment",
+      "type": "color",
+      "default": "",
+      "help": "Empty = auto: the darkest colour in your brand palette.",
+      "showIf": {
+        "effect": "duotone",
+        "du_treatment": ["tint", "duotone", "gradient", "split"]
+      }
+    },
+    {
+      "id": "du_treatMid",
+      "label": "Midtone colour",
+      "section": "Treatment",
+      "type": "color",
+      "default": "",
+      "help": "Empty = auto: the most colourful swatch in your brand palette.",
+      "showIf": {
+        "effect": "duotone",
+        "du_treatment": ["gradient"]
+      }
+    },
+    {
+      "id": "du_treatHighlight",
+      "label": "Highlight colour",
+      "section": "Treatment",
+      "type": "color",
+      "default": "",
+      "help": "Empty = auto: the lightest colour in your brand palette.",
+      "showIf": {
+        "effect": "duotone",
+        "du_treatment": ["duotone", "gradient", "split"]
       }
     },
     {
@@ -1171,6 +1223,7 @@
           "scanline",
           "posterize",
           "voronoi",
+          "duotone",
           "pixel-stretch",
           "imperfections"
         ]

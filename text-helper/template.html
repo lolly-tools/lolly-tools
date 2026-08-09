@@ -505,194 +505,41 @@
     return { out: out, dir: 'Encoded' };
   }
 
-  // ── YAML: compact common-subset parser + emitter (no library in the sandbox) ─
-  // Handles block maps/seqs, nesting by indent, scalars (plain/quoted/number/bool/
-  // null), flow [..]/{..}, block scalars |/>, comments. NOT: anchors, multi-doc, tags.
-  function yErr(line, msg) { return new Error('Line ' + line.n + ': ' + msg); }
-  function yStripComment(s) {
-    var inS = false, inD = false;
-    for (var i = 0; i < s.length; i++) {
-      var c = s.charAt(i);
-      if (c === "'" && !inD) inS = !inS;
-      else if (c === '"' && !inS) inD = !inD;
-      else if (c === '#' && !inS && !inD && (i === 0 || /\s/.test(s.charAt(i - 1)))) return s.slice(0, i).replace(/\s+$/, '');
-    }
-    return s;
+  // ── YAML: real parser via the vendored eemeli/yaml library ──────────────────
+  // Full YAML 1.1/1.2 — anchors & aliases, merge keys, explicit "? key / : value",
+  // block & folded scalars, flow collections, multi-document streams, octal/hex
+  // numbers: everything the old hand-rolled stand-in parser could not do.
+  // It ships as a classic-script global in the tool dir (loaded once, on demand),
+  // so it needs no bundler and is cached offline after first use — like the D3 tool.
+  var YAML_LIB = '/tools/text-helper/lib/yaml.min.js';
+  function loadYaml() {
+    if (window.YAML) return Promise.resolve(window.YAML);
+    window.__yamlLoading = window.__yamlLoading || new Promise(function (res, rej) {
+      var s = document.createElement('script');
+      s.src = YAML_LIB;
+      s.onload = function () { window.YAML ? res(window.YAML) : rej(new Error('YAML engine loaded but exposed no global.')); };
+      /* Remove the failed node so a re-paint doesn't accrete orphan <script>s. */
+      s.onerror = function () { s.remove(); window.__yamlLoading = null; rej(new Error('YAML engine failed to load — check your connection and retry.')); };
+      document.head.appendChild(s);
+    });
+    return window.__yamlLoading;
   }
-  function yIsSeq(t) { return t.charAt(0) === '-' && (t.length === 1 || t.charAt(1) === ' '); }
-  function ySplit(t) {
-    var depth = 0, inS = false, inD = false;
-    for (var i = 0; i < t.length; i++) {
-      var c = t.charAt(i);
-      if (inS) { if (c === "'") inS = false; continue; }
-      if (inD) { if (c === '"') inD = false; continue; }
-      if (c === "'") { inS = true; continue; }
-      if (c === '"') { inD = true; continue; }
-      if (c === '[' || c === '{') depth++;
-      else if (c === ']' || c === '}') depth--;
-      else if (c === ':' && depth === 0 && (i === t.length - 1 || t.charAt(i + 1) === ' '))
-        return { key: t.slice(0, i).replace(/\s+$/, ''), value: t.slice(i + 1).replace(/^\s/, '') };
-    }
-    return null;
+  // eemeli parse errors carry a multi-line caret snippet; its first line
+  // ("… at line N, column C") is the concise summary we surface. Collapse the
+  // errors from every document in a stream into one thrown Error.
+  function yamlError(docs) {
+    var errs = docs.reduce(function (a, d) { return a.concat(d.errors); }, []);
+    if (!errs.length) return null;
+    var first = String(errs[0].message).split('\n')[0];
+    return new Error(errs.length > 1 ? first + '  (+' + (errs.length - 1) + ' more)' : first);
   }
-  function yScalar(s, isKey) {
-    s = s.replace(/^\s+|\s+$/g, '');
-    if (s === '') return null;
-    var q = s.charAt(0);
-    if ((q === '"' || q === "'") && s.charAt(s.length - 1) === q && s.length >= 2) {
-      var b = s.slice(1, -1);
-      return q === '"' ? b.replace(/\\n/g, '\n').replace(/\\t/g, '\t').replace(/\\"/g, '"').replace(/\\\\/g, '\\') : b.replace(/''/g, "'");
-    }
-    if (s.charAt(0) === '[' || s.charAt(0) === '{') return yFlow(s);
-    if (isKey) return s;
-    if (s === 'null' || s === '~' || s === 'Null' || s === 'NULL') return null;
-    if (s === 'true' || s === 'True' || s === 'TRUE') return true;
-    if (s === 'false' || s === 'False' || s === 'FALSE') return false;
-    if (/^[-+]?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?$/.test(s)) return Number(s);
-    return s;
-  }
-  function yFlow(s) {
-    var i = 0;
-    function ws() { while (i < s.length && /\s/.test(s.charAt(i))) i++; }
-    function tok(stops) { var st = i; while (i < s.length && stops.indexOf(s.charAt(i)) < 0) i++; return s.slice(st, i).replace(/\s+$/, ''); }
-    function val() {
-      ws(); var c = s.charAt(i);
-      if (c === '[') { i++; var a = []; ws(); if (s.charAt(i) === ']') { i++; return a; } while (i < s.length) { a.push(val()); ws(); if (s.charAt(i) === ',') { i++; continue; } if (s.charAt(i) === ']') { i++; break; } break; } return a; }
-      if (c === '{') { i++; var o = {}; ws(); if (s.charAt(i) === '}') { i++; return o; } while (i < s.length) { ws(); var k = tok(':,}'); ws(); if (s.charAt(i) === ':') i++; o[yScalar(k, true)] = val(); ws(); if (s.charAt(i) === ',') { i++; continue; } if (s.charAt(i) === '}') { i++; break; } break; } return o; }
-      if (c === '"' || c === "'") { var st = i++; while (i < s.length && s.charAt(i) !== c) i++; return yScalar(s.slice(st, ++i), false); }
-      return yScalar(tok(',]}'), false);
-    }
-    return val();
-  }
-  function yBlock(ctx, parent, ind) {
-    var fold = ind.charAt(0) === '>', chomp = /-/.test(ind) ? 'strip' : (/\+/.test(ind) ? 'keep' : 'clip');
-    var bi = -1, parts = [];
-    while (ctx.i < ctx.lines.length) {
-      var l = ctx.lines[ctx.i];
-      if (l.indent <= parent) break;
-      if (bi < 0) bi = l.indent;
-      parts.push(' '.repeat(Math.max(0, l.indent - bi)) + l.text); ctx.i++;
-    }
-    var text = parts.join(fold ? ' ' : '\n');
-    if (chomp === 'strip') return text.replace(/\n+$/, '');
-    if (chomp === 'clip') return text + '\n';
-    return text;
-  }
-  function yNode(ctx, ind) {
-    var l = ctx.lines[ctx.i];
-    if (yIsSeq(l.text)) return ySeq(ctx, ind);
-    if (ySplit(l.text)) return yMap(ctx, ind);
-    ctx.i++; return yScalar(yStripComment(l.text), false);
-  }
-  function yChild(ctx, parent) {
-    if (ctx.i >= ctx.lines.length) return null;
-    var n = ctx.lines[ctx.i];
-    if (n.indent > parent) return yNode(ctx, n.indent);
-    if (n.indent === parent && yIsSeq(n.text)) return ySeq(ctx, parent);
-    return null;
-  }
-  function yMap(ctx, ind) {
-    var o = {};
-    while (ctx.i < ctx.lines.length) {
-      var l = ctx.lines[ctx.i];
-      if (l.indent < ind) break;
-      if (l.indent > ind) throw yErr(l, 'unexpected indentation');
-      if (yIsSeq(l.text)) throw yErr(l, 'list item where a "key:" was expected');
-      var kv = ySplit(l.text);
-      if (!kv) throw yErr(l, 'expected "key: value"');
-      var key = yScalar(kv.key, true); ctx.i++;
-      if (kv.value === '') o[key] = yChild(ctx, ind);
-      else if (kv.value === '|' || kv.value === '>' || /^[|>][-+]?$/.test(kv.value)) o[key] = yBlock(ctx, ind, kv.value);
-      else o[key] = yScalar(yStripComment(kv.value), false);
-    }
-    return o;
-  }
-  function ySeq(ctx, ind) {
-    var a = [];
-    while (ctx.i < ctx.lines.length) {
-      var l = ctx.lines[ctx.i];
-      if (l.indent < ind) break;
-      if (l.indent > ind) throw yErr(l, 'unexpected indentation in list');
-      if (!yIsSeq(l.text)) break;
-      var after = l.text.slice(1).replace(/^\s/, '');
-      if (after === '') { ctx.i++; a.push(yChild(ctx, ind)); continue; }
-      if (yIsSeq(after) || ySplit(after)) { var consumed = l.text.length - after.length; l.text = after; l.indent = ind + consumed; a.push(yNode(ctx, ind + consumed)); }
-      else { ctx.i++; a.push(yScalar(yStripComment(after), false)); }
-    }
-    return a;
-  }
-  function yamlParse(src) {
-    var raw = String(src).split(/\r\n|\r|\n/), lines = [];
-    for (var i = 0; i < raw.length; i++) {
-      var wt = raw[i].replace(/\t/g, '  '), nt = wt.replace(/\s+$/, ''), ct = nt.replace(/^\s+/, '');
-      if (ct === '' || ct.charAt(0) === '#' || ct === '---' || ct === '...') continue;
-      lines.push({ indent: nt.length - ct.length, text: ct, n: i + 1 });
-    }
-    if (!lines.length) return null;
-    var ctx = { i: 0, lines: lines };
-    var v = yNode(ctx, lines[0].indent);
-    if (ctx.i < lines.length) throw yErr(lines[ctx.i], 'unexpected content (anchors, multi-doc & tags are not supported)');
-    return v;
-  }
-  function yNeedQuote(s) {
-    if (s === '') return true;
-    if (/^\s|\s$/.test(s)) return true;
-    if (/^[-?:,\[\]{}#&*!|>'"%@`]/.test(s)) return true;
-    if (/^(true|false|null|yes|no|on|off|~)$/i.test(s)) return true;
-    if (/^[-+]?(\d+\.?\d*|\.\d+)([eE][-+]?\d+)?$/.test(s)) return true;
-    if (/:\s/.test(s) || /\s#/.test(s) || /:$/.test(s)) return true;
-    return false;
-  }
-  function yEmitScalar(v) {
-    if (v === null || v === undefined) return 'null';
-    if (typeof v === 'boolean') return v ? 'true' : 'false';
-    if (typeof v === 'number') return String(v);
-    var s = String(v);
-    if (s.indexOf('\n') >= 0) return null;
-    return yNeedQuote(s) ? '"' + s.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"' : s;
-  }
-  function yBlockOut(text, indent) {
-    var pad = '  '.repeat(indent), trail = /\n$/.test(text), body = trail ? text.replace(/\n$/, '') : text;
-    return (trail ? '|' : '|-') + '\n' + body.split('\n').map(function (l) { return pad + l; }).join('\n');
-  }
-  function yamlStringify(value, indent) {
-    indent = indent || 0;
-    var pad = '  '.repeat(indent), lines = [];
-    if (Array.isArray(value)) {
-      if (!value.length) return pad + '[]';
-      var cp = '  '.repeat(indent + 1);
-      value.forEach(function (item) {
-        if (item && typeof item === 'object' && (Array.isArray(item) ? item.length : Object.keys(item).length)) {
-          lines.push(pad + '- ' + yamlStringify(item, indent + 1).slice(cp.length));
-        } else if (item && typeof item === 'object') {
-          lines.push(pad + '- ' + (Array.isArray(item) ? '[]' : '{}'));
-        } else {
-          var sc = yEmitScalar(item);
-          lines.push(pad + '- ' + (sc === null ? yBlockOut(String(item), indent + 1) : sc));
-        }
-      });
-      return lines.join('\n');
-    }
-    if (value && typeof value === 'object') {
-      var keys = Object.keys(value);
-      if (!keys.length) return pad + '{}';
-      keys.forEach(function (k) {
-        var v = value[k], key = yNeedQuote(k) ? '"' + k + '"' : k;
-        if (v && typeof v === 'object' && (Array.isArray(v) ? v.length : Object.keys(v).length)) {
-          lines.push(pad + key + ':'); lines.push(yamlStringify(v, indent + 1));
-        } else if (v && typeof v === 'object') {
-          lines.push(pad + key + ': ' + (Array.isArray(v) ? '[]' : '{}'));
-        } else {
-          var sc = yEmitScalar(v);
-          lines.push(pad + key + ': ' + (sc === null ? yBlockOut(String(v), indent + 1) : sc));
-        }
-      });
-      return lines.join('\n');
-    }
-    return pad + yEmitScalar(value);
+  // Members summary for the status bar: "N documents" for a stream, else the
+  // key/item count of the single document's value.
+  function yamlSummary(docs) {
+    return docs.length > 1 ? docs.length + ' documents' : countMembers(docs.length ? docs[0].toJS() : null);
   }
 
-  // ── Helm: Go-template-aware helpers over the YAML above ─────────────────────
+  // ── Helm: Go-template-aware helpers; lint mode parses through eemeli/yaml ────
   var HELM_DIR = /\{\{-?[\s\S]*?-?\}\}/g;
   function helmValues(src) {
     var refs = {}, m; HELM_DIR.lastIndex = 0;
@@ -776,16 +623,21 @@
       return { out: out, status: 'Valid JSON · ' + countMembers(parsed) + ' · ' + fmtBytes(enc.encode(out).length), tone: 'ok' };
     },
     yaml: function (input) {
-      if (state.yaml.mode === 'toYaml') {
-        var obj = JSON.parse(input);
-        var y = yamlStringify(obj);
-        return { out: y, status: 'JSON → YAML · ' + countMembers(obj), tone: 'ok' };
-      }
-      var parsed = yamlParse(input);
-      if (state.yaml.mode === 'toJson') {
-        return { out: JSON.stringify(parsed, null, 2), status: 'YAML → JSON · ' + countMembers(parsed), tone: 'ok' };
-      }
-      return { out: parsed === null ? '' : yamlStringify(parsed), status: 'Valid YAML · ' + countMembers(parsed) + ' · common-subset parser', tone: 'ok' };
+      return loadYaml().then(function (Y) {
+        if (state.yaml.mode === 'toYaml') {
+          var obj = JSON.parse(input); // invalid JSON throws → surfaced by run()
+          return { out: Y.stringify(obj), status: 'JSON → YAML · ' + countMembers(obj), tone: 'ok' };
+        }
+        var docs = Y.parseAllDocuments(input);
+        var err = yamlError(docs); if (err) throw err;
+        if (!docs.length) return { out: '', status: 'Empty document', tone: 'ok' };
+        if (state.yaml.mode === 'toJson') {
+          var js = docs.length > 1 ? docs.map(function (d) { return d.toJS(); }) : docs[0].toJS();
+          return { out: JSON.stringify(js, null, 2), status: 'YAML → JSON · ' + yamlSummary(docs), tone: 'ok' };
+        }
+        // Format / validate: re-emit each document (anchors, merge keys & comments preserved).
+        return { out: docs.map(String).join(''), status: 'Valid YAML · ' + yamlSummary(docs), tone: 'ok' };
+      });
     },
     helm: function (input) {
       if (state.helm.mode === 'values') {
@@ -793,8 +645,11 @@
         if (!refs.length) return { out: '', status: 'No .Values / .Release / .Chart references found', tone: 'warn' };
         return { out: refs.join('\n'), status: refs.length + ' unique reference' + (refs.length === 1 ? '' : 's'), tone: 'ok' };
       }
-      var parsed = yamlParse(helmNeutralise(input)); // throws → run() shows the error at the original line
-      return { out: input, status: 'Valid structure · ' + countMembers(parsed) + ' · Helm directives neutralised', tone: 'ok' };
+      return loadYaml().then(function (Y) {
+        var docs = Y.parseAllDocuments(helmNeutralise(input)); // errors point at the original line
+        var err = yamlError(docs); if (err) throw err;
+        return { out: input, status: 'Valid structure · ' + yamlSummary(docs) + ' · Helm directives neutralised', tone: 'ok' };
+      });
     },
     base64: function (input) {
       if (state.base64.dir === 'encode') {

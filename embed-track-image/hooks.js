@@ -73,7 +73,13 @@ function onInput(ctx) {
   return {
     hasFiles: files.length > 0,
     fileCount: files.length,
-    files: list,
+    // NB: this key is `fileList`, NOT `files`. A hook return key that matches a
+    // declared input id OVERWRITES that input's value (hook-patch semantics); the
+    // file input's id here IS `files`, so returning `files` replaced the real
+    // InputFile[] (with bytes) with this bytes-less summary — exportFile then read
+    // empty bytes and produced a 0-byte download. `fileList` lands in `extras`
+    // instead, leaving the `files` input value (the real bytes) untouched.
+    fileList: list,
     supportedCount: supported,
     unsupportedCount: files.length - supported,
     rasterCount: raster,

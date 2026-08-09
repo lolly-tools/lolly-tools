@@ -1,121 +1,14 @@
 {{{svgContent}}}
-{{!-- Unified Filter tool. Six of the seven effects' hooks return a COMPLETE inline
-      <svg> string as `svgContent` (halftone/scanline/posterize/voronoi/imperfections
-      as shapes or an <image>; pixel-stretch as its pre-baked bitmap wrapped by the
-      hook). Duotone is the exception: its recolour is a declarative SVG <filter> that
-      needs the template's {{asset}} helper to resolve the image URL, so its hook flags
-      the render with `__duo` and renders in the guarded block below. Exactly one of the
-      two branches ever draws, so this stays a single drawable root — which the CLI's
+{{!-- Unified Filter tool. Every effect's hook returns a COMPLETE inline <svg> string
+      as `svgContent` (halftone/scanline/posterize/voronoi/imperfections as shapes or an
+      <image>; pixel-stretch and duotone/colour-treatment as their pre-baked bitmaps,
+      each wrapped in an <svg> by the hook). That single drawable root is what the CLI's
       vector path (rootSvgOf) needs for true svg/pdf/emf export of the vector effects.
-      The trailing <script>s are exempt from that drawable-child count. --}}
-{{#if __duo}}
-<svg xmlns="http://www.w3.org/2000/svg" data-img-key="{{#if image}}{{asset image}}{{/if}}" data-lolly-anno="{{treatmentColor}} {{blendMode}} {{logoPosition}} {{logoStyle}} {{ltTheme}} {{ltPosition}} {{asset ltHeadshot}}" viewBox="0 0 {{width}} {{height}}" width="{{width}}" height="{{height}}"
-     style="width:100%;height:auto;display:block;">
-  <defs>
-    <filter id="duo" color-interpolation-filters="sRGB">
-      <feColorMatrix type="hueRotate" values="{{hueDeg}}" result="h"/>
-      <feColorMatrix type="saturate" values="{{satFrac}}" in="h" result="s"/>
-      <feComponentTransfer in="s" result="lit">
-        <feFuncR type="linear" slope="{{liteSlope}}" intercept="{{liteIntercept}}"/>
-        <feFuncG type="linear" slope="{{liteSlope}}" intercept="{{liteIntercept}}"/>
-        <feFuncB type="linear" slope="{{liteSlope}}" intercept="{{liteIntercept}}"/>
-      </feComponentTransfer>
-      <feComponentTransfer in="lit" result="duo">
-        <feFuncR type="table" tableValues="{{tableR}}"/>
-        <feFuncG type="table" tableValues="{{tableG}}"/>
-        <feFuncB type="table" tableValues="{{tableB}}"/>
-      </feComponentTransfer>
-      <feFlood flood-color="{{treatColor}}" result="tcol"/>
-      <feBlend in="duo" in2="tcol" mode="{{treatBlend}}" result="tb"/>
-      <feComponentTransfer in="tb" result="tba"><feFuncA type="linear" slope="{{treatAmt}}"/></feComponentTransfer>
-      <feMerge><feMergeNode in="duo"/><feMergeNode in="tba"/></feMerge>
-    </filter>
-  </defs>
-
-  <rect id="duo-bg" width="100%" height="100%" fill="{{du_colorBg}}"/>
-
-  {{#if liveSrc}}
-  <image id="duo-live" data-lolly-anno="{{du_colorFg}}"
-    {{#unless noFilter}}filter="url(#duo)"{{/unless}}
-    preserveAspectRatio="xMidYMid slice"
-    href="{{liveSrc}}"
-    x="0" y="0" width="100%" height="100%"/>
-  {{else}}
-  {{#if image}}
-  <image id="duo-img"
-    {{#unless noFilter}}filter="url(#duo)"{{/unless}}
-    preserveAspectRatio="xMidYMid slice"
-    href="{{asset image}}"
-    x="0" y="0" width="100%" height="100%"
-    data-zoom="{{du_imageFraming.zoom}}" data-posx="{{du_imageFraming.x}}" data-posy="{{du_imageFraming.y}}" data-lolly-anno="{{du_colorFg}}"/>
-  {{else}}
-  {{#if defaultImageUrl}}
-  <image id="duo-img" data-lolly-anno="{{du_colorFg}}"
-    {{#unless noFilter}}filter="url(#duo)"{{/unless}}
-    preserveAspectRatio="xMidYMid slice"
-    href="{{defaultImageUrl}}"
-    x="0" y="0" width="100%" height="100%"
-    data-zoom="{{du_imageFraming.zoom}}" data-posx="{{du_imageFraming.x}}" data-posy="{{du_imageFraming.y}}"/>
-  {{/if}}
-  {{/if}}
-  {{/if}}
-  <g id="lolly-ov-slot">{{{overlaySvg}}}</g>
-</svg>
-{{/if}}
+      The trailing <script> is exempt from that drawable-child count. --}}
 <script>
-/* Duotone framing: reproduce CSS object-fit:cover + object-position over the full
-   canvas (SVG preserveAspectRatio can't express an arbitrary position). No-op for
-   every other effect (there is no #duo-img / #duo-bg then). IIFE + var: re-run each
-   render, so top-level const/let would throw. */
-(function () {
-  var img = document.getElementById('duo-img');
-  var anchor = img || document.getElementById('duo-bg');
-  var svg = anchor && anchor.ownerSVGElement;
-  if (!svg) return;
-  var vb = (svg.getAttribute('viewBox') || '0 0 1080 1080').split(/\s+/).map(Number);
-  var wEl = document.querySelector('[data-action="export-width"]');
-  var hEl = document.querySelector('[data-action="export-height"]');
-  var W = (wEl && parseFloat(wEl.value) > 0) ? parseFloat(wEl.value) : vb[2];
-  var H = (hEl && parseFloat(hEl.value) > 0) ? parseFloat(hEl.value) : vb[3];
-  svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H);
-  svg.setAttribute('width', W);
-  svg.setAttribute('height', H);
-  if (!img) return;
-  function num(v, d) { var n = parseFloat(v); return isFinite(n) ? n : d; }
-  function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
-  function layout(iw, ih) {
-    if (!(iw > 0 && ih > 0)) return;
-    var zoom = clamp(num(img.dataset.zoom, 100), 100, 800) / 100;
-    var px = clamp(num(img.dataset.posx, 50), 0, 100) / 100;
-    var py = clamp(num(img.dataset.posy, 50), 0, 100) / 100;
-    var s = Math.max(W / iw, H / ih) * zoom;
-    var dw = iw * s, dh = ih * s;
-    img.setAttribute('preserveAspectRatio', 'none');
-    img.setAttribute('width', dw);
-    img.setAttribute('height', dh);
-    img.setAttribute('x', -px * (dw - W));
-    img.setAttribute('y', -py * (dh - H));
-  }
-  var href = img.getAttribute('href') || img.getAttributeNS('http://www.w3.org/1999/xlink', 'href') || '';
-  if (!href) return;
-  var cache = (window.__duoNatural = window.__duoNatural || {});
-  var hit = cache[href];
-  if (hit) { layout(hit.w, hit.h); return; }
-  var probe = new Image();
-  function measured() {
-    if (!(probe.naturalWidth > 0)) return;
-    cache[href] = { w: probe.naturalWidth, h: probe.naturalHeight };
-    layout(probe.naturalWidth, probe.naturalHeight);
-  }
-  probe.onload = measured;
-  probe.src = href;
-  if (probe.complete) measured();
-})();
-</script>
-<script>
-/* Auto-fit the canvas to a newly chosen image (native pixel dimensions). The hook (or
-   the duotone block) stamps the chosen image's URL as data-img-key on the root <svg>
-   (empty for the demo default / a live camera frame). When the key changes to a new
+/* Auto-fit the canvas to a newly chosen image (native pixel dimensions). The hook
+   stamps the chosen image's URL as data-img-key on the root <svg> (halftone/…/duotone;
+   empty for the demo default / a live camera frame). When the key changes to a new
    image we snap the export Width/Height to the image's native size (probed, capped,
    aspect preserved). Keyed on the #tool-canvas element (recreated per mount → auto-
    scoped, absent for the off-screen export canvas → never resizes the bar mid-export).
