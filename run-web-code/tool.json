@@ -2,7 +2,7 @@
   "id": "run-web-code",
   "name": "Run Web Code",
   "description": "Paste HTML, CSS, JS — or a JSX/TypeScript component — and watch it run in a private, offline sandbox. Perfect for previewing code from an AI assistant.",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "utility",

@@ -1,6 +1,6 @@
 {
-  "name": "डेक स्टूडियो",
-  "description": "एक नेटिव, एडिटेबल PowerPoint डेक बनाएं - असली टेक्स्ट, बुलेट्स, टेबल्स और ब्रांड थीम - एक सिंपल स्लाइड बिल्डर, पेस्ट किए गए Markdown, या JSON स्पेक से। चार्ट और डायग्राम आपके अन्य Lolly टूल्स से आते हैं। .pptx (एडिटेबल), साथ ही PDF और PNG एक्सपोर्ट करता है।",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "{{_slideCount}} स्लाइड के साथ प्रेजेंटेशन डेक",
   "inputs.size.label": "डेक आकार",
   "inputs.size.help": "पूरे डेक के लिए एक ही आकार - PowerPoint हर स्लाइड को समान आकार देता है।",

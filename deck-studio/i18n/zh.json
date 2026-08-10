@@ -1,6 +1,6 @@
 {
-  "name": "演示文稿工作室",
-  "description": "从简单的幻灯片构建器、粘贴的 Markdown 或 JSON 规范,构建原生可编辑的 PowerPoint 演示文稿 - 真正的文本、项目符号、表格和品牌主题。图表和示意图来自你的其他 Lolly 工具。导出 .pptx(可编辑),以及 PDF 和 PNG。",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "包含 {{_slideCount}} 张幻灯片的演示文稿",
   "inputs.size.label": "演示文稿尺寸",
   "inputs.size.help": "整个演示文稿使用同一尺寸 - PowerPoint 为每张幻灯片设定相同尺寸。",

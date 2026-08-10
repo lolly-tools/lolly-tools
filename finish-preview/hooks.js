@@ -37,7 +37,7 @@ var MAX_EDGE = 8000;                 // matches the auto-fit cap in template.htm
 var _lastW = VIEW, _lastH = VIEW;    // most recent canvas size — read by setSheenPhase (export sweep range)
 // The default source image shown until the user picks one (a Lolly tool URL,
 // resolved lazily via host.compose — same convention as the other filter tools).
-var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
 // Decoded-image cache (keyed by URL); holds the in-flight PROMISE so re-renders
 // during the first decode share one load.

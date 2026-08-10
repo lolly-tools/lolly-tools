@@ -146,7 +146,7 @@ var MAX_CELLS = 26000;
 // bag-video tool rendered to a PNG), resolved lazily via host.compose so the tool
 // shows a real halftone on first paint. A plain catalog id still works too — the
 // resolver below branches on whether this is a URL (see compute()).
-var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
 // Decoded-image cache (keyed by URL). Holds the in-flight PROMISE, not just the
 // resolved image, so re-renders during the first decode share one load instead
@@ -1089,7 +1089,7 @@ function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_E
 function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
 // Default source image until the user picks one: a Lolly tool URL (bag-video → PNG),
 // resolved via host.compose. A plain catalog id still works (see resolver below).
-var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
 var _imgCache = { url: null, promise: null };
 var _defaultUrl = null;
@@ -1805,7 +1805,7 @@ var FX_posterize = (function () {
 // A Lolly tool URL (bag-video → PNG), resolved via host.compose.renderUrl — matches
 // the sibling filters so every filter opens on the same demo graphic. A plain
 // catalog id still works (resolveDefault branches on '://').
-var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 var _defaultUrl = null;
 
 // Sampling grid is capped so a high quality on a big photo can't blow up tracing
@@ -2940,7 +2940,7 @@ var FX_voronoi = (function () {
  * mesh. resolveDefault still branches on '://', so a tool URL would also work.
  */
 
-var DEFAULT_IMAGE_ID = 'suse/photos/stock-1';
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 var _defaultUrl = null;
 
 // Colour-sample resolution (longest edge). One decode feeds every cell's point
@@ -3785,7 +3785,7 @@ var LIVE_MAX = 960;   // live: OKLab per-pixel is heavier than a smear, so trade
 
 // Default source image until the user picks one: a Lolly tool URL (bag-video -> PNG),
 // resolved via host.compose. Same default as the sibling effects, kept in sync.
-var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
 var _imgCache = { url: null, promise: null };
 var _defaultUrl = null;
@@ -4536,7 +4536,7 @@ var LIVE_MAX = 1080;  // raster output, so keep the live working canvas near the
 // Default source image until the user picks one: a Lolly tool URL (bag-video → PNG),
 // resolved via host.compose. A plain catalog id still works (see resolver below).
 // Same default as the sibling filter-* tools, kept in sync deliberately.
-var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
 var _imgCache = { url: null, promise: null };
 var _defaultUrl = null;
@@ -5289,7 +5289,7 @@ var VIEW = 1000;
 var MAX_EDGE = 8000;   // upper bound on either canvas edge (matches width/height inputs' max)
 // The default source image shown until the user picks one (a Lolly tool URL,
 // resolved lazily via host.compose — same demo source as the sibling filters).
-var DEFAULT_IMAGE_ID = 'https://lolly.tools/tool/bag-video.png';
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
 var _defaultUrl = null;   // resolved demo-image URL, cached
 var _memoKey = null;      // one-entry memo of the last rendered SVG

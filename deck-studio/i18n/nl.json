@@ -1,6 +1,6 @@
 {
-  "name": "Deck Studio",
-  "description": "Bouw een native, bewerkbare PowerPoint-deck - echte tekst, opsommingstekens, tabellen en merkthema - vanuit een eenvoudige diabouwer, geplakte Markdown of een JSON-spec. Grafieken en diagrammen komen van je andere Lolly-tools. Exporteert .pptx (bewerkbaar), plus PDF en PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Presentatiedeck met {{_slideCount}} slides",
   "inputs.size.label": "Deckgrootte",
   "inputs.size.help": "Eén formaat voor de hele presentatie - PowerPoint geeft elke dia dezelfde grootte.",

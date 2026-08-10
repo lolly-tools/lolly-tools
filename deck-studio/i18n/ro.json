@@ -1,6 +1,6 @@
 {
-  "name": "Studio prezentări",
-  "description": "Creează o prezentare PowerPoint nativă, editabilă - text real, buline, tabele și tema brandului - dintr-un generator simplu de slide-uri, Markdown lipit sau o specificație JSON. Graficele și diagramele provin din celelalte instrumente Lolly. Exportă .pptx (editabil), plus PDF și PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Prezentare cu {{_slideCount}} diapozitive",
   "inputs.size.label": "Dimensiune prezentare",
   "inputs.size.help": "O singură dimensiune pentru tot deck-ul - PowerPoint dă aceeași dimensiune fiecărui slide.",

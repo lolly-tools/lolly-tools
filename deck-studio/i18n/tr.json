@@ -1,6 +1,6 @@
 {
-  "name": "Sunum Stüdyosu",
-  "description": "Basit bir slayt oluşturucudan, yapıştırılan Markdown'dan veya bir JSON spesifikasyonundan gerçek metin, madde işaretleri, tablolar ve marka temasıyla yerel, düzenlenebilir bir PowerPoint sunumu oluştur. Grafikler ve diyagramlar diğer Lolly araçlarından gelir. .pptx (düzenlenebilir), ayrıca PDF ve PNG olarak dışa aktarır.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "{{_slideCount}} slaytlık sunum destesi",
   "inputs.size.label": "Sunum boyutu",
   "inputs.size.help": "Tüm sunum için tek boyut - PowerPoint her slayta aynı boyutu verir.",

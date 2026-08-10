@@ -1,6 +1,6 @@
 {
-  "name": "Bildspelsstudio",
-  "description": "Bygg ett nativt, redigerbart PowerPoint-bildspel - riktig text, punktlistor, tabeller och varumärkestema - från en enkel bildbyggare, inklistrad Markdown eller en JSON-specifikation. Diagram kommer från dina andra Lolly-verktyg. Exporterar .pptx (redigerbar), samt PDF och PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Presentation med {{_slideCount}} bilder",
   "inputs.size.label": "Bildspelets storlek",
   "inputs.size.help": "En storlek för hela presentationen - PowerPoint ger alla bilder samma storlek.",

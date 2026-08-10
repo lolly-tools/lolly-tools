@@ -1,6 +1,6 @@
 {
-  "name": "استوديو العروض",
-  "description": "أنشئ عرض PowerPoint أصليا وقابلا للتعديل - نص حقيقي ونقاط وجداول وسمة علامة تجارية - من منشئ شرائح بسيط، أو Markdown ملصق، أو مواصفات JSON. تأتي المخططات والرسوم البيانية من أدوات Lolly الأخرى لديك. يصدر إلى .pptx (قابل للتعديل)، بالإضافة إلى PDF وPNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "عرض تقديمي يضم {{_slideCount}} شريحة",
   "inputs.size.label": "حجم العرض",
   "inputs.size.help": "حجم واحد للعرض التقديمي بالكامل - يمنح PowerPoint كل شريحة الحجم نفسه.",

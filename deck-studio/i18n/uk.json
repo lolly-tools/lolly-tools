@@ -1,6 +1,6 @@
 {
-  "name": "Студія презентацій",
-  "description": "Створіть нативну, редаговану колоду PowerPoint - справжній текст, списки, таблиці й тему бренду - за допомогою простого конструктора слайдів, вставленого Markdown або специфікації JSON. Діаграми та графіки беруться з ваших інших інструментів Lolly. Експортує .pptx (редаговані), а також PDF і PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Презентація з {{_slideCount}} слайдами",
   "inputs.size.label": "Розмір презентації",
   "inputs.size.help": "Один розмір для всієї презентації - PowerPoint дає кожному слайду однаковий розмір.",

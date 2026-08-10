@@ -1,6 +1,6 @@
 {
-  "name": "ڈیک اسٹوڈیو",
-  "description": "ایک نیٹو، قابل ترمیم PowerPoint ڈیک بنائیں - اصل متن، بلٹس، جداول اور برانڈ تھیم - ایک سادہ سلائیڈ بلڈر، پیسٹ کیے گئے Markdown، یا JSON اسپیک سے۔ چارٹس اور ڈایاگرامز آپ کے دوسرے Lolly ٹولز سے آتے ہیں۔ .pptx (قابل ترمیم) کے ساتھ ساتھ PDF اور PNG بھی ایکسپورٹ کرتا ہے۔",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "{{_slideCount}} سلائیڈز والی پریزنٹیشن ڈیک",
   "inputs.size.label": "ڈیک سائز",
   "inputs.size.help": "پوری ڈیک کے لیے ایک سائز - PowerPoint ہر سلائیڈ کو ایک ہی سائز دیتا ہے۔",

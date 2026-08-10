@@ -1,6 +1,6 @@
 {
-  "name": "Deck Studio",
-  "description": "Gumawa ng native, nae-edit na PowerPoint deck - tunay na text, bullets, tables, at brand theme - mula sa simpleng slide builder, na-paste na Markdown, o JSON spec. Ang mga chart at diagram ay galing sa iba mong Lolly tools. Nag-e-export ng .pptx (nae-edit), kasama ang PDF at PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Deck ng presentasyon na may {{_slideCount}} na slide",
   "inputs.size.label": "Sukat ng deck",
   "inputs.size.help": "Iisang sukat para sa buong deck - pareho ang sukat ng bawat slide sa PowerPoint.",

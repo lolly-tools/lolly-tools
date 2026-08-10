@@ -1,6 +1,6 @@
 {
-  "name": "Palette Lab",
-  "description": "Grow a palette from one seed colour — harmony accents, perceptual OKLab ramps and WCAG/APCA readability badges, with DTCG tokens and CSV export.",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "Culoare sursă",
   "inputs.seed.help": "Culoarea din care pornește întreaga paletă - implicit culoarea primară a brandului tău.",
   "inputs.harmony.label": "Armonie",

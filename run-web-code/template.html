@@ -540,7 +540,20 @@
   // ── External-resource detection ─────────────────────────────────────────────
   function hostOf(u) { try { return new URL(u).host; } catch (e) { return u; } }
   function pathOf(u) { try { var p = new URL(u); return p.pathname + p.search; } catch (e) { return ''; } }
-  function isTrusted(u) { var h = hostOf(u); return h === 'fonts.googleapis.com' || h === 'fonts.gstatic.com'; }
+  // Hosts whose external resources may be fetched & inlined without the "external" warning.
+  // Google Fonts: exact hosts (CSS API + its font-file CDN). SUSE: apex or any subdomain of
+  // suse.com/.de/.cz — SUSE-owned, under full IT oversight, so a www./cdn./static. host counts too.
+  var TRUSTED_HOSTS = { 'fonts.googleapis.com': 1, 'fonts.gstatic.com': 1 };
+  var TRUSTED_DOMAINS = ['suse.com', 'suse.de', 'suse.cz'];
+  function isTrusted(u) {
+    var h = hostOf(u);
+    if (TRUSTED_HOSTS[h]) return true;
+    for (var i = 0; i < TRUSTED_DOMAINS.length; i++) {
+      var d = TRUSTED_DOMAINS[i];
+      if (h === d || h.slice(-(d.length + 1)) === '.' + d) return true;
+    }
+    return false;
+  }
 
   function findExternals(files) {
     var out = [], seen = {};

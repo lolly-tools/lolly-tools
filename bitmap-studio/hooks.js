@@ -62,6 +62,11 @@ var _memoKey = null;
 var _memoResult = null;
 var _lastOutSrc = null;                        // previous composed bitmap (template double-buffer)
 var _imgCache = { url: null, promise: null };  // decoded user image
+// First-state subject when nothing is picked: the animated Lolly swirl (an SVG,
+// rasterised on decode like any vector). _defaultUrl caches the resolved catalog
+// URL; the procedural demo scene stays as the fallback if it can't be resolved.
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
+var _defaultUrl = null;
 var _demoCanvas = null;                        // procedural demo scene, drawn once
 var _framedCache = { key: null, canvas: null };// cover-framed source
 var _pipeLutCache = { key: null, lut: null };  // baked colour-pipeline LUT
@@ -1478,9 +1483,17 @@ async function compute(model) {
     return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
   }
 
-  // Resolve the source: the user's pick, else the procedural demo scene.
+  // Resolve the source: the user's pick, else the animated Lolly swirl (SVG →
+  // bitmap on decode), else the procedural demo scene.
   var ref = inputs.image;
   var url = ref && typeof ref === 'object' ? ref.url : null;
+  if (!url) {
+    if (_defaultUrl === null) {
+      try { var def = await host.assets.get(DEFAULT_IMAGE_ID); _defaultUrl = (def && def.url) || ''; }
+      catch (e) { _defaultUrl = ''; }
+    }
+    if (_defaultUrl) url = _defaultUrl;
+  }
 
   var dims = workDims(P.W, P.H, STILL_MAX);
   var memoKey = JSON.stringify({ url: url, P: P, d: dims, stops: stops });

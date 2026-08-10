@@ -1,6 +1,6 @@
 {
-  "name": "Студио за презентации",
-  "description": "Създай нативна, редактируема презентация за PowerPoint - истински текст, точки, таблици и брандирана тема - от прост конструктор на слайдове, поставен Markdown или JSON спецификация. Графиките и диаграмите идват от другите ти инструменти на Lolly. Експортира .pptx (редактируем), плюс PDF и PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Презентация с {{_slideCount}} слайда",
   "inputs.size.label": "Размер на презентацията",
   "inputs.size.help": "Един размер за цялата презентация - PowerPoint дава на всеки слайд еднакъв размер.",

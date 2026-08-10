@@ -1,6 +1,6 @@
 {
-  "name": "Palette Lab",
-  "description": "Grow a palette from one seed colour — harmony accents, perceptual OKLab ramps and WCAG/APCA readability badges, with DTCG tokens and CSV export.",
+  "name": "Color Picker",
+  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
   "inputs.seed.label": "سیڈ کلر",
   "inputs.seed.help": "وہ رنگ جس سے پورا پیلٹ نکلتا ہے - ڈیفالٹ آپ کے برانڈ کے پرائمری رنگ پر ہے۔",
   "inputs.harmony.label": "ہارمنی",

@@ -1,6 +1,6 @@
 {
-  "name": "Deck Studio",
-  "description": "Crée un diaporama PowerPoint natif et modifiable - texte réel, puces, tableaux et thème de marque - à partir d'un simple générateur de diapositives, de Markdown collé ou d'une spec JSON. Les graphiques et diagrammes proviennent de tes autres outils Lolly. Exporte en .pptx (modifiable), plus PDF et PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Deck de présentation avec {{_slideCount}} diapositives",
   "inputs.size.label": "Taille du diaporama",
   "inputs.size.help": "Une seule taille pour tout le diaporama - PowerPoint donne la même taille à chaque diapositive.",

@@ -1,6 +1,6 @@
 {
-  "name": "Studio Presentasi",
-  "description": "Buat deck PowerPoint native yang bisa diedit - teks asli, bullet, tabel, dan tema brand - dari pembuat slide sederhana, Markdown yang ditempel, atau spesifikasi JSON. Chart dan diagram berasal dari tool Lolly lainnya. Mengekspor .pptx (bisa diedit), plus PDF dan PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Dek presentasi dengan {{_slideCount}} slide",
   "inputs.size.label": "Ukuran presentasi",
   "inputs.size.help": "Satu ukuran untuk seluruh dek - PowerPoint memberi setiap slide ukuran yang sama.",

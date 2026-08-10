@@ -1,6 +1,6 @@
 {
-  "name": "簡報工作室",
-  "description": "從簡易投影片建立工具、貼上的 Markdown 或 JSON 規格,建立原生、可編輯的 PowerPoint 投影片集 - 真實文字、項目符號、表格與品牌主題。圖表與圖示來自您其他的 Lolly 工具。匯出為 .pptx(可編輯),另加 PDF 與 PNG。",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "簡報,共 {{_slideCount}} 張投影片",
   "inputs.size.label": "簡報大小",
   "inputs.size.help": "整份簡報只有一種大小 - PowerPoint 讓每張投影片大小相同。",

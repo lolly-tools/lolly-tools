@@ -1,6 +1,6 @@
 {
-  "name": "Estúdio de Deck",
-  "description": "Crie um deck nativo e editável do PowerPoint - com texto real, marcadores, tabelas e tema da marca - a partir de um criador de slides simples, Markdown colado ou uma especificação JSON. Gráficos e diagramas vêm das suas outras ferramentas da Lolly. Exporta em .pptx (editável), além de PDF e PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Apresentação com {{_slideCount}} slides",
   "inputs.size.label": "Tamanho do deck",
   "inputs.size.help": "Um tamanho para todo o deck - o PowerPoint dá o mesmo tamanho a todos os slides.",

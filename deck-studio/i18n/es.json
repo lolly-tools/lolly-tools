@@ -1,6 +1,6 @@
 {
-  "name": "Estudio de presentaciones",
-  "description": "Crea una presentación PowerPoint nativa y editable - texto real, viñetas, tablas y tema de marca - desde un creador de diapositivas sencillo, Markdown pegado o una especificación JSON. Los gráficos y diagramas vienen de tus otras herramientas de Lolly. Exporta a .pptx (editable), además de PDF y PNG.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Presentación con {{_slideCount}} diapositivas",
   "inputs.size.label": "Tamaño de la presentación",
   "inputs.size.help": "Un solo tamaño para toda la presentación - PowerPoint da a cada diapositiva el mismo tamaño.",

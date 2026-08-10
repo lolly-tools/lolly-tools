@@ -1,6 +1,6 @@
 {
-  "name": "덱 스튜디오",
-  "description": "네이티브 편집 가능한 PowerPoint 덱을 만드세요 - 실제 텍스트, 글머리 기호, 표, 브랜드 테마까지 - 간단한 슬라이드 빌더, 붙여넣은 Markdown, 또는 JSON 스펙으로요. 차트와 다이어그램은 다른 Lolly 도구에서 가져와요. .pptx(편집 가능)로 내보내고, PDF와 PNG도 함께 내보내요.",
+  "name": "Markdown Slides",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "슬라이드 {{_slideCount}}개로 된 프레젠테이션 덱",
   "inputs.size.label": "덱 크기",
   "inputs.size.help": "전체 덱에 하나의 크기예요 - PowerPoint는 모든 슬라이드에 같은 크기를 적용해요.",
