@@ -15,7 +15,10 @@
  * of silently exporting blanks.
  */
 
-var FALLBACK_FAMILY = 'Outfit'; // the platform face — every shell can resolve it
+// The platform face — every shell can resolve it (web: font-registry's PLATFORM_FACES;
+// CLI/TUI: the node shell scans shells/web/public/fonts). 'Outfit' until 2026-08-10;
+// SUSE is the default now AND has a real italic, which Outfit never did.
+var FALLBACK_FAMILY = 'SUSE';
 
 function esc(s) {
   return String(s)
