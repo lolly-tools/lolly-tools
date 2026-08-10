@@ -85,15 +85,68 @@ function _viewFor(effect, model) {
   });
 }
 
+// The most recent live frame (camera or animated-asset playback) and the image
+// input's value identity when it arrived. While a live source is driving the
+// canvas, a PARAMETER edit must re-render THIS frame — not the still path, whose
+// async recompute would flash the placeholder/demo still until the next tick
+// (and, once the source stops, permanently revert a frozen frame). The cache
+// lives on the DISPATCHER so it survives an effect switch mid-live, and it is
+// dropped the moment the user changes the image source itself — picking a new
+// image is the one edit that MUST leave live replay for the still path.
+var _lastLiveFrame = null;
+var _liveImageKey = null;
+
+function _imageKeyOf(model) {
+  var v = inputsFrom(model).image;
+  if (v && typeof v === 'object') return v.url || v.id || '';
+  return v == null ? '' : String(v);
+}
+
+// A VIDEO pick has no still form the effect pipelines can decode (their still
+// paths read pixels through an <img>) — its frames only arrive through the live
+// loop (the shell's Play control). Until the first frame, render an instruction
+// instead of letting a module report "Could not read this image" for a
+// perfectly good pick.
+var _VIDEO_FMT = /^(?:mp4|m4v|webm|mov|ogv)$/;
+function _isVideoRef(v) {
+  return !!(v && typeof v === 'object' && v.url
+    && (v.type === 'video' || _VIDEO_FMT.test(String(v.format || '').toLowerCase())));
+}
+function _stillNote(message, W, H) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block">'
+    + '<rect width="' + W + '" height="' + H + '" fill="#f4f4f5"/>'
+    + '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" dominant-baseline="middle" '
+    + 'font-family="system-ui, sans-serif" font-size="' + Math.max(16, Math.round(W / 34)) + '" fill="#9ca3af">'
+    + _esc(message) + '</text></svg>';
+}
+
 function _run(ctx, fn) {
   var e = _effectOf(ctx.model);
   _activeEffect = e;
   var mod = EFFECT_MOD[e];
   if (!mod) return undefined;
-  var f = mod[fn] || ((fn === 'onInit' || fn === 'onInput') ? mod.compute : null);
-  if (!f) return undefined;
   var vals = inputsFrom(ctx.model);
   var W = _num(vals.width, 1080), H = _num(vals.height, 1080);
+  if (fn === 'onFrame') {
+    _lastLiveFrame = ctx.frame || null;
+    _liveImageKey = _imageKeyOf(ctx.model);
+  } else if ((fn === 'onInit' || fn === 'onInput') && _lastLiveFrame) {
+    if (_imageKeyOf(ctx.model) !== _liveImageKey) {
+      // Source swap → retire the live frame; fall through to the still path.
+      _lastLiveFrame = null;
+      _liveImageKey = null;
+    } else if (mod.onFrame) {
+      // Param edit during (or after — a paused/frozen frame) live: replay the
+      // current frame through the effect's own onFrame so the canvas re-renders
+      // seamlessly with the new parameters. Same pipeline, no still flash.
+      return _finalize(e, mod.onFrame({ model: _viewFor(e, ctx.model), host: ctx.host, frame: _lastLiveFrame }), W, H);
+    }
+  }
+  if ((fn === 'onInit' || fn === 'onInput') && !_lastLiveFrame && _isVideoRef(vals.image)) {
+    return { svgContent: _stillNote('Press ▶ Play (beside the image slot) to run this video through the effect', W, H) };
+  }
+  var f = mod[fn] || ((fn === 'onInit' || fn === 'onInput') ? mod.compute : null);
+  if (!f) return undefined;
   var vctx = { model: _viewFor(e, ctx.model), host: ctx.host };
   if (fn === 'onFrame') vctx.frame = ctx.frame;
   return _finalize(e, mod.compute && f === mod.compute ? f(vctx.model) : f(vctx), W, H);
@@ -102,8 +155,104 @@ function _run(ctx, fn) {
 function onInit(ctx)  { return _run(ctx, 'onInit'); }
 function onInput(ctx) { return _run(ctx, 'onInput'); }
 function onFrame(ctx) { return _run(ctx, 'onFrame'); }
-function beforeExport(ctx) { var m = EFFECT_MOD[_activeEffect]; return m && m.beforeExport ? m.beforeExport(ctx) : undefined; }
-function afterExport(ctx)  { var m = EFFECT_MOD[_activeEffect]; return m && m.afterExport  ? m.afterExport(ctx)  : undefined; }
+// ── Base-raster caching for motion export ─────────────────────────────────────
+// A vector effect's base can be tens of thousands of dot/line nodes, and the shell
+// re-serialises the WHOLE base with dom-to-image on every captured video frame — its
+// static-chrome fast path is declined because the overlay slot mutates each frame. So a
+// 5s clip rasterises that giant DOM ~120-150 times. For a MOTION format we rasterise the
+// STATIC base to ONE <image> up front, so each frame serialises a tiny DOM (that image +
+// the small overlay). Restored in afterExport, so still / vector (svg/pdf/emf) export keeps
+// crisp vectors. FAIL-SAFE: any problem leaves the vector base in place — the export still
+// works, just at the old speed. Only vector effects benefit (raster effects already emit a
+// single <image> base); raster/pixel-stretch/duotone/imperfections are skipped.
+var _MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
+var _VECTOR_EFFECTS = { halftone: 1, scanline: 1, posterize: 1, voronoi: 1 };
+var _baseRaster = null; // { svg, removed:[{node,next}], image } — for afterExport restore
+
+function _rasterizeBaseForMotion(ctx) {
+  if (!ctx || !_MOTION_FORMATS[ctx.format] || !_VECTOR_EFFECTS[_activeEffect]) return;
+  // STATIC-image optimisation ONLY: a live/animated source (camera or an animated asset)
+  // must keep its live base — freezing it to one raster would lock the video to a single
+  // frame. `_lastLiveFrame` is set whenever the last render came through onFrame.
+  if (_lastLiveFrame) return;
+  if (typeof document === 'undefined') return;
+  var node = ctx.node; if (!node || !node.querySelector) return;
+  var svg = node.querySelector('svg'); if (!svg) return;
+  if (svg.querySelector('image[data-base-raster]')) return; // already swapped
+  var vb = (svg.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number);
+  var W = vb[2] || +svg.getAttribute('width') || VIEW;
+  var H = vb[3] || +svg.getAttribute('height') || VIEW;
+  // Rasterise the base = the svg WITHOUT its overlay slot.
+  var clone = svg.cloneNode(true);
+  var cslot = clone.querySelector('#lolly-ov-slot');
+  if (cslot && cslot.parentNode) cslot.parentNode.removeChild(cslot);
+  var str = new XMLSerializer().serializeToString(clone);
+  return new Promise(function (resolve) {
+    var im = new Image();
+    im.onload = function () {
+      try {
+        var scale = Math.min(2, 2160 / Math.max(W, H)); // crisp, but cap the canvas
+        var cv = document.createElement('canvas');
+        cv.width = Math.max(1, Math.round(W * scale));
+        cv.height = Math.max(1, Math.round(H * scale));
+        cv.getContext('2d').drawImage(im, 0, 0, cv.width, cv.height);
+        var raster = cv.toDataURL('image/png');
+        // Swap: drop the base children (keep the overlay slot, defs/style, and anything
+        // carrying the [data-ov-clock] anchor), insert the rasterised base before the slot.
+        var slot = svg.querySelector('#lolly-ov-slot');
+        var removed = [];
+        [].slice.call(svg.childNodes).forEach(function (k) {
+          if (k === slot) return;
+          if (k.nodeType === 1) {
+            var tag = (k.tagName || '').toLowerCase();
+            if (tag === 'defs' || tag === 'style') return;
+            if (k.hasAttribute && k.hasAttribute('data-ov-clock')) return;
+            if (k.querySelector && k.querySelector('[data-ov-clock]')) return;
+          }
+          removed.push({ node: k, next: k.nextSibling });
+          svg.removeChild(k);
+        });
+        var image = document.createElementNS('http://www.w3.org/2000/svg', 'image');
+        image.setAttribute('data-base-raster', '1');
+        image.setAttribute('x', '0'); image.setAttribute('y', '0');
+        image.setAttribute('width', String(W)); image.setAttribute('height', String(H));
+        image.setAttribute('href', raster);
+        image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', raster);
+        svg.insertBefore(image, slot || null);
+        _baseRaster = { svg: svg, removed: removed, image: image };
+      } catch (e) { /* leave the vector base in place — slow but correct */ }
+      resolve();
+    };
+    im.onerror = function () { resolve(); };
+    im.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(str);
+  });
+}
+
+function _restoreBaseRaster() {
+  var st = _baseRaster; _baseRaster = null;
+  if (!st) return;
+  try {
+    if (st.image && st.image.parentNode) st.image.parentNode.removeChild(st.image);
+    st.removed.forEach(function (r) {
+      var ref = (r.next && r.next.parentNode === st.svg) ? r.next : null;
+      st.svg.insertBefore(r.node, ref);
+    });
+  } catch (e) { /* best effort — the next render rebuilds the preview anyway */ }
+}
+
+function beforeExport(ctx) {
+  var m = EFFECT_MOD[_activeEffect];
+  var moduleBefore = function () { return m && m.beforeExport ? m.beforeExport(ctx) : undefined; };
+  // Rasterise the base BEFORE the module arms its overlay clock (which re-finds the slot
+  // on the swapped DOM) and before the shell captures frames.
+  var pre = _rasterizeBaseForMotion(ctx);
+  return (pre && typeof pre.then === 'function') ? pre.then(moduleBefore) : moduleBefore();
+}
+function afterExport(ctx)  {
+  _restoreBaseRaster();
+  var m = EFFECT_MOD[_activeEffect];
+  return m && m.afterExport ? m.afterExport(ctx) : undefined;
+}
 
 
 // ===== effect module: halftone (from community/filter-halftone/hooks.js) =====
@@ -142,11 +291,14 @@ function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_E
 function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
 // Upper bound on the dot grid so a tiny grid size can't emit a runaway SVG.
 var MAX_CELLS = 26000;
-// Live/motion cap: onFrame re-parses the whole SVG into the DOM every frame, and the
-// runtime drops any frame that arrives mid-parse — so thousands of dot nodes per frame
-// throttle live playback to a crawl. A much smaller budget keeps live smooth (still a
-// legible halftone); the full MAX_CELLS is only needed for a crisp still/vector export.
-var LIVE_MAX_CELLS = 6000;
+// Live cap = the SAME budget as a still (Andy, 2026-08-10). The old smaller live
+// budget (6000) silently RESCALED the grid, so on a typical canvas "Grid size"
+// bottomed out around 14 while live — a floor the user chose nothing about and
+// couldn't explain. The user's explicit choice wins now: live geometry always
+// matches the still/export at the same params, and a very fine grid simply plays
+// at a lower fps (the runtime's drop-overlap throttle absorbs the cost visibly)
+// instead of being quietly coarsened.
+var LIVE_MAX_CELLS = MAX_CELLS;
 // The default source image shown until the user picks one. A Lolly tool URL (the
 // bag-video tool rendered to a PNG), resolved lazily via host.compose so the tool
 // shows a real halftone on first paint. A plain catalog id still works too — the
@@ -1092,10 +1244,12 @@ var VIEW = 1000;        // default viewBox edge when the tool has no explicit si
                         // <script> in template.html); every render works in the live W×H.
 var MAX_EDGE = 8000;    // upper bound on either canvas edge (matches width/height inputs' max)
 var MAX_CELLS = 100000; // bound the total rect count so a tiny line size can't blow up the SVG
-// Live/motion cap (see the halftone module): onFrame re-parses the whole SVG each frame and
-// the runtime drops frames that arrive mid-parse, so a live frame emits far fewer rects than
-// a still export. Full MAX_CELLS is only for a crisp still/vector export.
-var LIVE_MAX_CELLS = 8000;
+// Live cap = the still budget (see the halftone module's note, Andy 2026-08-10):
+// the old 8000-cell live budget silently rescaled the grid, putting an
+// unexplained floor under "Line height" while live. The user's choice wins; a
+// very fine grid just plays at a lower fps via the runtime's drop-overlap
+// throttle, and live geometry always matches the still/export at the same params.
+var LIVE_MAX_CELLS = MAX_CELLS;
                         // (this is the real floor on detail at very small line sizes, not the input min)
 // Live canvas size from the width/height inputs (synced from the export bar by the shell).
 function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_EDGE); }
@@ -1834,6 +1988,10 @@ var MAX_CELLS = 410000;
 // stale decoded bitmaps + grids — mirrors logo-wall's pruneCaches.
 var _imgCache = {};       // url -> Promise<Image>
 var _sampleCache = {};    // url|cols x rows -> { lum, alpha, r, g, b, cols, rows }
+// User background override (`bgColor` / pz_bgColor). Empty = the legacy paper:
+// the lightest palette swatch. Replaces ONLY the paper rect + export margins —
+// the separation bands keep their palette colours.
+var _bgOverride = '';
 var _bandCache = { key: null, paths: null }; // geometry-only traced band paths (palette-independent)
 var _memoKey = null, _memoResult = null;
 var _transparent = false, _paper = '#ffffff';
@@ -2565,7 +2723,7 @@ function buildPoster(url, img, W, H, grid, thr, palette, ov, rawSrc) {
   // No-filter bypass: show the raw source (still photo or live camera frame) with the
   // brand overlay composited on top — skip the trace/separations entirely.
   if (ov && ov.noFilter) {
-    var paperNf = palette[palette.length - 1];
+    var paperNf = _bgOverride || palette[palette.length - 1];
     _paper = paperNf;
     var onf = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" '
       + 'width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block;">';
@@ -2586,7 +2744,7 @@ function buildPoster(url, img, W, H, grid, thr, palette, ov, rawSrc) {
   var scale = Math.max(W / grid.cols, H / grid.rows);
   var tx = (W - grid.cols * scale) / 2, ty = (H - grid.rows * scale) / 2;
 
-  var paper = palette[steps - 1];
+  var paper = _bgOverride || palette[steps - 1];
   _paper = paper;
   var out = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" '
     + 'width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block;">';
@@ -2634,6 +2792,7 @@ async function resolveDefault() {
 async function compute(model) {
   var inputs = inputsFrom(model);
   _transparent = Boolean(inputs.transparentBg);
+  _bgOverride = typeof inputs.bgColor === 'string' ? inputs.bgColor.trim() : '';
   var steps = clamp(Math.round(num(inputs.steps, 8)), 2, 12);
   var invert = Boolean(inputs.invert);
   var brightness = clamp(Math.round(num(inputs.brightness, 0)), -100, 100);
@@ -2759,7 +2918,7 @@ async function compute(model) {
   // Memoise the SVG on everything that changes the pixels — palette, steps, size,
   // quality, tone, transparency, photo, treatment, overlay (+ no-filter) — so dragging an
   // unrelated control is cheap. `ov` carries the overlay inputs + noFilter + resolved URLs.
-  var memoKey = JSON.stringify({ url: url, steps: effSteps, thr: thr.join(','), q: inputs.quality, sm: inputs.smoothing, inv: invert, tone: toneKey, W: W, H: H, t: _transparent, pal: palette, tc: (_t.on ? _t.ov : null), tm: _t.mode, ti: _t.amt, ov: ov });
+  var memoKey = JSON.stringify({ url: url, steps: effSteps, thr: thr.join(','), q: inputs.quality, sm: inputs.smoothing, inv: invert, tone: toneKey, W: W, H: H, t: _transparent, bg: _bgOverride, pal: palette, tc: (_t.on ? _t.ov : null), tm: _t.mode, ti: _t.amt, ov: ov });
   if (memoKey === _memoKey) { patch.posterSvg = _memoResult; return patch; }
 
   var svg;
@@ -2822,6 +2981,7 @@ function onFrame(ctx) {
   if (!canRaster() || typeof ImageData === 'undefined') return null;
   var inputs = inputsFrom(ctx.model);
   _transparent = Boolean(inputs.transparentBg);
+  _bgOverride = typeof inputs.bgColor === 'string' ? inputs.bgColor.trim() : '';
   var steps = clamp(Math.round(num(inputs.steps, 8)), 2, 12);
   var invert = Boolean(inputs.invert);
   var brightness = clamp(Math.round(num(inputs.brightness, 0)), -100, 100);
@@ -2973,6 +3133,9 @@ var _sampleCache = {};    // url|cols x rows -> { lum, alpha, r, g, b, cols, row
 var _cellCache = { key: null, sites: null, cells: null }; // layout-only cell geometry (palette-independent)
 var _memoKey = null, _memoResult = null;
 var _transparent = false, _paper = '#ffffff';
+// User background override (`bgColor` / vo_bgColor). Empty = the legacy paper:
+// the edge colour (export margins + the rect behind the mesh follow the mortar).
+var _bgOverride = '';
 var _lastOv = null, _lastW = null, _lastH = null; // most recent overlay params — read by beforeExport
 
 // ── small helpers (shared with the filter-* family) ───────────────────────────
@@ -3536,7 +3699,7 @@ function placeholder(msg) {
 function buildVoronoi(W, H, gEff, sites, cells, edgeWidth, edgeColor, t, ov, rawSrc) {
   // No-filter bypass: show the raw source (still photo or live frame) + overlay.
   if (ov && ov.noFilter) {
-    _paper = color(edgeColor, '#ffffff');
+    _paper = _bgOverride || color(edgeColor, '#ffffff');
     var onf = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" '
       + 'width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block;">';
     if (!_transparent) onf += '<rect width="100%" height="100%" fill="' + esc(_paper) + '"/>';
@@ -3545,7 +3708,7 @@ function buildVoronoi(W, H, gEff, sites, cells, edgeWidth, edgeColor, t, ov, raw
     return onf;
   }
 
-  _paper = color(edgeColor, '#ffffff');
+  _paper = _bgOverride || color(edgeColor, '#ffffff');
   // COVER-fit the colour grid into the canvas, centred — the same framing the mesh
   // (built over the full W×H box) uses, so each cell samples the pixel under its site.
   var gscale = Math.max(W / gEff.cols, H / gEff.rows);
@@ -3633,6 +3796,7 @@ function gradeGrid(g, pr) {
 async function compute(model) {
   var inputs = inputsFrom(model);
   _transparent = Boolean(inputs.transparentBg);
+  _bgOverride = typeof inputs.bgColor === 'string' ? inputs.bgColor.trim() : '';
   var pr = readParams(inputs, 2000);
   var _t = treatmentFrom(inputs);
 
@@ -3670,7 +3834,7 @@ async function compute(model) {
 
   var memoKey = JSON.stringify({
     url: url, c: pr.cells, j: f2(pr.jitter), rl: pr.relax, sd: pr.seed, ew: f2(pr.edgeWidth), ec: pr.edgeColor,
-    con: pr.contrast, h: pr.hueDeg, s: pr.sat, l: pr.light, W: pr.W, H: pr.H, t: _transparent,
+    con: pr.contrast, h: pr.hueDeg, s: pr.sat, l: pr.light, W: pr.W, H: pr.H, t: _transparent, bg: _bgOverride,
     tc: (_t.on ? _t.ov : null), tm: _t.mode, ti: _t.amt, ov: ov,
   });
   if (memoKey === _memoKey) return { voronoiSvg: _memoResult, imgKey: imgKey, natW: natW, natH: natH };
@@ -3716,6 +3880,7 @@ function onFrame(ctx) {
   if (!canRaster() || typeof ImageData === 'undefined') return null;
   var inputs = inputsFrom(ctx.model);
   _transparent = Boolean(inputs.transparentBg);
+  _bgOverride = typeof inputs.bgColor === 'string' ? inputs.bgColor.trim() : '';
   var pr = readParams(inputs, LIVE_MAX_CELLS);
   var _t = treatmentFrom(inputs);
 
