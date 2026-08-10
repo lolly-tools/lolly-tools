@@ -142,6 +142,11 @@ function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_E
 function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
 // Upper bound on the dot grid so a tiny grid size can't emit a runaway SVG.
 var MAX_CELLS = 26000;
+// Live/motion cap: onFrame re-parses the whole SVG into the DOM every frame, and the
+// runtime drops any frame that arrives mid-parse — so thousands of dot nodes per frame
+// throttle live playback to a crawl. A much smaller budget keeps live smooth (still a
+// legible halftone); the full MAX_CELLS is only needed for a crisp still/vector export.
+var LIVE_MAX_CELLS = 6000;
 // The default source image shown until the user picks one. A Lolly tool URL (the
 // bag-video tool rendered to a PNG), resolved lazily via host.compose so the tool
 // shows a real halftone on first paint. A plain catalog id still works too — the
@@ -798,9 +803,12 @@ function buildSvg(args) {
 
   var cols = Math.max(1, Math.round(regionW / cell));
   var rows = Math.max(1, Math.round(regionH / cell));
-  // Clamp total dots so a fine grid on a big region stays bounded.
-  if (cols * rows > MAX_CELLS) {
-    var k = Math.sqrt(MAX_CELLS / (cols * rows));
+  // Clamp total dots so a fine grid on a big region stays bounded. The live path passes
+  // a smaller cap (LIVE_MAX_CELLS) so per-frame DOM re-parse stays cheap enough not to be
+  // dropped by the runtime's single-flight frame throttle.
+  var maxCells = args.maxCells || MAX_CELLS;
+  if (cols * rows > maxCells) {
+    var k = Math.sqrt(maxCells / (cols * rows));
     cols = Math.max(1, Math.floor(cols * k));
     rows = Math.max(1, Math.floor(rows * k));
   }
@@ -1018,6 +1026,7 @@ function onFrame(ctx) {
 
   var svg = buildSvg({
     img: src, W: W, H: H, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? src.toDataURL('image/jpeg', 0.85) : null, _ov: ov,
+    maxCells: LIVE_MAX_CELLS,
     gridSize: inputs.gridSize, dotScale: inputs.dotScale, shape: inputs.shape,
     fgColor: inputs.fgColor, bgColor: inputs.bgColor, invert: inputs.invert, fit: inputs.fit,
     brightness: inputs.brightness, contrast: inputs.contrast, gamma: inputs.gamma,
@@ -1083,6 +1092,10 @@ var VIEW = 1000;        // default viewBox edge when the tool has no explicit si
                         // <script> in template.html); every render works in the live W×H.
 var MAX_EDGE = 8000;    // upper bound on either canvas edge (matches width/height inputs' max)
 var MAX_CELLS = 100000; // bound the total rect count so a tiny line size can't blow up the SVG
+// Live/motion cap (see the halftone module): onFrame re-parses the whole SVG each frame and
+// the runtime drops frames that arrive mid-parse, so a live frame emits far fewer rects than
+// a still export. Full MAX_CELLS is only for a crisp still/vector export.
+var LIVE_MAX_CELLS = 8000;
                         // (this is the real floor on detail at very small line sizes, not the input min)
 // Live canvas size from the width/height inputs (synced from the export bar by the shell).
 function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_EDGE); }
@@ -1566,8 +1579,9 @@ function buildSvg(args) {
   // gap re-thins the lines without re-sampling, and the image can't stretch or jump.
   var cols = Math.max(1, Math.round(regionW / vis));
   var rows = Math.max(1, Math.round(regionH / vis));
-  if (cols * rows > MAX_CELLS) {
-    var k = Math.sqrt(MAX_CELLS / (cols * rows));
+  var maxCells = args.maxCells || MAX_CELLS;
+  if (cols * rows > maxCells) {
+    var k = Math.sqrt(maxCells / (cols * rows));
     cols = Math.max(1, Math.floor(cols * k));
     rows = Math.max(1, Math.floor(rows * k));
   }
@@ -1738,6 +1752,7 @@ function onFrame(ctx) {
 
   var svg = buildSvg({
     img: src, W: W, H: H, noFilter: ovi.noFilter, rawSrc: ovi.noFilter ? src.toDataURL('image/jpeg', 0.85) : null, _ov: ov,
+    maxCells: LIVE_MAX_CELLS,
     lineSize: inputs.lineSize, gapSize: inputs.gapSize, separatePixels: inputs.separatePixels,
     everyLine: inputs.everyLine, fit: inputs.fit, highlight: inputs.highlight, light: inputs.light,
     mid: inputs.mid, shade: inputs.shade, shadow: inputs.shadow, background: inputs.background,
