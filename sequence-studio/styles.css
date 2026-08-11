@@ -58,6 +58,11 @@
    walker (SVG/PDF/raster) ever visits it. */
 .lolly-box-audio { display: none; }
 
+/* A camera box (plan 104 §5.4) is the same kind of citizen: a marker carrying the
+   scene's pose, never a picture. Hidden for the same reasons, and its wrapper is kept
+   transparent by boxCss, so a camera contributes nothing to any frame. */
+.lolly-box-cam { display: none; }
+
 .lolly-box-text {
   position: relative;
   width: 100%;

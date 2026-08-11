@@ -3,7 +3,7 @@
   "name": "Sequence Studio",
   "description": "Arrange clips, cards, overlays and music on a timeline, then export the frame.",
   "a11yLabel": "Sequence Studio canvas",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "engineVersion": "^1.64.0",
   "status": "community",
   "category": "everyone",
@@ -586,6 +586,8 @@
         "muteField": "mute",
         "linkField": "linkOf",
         "laneField": "lane",
+        "zField": "z",
+        "kfField": "kf",
         "minSize": 8,
         "import": {
           "mode": "scenes",
@@ -693,6 +695,11 @@
             {
               "value": "audio",
               "label": "Audio",
+              "repeatable": true
+            },
+            {
+              "value": "camera",
+              "label": "Camera",
               "repeatable": true
             }
           ]
@@ -1069,7 +1076,7 @@
           "type": "select",
           "label": "Shadow",
           "default": "none",
-          "help": "What the drop shadow applies to: the box outline, the text, or the visible content (image alpha). Raster export only — SVG/PDF flatten it.",
+          "help": "What the drop shadow applies to: the box outline, the text, the visible content (image alpha), or Depth — a soft shadow derived from the box's own depth, so lifting a box off the surface casts further. Raster and SVG export are faithful; PDF carries it partially.",
           "options": [
             {
               "value": "none",
@@ -1086,6 +1093,10 @@
             {
               "value": "content",
               "label": "Content"
+            },
+            {
+              "value": "depth",
+              "label": "Depth"
             }
           ]
         },
@@ -1457,7 +1468,7 @@
           "type": "text",
           "label": "In easing",
           "default": "",
-          "help": "The timing curve the animate-in preset's GEOMETRY follows: a preset name (linear, ease-out, ease-in, ease-in-out, overshoot, anticipate) or a CSS cubic-bezier(a,b,c,d). Empty leaves the preset on its own built-in curve, which is what every composition authored before this control existed still renders with. Opacity is not governed by it."
+          "help": "The timing curve the animate-in preset's GEOMETRY follows: a preset name (linear, ease-out, ease-in, ease-in-out, overshoot, anticipate, smooth, snappy) or a CSS cubic-bezier(a,b,c,d). Empty leaves the preset on its own built-in curve, which is what every composition authored before this control existed still renders with. Opacity is not governed by it."
         },
         {
           "id": "exitEase",
@@ -1466,6 +1477,24 @@
           "label": "Out easing",
           "default": "",
           "help": "The same curve control for the animate-out preset. Same wire format, same geometry-only reach."
+        },
+        {
+          "id": "z",
+          "showFor": [],
+          "type": "number",
+          "label": "Depth",
+          "default": 0,
+          "min": -300,
+          "max": 900,
+          "help": "How far this box sits above the surface, in px — 0 is on the surface, negative sinks it below. Depth drives the camera's parallax and the Depth shadow. Machine-managed by the depth slider, so showFor:[] keeps it out of the sidebar."
+        },
+        {
+          "id": "kf",
+          "showFor": [],
+          "type": "text",
+          "label": "Keyframes",
+          "default": "",
+          "help": "This box's keyframe track: poses over its own local time, written compactly (t0_z0_b4*t1500_eo_z140). Machine-written by the timeline panel, never typed; anything outside the token grammar is dropped when the box renders."
         }
       ],
       "default": [
