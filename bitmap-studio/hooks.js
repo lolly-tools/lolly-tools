@@ -69,6 +69,7 @@ var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 var _defaultUrl = null;
 var _demoCanvas = null;                        // procedural demo scene, drawn once
 var _framedCache = { key: null, canvas: null };// cover-framed source
+var _beforeCache = { key: null, src: null };   // framed source as a data URL (split "before" layer)
 var _pipeLutCache = { key: null, lut: null };  // baked colour-pipeline LUT
 var _userLutCache = { id: null, lut: null };   // parsed .cube/.3dl (keyed by file identity)
 var _brandStops = null;                        // resolved brand palette stops (once per mount)
@@ -1434,13 +1435,13 @@ function renderFrame(source, iw, ih, dims, P, stops, userLut) {
   }
   if (textureActive(P)) applyTexture(out, P);
 
-  // Before/after split: restore the untouched left half with a hairline seam.
-  if (P.splitPreview) {
-    var half = Math.round(dims.w / 2);
-    octx.drawImage(framed, 0, 0, half, dims.h, 0, 0, half, dims.h);
-    octx.fillStyle = 'rgba(255,255,255,0.9)';
-    octx.fillRect(half - 1, 0, 2, dims.h);
-  }
+  // Hand the untouched framed source back on the canvas. The before/after split
+  // is NOT baked into the bitmap any more: the still/live paths emit `framed` as
+  // a separate "before" layer that the template composites in the SVG behind a
+  // drag/rotate-able divider (a screen-only overlay — see template.html). That
+  // keeps `out` the full graded result (so the histogram and every non-split
+  // export read the true grade) while the divider still rasterises "as shown".
+  try { out.__bsFramed = framed; } catch (e) { /* frozen canvas — split just skips */ }
   return out;
 }
 
@@ -1542,6 +1543,20 @@ async function compute(model) {
 
   var histSvg = P.histogram ? buildHistogramSvg(out) : '';
 
+  // "Before" layer for the split overlay — the framed source encoded losslessly,
+  // cached against the frame key so colour/texture drags don't re-encode it (only
+  // a source/framing/size change does). Only produced while the split is on.
+  var beforeSrc = null;
+  if (P.splitPreview && out.__bsFramed) {
+    var fkey = _framedCache.key;
+    if (fkey && _beforeCache.key === fkey && _beforeCache.src) beforeSrc = _beforeCache.src;
+    else {
+      try { beforeSrc = out.__bsFramed.toDataURL('image/png'); }
+      catch (e) { beforeSrc = null; }
+      if (beforeSrc && fkey) _beforeCache = { key: fkey, src: beforeSrc };
+    }
+  }
+
   // Previous bitmap as a decode buffer (see template.html), only when changed.
   var prev = (_lastOutSrc && _lastOutSrc !== outSrc) ? _lastOutSrc : null;
   _lastOutSrc = outSrc;
@@ -1549,7 +1564,7 @@ async function compute(model) {
   _memoResult = {
     outSrc: outSrc, prevSrc: prev, note: null,
     histSvg: histSvg, lutNote: lutNote, lutLabel: lutLabel,
-    bakeLut: false, downloadPresetLut: false, split: P.splitPreview,
+    bakeLut: false, downloadPresetLut: false, split: P.splitPreview, beforeSrc: beforeSrc,
   };
   return _memoResult;
 }
@@ -1645,9 +1660,13 @@ function onFrame(ctx) {
   var outSrc;
   try { outSrc = out.toDataURL('image/jpeg', 0.85); } catch (e) { return null; }
   _lastOutSrc = outSrc;
+  var beforeSrc = null;
+  if (P.splitPreview && out.__bsFramed) {
+    try { beforeSrc = out.__bsFramed.toDataURL('image/jpeg', 0.85); } catch (e) { beforeSrc = null; }
+  }
   return {
     outSrc: outSrc, prevSrc: null, note: null,
     histSvg: P.histogram ? buildHistogramSvg(out) : '',
-    bakeLut: false, downloadPresetLut: false, split: P.splitPreview,
+    bakeLut: false, downloadPresetLut: false, split: P.splitPreview, beforeSrc: beforeSrc,
   };
 }

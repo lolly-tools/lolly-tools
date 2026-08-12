@@ -3,7 +3,7 @@
   "name": "Sequence Studio",
   "description": "Arrange clips, cards, overlays and music on a timeline, then export the frame.",
   "a11yLabel": "Sequence Studio canvas",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "engineVersion": "^1.64.0",
   "status": "community",
   "category": "everyone",
@@ -568,6 +568,8 @@
         "groupField": "group",
         "clipField": "clip",
         "pathField": "path",
+        "headStartField": "headStart",
+        "headEndField": "headEnd",
         "shadowField": "shadow",
         "shadowColorField": "shadowColor",
         "shadowXField": "shadowX",
@@ -1495,6 +1497,78 @@
           "label": "Keyframes",
           "default": "",
           "help": "This box's keyframe track: poses over its own local time, written compactly (t0_z0_b4*t1500_eo_z140). Machine-written by the timeline panel, never typed; anything outside the token grammar is dropped when the box renders."
+        },
+        {
+          "id": "headStart",
+          "type": "select",
+          "label": "Path start",
+          "default": "none",
+          "showFor": [
+            "path"
+          ],
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "triangle",
+              "label": "Arrow"
+            },
+            {
+              "value": "open",
+              "label": "Open arrow"
+            },
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "diamond",
+              "label": "Diamond"
+            },
+            {
+              "value": "bar",
+              "label": "Bar"
+            }
+          ],
+          "help": "An arrowhead at the path's FIRST point, pointing back out along the curve's own tangent. A spline, a line and a connector are one shape here, so they all take the same six heads."
+        },
+        {
+          "id": "headEnd",
+          "type": "select",
+          "label": "Path end",
+          "default": "none",
+          "showFor": [
+            "path"
+          ],
+          "options": [
+            {
+              "value": "none",
+              "label": "None"
+            },
+            {
+              "value": "triangle",
+              "label": "Arrow"
+            },
+            {
+              "value": "open",
+              "label": "Open arrow"
+            },
+            {
+              "value": "circle",
+              "label": "Circle"
+            },
+            {
+              "value": "diamond",
+              "label": "Diamond"
+            },
+            {
+              "value": "bar",
+              "label": "Bar"
+            }
+          ],
+          "help": "An arrowhead at the path's LAST point, pointing out along the curve's own tangent. The line tool sets this to Arrow; every other path starts with None."
         }
       ],
       "default": [

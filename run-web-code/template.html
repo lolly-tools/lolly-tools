@@ -20,18 +20,17 @@
       <input type="checkbox" data-rwc-auto checked> Auto-run
     </label>
     <button class="rwc-btn rwc-ghost" type="button" data-rwc-layout aria-label="Toggle layout" title="Side-by-side / stacked">⊞</button>
-    <button class="rwc-btn rwc-ghost" type="button" data-rwc-fullscreen aria-label="Toggle fullscreen" aria-pressed="false" title="Fullscreen">⛶</button>
+    <button class="rwc-btn rwc-ghost" type="button" data-rwc-fullscreen aria-label="Toggle fullscreen" aria-pressed="false" title="Fullscreen (whole browser window)">⛶</button>
+    <!-- Full-page mode: hide all chrome, the live preview takes over the whole viewport
+         (deep-linkable via ?full). A floating top-right control returns to the split view. -->
+    <button class="rwc-btn rwc-ghost rwc-svgbtn" type="button" data-rwc-fullpage aria-pressed="false" aria-label="Full page — preview only" title="Full page — the preview fills the whole window (shareable with ?full)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M6.5 9.3h11"/></svg>
+    </button>
     <div class="rwc-sess" data-rwc-sess>
       <span class="rwc-sess-name" data-rwc-sess-name hidden></span>
       <button class="rwc-btn rwc-ghost" type="button" data-rwc-save title="Save the current code (updates the open session, or names a new one)">Save</button>
-      <button class="rwc-btn rwc-ghost" type="button" data-rwc-sess-open aria-haspopup="menu" aria-expanded="false" title="Open a saved session">Sessions ▾</button>
-      <div class="rwc-sess-panel" data-rwc-sess-panel hidden role="menu" aria-label="Saved sessions">
-        <div class="rwc-sess-saverow">
-          <input class="rwc-sess-input" data-rwc-sess-newname type="text" placeholder="Name this session…" aria-label="New session name" spellcheck="false" autocomplete="off">
-          <button class="rwc-banner-btn" type="button" data-rwc-sess-saveas>Save</button>
-        </div>
-        <div class="rwc-sess-list" data-rwc-sess-list></div>
-      </div>
+      <!-- Opens the docked sessions drawer (below, in the body) for quick-switching. -->
+      <button class="rwc-btn rwc-ghost" type="button" data-rwc-sess-open aria-haspopup="true" aria-expanded="false" aria-controls="rwc-sessbar" title="Saved sessions — a quick-switch panel">Sessions</button>
     </div>
     <button class="rwc-btn rwc-ghost" type="button" data-rwc-reset title="Load the starter example">Reset</button>
     <!-- The shell relocates its render/export pill here (tool.ts placeActions →
@@ -41,32 +40,54 @@
   </header>
 
   <div class="rwc-body" data-rwc-body data-export-hide>
+    <!-- Optional docked sessions panel — an overlay drawer for quick-switching
+         between saved pens. Toggled by the header "Sessions" button; absolutely
+         positioned so it never disturbs the editor/preview split math. -->
+    <aside class="rwc-sessbar" id="rwc-sessbar" data-rwc-sessbar hidden aria-label="Saved sessions">
+      <div class="rwc-sessbar-head">
+        <span class="rwc-sessbar-title">Sessions</span>
+        <button class="rwc-icbtn rwc-sessbar-close" type="button" data-rwc-sess-close aria-label="Close sessions panel" title="Close">&times;</button>
+      </div>
+      <div class="rwc-sess-saverow">
+        <input class="rwc-sess-input" data-rwc-sess-newname type="text" placeholder="Name this session…" aria-label="New session name" spellcheck="false" autocomplete="off">
+        <button class="rwc-banner-btn" type="button" data-rwc-sess-saveas>Save</button>
+      </div>
+      <div class="rwc-sess-list" data-rwc-sess-list></div>
+    </aside>
+
     <section class="rwc-editor" aria-label="Code editor">
+      <!-- Slim rail shown only while the editor is collapsed; click to expand. -->
+      <button class="rwc-rail" type="button" data-rwc-expand="editor" aria-label="Expand code editor" title="Expand editor"><span class="rwc-rail-label">Code ›</span></button>
       <div class="rwc-tabs" role="tablist" aria-label="Code language">
         <button class="rwc-tab is-active" type="button" role="tab" aria-selected="true" data-pane="html">HTML<span class="rwc-tab-dot" data-dot="html" hidden></span></button>
         <button class="rwc-tab" type="button" role="tab" aria-selected="false" data-pane="css">CSS<span class="rwc-tab-dot" data-dot="css" hidden></span></button>
         <button class="rwc-tab" type="button" role="tab" aria-selected="false" data-pane="js"><span data-js-label>JS</span><span class="rwc-tab-dot" data-dot="js" hidden></span></button>
         <span class="rwc-saved" data-rwc-saved role="status" aria-live="polite"></span>
         <span class="rwc-tabs-gap"></span>
-        <button class="rwc-tab rwc-tab-head" type="button" role="tab" aria-selected="false" data-pane="head" title="Persistent <head> — saved on this device and added to every preview">Head<span class="rwc-tab-dot" data-dot="head" hidden></span></button>
+        <button class="rwc-tab rwc-tab-head" type="button" role="tab" aria-selected="false" data-pane="head" title="Persistent <head> — added to every preview, and travels with a saved or shared pen">Head<span class="rwc-tab-dot" data-dot="head" hidden></span></button>
+        <button class="rwc-collapse" type="button" data-rwc-collapse="editor" aria-label="Collapse code editor" title="Collapse editor — give the preview the full width">⟨</button>
       </div>
       <div class="rwc-panes">
         <textarea class="rwc-code is-active" data-pane="html" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Paste your HTML here — a full page or just a snippet…" aria-label="HTML"></textarea>
         <textarea class="rwc-code" data-pane="css" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional CSS — or keep it inside your HTML…" aria-label="CSS"></textarea>
         <textarea class="rwc-code" data-pane="js" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional JavaScript — or keep it inside your HTML…" aria-label="JavaScript"></textarea>
-        <textarea class="rwc-code" data-pane="head" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Persistent &lt;head&gt; — meta, fonts, base styles, library &lt;script&gt;/&lt;link&gt;. Saved on this device and added to every preview." aria-label="Persistent head"></textarea>
+        <textarea class="rwc-code" data-pane="head" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Persistent &lt;head&gt; — meta, fonts, base styles, library &lt;script&gt;/&lt;link&gt;. Added to every preview, and travels with a saved or shared pen." aria-label="Persistent head"></textarea>
       </div>
     </section>
 
     <div class="rwc-split" data-rwc-split role="separator" aria-orientation="vertical" aria-label="Drag to resize"></div>
 
     <section class="rwc-preview" aria-label="Live preview">
+      <!-- Slim rail shown only while the preview is collapsed; click to expand. -->
+      <button class="rwc-rail" type="button" data-rwc-expand="preview" aria-label="Expand preview" title="Expand preview"><span class="rwc-rail-label">‹ Preview</span></button>
       <div class="rwc-preview-head">
         <span class="rwc-live" data-rwc-live aria-hidden="true"></span>
         <span class="rwc-preview-label">Preview</span>
         <span class="rwc-status" data-rwc-status role="status" aria-live="polite"></span>
         <span class="rwc-flex"></span>
+        <button class="rwc-icbtn rwc-consbtn" type="button" data-rwc-console-vis aria-pressed="true" title="Show or hide the console" aria-label="Toggle console visibility">Console</button>
         <button class="rwc-icbtn" type="button" data-rwc-reload title="Reload preview" aria-label="Reload preview">⟳</button>
+        <button class="rwc-collapse" type="button" data-rwc-collapse="preview" aria-label="Collapse preview" title="Collapse preview — give the editor the full width">⟩</button>
       </div>
 
       <div class="rwc-banner" data-rwc-banner hidden></div>
@@ -88,6 +109,12 @@
       </div>
     </section>
   </div>
+
+  <!-- Full-page exit — floats top-right ONLY while .rwc.is-fullpage; a split-pane
+       glyph signalling "back to the editor + preview". Esc also exits. -->
+  <button class="rwc-fullpage-exit" type="button" data-rwc-fullpage-exit data-export-hide aria-label="Exit full page — back to split view" title="Back to split view (Esc)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M12 4.5v15"/></svg>
+  </button>
 
   <div class="rwc-shot" data-rwc-shot data-export-root aria-hidden="true"></div>
   <div class="rwc-about-overlay" data-rwc-about data-export-hide hidden>
@@ -138,6 +165,14 @@
 }
 .rwc * { box-sizing: border-box; }
 .rwc-flex { flex: 1 1 auto; }
+/* Fill the whole browser window. The web shell pins the mount host (#tool-content)
+   to the manifest render size (1280×800 — kept, since the snapshot mirror export
+   reads it), which would leave this full-bleed IDE floating in dead space on a wider
+   screen. The style scoper (shells/web scope-css.ts) maps a bare :root / html / body
+   selector onto the mount root, so this resolves to `#tool-content { … }`; !important
+   beats the shell's inline width. Harmless in the CLI/jsdom path and never reaches the
+   export (the [data-export-root] mirror is a separate node). */
+:root { width: 100% !important; height: 100% !important; }
 
 /* ── Top bar ─────────────────────────────────────────────────────────────── */
 .rwc-bar {
@@ -224,7 +259,7 @@
 /* min-height floor keeps the split usable even when the tool canvas hands us an
    indefinite height (#tool-content is min-height:100%, not a definite height); it
    still grows to fill a definite/tall canvas via flex:1. */
-.rwc-body { flex: 1 1 auto; display: flex; min-height: 540px; }
+.rwc-body { flex: 1 1 auto; display: flex; min-height: 540px; position: relative; }
 .rwc-editor { flex: 0 0 var(--rwc-left, 44%); display: flex; flex-direction: column; min-width: 0; min-height: 0; }
 .rwc-preview { flex: 1 1 0; display: flex; flex-direction: column; min-width: 0; min-height: 0; background: hsl(var(--rwc-fill) / .5); }
 
@@ -362,7 +397,11 @@
    OVER the editor (not behind it), so park it out of view. It stays laid out with a
    real px size (set by JS in mountShot) so the walker still gets true geometry —
    the shell's standard hidden-export-stage approach. Click-through, hidden from AT. */
-.rwc-shot { position: absolute; left: -100000px; top: 0; width: 1px; height: 1px; overflow: hidden; background: #fff; pointer-events: none; }
+/* No background here: a transparent WebGL/canvas pen (alpha:true) exports with its
+   alpha intact — a far more usable asset. A pen that wants a solid backdrop sets its
+   own html/body background (re-scoped onto .rwc-shot-body); a text snippet keeps the
+   reset's white body. So the export honours whatever the pen actually renders. */
+.rwc-shot { position: absolute; left: -100000px; top: 0; width: 1px; height: 1px; overflow: hidden; pointer-events: none; }
 .rwc-shot-body { all: initial; display: block; width: 100%; height: 100%; }
 /* Saved sessions */
 .rwc-sess { position: relative; display: inline-flex; align-items: center; gap: 8px; }
@@ -371,9 +410,27 @@
 .rwc-sess-name::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: hsl(var(--rwc-ok)); flex: 0 0 auto; }
 .rwc-sess-name.is-dirty { color: hsl(var(--rwc-fg)); }
 .rwc-sess-name.is-dirty::before { background: hsl(38 92% 50%); }
-.rwc-sess-panel { position: absolute; top: calc(100% + 8px); right: 0; z-index: 60; width: 320px; max-width: 78vw; padding: 12px; background: hsl(var(--rwc-card)); border: 1px solid hsl(var(--rwc-bd)); border-radius: 12px; box-shadow: 0 16px 40px hsl(var(--rwc-fg) / .22); }
-.rwc-sess-panel[hidden] { display: none; }
-.rwc-sess-saverow { display: flex; gap: 8px; margin-bottom: 10px; }
+/* Docked sessions drawer — an absolutely-positioned overlay on the RIGHT of the
+   body (nearer the "Sessions" toolbar button), so it never perturbs the
+   editor/preview flex split. Stays open for quick-switching (click a row to load
+   without closing). It overlays the live preview, so the panel is slightly
+   translucent with a backdrop blur — the running content stays sensed behind it
+   while the session list keeps its contrast. */
+.rwc-sessbar {
+  position: absolute; right: 0; top: 0; bottom: 0; z-index: 40; width: min(280px, 82%);
+  display: flex; flex-direction: column; gap: 10px; padding: 12px;
+  background: hsl(var(--rwc-card) / .86); border-left: 1px solid hsl(var(--rwc-bd));
+  box-shadow: -10px 0 30px hsl(var(--rwc-fg) / .16);
+  -webkit-backdrop-filter: blur(14px) saturate(1.4); backdrop-filter: blur(14px) saturate(1.4);
+}
+.rwc-sessbar[hidden] { display: none; }
+.rwc-sessbar-head { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+.rwc-sessbar-title { flex: 1 1 auto; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: hsl(var(--rwc-muted)); }
+.rwc-sessbar-close { width: 26px; height: 26px; font-size: 18px; }
+.rwc-sessbar .rwc-sess-list { flex: 1 1 auto; max-height: none; }
+/* Active state for the header Sessions toggle while the drawer is open. */
+.rwc-sess [data-rwc-sess-open][aria-expanded="true"] { color: hsl(var(--rwc-brand)); border-color: hsl(var(--rwc-brand) / .5); background: hsl(var(--rwc-brand) / .1); }
+.rwc-sess-saverow { display: flex; gap: 8px; flex: 0 0 auto; }
 .rwc-sess-input { flex: 1 1 auto; min-width: 0; padding: 7px 10px; border: 1px solid hsl(var(--rwc-bd)); border-radius: 8px; background: hsl(var(--rwc-bg)); color: hsl(var(--rwc-fg)); font: inherit; font-size: 12.5px; }
 .rwc-sess-input:focus { outline: none; border-color: hsl(var(--rwc-brand) / .6); }
 .rwc-sess-list { display: flex; flex-direction: column; gap: 2px; max-height: 320px; overflow: auto; }
@@ -401,6 +458,93 @@
 .rwc-about-points li { font-size: 13px; line-height: 1.5; color: hsl(var(--rwc-fg)); padding-left: 22px; position: relative; }
 .rwc-about-points li::before { content: ''; position: absolute; left: 2px; top: 6px; width: 8px; height: 8px; border-radius: 999px; background: hsl(var(--rwc-brand) / .5); }
 .rwc-about-points strong { font-weight: 800; }
+
+/* ── Collapsible panels ──────────────────────────────────────────────────── */
+/* A small chevron in each panel's header collapses that panel to a slim rail;
+   the other panel then fills the width (or height, when stacked). The rail is a
+   full-size click target that expands the panel again. Only one side collapses at
+   a time (enforced in JS). */
+.rwc-collapse {
+  appearance: none; border: 1px solid transparent; background: transparent; flex: 0 0 auto;
+  width: 26px; height: 26px; margin-left: 2px; border-radius: 7px; cursor: pointer;
+  color: hsl(var(--rwc-muted)); font-size: 13px; line-height: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+.rwc-collapse:hover { color: hsl(var(--rwc-brand)); border-color: hsl(var(--rwc-brand) / .5); }
+/* The rail: hidden until its panel is collapsed, then it fills the panel box. */
+.rwc-rail {
+  display: none; flex: 1 1 auto; width: 100%; align-items: center; justify-content: center;
+  appearance: none; border: 0; background: hsl(var(--rwc-card)); cursor: pointer;
+  color: hsl(var(--rwc-muted));
+}
+.rwc-rail:hover { color: hsl(var(--rwc-brand)); background: hsl(var(--rwc-brand) / .06); }
+.rwc-rail-label {
+  writing-mode: vertical-rl; transform: rotate(180deg);
+  font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em;
+}
+/* Side-by-side collapse: the collapsed panel shrinks to a rail, the split hides. */
+.rwc-body.editor-collapsed .rwc-editor,
+.rwc-body.preview-collapsed .rwc-preview { flex: 0 0 var(--rwc-rail-w, 40px); min-width: 0; }
+.rwc-body.editor-collapsed .rwc-editor > :not(.rwc-rail),
+.rwc-body.preview-collapsed .rwc-preview > :not(.rwc-rail) { display: none; }
+.rwc-body.editor-collapsed .rwc-editor .rwc-rail,
+.rwc-body.preview-collapsed .rwc-preview .rwc-rail { display: flex; }
+.rwc-body.editor-collapsed .rwc-editor { border-right: 1px solid hsl(var(--rwc-bd)); }
+.rwc-body.preview-collapsed .rwc-preview { border-left: 1px solid hsl(var(--rwc-bd)); }
+.rwc-body.editor-collapsed .rwc-split,
+.rwc-body.preview-collapsed .rwc-split { display: none; }
+/* Whichever panel stays open takes all the room. */
+.rwc-body.preview-collapsed .rwc-editor { flex: 1 1 auto; }
+.rwc-body.editor-collapsed .rwc-preview { flex: 1 1 auto; }
+/* Stacked/narrow: a collapsed panel becomes a short horizontal bar with an upright
+   label instead of a vertical rail. */
+.rwc-body.is-stack.editor-collapsed .rwc-editor,
+.rwc-body.is-narrow.editor-collapsed .rwc-editor { flex: 0 0 auto; border-right: 0; border-bottom: 1px solid hsl(var(--rwc-bd)); }
+.rwc-body.is-stack.preview-collapsed .rwc-preview,
+.rwc-body.is-narrow.preview-collapsed .rwc-preview { flex: 0 0 auto; border-left: 0; border-top: 1px solid hsl(var(--rwc-bd)); }
+.rwc-body.is-stack .rwc-rail, .rwc-body.is-narrow .rwc-rail { flex: 0 0 auto; padding: 11px 0; }
+.rwc-body.is-stack .rwc-rail-label, .rwc-body.is-narrow .rwc-rail-label { writing-mode: horizontal-tb; transform: none; }
+
+/* Console visibility — a full show/hide toggle in the preview head, distinct from
+   the console header's collapse/peek. Hidden → the preview stage fills the panel
+   (the "full page, no console" view). */
+.rwc-consbtn {
+  width: auto; padding: 0 10px; gap: 6px; font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .04em;
+}
+.rwc-consbtn[aria-pressed="true"] {
+  color: hsl(var(--rwc-brand)); border-color: hsl(var(--rwc-brand) / .45); background: hsl(var(--rwc-brand) / .08);
+}
+.rwc-preview.no-console .rwc-console { display: none; }
+
+/* SVG glyph inside a toolbar button (the full-page button). */
+.rwc-svgbtn { padding: 8px 11px; }
+.rwc-svgbtn svg { width: 16px; height: 16px; display: block; }
+.rwc-btn.rwc-svgbtn[aria-pressed="true"] { color: hsl(var(--rwc-brand)); border-color: hsl(var(--rwc-brand) / .5); background: hsl(var(--rwc-brand) / .1); }
+
+/* ── Full-page mode ──────────────────────────────────────────────────────────
+   Preview-only, chrome-free, filling the whole viewport (the tool root already
+   spans the window — see the :root width rule up top). Deep-linkable via ?full;
+   Esc or the floating top-right control returns to the split view. */
+.rwc.is-fullpage .rwc-bar,
+.rwc.is-fullpage .rwc-editor,
+.rwc.is-fullpage .rwc-split,
+.rwc.is-fullpage .rwc-preview-head,
+.rwc.is-fullpage .rwc-console { display: none !important; }
+.rwc.is-fullpage .rwc-body { min-height: 0; }
+.rwc.is-fullpage .rwc-preview { flex: 1 1 auto; background: none; }
+.rwc-fullpage-exit { display: none; }
+.rwc.is-fullpage .rwc-fullpage-exit {
+  display: inline-flex; align-items: center; justify-content: center;
+  position: absolute; top: 12px; right: 12px; z-index: 120;
+  width: 40px; height: 40px; padding: 0; border-radius: 10px; cursor: pointer;
+  border: 1px solid hsl(var(--rwc-bd)); background: hsl(var(--rwc-card) / .85);
+  color: hsl(var(--rwc-fg)); box-shadow: 0 6px 20px hsl(var(--rwc-fg) / .2);
+  -webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
+  transition: color .12s, border-color .12s;
+}
+.rwc.is-fullpage .rwc-fullpage-exit:hover { color: hsl(var(--rwc-brand)); border-color: hsl(var(--rwc-brand) / .55); }
+.rwc-fullpage-exit svg { width: 19px; height: 19px; }
 
 /* ── Responsive: stack editor over preview ───────────────────────────────── */
 .rwc-body.is-stack, .rwc-body.is-narrow { flex-direction: column; }
@@ -476,6 +620,11 @@
   // Kept free of a literal script-closing sequence so it embeds safely in the srcdoc.
   var SHIM = [
     '(function(){',
+    // Force preserveDrawingBuffer on WebGL contexts so a canvas can still be read back
+    // (toDataURL) at snapshot time for export — otherwise the drawing buffer is cleared
+    // after compositing and exports come out blank. Runs before any pen code, so it
+    // catches the context at creation. Tiny perf cost, worth it for a preview tool.
+    'try{var _gc=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(t,a){if(typeof t==="string"&&/webgl/i.test(t)){a=a||{};try{if(a.preserveDrawingBuffer!==true)a.preserveDrawingBuffer=true;}catch(_){}}return _gc.call(this,t,a);};}catch(e){}',
     'try{window.localStorage.length;}catch(e){',
     ' var mk=function(){var m={};return{getItem:function(k){k=String(k);return Object.prototype.hasOwnProperty.call(m,k)?m[k]:null;},setItem:function(k,v){m[String(k)]=String(v);},removeItem:function(k){delete m[String(k)];},clear:function(){m={};},key:function(i){var ks=Object.keys(m);return i<ks.length?ks[i]:null;},get length(){return Object.keys(m).length;}};};',
     ' try{Object.defineProperty(window,"localStorage",{value:mk(),configurable:true});}catch(_){}',
@@ -487,7 +636,11 @@
     'window.addEventListener("error",function(e){if(e.error&&e.error.stack)send("error",[String(e.error.stack).replace(/about:srcdoc/g,"preview")]);else send("error",[(e.message||"Error")+(e.filename?" ("+String(e.filename).replace(/about:srcdoc/,"preview")+":"+e.lineno+")":"")]);});',
     'window.addEventListener("unhandledrejection",function(e){var r=e.reason;send("error",["Uncaught (in promise) "+(r&&(r.stack||r.message)||fmt(r))]);});',
     'parent.postMessage({__rwc:1,level:"__ready__"},"*");',
-    'function snap(){try{var d=document,de=d.documentElement,b=d.body;var w=Math.max(de.scrollWidth,b?b.scrollWidth:0)||de.clientWidth||1280;var h=Math.max(de.scrollHeight,b?b.scrollHeight:0)||de.clientHeight||800;parent.postMessage({__rwc:1,level:"__snapshot__",html:"<!doctype html>"+de.outerHTML,w:w,h:h},"*");}catch(e){}}',
+    // Snapshot the live preview for export. Canvas pixels do NOT survive DOM
+    // serialisation, so each <canvas> is baked to an <img> of its toDataURL in a CLONE
+    // of the document (the live preview is left untouched). Wholly guarded — any failure
+    // (a tainted/cross-origin canvas throws on toDataURL) falls back to the plain HTML.
+    'function snap(){try{var d=document,de=d.documentElement,b=d.body;var w=Math.max(de.scrollWidth,b?b.scrollWidth:0)||de.clientWidth||1280;var h=Math.max(de.scrollHeight,b?b.scrollHeight:0)||de.clientHeight||800;var html;try{var src=d.getElementsByTagName("canvas");if(src&&src.length){var clone=de.cloneNode(true);var cc=clone.getElementsByTagName("canvas");for(var i=0;i<src.length&&i<cc.length;i++){try{var u=src[i].toDataURL("image/png");if(u&&u.slice(0,10)==="data:image"){var im=d.createElement("img");im.src=u;var st=src[i].getAttribute("style");if(st)im.setAttribute("style",st);var cw=src[i].width,ch=src[i].height;if(cw)im.setAttribute("width",cw);if(ch)im.setAttribute("height",ch);if(cc[i].parentNode)cc[i].parentNode.replaceChild(im,cc[i]);}}catch(_){}}html=clone.outerHTML;}else{html=de.outerHTML;}}catch(_){html=de.outerHTML;}parent.postMessage({__rwc:1,level:"__snapshot__",html:"<!doctype html>"+html,w:w,h:h},"*");}catch(e){}}',
     'window.addEventListener("message",function(e){try{if(e.source===parent&&e.data&&e.data.__rwcCmd==="snap")snap();}catch(_){}});',
     'if(document.readyState==="complete")requestAnimationFrame(snap);else window.addEventListener("load",function(){requestAnimationFrame(snap);});',
     '})();'
@@ -531,7 +684,13 @@
       if (jsTag) doc = injectBeforeBodyClose(doc, jsTag);
       return doc;
     }
-    var reset = 'html{color-scheme:light dark}*{box-sizing:border-box}body{margin:16px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;color:#111}';
+    // The default preview is a neutral WHITE page (dark text). Pin color-scheme to
+    // light + an explicit white background so the canvas never darkens under the OS
+    // dark preference — otherwise `color-scheme:light dark` + the dark `color:#111`
+    // gives dark-text-on-dark-canvas (unreadable), which Safari hits by rendering the
+    // sandboxed iframe's canvas dark in the app's LIGHT mode. A pen can still opt into
+    // dark by setting its own background / color-scheme (its CSS comes after this reset).
+    var reset = 'html{color-scheme:light;background:#fff}*{box-sizing:border-box}body{margin:16px;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;line-height:1.5;color:#111;background:#fff}';
     return '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'
       + shimTag + '<style>' + reset + '</style>' + headExtra + styleTag
       + '</head><body>' + html + jsTag + '</body></html>';
@@ -914,7 +1073,10 @@
     if (persistTimer) clearTimeout(persistTimer);
     persistTimer = setTimeout(function () {
       var f = readFiles();
-      idbSet('draft', { html: f.html, css: f.css, js: f.js, mode: modeSel ? modeSel.value : 'none' }).catch(function () {});
+      // The draft now carries `head` too — head travels with the pen (per-pen/shareable),
+      // not per-device. The separate 'head' key is kept as a one-time migration source for
+      // pens saved before this change (and for an older shell that still reads it).
+      idbSet('draft', { html: f.html, css: f.css, js: f.js, head: f.head, mode: modeSel ? modeSel.value : 'none' }).catch(function () {});
       idbSet('head', f.head).then(flashSaved, function () {});
     }, 700);
   }
@@ -936,6 +1098,128 @@
     });
   }
 
+  // ── Synced input-model bridge (plan 107: collaborative code panes) ───────────
+  // The tool declares html/css/js/head/mode as inputs (render.sidebar:false, so NO
+  // sidebar) purely as a DATA channel: the model is the shared source of truth for
+  // URL-share, saved sessions, undo/redo and LIVE COLLABORATION (a second person
+  // watches the preview update as one edits), while THIS IIFE stays the sole owner of
+  // the <textarea> editor DOM. The template deliberately never references the inputs,
+  // so the shell's hydrated output is byte-constant and paint() skips its innerHTML
+  // rebuild on every commit — the editor + sandbox iframe survive untouched. The web
+  // shell attaches the per-canvas channel (attachCanvasCommit) on the stable
+  // [data-lolly-canvas] container; when it is absent (CLI / an older shell) everything
+  // here no-ops and the tool falls back to its own IndexedDB persistence below.
+  var PANES = ['html', 'css', 'js', 'head'];
+  function str(x) { return x == null ? '' : String(x); }
+  var _chan = null, _chanTried = false;
+  function chan() {
+    if (_chanTried) return _chan;
+    _chanTried = true;
+    try {
+      var el = root.closest && root.closest('[data-lolly-canvas]');
+      if (el && (el.__lollyModel || el.__lollyCommit)) _chan = el;
+    } catch (e) { /* no channel — degrade to IDB */ }
+    return _chan;
+  }
+  function hasModelChannel() { var c = chan(); return !!(c && c.__lollyModel && c.__lollyCommit); }
+  function modelValue(id) {
+    var c = chan(); if (!c || !c.__lollyModel) return null;
+    try { var m = c.__lollyModel(); if (m) for (var i = 0; i < m.length; i++) if (m[i].id === id) return m[i].value; }
+    catch (e) { /* ignore */ }
+    return null;
+  }
+  // coarse=true → __lollyCommit (wrapped setInput: broadcasts to collab peers AND is the
+  // undo checkpoint). coarse=false → __lollyCommitQuiet (setInputNoHistory: updates the
+  // model + URL only, no undo entry, no broadcast) — used for per-keystroke liveness and
+  // for the boot seed (a joining peer must not overwrite the shared doc with its restore).
+  function commit(id, value, coarse) {
+    var c = chan(); if (!c) return;
+    var fn = coarse ? c.__lollyCommit : (c.__lollyCommitQuiet || c.__lollyCommit);
+    if (fn) try { fn(id, value); } catch (e) { /* ignore */ }
+  }
+  // Baseline of what the model already holds for each field, so a coarse commit skips a
+  // pane that hasn't changed (no spurious undo step / broadcast) and the reconcile can
+  // tell our own echo from a genuine remote edit.
+  var lastCommitted = { html: null, css: null, js: null, head: null, mode: null };
+  function commitAll(coarse) {
+    var f = readFiles();
+    commit('html', f.html, coarse); commit('css', f.css, coarse);
+    commit('js', f.js, coarse); commit('head', f.head, coarse);
+    if (modeSel) commit('mode', modeSel.value, coarse);
+    lastCommitted.html = f.html; lastCommitted.css = f.css; lastCommitted.js = f.js; lastCommitted.head = f.head;
+    if (modeSel) lastCommitted.mode = modeSel.value;
+  }
+
+  var quietTimers = {}, coarseTimers = {};
+  function scheduleQuiet(pane) {
+    if (quietTimers[pane]) clearTimeout(quietTimers[pane]);
+    quietTimers[pane] = setTimeout(function () { quietTimers[pane] = 0; commit(pane, codeEls[pane].value, false); }, 200);
+  }
+  function scheduleCoarse(pane) {
+    if (coarseTimers[pane]) clearTimeout(coarseTimers[pane]);
+    coarseTimers[pane] = setTimeout(function () { flushCoarse(pane); }, 650);
+  }
+  function flushCoarse(pane) {
+    if (coarseTimers[pane]) { clearTimeout(coarseTimers[pane]); coarseTimers[pane] = 0; }
+    var v = codeEls[pane].value;
+    if (v !== lastCommitted[pane]) { commit(pane, v, true); lastCommitted[pane] = v; }
+  }
+  function flushPane(pane) {
+    if (quietTimers[pane]) { clearTimeout(quietTimers[pane]); quietTimers[pane] = 0; }
+    flushCoarse(pane);
+  }
+  // Force every pending commit to land NOW — called atop the beforeExport hook (via
+  // root.__rwcFlush) so an export always captures the fully-committed model state.
+  root.__rwcFlush = function () {
+    PANES.forEach(flushPane);
+    if (modeSel && modeSel.value !== lastCommitted.mode) { commit('mode', modeSel.value, true); lastCommitted.mode = modeSel.value; }
+  };
+
+  // ── Model → editor reconcile (caret-safe) ────────────────────────────────────
+  // A remote edit (or an undo/redo, or a session load in another realm) arrives through
+  // the shell's runtime.subscribe as a fresh model. For each pane we skip our own echo,
+  // defer while the caret is IN that pane (local-wins LWW), and otherwise update the
+  // textarea live + re-run the preview so a watcher sees the change.
+  var editedWhileFocused = {}, pendingRemote = {};
+  function applyRemotePane(pane, v) {
+    var ta = codeEls[pane];
+    ta.value = v;
+    lastCommitted[pane] = v;   // adopt as baseline — never re-broadcast a value we received
+    if (typeof hl !== 'undefined' && hl) hl.paint(pane);
+    updateDots();
+    schedulePersist();
+    scheduleRun();
+  }
+  function reconcile(state) {
+    var m = state && state.model; if (!m) return;
+    for (var i = 0; i < PANES.length; i++) {
+      var pane = PANES[i], it = null;
+      for (var j = 0; j < m.length; j++) if (m[j].id === pane) { it = m[j]; break; }
+      if (!it) continue;
+      var v = str(it.value), ta = codeEls[pane];
+      if (v === ta.value) { delete pendingRemote[pane]; continue; }        // our own echo
+      if (document.activeElement === ta) { pendingRemote[pane] = v; continue; }  // defer while focused
+      applyRemotePane(pane, v);
+    }
+    var mit = null;
+    for (var k = 0; k < m.length; k++) if (m[k].id === 'mode') { mit = m[k]; break; }
+    if (mit && modeSel) {
+      var mv = str(mit.value) || 'none';
+      if (mv !== modeSel.value && document.activeElement !== modeSel) {
+        modeSel.value = mv; lastCommitted.mode = mv; relabelJs();
+        if (typeof hl !== 'undefined' && hl) hl.paint('js'); scheduleRun();
+      }
+    }
+  }
+  function startReconcile() {
+    var c = chan(); if (!c || !c.__lollySubscribe) return;
+    var first = true;
+    // Skip the synchronous on-subscribe fire: we have just seeded + pushed the model, so it
+    // would only re-assert what the editor already shows.
+    try { c.__lollySubscribe(function (state) { if (first) { first = false; return; } reconcile(state); }); }
+    catch (e) { /* subscribe unavailable — no live reconcile, editing still works */ }
+  }
+
   // ── Wire up ─────────────────────────────────────────────────────────────────
   tabEls.forEach(function (t) { t.addEventListener('click', function () { selectTab(t.dataset.pane); }); });
 
@@ -945,14 +1229,36 @@
       var dirty = sig(readFiles()) !== lastRunSig;
       runBtn.classList.toggle('is-dirty', dirty);
       schedulePersist();
+      // Mirror this pane into the synced model: quiet per keystroke (live URL / model, no
+      // undo flood), coarse on the ~pause (undo checkpoint + collab broadcast).
+      editedWhileFocused[k] = true;
+      scheduleQuiet(k); scheduleCoarse(k);
       if (autoEl.checked) scheduleRun();
     });
+    codeEls[k].addEventListener('focus', function () { editedWhileFocused[k] = false; });
+    codeEls[k].addEventListener('blur', function () {
+      // Local-wins LWW: if you touched this pane while focused your edit is the latest —
+      // flush it (broadcast + undo). If you did NOT touch it but a remote edit arrived
+      // while the caret sat here, adopt that deferred value now.
+      if (editedWhileFocused[k]) { flushCoarse(k); delete pendingRemote[k]; }
+      else if (Object.prototype.hasOwnProperty.call(pendingRemote, k)) {
+        var v = pendingRemote[k]; delete pendingRemote[k];
+        if (v !== codeEls[k].value) applyRemotePane(k, v);
+      }
+      editedWhileFocused[k] = false;
+    });
     codeEls[k].addEventListener('keydown', function (e) {
-      if ((e.metaKey || e.ctrlKey) && (e.key === 'Enter' || e.keyCode === 13)) { e.preventDefault(); run(); }
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'Enter' || e.keyCode === 13)) { e.preventDefault(); userRun(); }
     });
   });
 
-  runBtn.addEventListener('click', run);
+  // An explicit Run gesture also lands any pending commits at once (broadcast + undo
+  // checkpoint), so a collaborator sees the running pen the instant you hit Run — even
+  // mid-typing, before the pause timer would have fired. run() itself stays free of
+  // commit side-effects so the boot seed / auto-run / remote-reconcile paths never
+  // broadcast.
+  function userRun() { PANES.forEach(flushPane); run(); }
+  runBtn.addEventListener('click', userRun);
   $('[data-rwc-reload]').addEventListener('click', run);
   autoEl.addEventListener('change', function () { if (autoEl.checked) run(); });
 
@@ -964,7 +1270,11 @@
     var m = modeSel ? modeSel.value : 'none';
     jsLabel.textContent = m === 'jsx' ? 'JSX' : m === 'ts' ? 'TS' : m === 'tsx' ? 'TSX' : 'JS';
   }
-  if (modeSel) modeSel.addEventListener('change', function () { relabelJs(); schedulePersist(); run(); if (typeof hl !== 'undefined') hl.paint('js'); });
+  if (modeSel) modeSel.addEventListener('change', function () {
+    relabelJs(); schedulePersist();
+    commit('mode', modeSel.value, true); lastCommitted.mode = modeSel.value;
+    run(); if (typeof hl !== 'undefined') hl.paint('js');
+  });
 
   // ── Syntax highlighting overlay + themes ─────────────────────────────────────
   // A coloured <pre> behind each transparent <textarea>. Themes are a CSS-var swap
@@ -1092,6 +1402,7 @@
     clearTimeout(resetTimer); resetArmed = false; resetBtn.textContent = 'Reset';
     codeEls.html.value = STARTER.html; codeEls.css.value = STARTER.css; codeEls.js.value = STARTER.js;
     if (modeSel) modeSel.value = 'none'; relabelJs();
+    commitAll(true);   // push the starter into the model — one undo checkpoint + broadcast
     idbSet('draft', null).catch(function () {});   // forget the saved pen; the persistent <head> stays
     bannerDismissed = false; updateDots(); selectTab('html'); run();
     openSessionId = null; openSessionName = ''; openSessionSig = null; updateSessBadge();
@@ -1099,9 +1410,9 @@
   });
 
   // Layout toggle (side-by-side / stacked).
-  $('[data-rwc-layout]').addEventListener('click', function () { body.classList.toggle('is-stack'); });
+  $('[data-rwc-layout]').addEventListener('click', function () { body.classList.toggle('is-stack'); saveUi(); });
 
-  // Console collapse.
+  // Console collapse (peek — hides the log body, keeps the header strip).
   var consoleHead = $('[data-rwc-console-toggle]');
   function toggleConsole() {
     var collapsed = consoleEl.classList.toggle('is-collapsed');
@@ -1110,6 +1421,54 @@
   consoleHead.addEventListener('click', function (e) { if (e.target.closest('[data-rwc-console-clear]')) return; toggleConsole(); });
   consoleHead.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleConsole(); } });
   $('[data-rwc-console-clear]').addEventListener('click', function (e) { e.stopPropagation(); clearConsole(); });
+
+  // ── Collapsible panels + console visibility ─────────────────────────────────
+  // Collapse the editor OR the preview to a slim rail so the other fills the space
+  // — collapse the editor + hide the console for a full-page preview. Mutually
+  // exclusive (only one side collapses at a time). Delegated so the rails (added
+  // to the DOM up front) and the header chevrons share one handler.
+  var previewSection = $('.rwc-preview');
+  var consVisBtn = $('[data-rwc-console-vis]');
+  function setCollapse(which) {
+    body.classList.remove('editor-collapsed', 'preview-collapsed');
+    if (which === 'editor' || which === 'preview') body.classList.add(which + '-collapsed');
+    saveUi();
+  }
+  root.addEventListener('click', function (e) {
+    var col = e.target.closest('[data-rwc-collapse]');
+    if (col) { e.preventDefault(); setCollapse(col.getAttribute('data-rwc-collapse')); return; }
+    var exp = e.target.closest('[data-rwc-expand]');
+    if (exp) { e.preventDefault(); setCollapse(''); }
+  });
+  function setConsoleVisible(vis) {
+    if (previewSection) previewSection.classList.toggle('no-console', !vis);
+    if (consVisBtn) consVisBtn.setAttribute('aria-pressed', vis ? 'true' : 'false');
+    saveUi();
+  }
+  if (consVisBtn) consVisBtn.addEventListener('click', function () {
+    setConsoleVisible(!!(previewSection && previewSection.classList.contains('no-console')));
+  });
+
+  // Persist the layout prefs (collapse side, console visibility, stacked) on-device
+  // in the same IDB 'kv' store as the draft/head/sessions. Guarded — a blocked IDB
+  // just means the layout resets to the default on reload.
+  function currentUi() {
+    return {
+      col: body.classList.contains('editor-collapsed') ? 'editor'
+         : body.classList.contains('preview-collapsed') ? 'preview' : '',
+      noConsole: !!(previewSection && previewSection.classList.contains('no-console')),
+      stack: body.classList.contains('is-stack')
+    };
+  }
+  var uiTimer = null;
+  function saveUi() { if (uiTimer) clearTimeout(uiTimer); uiTimer = setTimeout(function () { idbSet('ui', currentUi()).catch(function () {}); }, 200); }
+  function applyUi(ui) {
+    if (!ui) return;
+    if (ui.col === 'editor' || ui.col === 'preview') body.classList.add(ui.col + '-collapsed');
+    if (ui.noConsole && previewSection) { previewSection.classList.add('no-console'); if (consVisBtn) consVisBtn.setAttribute('aria-pressed', 'false'); }
+    if (ui.stack) body.classList.add('is-stack');
+  }
+  idbGet('ui').then(applyUi, function () {});
 
   // Banner actions (delegated).
   bannerEl.addEventListener('click', function (e) {
@@ -1171,6 +1530,77 @@
   document.addEventListener('fullscreenchange', syncFs);
   document.addEventListener('webkitfullscreenchange', syncFs);
 
+  // ── Full-page mode (preview-only, chrome-free) + ?full deep-linking ──────────
+  // Distinct from ⛶ OS fullscreen: this hides all tool chrome IN the page so the
+  // live preview fills the whole viewport. The mode lives in the URL as ?full so a
+  // pen can be shared "running only"; ?edit (or no param) is the split view.
+  // The shell reads ?full too ("collapse chrome to the bare preview"), which is
+  // inert for this sidebar-less tool — so reusing it just aligns the vocabulary.
+  var fpBtn = $('[data-rwc-fullpage]');
+  var fpExit = $('[data-rwc-fullpage-exit]');
+  // Does a URL (search OR hash query) carry ?full?
+  function urlHasFull(href) {
+    try {
+      var u = new URL(href, location.origin);
+      if (new URLSearchParams(u.search).has('full')) return true;
+      var hi = u.hash.indexOf('?');
+      return hi >= 0 && new URLSearchParams(u.hash.slice(hi + 1)).has('full');
+    } catch (e) { return false; }
+  }
+  // Did we BOOT with ?full? Check the live location (covers SPA internal nav, and the
+  // instant before the shell's boot syncUrl() cleans the bar) AND the ORIGINAL navigation
+  // URL from the Performance timeline — history.replaceState never mutates that, so a
+  // direct load / refresh / shared link to /t/<id>?full still reads true after the strip.
+  function bootHadFull() {
+    if (urlHasFull(location.href)) return true;
+    try {
+      var nav = performance.getEntriesByType && performance.getEntriesByType('navigation')[0];
+      if (nav && nav.name && urlHasFull(nav.name)) return true;
+    } catch (e) {}
+    return false;
+  }
+  // Write/remove ?full via replaceState (no router re-entry, mirrors the shell's own
+  // updateFullParam). location.pathname is /t/<id> once mounted; other params kept.
+  function setUrlFull(on) {
+    try {
+      var sp = new URLSearchParams(location.search);
+      if (on) { sp.set('full', ''); sp.delete('edit'); } else { sp.delete('full'); }
+      var parts = []; sp.forEach(function (v, k) { parts.push(v ? k + '=' + encodeURIComponent(v) : k); });
+      var q = parts.join('&');
+      history.replaceState(null, '', location.pathname + (q ? '?' + q : ''));
+    } catch (e) { /* history may be restricted — the visual mode still applies */ }
+  }
+  function setFullPage(on, skipUrl) {
+    root.classList.toggle('is-fullpage', on);
+    if (fpBtn) fpBtn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    if (!skipUrl) setUrlFull(on);
+    if (on && fpExit) { try { fpExit.focus(); } catch (_) {} }
+  }
+  if (fpBtn) fpBtn.addEventListener('click', function () { setFullPage(!root.classList.contains('is-fullpage')); });
+  if (fpExit) fpExit.addEventListener('click', function () { setFullPage(false); });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape' && root.classList.contains('is-fullpage')) { e.preventDefault(); setFullPage(false); }
+  });
+  // Honour the deep link at boot. The tool IIFE runs BEFORE the shell's boot syncUrl()
+  // strips unknown params, so enter the mode now, then re-assert ?full on the next
+  // frame so it survives that strip (nothing re-runs syncUrl afterwards — no inputs,
+  // and the export panel that would is hidden in full-page).
+  (function () {
+    try {
+      if (bootHadFull()) {
+        setFullPage(true, true);
+        // Re-assert ?full in the bar AFTER the boot syncUrl() cleaned it (rAF), and again
+        // shortly after in case a second boot paint re-runs syncUrl — guarded so it never
+        // re-adds the flag once the user has exited. Nothing re-runs syncUrl in full-page
+        // (no inputs; the export panel that would is hidden), so this settles.
+        var reassert = function () { if (root.classList.contains('is-fullpage')) setUrlFull(true); };
+        (window.requestAnimationFrame || setTimeout)(reassert);
+        setTimeout(reassert, 400);
+      }
+      // ?edit (or nothing) → split view: the default, nothing to do.
+    } catch (e) { /* no URL access — default split view */ }
+  })();
+
   // Narrow container -> stack (independent of viewport media query).
   if (typeof ResizeObserver === 'function') {
     new ResizeObserver(function (entries) {
@@ -1194,6 +1624,37 @@
   // it. The mirror carries [data-export-root], so tool-actions' exportTargetNode
   // retargets export/thumbnail to it. Scripts are stripped (inert here anyway);
   // html/body-scoped rules are re-scoped onto .rwc-shot-body so the reset still bites.
+  // ── Export sizing ───────────────────────────────────────────────────────────
+  // The export walker rasterises the off-screen .rwc-shot mirror. Size it to the
+  // CHOSEN export dimensions (the shell's width/height fields, which live in this
+  // tool's own toolbar slot; default 1280×800) rather than the preview's content
+  // box — so the walker renders the node 1:1 and the preview FILLS the exported
+  // image with no crop or letterbox, whatever size/aspect is picked. Matching the
+  // ASPECT is what does it: the walker scales the node uniformly to the target, so
+  // equal aspects can't letterbox — and physical units (mm/pt) work too, since only
+  // the ratio of the two numbers matters here, not their unit.
+  function exportMirrorDims() {
+    var wIn = document.querySelector('[data-action="export-width"]');
+    var hIn = document.querySelector('[data-action="export-height"]');
+    var w = wIn ? parseFloat(wIn.value) : NaN;
+    var h = hIn ? parseFloat(hIn.value) : NaN;
+    if (!(w > 0)) w = 1280;
+    if (!(h > 0)) h = 800;
+    return { w: Math.round(w), h: Math.round(h) };
+  }
+  function syncShotToExportDims() {
+    if (!shotEl) return;
+    var d = exportMirrorDims();
+    shotEl.style.width = d.w + 'px';
+    shotEl.style.height = d.h + 'px';
+  }
+  // Re-fit the mirror the instant the export size changes, so a resize typed into the
+  // popup takes effect without needing another Run.
+  document.addEventListener('input', function (e) {
+    var t = e.target;
+    if (t && t.matches && t.matches('[data-action="export-width"], [data-action="export-height"]')) syncShotToExportDims();
+  });
+
   function mountShot(html, w, h) {
     if (!shotEl || !html) return;
     try {
@@ -1210,31 +1671,99 @@
       if (bstyle) wrap.setAttribute('style', bstyle);
       wrap.innerHTML = doc.body ? doc.body.innerHTML : '';
       shotEl.appendChild(wrap);
-      var W = Math.max(1, Math.round(+w || 0)) || 1280, H = Math.max(1, Math.round(+h || 0)) || 800;
-      shotEl.style.width = W + 'px';
-      shotEl.style.height = H + 'px';
+      // Size to the chosen EXPORT dimensions (not the snapshot's own content box),
+      // so the walker renders 1:1 and the preview fills the image with no letterbox.
+      var dims = exportMirrorDims();
+      shotEl.style.width = dims.w + 'px';
+      shotEl.style.height = dims.h + 'px';
     } catch (e) { /* keep the last good snapshot */ }
   }
 
-  // ── First paint — restore the persistent <head> + last pen draft, else starter ─
+  // ── Render at the chosen EXPORT size (called + awaited by the beforeExport hook) ─
+  // The preview runs at the on-screen pane's size; a WebGL canvas sized to
+  // window.innerWidth (or a 100vh layout) therefore renders at THAT size, and a frozen
+  // frame can't be resized. So before the shell captures the export mirror, briefly
+  // resize the preview iframe to the export box: its own window.innerWidth becomes the
+  // export width, so the pen's `resize` handler / CSS viewport units re-lay-out at the
+  // export size — then we re-snapshot (the canvas re-bakes at that size) and restore.
+  // This is what lets someone on a small screen export a large render of their code.
+  // The export shutter is closed over this, so the resize isn't seen. Awaited, within
+  // the 5s beforeExport budget; falls back to the last preview-size snapshot on timeout.
+  root.__rwcExportRender = function (w, h) {
+    return new Promise(function (resolve) {
+      if (!frame || !shotEl) { resolve(); return; }
+      var d = exportMirrorDims();
+      w = Math.round(w > 0 ? w : d.w);
+      h = Math.round(h > 0 ? h : d.h);
+      var savedStyle = frame.getAttribute('style');
+      var done = false;
+      function finish() {
+        if (done) return; done = true;
+        window.removeEventListener('message', onSnap);
+        if (savedStyle != null) frame.setAttribute('style', savedStyle); else frame.removeAttribute('style');
+        resolve();
+      }
+      function onSnap(e) {
+        if (!frame || e.source !== frame.contentWindow) return;
+        var m = e.data; if (!m || m.__rwc !== 1 || m.level !== '__snapshot__') return;
+        // The main message listener has already rebuilt .rwc-shot from this snapshot.
+        finish();
+      }
+      window.addEventListener('message', onSnap);
+      // Size the iframe to the export box (overflows the stage, clipped + shutter-hidden).
+      // right/bottom auto so width/height win over the .rwc-frame inset:0.
+      frame.style.top = '0'; frame.style.left = '0'; frame.style.right = 'auto'; frame.style.bottom = 'auto';
+      frame.style.width = w + 'px'; frame.style.height = h + 'px';
+      // Let the iframe reflow + the pen's resize handler + a fresh render frame run, then snap.
+      setTimeout(function () { try { frame.contentWindow.postMessage({ __rwcCmd: 'snap' }, '*'); } catch (_) {} }, 280);
+      setTimeout(finish, 1600);   // safety net inside the hook budget
+    });
+  };
+
+  // ── First paint — seed the editor, prefer the synced model over on-device draft ─
+  // Precedence: (1) if the model already carries a pen — a shared link (?html=…), a
+  // session/in-process seed, or a collab doc — the MODEL wins; (2) else the on-device
+  // IndexedDB draft (the plain-reload persistence); (3) else the starter. The model is
+  // now the source of truth; IDB is demoted to a cold-start mirror. After seeding, the
+  // editor state is pushed into the model (quietly — a boot restore must not broadcast
+  // over a peer's doc) and the reconcile subscription is opened.
   (function bootstrap() {
     var done = false;
+    function seed(head, draft) {
+      var d = draft || {};
+      var mv = { html: str(modelValue('html')), css: str(modelValue('css')), js: str(modelValue('js')), head: str(modelValue('head')), mode: str(modelValue('mode')) };
+      var modelHasContent = !!(mv.html || mv.css || mv.js || mv.head || (mv.mode && mv.mode !== 'none'));
+      if (hasModelChannel() && modelHasContent) {
+        // A deliberate seed. syncUrl drops any scalar over 150 chars, so on a plain reload
+        // of a LARGE pen the URL-rehydrated model is missing those panes; back-fill them
+        // from the local draft — but ONLY when the draft is the SAME pen (every pane the two
+        // share agrees), never merging a stranger's shared link with your local work.
+        var samePen = !!draft && PANES.every(function (p) { return !mv[p] || !d[p] || mv[p] === d[p]; });
+        codeEls.html.value = mv.html || (samePen ? str(d.html) : '');
+        codeEls.css.value = mv.css || (samePen ? str(d.css) : '');
+        codeEls.js.value = mv.js || (samePen ? str(d.js) : '');
+        codeEls.head.value = mv.head || (samePen ? str(d.head) : '') || (head || '');
+        if (modeSel) modeSel.value = mv.mode || (samePen && d.mode ? d.mode : 'none');
+      } else if (d.html || d.css || d.js || d.head) {
+        codeEls.html.value = str(d.html); codeEls.css.value = str(d.css);
+        codeEls.js.value = str(d.js); codeEls.head.value = str(d.head) || (head || '');
+        if (modeSel) modeSel.value = d.mode || 'none';
+      } else {
+        codeEls.html.value = STARTER.html; codeEls.css.value = STARTER.css; codeEls.js.value = STARTER.js;
+        codeEls.head.value = head || '';
+        if (modeSel) modeSel.value = 'none';
+      }
+    }
     function apply(head, draft) {
       if (done) return; done = true;
-      codeEls.head.value = head || '';
-      if (draft && (draft.html || draft.css || draft.js)) {
-        codeEls.html.value = draft.html || '';
-        codeEls.css.value = draft.css || '';
-        codeEls.js.value = draft.js || '';
-      } else {
-        codeEls.html.value = STARTER.html;
-        codeEls.css.value = STARTER.css;
-        codeEls.js.value = STARTER.js;
-      }
-      if (draft && draft.mode && modeSel) modeSel.value = draft.mode;
+      seed(head, draft);
       relabelJs();
       clearConsole(); updateDots(); run();
       if (typeof hl !== 'undefined' && hl) hl.paintAll();
+      // Make the model match the seeded editor (quiet), THEN open the reconcile — which
+      // skips its immediate on-subscribe fire, so nothing re-asserts over the fresh seed.
+      commitAll(false);
+      startReconcile();
     }
     var head = '', draft = null;
     var t = setTimeout(function () { apply(head, draft); }, 1200);   // safety if IndexedDB stalls
@@ -1248,7 +1777,8 @@
   // Stored as a single 'sessions' array in the existing 'kv' store (idbGet/idbSet),
   // so no DB version bump and the hardcoded-'kv' helpers are reused unchanged. The
   // anonymous 'draft' auto-save stays as the working copy; sessions layer on top.
-  var sessPanel   = $('[data-rwc-sess-panel]');
+  var sessPanel   = $('[data-rwc-sessbar]');
+  var sessCloseBtn = $('[data-rwc-sess-close]');
   var sessListEl  = $('[data-rwc-sess-list]');
   var sessNameEl  = $('[data-rwc-sess-name]');
   var sessNewName = $('[data-rwc-sess-newname]');
@@ -1293,8 +1823,8 @@
       }).join('');
     });
   }
-  function openSessPanel() { renderSessList(); sessPanel.hidden = false; sessOpenBtn.setAttribute('aria-expanded', 'true'); if (sessNewName) { sessNewName.value = ''; setTimeout(function () { sessNewName.focus(); }, 0); } }
-  function closeSessPanel() { sessPanel.hidden = true; sessOpenBtn.setAttribute('aria-expanded', 'false'); }
+  function openSessPanel() { renderSessList(); sessPanel.hidden = false; body.classList.add('sess-open'); if (sessOpenBtn) sessOpenBtn.setAttribute('aria-expanded', 'true'); if (sessNewName) { sessNewName.value = ''; setTimeout(function () { try { sessNewName.focus(); } catch (_) {} }, 0); } }
+  function closeSessPanel() { sessPanel.hidden = true; body.classList.remove('sess-open'); if (sessOpenBtn) { sessOpenBtn.setAttribute('aria-expanded', 'false'); try { sessOpenBtn.focus(); } catch (_) {} } }
   function toggleSessPanel() { if (sessPanel.hidden) openSessPanel(); else closeSessPanel(); }
 
   function saveAsNew() {
@@ -1328,8 +1858,11 @@
       codeEls.js.value = s.js || ''; codeEls.head.value = s.head || '';
       if (modeSel) modeSel.value = s.mode || 'none';
       relabelJs();
+      commitAll(true);   // push the loaded session into the model — undo checkpoint + broadcast
       openSessionId = s.id; openSessionName = s.name; openSessionSig = sessSig();
-      bannerDismissed = false; updateDots(); updateSessBadge(); closeSessPanel();
+      // Keep the drawer open so the user can keep quick-switching; just re-render
+      // the list so the "· open" marker moves to the freshly loaded session.
+      bannerDismissed = false; updateDots(); updateSessBadge(); renderSessList();
       schedulePersist();
       selectTab('html'); run();
       if (typeof hl !== 'undefined' && hl) hl.paintAll();
@@ -1356,6 +1889,7 @@
   }
 
   if (sessOpenBtn) sessOpenBtn.addEventListener('click', function (e) { e.stopPropagation(); toggleSessPanel(); });
+  if (sessCloseBtn) sessCloseBtn.addEventListener('click', function (e) { e.stopPropagation(); closeSessPanel(); });
   if (sessSaveBtn) sessSaveBtn.addEventListener('click', function (e) { e.stopPropagation(); saveQuick(); });
   var saveAsBtn = $('[data-rwc-sess-saveas]');
   if (saveAsBtn) saveAsBtn.addEventListener('click', saveAsNew);
@@ -1367,8 +1901,8 @@
     else if (t.hasAttribute('data-rwc-sess-rename')) renameSession(t.getAttribute('data-rwc-sess-rename'));
     else if (t.hasAttribute('data-rwc-sess-delete')) deleteSession(t.getAttribute('data-rwc-sess-delete'));
   });
-  if (sessPanel) sessPanel.addEventListener('click', function (e) { e.stopPropagation(); });
-  document.addEventListener('click', function () { if (sessPanel && !sessPanel.hidden) closeSessPanel(); });
+  // The docked drawer stays open for quick-switching — no outside-click auto-close.
+  // Esc and the × button close it.
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && sessPanel && !sessPanel.hidden) closeSessPanel(); });
   ['input', 'change'].forEach(function (ev) { root.addEventListener(ev, function () { if (openSessionId) updateSessBadge(); }); });
   updateSessBadge();

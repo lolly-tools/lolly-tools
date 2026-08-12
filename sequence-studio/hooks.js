@@ -409,6 +409,130 @@ function pathPlaceholder(w, h, why) {
     ' stroke-dasharray="6 4" opacity="0.45"></path></svg>';
 }
 
+// ── arrowheads on an authored path (plan 96 P1) ──────────────────────────────
+//
+// A spline, a line and a connector are the SAME thing here — an authored path — so the
+// arrowheads that belong to a connector edge belong to any path box. The shapes and their
+// geometry are the engine's (`edgeArrowHead`), reached through the host bridge so the
+// editor, the export and a headless CLI draw one head, not three. This is the same port
+// Layout Studio carries; there is no <marker> anywhere in it — the primitive bakes each
+// head's coordinates into a self-contained fragment, so there is no id to namespace and
+// two path boxes in one document can never collide.
+//
+// Everything below is feature-detected and degrades to "no decoration", never to a throw:
+// a path box on an engine that predates the primitive renders exactly the markup it
+// rendered before these fields existed.
+
+// The head vocabulary, whitelisted for the same reason the fill rule is: the value reaches
+// a bridge call and, through it, an attribute in {{{ }}} markup. The membership test is an
+// OWN-property lookup, not the bare `HEAD_KINDS[s]` truthiness test, because every object
+// literal inherits truthy `constructor`/`__proto__`/`toString`/`valueOf` from
+// Object.prototype — `headEnd=constructor` in a hand-edited URL would otherwise pass the
+// gate and reach the engine, which draws a triangle for any name it doesn't recognise. Same
+// posture as SHADOW_TARGETS below: one rule for every enum whitelist in this file.
+var HEAD_KINDS = { none: 1, triangle: 1, open: 1, circle: 1, diamond: 1, bar: 1 };
+function headKind(v) {
+  var s = String(v == null ? '' : v);
+  return Object.prototype.hasOwnProperty.call(HEAD_KINDS, s) ? s : 'none';
+}
+
+// host.connectors is OPTIONAL and additive (HostV1 v1.110) — feature-detect exactly like
+// geomApi() above.
+function connApi() {
+  return typeof host !== 'undefined' && host && host.connectors ? host.connectors : null;
+}
+
+// The head's SIZE from the stroke width, and how far the SHAFT is pulled back so a filled
+// head is not pierced by the line it terminates. Both mirror engine/src/connectors.ts
+// (`pathHeadSize` and `edgeHeadInset`) EXACTLY, because the head is drawn by that engine
+// code and the pull-back is computed here: two formulas that must agree, so they are
+// written to agree rather than guessed. An open chevron and a bar are strokes across the
+// tip with nothing to pierce, so they pull back by nothing.
+// The width is clamped to the SAME [0.5, 20] band `pathHeadSize` clamps it to before the
+// engine sizes the head. Without that, a 40px stroke draws an 80px head (the engine's) and
+// pulls its shaft back 144px (this one's), leaving the line visibly short of its own arrow.
+function headSizeFor(w) { return Math.max(9, clamp(num(w, 2.5), 0.5, 20) * 4); }
+function headInsetFor(kind, s) {
+  if (kind === 'none' || kind === 'open' || kind === 'bar') return 0;
+  if (kind === 'diamond') return 2 * s;
+  if (kind === 'circle') return 2 * (0.42 * s);
+  return s * 0.9;   // triangle
+}
+
+// One arrowhead as an SVG fragment, via the bridge. `angle` is RADIANS about the +x axis —
+// atan2 order — and the primitive derives the head size from `width` the same way
+// headSizeFor does. Absent primitive (older engine) → '' and the path simply has no head.
+function headSvgFor(tip, ux, uy, kind, color, width) {
+  var api = connApi();
+  if (kind === 'none' || !api || typeof api.pathHeadSvg !== 'function') return '';
+  try {
+    return api.pathHeadSvg({
+      tipX: tip.x, tipY: tip.y, angle: Math.atan2(uy, ux),
+      head: kind, color: color, width: width,
+    }) || '';
+  } catch (e) {
+    pathWarn('arrowhead render failed: ' + e);
+    return '';
+  }
+}
+
+// ── end tangents ─────────────────────────────────────────────────────────────
+// A head needs a tip and a direction. On an AUTHORED path there is none declared, so it is
+// read off the LOWERED curve — the only honest source, since the same nodes lower to
+// different tangents under different spline kinds. Both vectors point OUT of the path: the
+// way a head at that end faces.
+// `curves` is the engine's cubic form: [x0,y0, c1x,c1y, c2x,c2y, x3,y3].
+function unitBetween(ax, ay, bx, by) {
+  var dx = bx - ax, dy = by - ay, L = Math.sqrt(dx * dx + dy * dy);
+  return L > 1e-9 ? { x: dx / L, y: dy / L } : null;
+}
+function endTangents(curves) {
+  var s = null, e = null, i, c, legs, k;
+  // A zero-length control leg is ordinary (a straight segment out of fromNodes has one), so
+  // step over it rather than normalise it; only a wholly degenerate segment moves the walk
+  // into its neighbour.
+  for (i = 0; i < curves.length && !s; i++) {
+    c = curves[i]; legs = [[2, 3], [4, 5], [6, 7]];
+    for (k = 0; k < legs.length && !s; k++) s = unitBetween(c[legs[k][0]], c[legs[k][1]], c[0], c[1]);
+  }
+  for (i = curves.length - 1; i >= 0 && !e; i--) {
+    c = curves[i]; legs = [[4, 5], [2, 3], [0, 1]];
+    for (k = 0; k < legs.length && !e; k++) e = unitBetween(c[legs[k][0]], c[legs[k][1]], c[6], c[7]);
+  }
+  return s && e ? { start: s, end: e } : null;
+}
+function endPoints(curves) {
+  var a = curves[0], z = curves[curves.length - 1];
+  return { start: { x: a[0], y: a[1] }, end: { x: z[6], y: z[7] } };
+}
+
+// Pull the two END POINTS back along their own tangents, so the shaft stops short of a
+// filled head instead of running out through its tip. Only the endpoint and the control
+// point beside it move, by the same delta, so the tangent direction is untouched and the
+// curve keeps its shape; the pull-back is capped at 40% of the segment's chord so a very
+// short final segment cannot be turned inside out. Returns a NEW curves array.
+function insetCurveEnds(curves, dirs, insetStart, insetEnd) {
+  var out = [], i;
+  for (i = 0; i < curves.length; i++) out.push(curves[i].slice());
+  var first = out[0], last = out[out.length - 1];
+  var capOf = function (c) {
+    var dx = c[6] - c[0], dy = c[7] - c[1];
+    return Math.sqrt(dx * dx + dy * dy) * 0.4;
+  };
+  if (insetStart > 0) {
+    var ds = Math.min(insetStart, capOf(first));
+    // start tangent points OUT of the path, so moving IN is +ds along it reversed.
+    first[0] -= dirs.start.x * ds; first[1] -= dirs.start.y * ds;
+    first[2] -= dirs.start.x * ds; first[3] -= dirs.start.y * ds;
+  }
+  if (insetEnd > 0) {
+    var de = Math.min(insetEnd, capOf(last));
+    last[6] -= dirs.end.x * de; last[7] -= dirs.end.y * de;
+    last[4] -= dirs.end.x * de; last[5] -= dirs.end.y * de;
+  }
+  return out;
+}
+
 // A path box's inline <svg>, or '' for every other kind. Pure/string-only like
 // mediaHtmlFor, so the CLI emits identical markup.
 function pathHtmlFor(b) {
@@ -471,6 +595,57 @@ function pathHtmlFor(b) {
   var sw = clamp(num(b.strokeW, 0), 0, 400);
   var rule = FILL_RULES[String(b.fillRule)] ? String(b.fillRule) : 'nonzero';
 
+  // ── plan 96 decorations: the arrowheads ────────────────────────────────────
+  //
+  // A head needs the LOWERED curve — the tangent it points along — and is meaningful only
+  // on a path with two ends, so it applies to a SINGLE OPEN contour. A closed loop has no
+  // ends; a multi-contour result (a boolean, a traced glyph) has no single pair of them,
+  // and picking one arbitrarily would put an arrow on whichever subpath happened to be
+  // first. Those keep today's markup.
+  var headStart = headKind(b.headStart);
+  var headEnd = headKind(b.headEnd);
+  var wantHeads = !!stroke && sw > 0 && (headStart !== 'none' || headEnd !== 'none');
+  var sole = srcs.length === 1 ? srcs[0] : null;
+  var curves = null;
+  if (wantHeads && sole && typeof geom.parse === 'function') {
+    var pr = geom.parse(d);
+    if (pr && pr.ok && pr.value && pr.value.length === 1) curves = pr.value[0].curves;
+  }
+
+  var heads = '';
+  var headReach = 0;
+  if (wantHeads && curves && curves.length && !(sole.closed === true)) {
+    var dirs = endTangents(curves);
+    if (dirs) {
+      var tips = endPoints(curves);
+      var hsz = headSizeFor(sw);
+      // Each head is BUILT FIRST and the shaft is pulled back only where one actually came
+      // back. The primitive is feature-detected, so "no head" is a real outcome on an older
+      // engine — and trimming for a head that was never drawn would leave the line visibly
+      // short of its own endpoint with nothing there to explain it.
+      var hs = headSvgFor(tips.start, dirs.start.x, dirs.start.y, headStart, stroke, sw);
+      var he = headSvgFor(tips.end, dirs.end.x, dirs.end.y, headEnd, stroke, sw);
+      heads = hs + he;
+      if (heads) {
+        var trimmed = insetCurveEnds(curves, dirs,
+          hs ? headInsetFor(headStart, hsz) : 0,
+          he ? headInsetFor(headEnd, hsz) : 0);
+        // Re-serialising the pulled-back curve is the engine's job too, so the `d` the
+        // browser reads is the `d` the SVG/PDF walkers read. No toPathData (or a refusal)
+        // leaves the shaft at full length under its head — a cosmetic loss, not a wrong
+        // drawing, so it is not worth a placeholder.
+        if (typeof geom.toPathData === 'function') {
+          var td = geom.toPathData([{ curves: trimmed, closed: false }], { decimals: 3 });
+          if (td && td.ok && td.d) d = td.d;
+        }
+        // A head sits ON the frame edge and spreads across the tangent (a bar reaches
+        // 0.62·size either side, the widest of the six), so the pad below has to cover it
+        // or the outer <svg> clips the arrow off the shape it belongs to.
+        headReach = hsz * 0.7 + sw / 2;
+      }
+    }
+  }
+
   // The STROKE PAD. The frame is the curve's tight bounding box (the pen tool refits it to
   // exactly that), so a stroke straddles the frame edge and half of it falls outside — and
   // an outer <svg> clips to its viewport, so without a pad every stroked pen shape loses
@@ -480,11 +655,14 @@ function pathHtmlFor(b) {
   // instead — the element is grown by `pad` on every side and offset by −pad, and the
   // viewBox is shifted to match, which leaves path coordinates mapping to 0..w / 0..h
   // exactly as before. Cap and join are both hard-coded `round` here, and each reaches
-  // exactly half the stroke width, so sw / 2 is the whole reach.
+  // exactly half the stroke width, so sw / 2 is the whole reach — except for an ARROWHEAD,
+  // which sits ON the frame edge and spreads across the tangent, so `headReach` above sizes
+  // the pad for whichever head is on. A path with no head contributes 0 and the pad is
+  // byte-identical to what it was.
   //
   // The inline geometry also has to override styles.css's `inset: 0; width/height: 100%`,
   // which would otherwise pull the element back to the frame — hence `inset:auto` first.
-  var pad = stroke && sw > 0 ? sw / 2 : 0;
+  var pad = Math.max(stroke && sw > 0 ? sw / 2 : 0, headReach);
   var vw = f2(w + pad * 2), vh = f2(h + pad * 2), o = f2(-pad);
   // Everything interpolated is esc()'d even though each value is already reduced to a
   // validated colour, a whitelisted keyword or a number: the extra is emitted through
@@ -498,7 +676,12 @@ function pathHtmlFor(b) {
       ? ' stroke="' + esc(stroke) + '" stroke-width="' + esc(f2(sw)) +
         '" stroke-linejoin="round" stroke-linecap="round"'
       : '') +
-    '></path></svg>';
+    '></path>' +
+    // The heads follow the shaft so they paint over its end, and they are NOT esc()'d:
+    // they are engine-built SVG fragments, not values — the engine escapes the one thing
+    // in them that came from the box (the colour), exactly as it does for a connector.
+    heads +
+    '</svg>';
 }
 
 function rot2(px, py, deg) {

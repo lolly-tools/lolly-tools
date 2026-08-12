@@ -3,7 +3,7 @@
   "name": "Bitmap Studio",
   "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
   "a11yLabel": "Graded photo preview — {{default preset \"custom\"}} look",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "engineVersion": "^1.4.0",
   "status": "community",
   "category": "designer",
@@ -438,7 +438,7 @@
       "section": "View",
       "type": "boolean",
       "default": false,
-      "help": "Show the untouched image on the left half and the graded result on the right. Exports exactly as shown — handy for approval decks."
+      "help": "Lay the untouched image over the graded result behind a divider you can drag and rotate. A raster export bakes the divider exactly as placed — handy for approval decks."
     },
     {
       "id": "histogram",
