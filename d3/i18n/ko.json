@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "범례",
   "inputs.legendPosition.label": "범례 위치",
   "inputs.legendPosition.section": "범례",
-  "inputs.legendPosition.options.bottom": "아래쪽",
-  "inputs.legendPosition.options.top": "위쪽",
-  "inputs.legendPosition.options.right": "오른쪽",
-  "inputs.legendPosition.options.left": "왼쪽",
   "inputs.width.label": "너비",
   "inputs.height.label": "높이"
 }

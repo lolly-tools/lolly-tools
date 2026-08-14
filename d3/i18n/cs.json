@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Legenda",
   "inputs.legendPosition.label": "Umístění legendy",
   "inputs.legendPosition.section": "Legenda",
-  "inputs.legendPosition.options.bottom": "Dole",
-  "inputs.legendPosition.options.top": "Nahoře",
-  "inputs.legendPosition.options.right": "Vpravo",
-  "inputs.legendPosition.options.left": "Vlevo",
   "inputs.width.label": "Šířka",
   "inputs.height.label": "Výška"
 }

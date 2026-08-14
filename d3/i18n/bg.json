@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Легенда",
   "inputs.legendPosition.label": "Позиция на легендата",
   "inputs.legendPosition.section": "Легенда",
-  "inputs.legendPosition.options.bottom": "Отдолу",
-  "inputs.legendPosition.options.top": "Отгоре",
-  "inputs.legendPosition.options.right": "Отдясно",
-  "inputs.legendPosition.options.left": "Отляво",
   "inputs.width.label": "Ширина",
   "inputs.height.label": "Височина"
 }

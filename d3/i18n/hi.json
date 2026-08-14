@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "लेजेंड",
   "inputs.legendPosition.label": "लेजेंड की स्थिति",
   "inputs.legendPosition.section": "लेजेंड",
-  "inputs.legendPosition.options.bottom": "नीचे",
-  "inputs.legendPosition.options.top": "ऊपर",
-  "inputs.legendPosition.options.right": "दाएँ",
-  "inputs.legendPosition.options.left": "बाएँ",
   "inputs.width.label": "चौड़ाई",
   "inputs.height.label": "ऊँचाई"
 }

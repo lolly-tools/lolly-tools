@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Legende",
   "inputs.legendPosition.label": "Legendenposition",
   "inputs.legendPosition.section": "Legende",
-  "inputs.legendPosition.options.bottom": "Unten",
-  "inputs.legendPosition.options.top": "Oben",
-  "inputs.legendPosition.options.right": "Rechts",
-  "inputs.legendPosition.options.left": "Links",
   "inputs.width.label": "Breite",
   "inputs.height.label": "Höhe"
 }

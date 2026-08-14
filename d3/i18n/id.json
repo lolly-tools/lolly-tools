@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Legenda",
   "inputs.legendPosition.label": "Posisi legenda",
   "inputs.legendPosition.section": "Legenda",
-  "inputs.legendPosition.options.bottom": "Bawah",
-  "inputs.legendPosition.options.top": "Atas",
-  "inputs.legendPosition.options.right": "Kanan",
-  "inputs.legendPosition.options.left": "Kiri",
   "inputs.width.label": "Lebar",
   "inputs.height.label": "Tinggi"
 }

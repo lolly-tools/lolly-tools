@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Legend",
   "inputs.legendPosition.label": "Posisyon ng legend",
   "inputs.legendPosition.section": "Legend",
-  "inputs.legendPosition.options.bottom": "Ibaba",
-  "inputs.legendPosition.options.top": "Itaas",
-  "inputs.legendPosition.options.right": "Kanan",
-  "inputs.legendPosition.options.left": "Kaliwa",
   "inputs.width.label": "Lapad",
   "inputs.height.label": "Taas"
 }

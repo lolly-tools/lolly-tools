@@ -302,12 +302,28 @@ function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
 function num(v, d) { const n = parseFloat(v); return Number.isFinite(n) ? n : d; }
 function isHex(s) { return typeof s === 'string' && /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$/.test(s.trim()); }
 
+// Legend position: a 2-char side+alignment code (tl/tc/tr/bl/bc/br/lt/lc/lb/rt/rc/rb).
+// Old single-word values (bottom/top/left/right) map to their centred forms.
+const LEGEND_POS = new Set(['tl', 'tc', 'tr', 'bl', 'bc', 'br', 'lt', 'lc', 'lb', 'rt', 'rc', 'rb']);
+function normLegendPos(v) {
+  v = String(v == null ? '' : v).toLowerCase().trim();
+  const legacy = { bottom: 'bc', top: 'tc', left: 'lc', right: 'rc' };
+  if (legacy[v]) return legacy[v];
+  return LEGEND_POS.has(v) ? v : 'bc';
+}
+
 function buildConfig(inp) {
   const W = clamp(Math.round(num(inp.width, 1280)), 100, 8000);
   const H = clamp(Math.round(num(inp.height, 800)), 100, 8000);
   const transparent = inp.transparentBg === true || inp.transparentBg === 'true';
   const background = isHex(inp.background) ? inp.background.trim() : '#ffffff';
-  const textColor = isHex(inp.textColor) ? inp.textColor.trim() : '#111111';
+  // Blank text colour → 'auto': the template contrasts it against the background,
+  // so titles/axes/labels/legend/gridlines stay legible on any background without
+  // the user colouring each one. A real hex overrides.
+  const textColor = isHex(inp.textColor) ? inp.textColor.trim() : 'auto';
+  // Manual categorical palette slots (Colour 1..6) — blank = brand palette there.
+  const paletteSlots = ['palette1', 'palette2', 'palette3', 'palette4', 'palette5', 'palette6']
+    .map((k) => (isHex(inp[k]) ? inp[k].trim().toLowerCase() : null));
 
   return {
     chartType:      String(inp.chartType || 'bar'),
@@ -322,8 +338,17 @@ function buildConfig(inp) {
     sliceGap:       clamp(num(inp.sliceGap, 1), 0, 24),
     cornerRadius:   clamp(num(inp.cornerRadius, 3), 0, 40),
     barPadding:     clamp(num(inp.barPadding, 0.2), 0, 0.9),
+    barGap:         clamp(num(inp.barGap, 0.08), 0, 0.8),
+    paletteSlots,
     binCount:       clamp(Math.round(num(inp.binCount, 0)), 0, 60),
     sort:           String(inp.sort || 'none'),
+    labelLayout:    String(inp.labelLayout || 'auto'),
+    labelReserve:   clamp(num(inp.labelReserve, 0), 0, 60),
+    labelLines:     clamp(Math.round(num(inp.labelLines, 2)), 1, 4),
+    barThickness:   clamp(num(inp.barThickness, 0), 0, 400),
+    barStyle:       String(inp.barStyle || 'flat'),
+    pieStyle:       String(inp.pieStyle || 'flat'),
+    depth3d:        clamp(num(inp.depth3d, 0), 0, 160),
     yScaleType:     String(inp.yScaleType || 'linear'),
     yZero:          inp.yZero !== false && inp.yZero !== 'false',
     yMax:           Math.max(0, num(inp.yMax, 0)),
@@ -335,6 +360,8 @@ function buildConfig(inp) {
     yTitle:         String(inp.yTitle || ''),
     palette:        String(inp.palette || 'suse'),
     colorBy:        String(inp.colorBy || 'series'),
+    differentiate:  String(inp.differentiate || 'auto'),   // colour / pattern / both
+    colorOverrides: String(inp.colorOverrides || ''),       // JSON map: value → hex (click-to-recolour)
     background,
     textColor,
     transparent,
@@ -344,10 +371,17 @@ function buildConfig(inp) {
     subheading:     String(inp.subheading || ''),
     showValues:     inp.showValues === true || inp.showValues === 'true',
     labelSize:      clamp(num(inp.labelSize, 22), 8, 56),
+    titleSize:      clamp(num(inp.titleSize, 34), 14, 72),
     titleWeight:    clamp(Math.round(num(inp.titleWeight, 700)), 100, 900),
     labelWeight:    clamp(Math.round(num(inp.labelWeight, 500)), 100, 900),
     showLegend:     inp.showLegend !== false && inp.showLegend !== 'false',
-    legendPosition: String(inp.legendPosition || 'bottom'),
+    legendPosition: normLegendPos(inp.legendPosition),
+    legendTextSize: clamp(num(inp.legendTextSize, 0), 0, 48),
+    legendSwatchSize: clamp(num(inp.legendSwatchSize, 0), 0, 48),
+    legendGap:      clamp(num(inp.legendGap, 24), 0, 80),
+    legendMono:     inp.legendMono === true || inp.legendMono === 'true',
+    legendBold:     inp.legendBold === true || inp.legendBold === 'true',
+    legendItalic:   inp.legendItalic === true || inp.legendItalic === 'true',
     width:          W,
     height:         H,
   };
@@ -365,45 +399,142 @@ function safeJson(obj) {
     .replace(/\u2029/g, '\\u2029');
 }
 
-// ── brand-driven categorical palette (host.color, engine ≥ 1.40) ─────────────
-// When the active brand's tokens carry a spectrum (color.spectrum.* — the
-// categorical hues deriveBrandTokens designs for charts), the template's
-// categorical option follows the brand instead of the shipped CATEGORICAL
-// set; short spectrums top up with host.color.distinct() anchored on the
-// brand primary. A brand whose tokens carry no spectrum keeps the shipped
-// hand-tuned palette (this stays null). Resolved once in
-// onInit (async), cached for onInput; rides cfg into `_state`.
-let BRAND_SPECTRUM = null;
+// ── brand-driven palettes (host.color/host.tokens, engine ≥ 1.40) ────────────
+// Resolves the ACTIVE brand's colours ONCE in onInit so every palette feels
+// native to the brand instead of the shipped SUSE hues:
+//   • spectrum   – categorical hues (color.spectrum.*), topped up via distinct()
+//   • ramps      – sequential/diverging/mono ramps built from the brand's
+//                  primary/secondary with host.color.ramp()/mix() (variations of
+//                  one brand hue + combinations of two) — light→dark anchor stops
+//                  the template feeds to d3 exactly like the shipped RAMPS
+//   • swatches   – a curated brand-swatch list for the click-to-recolour picker
+//   • monochrome – fewer than 4 spectrum hues → the template auto-adds patterns
+// A brand/host that can't supply a piece leaves it null and the template falls
+// back to its shipped hand-tuned palette (older shells stay byte-identical).
+let BRAND = null;
 
-async function resolveBrandSpectrum() {
+function normHex(x) {
+  return typeof x === 'string' && /^#[0-9a-f]{6}([0-9a-f]{2})?$/i.test(x.trim()) ? x.trim().toLowerCase() : null;
+}
+
+async function resolveBrandColors() {
   try {
     const c = typeof host !== 'undefined' && host && host.color;
     if (!c || !host.tokens || !host.tokens.colors) return null;
-    const swatches = (await host.tokens.colors()) || [];
-    const spectrum = [];
-    const seen = new Set();
-    for (const s of swatches) {
-      const v = typeof s.value === 'string' ? s.value.toLowerCase() : '';
-      if (!/^#[0-9a-f]{6}$/.test(v) || seen.has(v)) continue;
-      const path = String(s.path || '');
-      const group = String(s.group || '');
-      if (path.indexOf('color.spectrum.') !== 0 && group !== 'Spectrum') continue;
-      seen.add(v);
-      spectrum.push(v);
+    const swatchesRaw = (await host.tokens.colors()) || [];
+
+    // host.color accepts hex OR oklch()/lch() strings; mix(x,x,0) normalises any
+    // resolvable colour to hex (blank/mono brands write oklch() semantic values).
+    const toHex = (x) => x ? (normHex(x) || (c.mix ? normHex(c.mix(x, x, 0)) : null)) : null;
+    const chroma = (col) => { try { const o = c.oklch && c.oklch(col); return o ? o.c : 0; } catch (e) { return 0; } };
+    async function sem(name) {
+      try { const v = await host.tokens.resolve('{color.semantic.' + name + '}'); return (typeof v === 'string' && v) ? v : null; }
+      catch (e) { return null; }
     }
-    if (spectrum.length < 4) return null; // no real spectrum — shipped palette
-    if (c.distinct && c.deltaE && spectrum.length < 10) {
-      let anchor = null;
-      try {
-        const p = await host.tokens.resolve('{color.semantic.primary}');
-        if (typeof p === 'string' && p) anchor = p;
-      } catch (e) { /* no semantic slots — anchorless top-up */ }
+
+    // ── categorical spectrum (as before; .value is already resolved hex) ────
+    const spectrum = [], seen = new Set();
+    for (const s of swatchesRaw) {
+      const v = normHex(s.value);
+      if (!v || seen.has(v)) continue;
+      const path = String(s.path || ''), group = String(s.group || '');
+      if (path.indexOf('color.spectrum.') !== 0 && group !== 'Spectrum') continue;
+      seen.add(v); spectrum.push(v);
+    }
+    const primary = await sem('primary');
+    const surface = (await sem('surface')) || '#ffffff';
+    const text    = (await sem('text')) || '#111111';
+    let secondary = await sem('secondary');
+    if (spectrum.length >= 4 && c.distinct && c.deltaE && spectrum.length < 10) {
+      const anchor = toHex(primary);
       for (const g of c.distinct(20, anchor ? { anchorHex: anchor } : {})) {
         if (spectrum.length >= 10) break;
-        if (spectrum.every(v => c.deltaE(v, g) >= 0.05)) spectrum.push(g);
+        const gh = normHex(g);
+        if (gh && spectrum.every(v => c.deltaE(v, gh) >= 0.05)) spectrum.push(gh);
       }
     }
-    return spectrum;
+
+    // ── sequential / diverging / mono ramps from the brand ─────────────────
+    // Needs ramp()+mix(); without them the template keeps the shipped ramps.
+    let ramps = null;
+    if (c.ramp && c.mix && primary) {
+      const mix = (a, b, t) => c.mix(a, b, t) || a;
+      if (!secondary && c.schemes) { const acc = c.schemes(primary, 'complement'); if (acc && acc[0] && acc[0].hex) secondary = acc[0].hex; }
+      if (!secondary && spectrum[1]) secondary = spectrum[1];
+      if (!secondary) secondary = primary;
+      // The "vibrant" brand hue leads the sequential ramps — the more chromatic of
+      // primary/secondary. (SUSE's primary is a near-black ink and its Pine green
+      // lives in secondary, so this keeps charts feeling Pine-green, not grey.)
+      const vib = chroma(secondary) > chroma(primary) ? secondary : primary;
+      // A SECOND, distinct hue for the alternate + diverging ramps: the other
+      // semantic hue, or — when that's near-neutral / too close — the most
+      // chromatic spectrum hue that's far from vib.
+      let second = (vib === secondary) ? primary : secondary;
+      if (chroma(second) < 0.04 || (c.deltaE && c.deltaE(second, vib) < 0.12)) {
+        let best = null, bestScore = -1;
+        for (const s of (spectrum || [])) {
+          if (c.deltaE && c.deltaE(s, vib) < 0.12) continue;
+          const sc = chroma(s) + (c.deltaE ? c.deltaE(s, vib) : 0);
+          if (sc > bestScore) { bestScore = sc; best = s; }
+        }
+        if (best) second = best;
+      }
+      // a light→dark ramp of ONE brand hue (5 OKLab-even anchors = variations)
+      const seq = (hue) => c.ramp([mix(hue, surface, 0.88), mix(hue, surface, 0.42), hue, mix(hue, text, 0.42), mix(hue, text, 0.72)], 5, { correctLightness: true });
+      ramps = {
+        suse:      seq(vib),
+        pine:      seq(vib),
+        waterhole: seq(second),
+        warm:      seq(mix(vib, '#f47a34', 0.5)),   // brand hue biased warm
+        cool:      seq(mix(vib, '#2f6bff', 0.5)),   // brand hue biased cool
+        mono:      seq(vib),
+        // diverging = a COMBINATION of two brand hues through a neutral middle
+        diverging: c.ramp([second, mix(second, surface, 0.5), mix(surface, text, 0.05), mix(vib, surface, 0.5), vib], 5, { correctLightness: false }),
+      };
+      for (const k of Object.keys(ramps)) {
+        const r = (ramps[k] || []).map(normHex).filter(Boolean);
+        if (r.length >= 3) ramps[k] = r; else { ramps = null; break; }   // junk → shipped ramps
+      }
+    }
+
+    // ── click-to-recolour swatches ─────────────────────────────────────────
+    // Order = "start with the primary set, then the brand's other colours":
+    // primary → secondary → the brand's chromatic hues (spectrum/brand palette) →
+    // tints & shades of the two lead hues (variations) → a few neutrals for
+    // emphasis last. Near-greys are held back so brand HUES lead the picker.
+    const swatches = [], sseen = new Set();
+    const pushSwatch = (name, value, path) => {
+      const v = toHex(value);
+      if (!v || sseen.has(v) || /^#[0-9a-f]{6}00$/i.test(v) || swatches.length >= 30) return;
+      sseen.add(v); swatches.push({ name: String(name || v), value: v, path: String(path || '') });
+    };
+    const primaryHex = toHex(primary), secondaryHex = toHex(secondary);
+    const surfaceHex = toHex(surface) || '#ffffff', textHex = toHex(text) || '#111111';
+    pushSwatch('Primary', primaryHex, 'color.semantic.primary');
+    pushSwatch('Secondary', secondaryHex, 'color.semantic.secondary');
+    for (const s of swatchesRaw) {                 // brand hues (skip near-greys — added at the end)
+      const hx = toHex(s.value);
+      if (hx && chroma(hx) < 0.03) continue;
+      pushSwatch(s.name, s.value, s.path);
+    }
+    if (c.mix) {                                    // tints + shades = variations of the lead hues
+      for (const base of [primaryHex, secondaryHex]) {
+        if (!base) continue;
+        pushSwatch('Light', c.mix(base, surfaceHex, 0.5));
+        pushSwatch('Lighter', c.mix(base, surfaceHex, 0.76));
+        pushSwatch('Dark', c.mix(base, textHex, 0.45));
+      }
+    }
+    pushSwatch('Muted', toHex(await sem('muted')), 'color.semantic.muted');
+    pushSwatch('Ink', textHex, 'color.semantic.text');
+    pushSwatch('Paper', surfaceHex, 'color.semantic.surface');
+
+    return {
+      spectrum: spectrum.length ? spectrum : null,
+      ramps, swatches,
+      monochrome: spectrum.length < 4,
+      primary: primaryHex, secondary: secondaryHex,
+    };
   } catch (e) {
     return null; // tokens/host unavailable (older shell) — shipped palette
   }
@@ -412,7 +543,10 @@ async function resolveBrandSpectrum() {
 function compute(model) {
   const inp = Object.fromEntries(model.map((i) => [i.id, i.value]));
   const cfg = buildConfig(inp);
-  cfg.brandPalette = BRAND_SPECTRUM;
+  cfg.brandPalette  = BRAND && BRAND.spectrum;     // categorical (existing name)
+  cfg.brandRamps    = BRAND && BRAND.ramps;        // sequential/diverging/mono ramps
+  cfg.brandSwatches = (BRAND && BRAND.swatches) || null;  // click-to-recolour picker
+  cfg.brandMono     = !!(BRAND && BRAND.monochrome);      // few hues → auto patterns
   const data = buildModel(inp.data, {
     delimiter: String(inp.delimiter || 'auto'),
     hasHeader: inp.hasHeader !== false && inp.hasHeader !== 'false',
@@ -455,7 +589,7 @@ function d3Md(inp) {
 }
 
 async function onInit({ model }) {
-  BRAND_SPECTRUM = await resolveBrandSpectrum();
+  BRAND = await resolveBrandColors();
   return compute(model);
 }
 function onInput({ model }) { return compute(model); }

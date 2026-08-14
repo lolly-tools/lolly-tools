@@ -1,8 +1,8 @@
 {
   "id": "d3",
   "name": "D3 Chart Studio",
-  "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap and more, on-brand and vector-clean.",
-  "version": "1.1.0",
+  "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
+  "version": "1.4.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -24,6 +24,10 @@
     "treemap",
     "heatmap",
     "histogram",
+    "wordcloud",
+    "word cloud",
+    "3d",
+    "survey",
     "svg",
     "vector",
     "csv"
@@ -37,7 +41,10 @@
     { "label": "Donut of segments", "values": { "chartType": "donut", "data": "Segment,Share\nEnterprise,38\nSMB,27\nPartner,20\nSelf-serve,15", "palette": "warm", "showValues": true, "legendPosition": "right" } },
     { "label": "Stacked bars", "values": { "chartType": "bar", "stackMode": "stacked", "data": "Quarter,North,South,East\nQ1,42,28,12\nQ2,49,35,18\nQ3,55,41,24\nQ4,61,48,31", "palette": "mono", "cornerRadius": 4 } },
     { "label": "Radar profile", "values": { "chartType": "radar", "data": "Axis,Design,Engineering\nStrategy,7,5\nCraft,8,9\nSpeed,6,8\nRigour,7,9\nStory,9,6", "fillOpacity": 40, "palette": "diverging" } },
-    { "label": "Waffle share", "values": { "chartType": "waffle", "data": "Status,Count\nDone,68\nIn progress,22\nBlocked,10", "palette": "warm" } }
+    { "label": "Waffle share", "values": { "chartType": "waffle", "data": "Status,Count\nDone,68\nIn progress,22\nBlocked,10", "palette": "warm" } },
+    { "label": "Survey word cloud", "values": { "chartType": "wordcloud", "data": "Response,Count\nStrongly agree,42\nAgree,31\nIt depends on the context,26\nNeutral,18\nDisagree,11\nStrongly disagree,7\nPrefer not to say,4", "palette": "suse" } },
+    { "label": "3-D bars", "values": { "chartType": "bar", "barStyle": "iso3d", "data": "Team,Responses\nDesign,42\nEngineering,58\nSales,33\nSupport,27", "palette": "cool", "showValues": true } },
+    { "label": "Wrapped horizontal bars", "values": { "chartType": "bar-horizontal", "data": "Question,Responses\n\"How likely are you to recommend us to a friend or colleague?\",71\n\"The onboarding experience felt smooth and well paced\",54\n\"Support resolved my issue on the first contact\",38\n\"Pricing is clear and easy to understand\",22", "sort": "desc", "palette": "suse" } }
   ],
   "render": {
     "width": 1280,
@@ -185,6 +192,10 @@
         {
           "value": "chord",
           "label": "Chord"
+        },
+        {
+          "value": "wordcloud",
+          "label": "Word cloud"
         }
       ]
     },
@@ -511,7 +522,7 @@
       "section": "Chart",
       "type": "number",
       "display": "slider",
-      "default": 3,
+      "default": 6,
       "min": 0,
       "max": 40,
       "step": 1,
@@ -545,6 +556,7 @@
       "min": 0,
       "max": 0.9,
       "step": 0.01,
+      "help": "Gap between categories (each group of bars).",
       "showIf": {
         "chartType": [
           "bar",
@@ -553,6 +565,25 @@
           "histogram",
           "waterfall",
           "lollipop"
+        ]
+      }
+    },
+    {
+      "id": "barGap",
+      "urlKey": "bpg",
+      "label": "Series gap",
+      "section": "Chart",
+      "type": "number",
+      "display": "slider",
+      "default": 0.08,
+      "min": 0,
+      "max": 0.8,
+      "step": 0.01,
+      "help": "Gap between the bars of different series WITHIN a group (grouped bars only).",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal"
         ]
       }
     },
@@ -609,6 +640,64 @@
           "waffle"
         ]
       }
+    },
+    {
+      "id": "labelLayout",
+      "urlKey": "ll",
+      "label": "Category label layout",
+      "section": "Labels & bar size",
+      "type": "select",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto-fit" },
+        { "value": "horizontal", "label": "Horizontal" },
+        { "value": "angled", "label": "Angled (45°)" },
+        { "value": "wrap", "label": "Wrap to lines" }
+      ],
+      "help": "How long category labels are fitted. Auto wraps them into the label column on horizontal bars, and angles or wraps them on vertical bars when they'd collide — instead of truncating them.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "lollipop", "dumbbell"] }
+    },
+    {
+      "id": "labelReserve",
+      "urlKey": "lr",
+      "label": "Label area (%, 0 = auto)",
+      "section": "Labels & bar size",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "help": "How much of the picture to hand to the category labels — the width of the label column on horizontal bars, or the height of the label strip on vertical bars. 0 fits automatically; raise it to give long labels more room (the bars take the rest).",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "lollipop", "dumbbell"] }
+    },
+    {
+      "id": "labelLines",
+      "urlKey": "ln",
+      "label": "Max label lines",
+      "section": "Labels & bar size",
+      "type": "number",
+      "display": "slider",
+      "default": 2,
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "help": "How many lines a wrapped category label may use before it's trimmed with an ellipsis.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "lollipop", "dumbbell"] }
+    },
+    {
+      "id": "barThickness",
+      "urlKey": "bt",
+      "label": "Bar thickness (px, 0 = auto)",
+      "section": "Labels & bar size",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 400,
+      "step": 1,
+      "help": "Cap the thickness of each bar. 0 lets bars fill their slot; a value makes them thinner and centres them, freeing space for labels.",
+      "showIf": { "chartType": ["bar", "bar-horizontal"] }
     },
     {
       "id": "yScaleType",
@@ -873,31 +962,31 @@
       "options": [
         {
           "value": "suse",
-          "label": "Brand (categorical)"
+          "label": "Brand — categorical"
         },
         {
           "value": "pine",
-          "label": "Pine (sequential)"
+          "label": "Brand — sequential"
         },
         {
           "value": "waterhole",
-          "label": "Waterhole (sequential)"
+          "label": "Brand — sequential (2nd hue)"
         },
         {
           "value": "warm",
-          "label": "Warm (sequential)"
+          "label": "Warm (brand-tinted)"
         },
         {
           "value": "cool",
-          "label": "Cool (sequential)"
+          "label": "Cool (brand-tinted)"
         },
         {
           "value": "diverging",
-          "label": "Diverging (blue↔orange)"
+          "label": "Diverging (brand)"
         },
         {
           "value": "mono",
-          "label": "Mono (green)"
+          "label": "Monochrome (brand)"
         }
       ]
     },
@@ -926,6 +1015,72 @@
       }
     },
     {
+      "id": "barStyle",
+      "urlKey": "b3",
+      "label": "Bar look",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "flat",
+      "options": [
+        { "value": "flat", "label": "Flat" },
+        { "value": "iso3d", "label": "3-D (extruded)" }
+      ],
+      "showIf": { "chartType": ["bar", "bar-horizontal"] }
+    },
+    {
+      "id": "pieStyle",
+      "urlKey": "p3",
+      "label": "Pie look",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "flat",
+      "options": [
+        { "value": "flat", "label": "Flat" },
+        { "value": "iso3d", "label": "3-D (tilted)" }
+      ],
+      "showIf": { "chartType": ["pie", "donut"] }
+    },
+    {
+      "id": "depth3d",
+      "urlKey": "dp",
+      "label": "3-D depth (px, 0 = auto)",
+      "section": "Colour & style",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 160,
+      "step": 1,
+      "help": "How far the 3-D bars or pie are extruded. 0 scales the depth to the chart.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "pie", "donut"] }
+    },
+    {
+      "id": "differentiate",
+      "urlKey": "df",
+      "label": "Differentiate series by",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto (patterns for monochrome brands)" },
+        { "value": "colour", "label": "Colour only" },
+        { "value": "both", "label": "Colour + pattern" }
+      ],
+      "help": "Add stripes, hatching and dots on top of colour so series stay distinct even with few brand hues — and in greyscale print or for colour-blind readers. Auto turns patterns on when the brand has a limited palette.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "pie", "donut"] }
+    },
+    {
+      "id": "colorOverrides",
+      "urlKey": "co",
+      "label": "Highlighted values",
+      "section": "Colour & style",
+      "type": "text",
+      "default": "",
+      "placeholder": "click a bar or slice to recolour",
+      "help": "Click a bar or slice on the canvas to recolour it from your brand swatches — highlight one or several related values to draw the eye. Advanced: a JSON map of label → colour.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "pie", "donut"] }
+    },
+    {
       "id": "background",
       "urlKey": "bg",
       "label": "Background",
@@ -939,7 +1094,8 @@
       "label": "Text & axis colour",
       "section": "Colour & style",
       "type": "color",
-      "default": "{color.semantic.text}"
+      "default": "",
+      "help": "Leave blank to contrast automatically with the background — so setting a dark background flips the titles, axes, labels, legend and gridlines to a light ink without you colouring each one. Set a colour to override."
     },
     {
       "id": "strokeWidth",
@@ -990,6 +1146,55 @@
       }
     },
     {
+      "id": "palette1",
+      "urlKey": "c1",
+      "label": "Colour 1",
+      "section": "Custom palette",
+      "type": "color",
+      "default": "",
+      "help": "Set your categorical palette slot by slot — Colour 1 is the first series (or category), Colour 2 the second, and so on. Leave a slot blank to use the brand palette there. Great for leading with your primary set, then your other brand colours."
+    },
+    {
+      "id": "palette2",
+      "urlKey": "c2",
+      "label": "Colour 2",
+      "section": "Custom palette",
+      "type": "color",
+      "default": ""
+    },
+    {
+      "id": "palette3",
+      "urlKey": "c3",
+      "label": "Colour 3",
+      "section": "Custom palette",
+      "type": "color",
+      "default": ""
+    },
+    {
+      "id": "palette4",
+      "urlKey": "c4",
+      "label": "Colour 4",
+      "section": "Custom palette",
+      "type": "color",
+      "default": ""
+    },
+    {
+      "id": "palette5",
+      "urlKey": "c5",
+      "label": "Colour 5",
+      "section": "Custom palette",
+      "type": "color",
+      "default": ""
+    },
+    {
+      "id": "palette6",
+      "urlKey": "c6",
+      "label": "Colour 6",
+      "section": "Custom palette",
+      "type": "color",
+      "default": ""
+    },
+    {
       "id": "heading",
       "urlKey": "t",
       "label": "Title",
@@ -1038,7 +1243,7 @@
       "label": "Show data labels",
       "section": "Titles & labels",
       "type": "boolean",
-      "default": false
+      "default": true
     },
     {
       "id": "labelSize",
@@ -1079,28 +1284,90 @@
       "label": "Legend position",
       "section": "Legend",
       "type": "select",
-      "default": "bottom",
+      "default": "bc",
       "options": [
-        {
-          "value": "bottom",
-          "label": "Bottom"
-        },
-        {
-          "value": "top",
-          "label": "Top"
-        },
-        {
-          "value": "right",
-          "label": "Right"
-        },
-        {
-          "value": "left",
-          "label": "Left"
-        }
+        { "value": "tl", "label": "Top · left" },
+        { "value": "tc", "label": "Top · centre" },
+        { "value": "tr", "label": "Top · right" },
+        { "value": "bl", "label": "Bottom · left" },
+        { "value": "bc", "label": "Bottom · centre" },
+        { "value": "br", "label": "Bottom · right" },
+        { "value": "lt", "label": "Left · top" },
+        { "value": "lc", "label": "Left · centre" },
+        { "value": "lb", "label": "Left · bottom" },
+        { "value": "rt", "label": "Right · top" },
+        { "value": "rc", "label": "Right · centre" },
+        { "value": "rb", "label": "Right · bottom" }
       ],
       "showIf": {
         "showLegend": true
       }
+    },
+    {
+      "id": "legendTextSize",
+      "urlKey": "lts",
+      "label": "Legend text size (0 = auto)",
+      "section": "Legend",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "showIf": { "showLegend": true }
+    },
+    {
+      "id": "legendSwatchSize",
+      "urlKey": "lss",
+      "label": "Indicator size (0 = auto)",
+      "section": "Legend",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 48,
+      "step": 1,
+      "showIf": { "showLegend": true }
+    },
+    {
+      "id": "legendGap",
+      "urlKey": "lgp",
+      "label": "Legend item gap",
+      "section": "Legend",
+      "type": "number",
+      "display": "slider",
+      "default": 24,
+      "min": 0,
+      "max": 80,
+      "step": 1,
+      "showIf": { "showLegend": true }
+    },
+    {
+      "id": "legendMono",
+      "urlKey": "lmo",
+      "label": "Monospace",
+      "section": "Legend",
+      "type": "boolean",
+      "default": false,
+      "showIf": { "showLegend": true }
+    },
+    {
+      "id": "legendBold",
+      "urlKey": "lbo",
+      "label": "Bold",
+      "section": "Legend",
+      "type": "boolean",
+      "default": false,
+      "showIf": { "showLegend": true }
+    },
+    {
+      "id": "legendItalic",
+      "urlKey": "lit",
+      "label": "Italic",
+      "section": "Legend",
+      "type": "boolean",
+      "default": false,
+      "showIf": { "showLegend": true }
     },
     {
       "id": "width",

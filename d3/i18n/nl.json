@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Legenda",
   "inputs.legendPosition.label": "Positie legenda",
   "inputs.legendPosition.section": "Legenda",
-  "inputs.legendPosition.options.bottom": "Onder",
-  "inputs.legendPosition.options.top": "Boven",
-  "inputs.legendPosition.options.right": "Rechts",
-  "inputs.legendPosition.options.left": "Links",
   "inputs.width.label": "Breedte",
   "inputs.height.label": "Hoogte"
 }

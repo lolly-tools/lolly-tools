@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "圖例",
   "inputs.legendPosition.label": "圖例位置",
   "inputs.legendPosition.section": "圖例",
-  "inputs.legendPosition.options.bottom": "底部",
-  "inputs.legendPosition.options.top": "頂部",
-  "inputs.legendPosition.options.right": "右側",
-  "inputs.legendPosition.options.left": "左側",
   "inputs.width.label": "寬度",
   "inputs.height.label": "高度"
 }

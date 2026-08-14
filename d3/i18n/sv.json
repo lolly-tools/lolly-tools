@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Teckenförklaring",
   "inputs.legendPosition.label": "Teckenförklaringens position",
   "inputs.legendPosition.section": "Teckenförklaring",
-  "inputs.legendPosition.options.bottom": "Nederst",
-  "inputs.legendPosition.options.top": "Överst",
-  "inputs.legendPosition.options.right": "Höger",
-  "inputs.legendPosition.options.left": "Vänster",
   "inputs.width.label": "Bredd",
   "inputs.height.label": "Höjd"
 }

@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "مفتاح الرسم",
   "inputs.legendPosition.label": "موضع المفتاح",
   "inputs.legendPosition.section": "مفتاح الرسم",
-  "inputs.legendPosition.options.bottom": "أسفل",
-  "inputs.legendPosition.options.top": "أعلى",
-  "inputs.legendPosition.options.right": "يمين",
-  "inputs.legendPosition.options.left": "يسار",
   "inputs.width.label": "العرض",
   "inputs.height.label": "الارتفاع"
 }

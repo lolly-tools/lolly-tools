@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Chú giải",
   "inputs.legendPosition.label": "Vị trí chú giải",
   "inputs.legendPosition.section": "Chú giải",
-  "inputs.legendPosition.options.bottom": "Dưới",
-  "inputs.legendPosition.options.top": "Trên",
-  "inputs.legendPosition.options.right": "Phải",
-  "inputs.legendPosition.options.left": "Trái",
   "inputs.width.label": "Chiều rộng",
   "inputs.height.label": "Chiều cao"
 }

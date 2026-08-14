@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "لیجنڈ",
   "inputs.legendPosition.label": "لیجنڈ کا مقام",
   "inputs.legendPosition.section": "لیجنڈ",
-  "inputs.legendPosition.options.bottom": "نیچے",
-  "inputs.legendPosition.options.top": "اوپر",
-  "inputs.legendPosition.options.right": "دائیں",
-  "inputs.legendPosition.options.left": "بائیں",
   "inputs.width.label": "چوڑائی",
   "inputs.height.label": "اونچائی"
 }

@@ -10,9 +10,11 @@
       #d3-svg text, #d3-svg tspan { font-family: var(--font-brand, 'SUSE', system-ui, -apple-system, sans-serif); }
       /* Click-to-focus: annotated parts jump to their sidebar control on click — hint it. */
       #d3-svg [data-canvas-input] { cursor: pointer; }
+      /* Click-to-recolour: bars/slices open a brand-swatch picker on click. */
+      #d3-svg [data-recolor] { cursor: pointer; }
     </style>
   </defs>
-  <rect id="d3-bg" width="{{width}}" height="{{height}}" fill="{{_bgFill}}" data-canvas-input="background" pointer-events="all"/>
+  <rect id="d3-bg" width="{{width}}" height="{{height}}" fill="{{_bgFill}}" pointer-events="all"/>
   <g id="d3-plot" data-canvas-input="data"></g>
 </svg>
 <script type="application/json" id="d3-state">{{{_state}}}</script>
@@ -61,8 +63,9 @@
      only ~2.5:1, so the deeper #008657 takes slot 0 (like the reference tool). */
   var CATEGORICAL = ['#008657','#2453FF','#FE7C3F','#5D4F99','#00BDA7','#BD3314','#3C8EEF','#192072','#30BA78','#FAB088'];
   /* Sequential ramps, light → dark, as interpolate anchors. The dark anchor is the
-     neutral near-black ink #111111 (not any brand's ink hex). */
-  var RAMPS = {
+     neutral near-black ink #111111 (not any brand's ink hex). SHIPPED = the fallback
+     when the hook couldn't derive brand ramps (older shell / no host.color). */
+  var SHIPPED_RAMPS = {
     suse:      ['#DDF3EA','#8FE3C0','#30BA78','#0C7C4E','#111111'],
     pine:      ['#DDF3EA','#8FE3C0','#30BA78','#0C7C4E','#111111'],
     waterhole: ['#E3EAFF','#93A9FF','#2453FF','#1B37B8','#192072'],
@@ -85,6 +88,10 @@
   /* Crossover for the near-black ink #111111 (luminance ~0.005) is ~0.18 — above it
      dark ink out-contrasts white on the mark (matches chart-creator's autoText). */
   function autoText(bg) { return lum(bg) > 0.179 ? '#111111' : '#ffffff'; }
+  /* Auto ink for chart chrome (titles/axes/labels/legend/gridlines) when the user
+     leaves "Text & axis colour" blank — contrasts with the background so a dark bg
+     flips everything light without the user colouring each element. */
+  function autoInk(bg) { return lum(bg) > 0.42 ? '#141414' : '#f4f4f4'; }
   function toRgb(hex){var c=String(hex).replace('#','');return [parseInt(c.slice(0,2),16),parseInt(c.slice(2,4),16),parseInt(c.slice(4,6),16)];}
   function toHex(a){return '#'+a.map(function(v){return clamp(Math.round(v),0,255).toString(16).padStart(2,'0');}).join('');}
   /* Nudge a fill away from the surface until it clears a legibility floor. */
@@ -117,9 +124,18 @@
   /* ── render ────────────────────────────────────────────────────────────────── */
   function render(state, d3) {
     var cfg = state.cfg, data = state.data;
+    cfg.bar3d = cfg.barStyle === 'iso3d';
+    cfg.pie3d = cfg.pieStyle === 'iso3d';
+    /* Brand-native ramps when the hook derived them (variations + combinations of
+       the brand's own hues); the shipped hand-tuned set is the fallback. */
+    var RAMPS = (cfg.brandRamps && cfg.brandRamps.suse) ? cfg.brandRamps : SHIPPED_RAMPS;
+    /* Click-to-recolour overrides (label → hex) + pattern differentiation. */
+    var overrides = parseOverrides(cfg.colorOverrides);
+    var patternsOn = cfg.differentiate === 'both' || (cfg.differentiate === 'auto' && cfg.brandMono);
+    var texDefs = null, texCache = {};   // lazily-created <defs> for texture patterns
     var W = cfg.width, H = cfg.height;
     var guardBg = cfg.transparent ? '#ffffff' : (isHex(cfg.background) ? cfg.background : '#ffffff');
-    var ink = isHex(cfg.textColor) ? cfg.textColor : '#111111';
+    var ink = isHex(cfg.textColor) ? cfg.textColor : autoInk(guardBg);
 
     var svg = d3.select('#d3-svg');
     svg.attr('viewBox', '0 0 '+W+' '+H).attr('width', W).attr('height', H);
@@ -145,13 +161,17 @@
     /* Colour functions. The categorical option follows the active brand's
        spectrum when the hook resolved one (cfg.brandPalette — see hooks.js);
        the shipped set is the fallback. */
+    var slots = cfg.paletteSlots || [];   // manual Colour 1..6 (blank = brand palette)
     function catColorFn(n) {
+      var baseFn;
       if (cfg.palette === 'suse') {
         var cat = (cfg.brandPalette && cfg.brandPalette.length) ? cfg.brandPalette : CATEGORICAL;
-        return function (i) { return legible(cat[i % cat.length], guardBg); };
+        baseFn = function (i) { return legible(cat[i % cat.length], guardBg); };
+      } else {
+        var ramp = d3.interpolateRgbBasis(RAMPS[cfg.palette] || RAMPS.suse);
+        baseFn = function (i) { return legible(ramp(n <= 1 ? 0.72 : (0.12 + 0.76 * (i/(n-1)))), guardBg); };
       }
-      var ramp = d3.interpolateRgbBasis(RAMPS[cfg.palette] || RAMPS.suse);
-      return function (i) { return legible(ramp(n <= 1 ? 0.72 : (0.12 + 0.76 * (i/(n-1)))), guardBg); };
+      return function (i) { return (slots[i] && isHex(slots[i])) ? legible(slots[i], guardBg) : baseFn(i); };
     }
     function seqColorFn(min, max) {
       var anchors = (cfg.palette && cfg.palette !== 'suse') ? RAMPS[cfg.palette] : RAMPS.pine;
@@ -166,6 +186,30 @@
       return function (v) { var t = max > min ? (v - min) / (max - min) : 0.5; return ramp(clamp(t, 0.05, 1)); };
     }
 
+    /* A value's colour, honouring a click-to-recolour override on its label. */
+    function overrideColor(label, base) {
+      return (label != null && overrides[label]) ? legible(overrides[label], guardBg) : base;
+    }
+    /* Texture url for a mark's differentiation index (null when patterns are off);
+       the <defs> is created lazily inside the plot on first use. */
+    function textureFor(index, base) {
+      if (!patternsOn) return null;
+      if (!texDefs) texDefs = root.append('defs').attr('class', 'd3-tex');
+      return ensureTexture(texDefs, index | 0, base, texCache);
+    }
+    function overlayRect(g, x, y, w, h, rx, index, base) {
+      var tex = textureFor(index, base); if (!tex) return;
+      var r = g.append('rect').attr('x', x).attr('y', y).attr('width', Math.max(0, w)).attr('height', Math.max(0, h)).attr('fill', tex).attr('pointer-events', 'none');
+      if (rx > 0) r.attr('rx', Math.min(rx, w / 2, h / 2)).attr('ry', Math.min(rx, w / 2, h / 2));
+    }
+    function overlayPath(g, dStr, index, base) {
+      var tex = textureFor(index, base); if (!tex) return;
+      g.append('path').attr('d', dStr).attr('fill', tex).attr('pointer-events', 'none');
+    }
+    /* Tag a mark so a click opens the brand-swatch recolour picker for its value. */
+    var recolorEnabled = ['bar', 'bar-horizontal', 'pie', 'donut'].indexOf(cfg.chartType) >= 0;
+    function tagMark(sel, label) { if (recolorEnabled && sel && label != null) sel.attr('data-recolor', String(label)); }
+
     /* Number formatting. */
     var fmt = makeFmt(cfg.numberFormat, d3);
 
@@ -176,7 +220,7 @@
     else if (cfg.heading || cfg.subheading) titleH = 48;
     if (cfg.heading) {
       root.append('text').attr('x', PAD).attr('y', PAD + 34).attr('data-canvas-input', 'heading')
-        .attr('font-size', 34).attr('font-weight', cfg.titleWeight).attr('fill', ink).text(cfg.heading);
+        .attr('font-size', cfg.titleSize || 34).attr('font-weight', cfg.titleWeight).attr('fill', ink).text(cfg.heading);
     }
     if (cfg.subheading) {
       root.append('text').attr('x', PAD).attr('y', PAD + (cfg.heading ? 66 : 30)).attr('data-canvas-input', 'subheading')
@@ -192,33 +236,36 @@
     if (cfg.showLegend) {
       if (needSeries && !barByCat && series.length > 1) {
         var scf = catColorFn(series.length);
-        legendItems = series.map(function (s, i) { return { label: s.name, color: scf(i) }; });
+        legendItems = series.map(function (s, i) { return { label: s.name, color: scf(i), tex: i }; });
       } else if (catCharts.indexOf(cfg.chartType) >= 0 || barByCat) {
         var ccf = catColorFn(cats.length);
-        legendItems = cats.map(function (c, i) { return { label: c, color: ccf(i) }; });
+        legendItems = cats.map(function (c, i) { return { label: c, color: overrideColor(c, ccf(i)), tex: i }; });
       }
     }
 
     /* ── plot rect after title + legend ──────────────────────────────────────── */
     var box = { x: PAD, y: PAD + titleH, w: W - 2*PAD, h: H - 2*PAD - titleH };
-    var legPos = cfg.legendPosition;
+    var legPos = cfg.legendPosition;               // 2-char side+alignment code
+    var legSide = legPos.charAt(0);                 // t / b / l / r
     var legendReserve = 0;
     if (legendItems && legendItems.length) {
-      var LSZ = clamp(cfg.labelSize, 12, 30);
-      if (legPos === 'right' || legPos === 'left') {
+      var lm = legendMetrics(cfg);
+      if (legSide === 'l' || legSide === 'r') {
         var longest = legendItems.reduce(function (m, it) { return Math.max(m, String(it.label).length); }, 0);
-        legendReserve = clamp(Math.round(longest * LSZ * 0.56) + LSZ + 28, 120, Math.round(W * 0.34));
-        if (legPos === 'left') box.x += legendReserve; box.w -= legendReserve;
+        legendReserve = clamp(Math.round(longest * lm.sz * 0.56) + lm.dot + 28, 120, Math.round(W * 0.34));
+        if (legSide === 'l') box.x += legendReserve; box.w -= legendReserve;
       } else {
-        var rows = estimateLegendRows(legendItems, box.w, LSZ);
-        legendReserve = rows * (LSZ + 12) + 16;
-        if (legPos === 'top') box.y += legendReserve; box.h -= legendReserve;
+        var rows = estimateLegendRows(legendItems, box.w, lm.sz, lm.dot, lm.gap);
+        legendReserve = rows * (lm.sz + 12) + 16;
+        if (legSide === 't') box.y += legendReserve; box.h -= legendReserve;
       }
     }
 
     var api = { d3: d3, root: root, cfg: cfg, data: data, cats: cats, series: series, numericCols: numericCols,
                 box: box, ink: ink, guardBg: guardBg, fmt: fmt, catColorFn: catColorFn, seqColorFn: seqColorFn,
-                barByCat: barByCat };
+                barByCat: barByCat, override: overrideColor, textureFor: textureFor,
+                overlayRect: overlayRect, overlayPath: overlayPath, patternsOn: patternsOn, swatches: cfg.brandSwatches,
+                recolorEnabled: recolorEnabled, tagMark: tagMark };
 
     /* ── dispatch ────────────────────────────────────────────────────────────── */
     switch (cfg.chartType) {
@@ -250,6 +297,7 @@
       case 'sunburst':       drawSunburst(api); break;
       case 'icicle':         drawIcicle(api); break;
       case 'chord':          drawChord(api); break;
+      case 'wordcloud':      drawWordcloud(api); break;
       default:               drawBars(api, false);
     }
 
@@ -261,6 +309,9 @@
        sees WHAT happened instead of a silently-surprising chart. */
     if (data.note) root.append('text').attr('x', PAD).attr('y', H - 12)
       .attr('font-size', 15).attr('font-weight', 400).attr('fill', ink).attr('opacity', 0.5).text(data.note);
+
+    setupRecolor(svgEl, cfg, overrides);
+    clearMeasure();   // drop the hidden measuring node so it never lands in an export
   }
 
   /* ── shared: number format ───────────────────────────────────────────────── */
@@ -285,48 +336,252 @@
   function round2(v){ return Math.round(v*100)/100; }
   function trunc(s, n) { s = String(s); return s.length > n ? s.slice(0, Math.max(1, n-1)) + '…' : s; }
 
+  /* ── text measurement + wrapping (survey-length category labels) ──────────── */
+  /* One hidden <text> measured with getComputedTextLength (falls back to a
+     char-width estimate when layout is unavailable, e.g. headless jsdom). Cached
+     per size|weight|string so wrapping many labels stays cheap. Reused across
+     re-paints (id 'd3-measure') and removed by clearMeasure() at the end of a
+     render so it never lands in an exported SVG. */
+  var _measNode = null, _measCache = {};
+  function measureText(s, sz, weight) {
+    s = String(s == null ? '' : s); if (s === '') return 0;
+    var key = sz + '|' + weight + '|' + s;
+    if (_measCache[key] != null) return _measCache[key];
+    var w = 0;
+    try {
+      if (!_measNode) {
+        _measNode = svgEl.querySelector('#d3-measure');
+        if (!_measNode) {
+          _measNode = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          _measNode.setAttribute('id', 'd3-measure');
+          _measNode.setAttribute('x', '-9999'); _measNode.setAttribute('y', '-9999');
+          _measNode.setAttribute('visibility', 'hidden');
+          svgEl.appendChild(_measNode);
+        }
+      }
+      _measNode.setAttribute('font-size', sz);
+      _measNode.setAttribute('font-weight', weight);
+      _measNode.textContent = s;
+      w = _measNode.getComputedTextLength ? _measNode.getComputedTextLength() : 0;
+    } catch (e) { w = 0; }
+    if (!(w > 0)) w = s.length * sz * 0.54;   // headless / no-layout fallback
+    _measCache[key] = w; return w;
+  }
+  function clearMeasure() { if (_measNode && _measNode.parentNode) _measNode.parentNode.removeChild(_measNode); _measNode = null; }
+  function fitPrefix(t, maxW, sz, weight) {
+    var lo = 1, hi = t.length, fit = 1;
+    while (lo <= hi) { var mid = (lo + hi) >> 1; if (measureText(t.slice(0, mid), sz, weight) <= maxW) { fit = mid; lo = mid + 1; } else hi = mid - 1; }
+    return fit;
+  }
+  /* Greedy word-wrap to a pixel width; hard-breaks a single over-long token. */
+  function wrapAll(s, maxW, sz, weight) {
+    s = String(s == null ? '' : s).replace(/\s+/g, ' ').trim();
+    if (!s) return [''];
+    if (maxW < 8) maxW = 8;
+    var tokens = s.split(' '), lines = [], cur = '';
+    for (var i = 0; i < tokens.length; i++) {
+      var t = tokens[i];
+      if (measureText(t, sz, weight) > maxW) {                 // token wider than the column
+        if (cur) { lines.push(cur); cur = ''; }
+        while (measureText(t, sz, weight) > maxW && t.length > 1) { var f = fitPrefix(t, maxW, sz, weight); lines.push(t.slice(0, f)); t = t.slice(f); }
+        cur = t; continue;
+      }
+      var trial = cur ? cur + ' ' + t : t;
+      if (!cur || measureText(trial, sz, weight) <= maxW) cur = trial;
+      else { lines.push(cur); cur = t; }
+    }
+    if (cur) lines.push(cur);
+    return lines.length ? lines : [''];
+  }
+  function ellipsizeToWidth(s, maxW, sz, weight) {
+    s = String(s == null ? '' : s);
+    if (measureText(s, sz, weight) <= maxW) return s;
+    var base = s.replace(/…+$/, '');
+    while (base.length > 1 && measureText(base + '…', sz, weight) > maxW) base = base.slice(0, -1);
+    return base + '…';
+  }
+  /* Wrap to at most maxLines; the final line is ellipsised if content remains. */
+  function wrapToWidth(s, maxW, sz, weight, maxLines) {
+    maxLines = Math.max(1, Math.min(6, (maxLines | 0) || 1));
+    var lines = wrapAll(s, maxW, sz, weight);
+    if (lines.length <= maxLines) return lines;
+    lines = lines.slice(0, maxLines);
+    lines[maxLines - 1] = ellipsizeToWidth(lines[maxLines - 1] + '…', maxW, sz, weight);
+    return lines;
+  }
+  /* Draw label lines centred on yAnchor ('center') or descending from it ('top'). */
+  function drawTextLines(g, lines, x, yAnchor, anchor, sz, weight, fill, opacity, mode) {
+    var lineH = sz * 1.12;
+    var y0 = mode === 'top' ? yAnchor + sz : yAnchor - (lines.length - 1) * lineH / 2 + sz * 0.34;
+    lines.forEach(function (ln, i) {
+      g.append('text').attr('x', x).attr('y', y0 + i * lineH).attr('text-anchor', anchor)
+        .attr('font-size', sz).attr('font-weight', weight).attr('fill', fill).attr('opacity', opacity).text(ln);
+    });
+  }
+
+  /* ── category-label layout planning (bar / lollipop / dumbbell) ───────────── */
+  var CAT_LABEL_CHARTS = { bar: 1, 'bar-horizontal': 1, lollipop: 1, dumbbell: 1 };
+  var AUTO_CAP_FRAC = 0.42;   // auto-fit label area never exceeds this share of the box
+  function catSz(cfg) { return clamp(cfg.labelSize, 11, 24); }
+  /* Resolve 'auto' into a concrete layout for the orientation + label lengths. */
+  function resolveLayout(api, horizontal) {
+    var cfg = api.cfg, L = cfg.labelLayout || 'auto';
+    if (L === 'horizontal' || L === 'wrap' || L === 'angled') return L;
+    if (horizontal) return 'wrap';                          // long labels flow into the left column
+    var sz = catSz(cfg), n = Math.max(1, api.cats.length);
+    var stepApprox = Math.max(10, (api.box.w - sz * 3.2 - 16) / n);
+    var longest = 0;
+    for (var i = 0; i < api.cats.length; i++) longest = Math.max(longest, measureText(api.cats[i], sz, cfg.labelWeight));
+    return longest <= stepApprox * 0.95 ? 'horizontal' : 'angled';
+  }
+  /* Pixels to reserve for the category labels on their axis side. */
+  function categoryMarginPx(api, horizontal) {
+    var cfg = api.cfg, b = api.box, sz = catSz(cfg), n = Math.max(1, api.cats.length), i, k;
+    if (horizontal) {
+      var capW = (cfg.labelReserve > 0 ? cfg.labelReserve / 100 : AUTO_CAP_FRAC) * b.w;
+      if (cfg.labelReserve > 0) return clamp(capW, 40, b.w * 0.7);
+      var need = 0;                                          // auto: fit the wrapped column to content
+      for (i = 0; i < api.cats.length; i++) {
+        var lines = wrapToWidth(api.cats[i], capW, sz, cfg.labelWeight, cfg.labelLines);
+        for (k = 0; k < lines.length; k++) need = Math.max(need, measureText(lines[k], sz, cfg.labelWeight));
+      }
+      return clamp(need + 14, 40, capW + 14);
+    }
+    if (cfg.labelReserve > 0) return clamp(cfg.labelReserve / 100 * b.h, sz * 1.6, b.h * 0.6);
+    var layout = resolveLayout(api, false);
+    if (layout === 'angled') {
+      var maxLen = 0;
+      for (i = 0; i < api.cats.length; i++) maxLen = Math.max(maxLen, measureText(api.cats[i], sz, cfg.labelWeight));
+      var capH = AUTO_CAP_FRAC * b.h;
+      maxLen = Math.min(maxLen, capH / 0.7071);              // ellipsised beyond the cap at draw time
+      return clamp(maxLen * 0.7071 + sz, sz * 2, capH + 10);
+    }
+    if (layout === 'wrap') {
+      var stepApprox = Math.max(10, (b.w - sz * 3.2 - 16) / n), maxLines = 1;
+      for (i = 0; i < api.cats.length; i++) maxLines = Math.max(maxLines, wrapToWidth(api.cats[i], stepApprox, sz, cfg.labelWeight, cfg.labelLines).length);
+      return (maxLines + 0.3) * sz * 1.12 + 12;
+    }
+    return sz * 2 + 8;                                        // single horizontal line
+  }
+
+  /* ── faux-3-D extruded bar (top + right side face, then a crisp front) ────── */
+  function shade(hex, amt) {                                  // amt>0 → lighten, <0 → darken
+    if (!isHex(hex)) return hex;
+    var rgb = toRgb(hex), t = amt > 0 ? [255, 255, 255] : [0, 0, 0], a = Math.min(1, Math.abs(amt));
+    return toHex(rgb.map(function (v, i) { return v + (t[i] - v) * a; }));
+  }
+  function bar3d(g, x, y, w, h, col, dep) {
+    if (w <= 0 || h <= 0) return null;
+    var dx = dep * 0.72, dy = -dep * 0.52;
+    g.append('path').attr('d', 'M' + x + ' ' + y + ' L' + (x + w) + ' ' + y + ' L' + (x + w + dx) + ' ' + (y + dy) + ' L' + (x + dx) + ' ' + (y + dy) + ' Z').attr('fill', shade(col, 0.20));
+    g.append('path').attr('d', 'M' + (x + w) + ' ' + y + ' L' + (x + w + dx) + ' ' + (y + dy) + ' L' + (x + w + dx) + ' ' + (y + h + dy) + ' L' + (x + w) + ' ' + (y + h) + ' Z').attr('fill', shade(col, -0.24));
+    return g.append('rect').attr('x', x).attr('y', y).attr('width', w).attr('height', h).attr('fill', col);
+  }
+  function barDepth(cfg, thick) { return cfg.depth3d > 0 ? cfg.depth3d : clamp(thick * 0.28, 6, 34); }
+
+  /* ── click-to-recolour overrides + differentiation patterns ───────────────── */
+  /* Parse the colorOverrides input (a JSON map: category/series label → hex) that
+     the canvas click-to-recolour writes. Silently ignores anything unparseable or
+     non-hex, so a half-typed value never breaks the render. */
+  function parseOverrides(s) {
+    s = String(s == null ? '' : s).trim();
+    if (!s || s.charAt(0) !== '{') return {};
+    try {
+      var o = JSON.parse(s), out = {};
+      for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k) && isHex(o[k])) out[k] = String(o[k]).toLowerCase();
+      return out;
+    } catch (e) { return {}; }
+  }
+  /* A tiled SVG <pattern> texture (transparent background, brand-tint strokes) to
+     layer OVER a solid mark, so series stay distinct with few brand hues, in
+     greyscale print, and for colour-blind readers. The solid base is drawn
+     separately underneath, so a format that can't render patterns (EMF/EPS/DXF)
+     still shows the tint. Index 0 is solid (no overlay). 8 textures cycle. */
+  function ensureTexture(defs, index, baseColor, cache) {
+    var t = ((index % 8) + 8) % 8;
+    if (t === 0 || !defs) return null;
+    var base = isHex(baseColor) ? baseColor : '#888888';
+    var ink = shade(base, lum(base) > 0.55 ? -0.5 : 0.55);
+    var id = 'd3tex-' + t + '-' + base.replace('#', '');
+    if (cache[id]) return 'url(#' + id + ')';
+    cache[id] = true;
+    var p = defs.append('pattern').attr('id', id).attr('patternUnits', 'userSpaceOnUse').attr('width', 7).attr('height', 7);
+    var sw = 2.2, op = 0.9;
+    function line(x1, y1, x2, y2) { p.append('line').attr('x1', x1).attr('y1', y1).attr('x2', x2).attr('y2', y2).attr('stroke', ink).attr('stroke-width', sw).attr('stroke-opacity', op).attr('stroke-linecap', 'round'); }
+    if (t === 1) { p.attr('patternTransform', 'rotate(45)'); line(0, 0, 0, 7); }        // diagonal /
+    else if (t === 2) { p.attr('patternTransform', 'rotate(-45)'); line(0, 0, 0, 7); }  // diagonal \
+    else if (t === 3) { p.append('circle').attr('cx', 3.5).attr('cy', 3.5).attr('r', 1.5).attr('fill', ink).attr('fill-opacity', op); }  // dots
+    else if (t === 4) { line(0, 3.5, 7, 3.5); }                                          // horizontal
+    else if (t === 5) { line(3.5, 0, 3.5, 7); }                                          // vertical
+    else if (t === 6) { line(0, 0, 7, 7); line(0, 7, 7, 0); }                            // crosshatch
+    else if (t === 7) { line(0, 3.5, 7, 3.5); line(3.5, 0, 3.5, 7); }                    // grid
+    return 'url(#' + id + ')';
+  }
+
   /* ── shared: legend ───────────────────────────────────────────────────────── */
-  function estimateLegendRows(items, width, sz) {
-    var x = 0, rows = 1, gap = 24;
+  /* Legend sizing: text size, indicator size (0 = auto from text), item gap. */
+  function legendMetrics(cfg) {
+    var sz = cfg.legendTextSize > 0 ? clamp(cfg.legendTextSize, 8, 48) : clamp(cfg.labelSize, 12, 30);
+    var dot = cfg.legendSwatchSize > 0 ? clamp(cfg.legendSwatchSize, 4, 48) : clamp(sz * 0.82, 10, 30);
+    return { sz: sz, dot: dot, gap: clamp(cfg.legendGap, 0, 80) };
+  }
+  function estimateLegendRows(items, width, sz, dot, gap) {
+    var x = 0, rows = 1;
     for (var i = 0; i < items.length; i++) {
-      var w = sz + 8 + String(items[i].label).length * sz * 0.56 + gap;
+      var w = dot + 8 + String(items[i].label).length * sz * 0.56 + gap;
       if (x + w > width && x > 0) { rows++; x = 0; }
       x += w;
     }
     return rows;
   }
+  /* Position is a side (t/b/l/r) + alignment. Vertical sides (l/r) stack a column
+     aligned top/centre/bottom; horizontal sides (t/b) pack rows aligned left/
+     centre/right. Optional mono / bold / italic font toggles. */
   function drawLegend(api, items, pos, reserve, PAD, titleH) {
-    var d3 = api.d3, cfg = api.cfg, ink = api.ink, W = cfg.width, H = cfg.height;
-    var sz = clamp(cfg.labelSize, 12, 30);
+    var cfg = api.cfg, ink = api.ink, W = cfg.width, H = cfg.height;
+    var side = pos.charAt(0), align = pos.charAt(1);
+    var m = legendMetrics(cfg), sz = m.sz, dot = m.dot, gap = m.gap, rowH = sz + 12;
     var g = api.root.append('g').attr('class', 'legend').attr('data-canvas-input', 'legendPosition');
-    var dot = clamp(sz * 0.82, 10, 26);
-    if (pos === 'right' || pos === 'left') {
-      var lx = (pos === 'left') ? PAD : W - reserve + 8;
-      var totalH = items.length * (sz + 12);
-      var ly = clamp(api.box.y + api.box.h/2 - totalH/2, PAD + titleH, H - PAD - totalH);
-      items.forEach(function (it, i) {
-        var y = ly + i * (sz + 12);
-        g.append('rect').attr('x', lx).attr('y', y).attr('width', dot).attr('height', dot).attr('rx', 3)
-          .attr('fill', it.color);
-        g.append('text').attr('x', lx + dot + 8).attr('y', y + dot*0.82)
-          .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', ink).attr('opacity', 0.9)
-          .text(trunc(it.label, 26));
-      });
-    } else {
-      var y0 = (pos === 'top') ? PAD + titleH + sz : H - reserve + sz + 4;
-      var gap = 24, rowH = sz + 12;
-      var cursorX = PAD, cursorY = y0, maxW = W - 2*PAD;
-      items.forEach(function (it) {
-        var w = dot + 8 + String(trunc(it.label,28)).length * sz * 0.56 + gap;
-        if (cursorX + w > PAD + maxW && cursorX > PAD) { cursorX = PAD; cursorY += rowH; }
-        g.append('rect').attr('x', cursorX).attr('y', cursorY - dot*0.85).attr('width', dot).attr('height', dot).attr('rx', 3)
-          .attr('fill', it.color);
-        g.append('text').attr('x', cursorX + dot + 8).attr('y', cursorY)
-          .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', ink).attr('opacity', 0.9)
-          .text(trunc(it.label, 28));
-        cursorX += w;
-      });
+    function styleText(t) {
+      t.attr('font-size', sz).attr('font-weight', cfg.legendBold ? 700 : cfg.labelWeight).attr('fill', ink).attr('opacity', 0.9);
+      if (cfg.legendItalic) t.attr('font-style', 'italic');
+      if (cfg.legendMono) t.attr('font-family', 'ui-monospace, SFMono-Regular, Menlo, monospace');
+      return t;
     }
+    function itemW(it) { return dot + 8 + String(trunc(it.label, 40)).length * sz * 0.56 + gap; }
+
+    if (side === 'l' || side === 'r') {
+      var lx = (side === 'l') ? PAD : W - reserve + 8;
+      var totalH = items.length * (sz + 12);
+      var top = (align === 't') ? PAD + titleH : (align === 'b') ? H - PAD - totalH : api.box.y + api.box.h/2 - totalH/2;
+      top = clamp(top, PAD + titleH, Math.max(PAD + titleH, H - PAD - totalH));
+      items.forEach(function (it, i) {
+        var y = top + i * (sz + 12);
+        g.append('rect').attr('x', lx).attr('y', y).attr('width', dot).attr('height', dot).attr('rx', 3).attr('fill', it.color);
+        api.overlayRect(g, lx, y, dot, dot, 3, it.tex, it.color);
+        styleText(g.append('text').attr('x', lx + dot + 8).attr('y', y + dot*0.82).text(trunc(it.label, 30)));
+      });
+      return;
+    }
+    // horizontal (t/b): pack items into rows, then align each row l/c/r
+    var maxW = W - 2*PAD, rows = [[]], rowW = [0], ri = 0;
+    items.forEach(function (it) {
+      var w = itemW(it);
+      if (rowW[ri] + w > maxW && rows[ri].length) { ri++; rows[ri] = []; rowW[ri] = 0; }
+      rows[ri].push(it); rowW[ri] += w;
+    });
+    var y0 = (side === 't') ? PAD + titleH + sz : H - reserve + sz + 4;
+    rows.forEach(function (row, r) {
+      var rw = Math.max(0, rowW[r] - gap);   // no trailing gap
+      var startX = (align === 'l') ? PAD : (align === 'r') ? PAD + maxW - rw : PAD + (maxW - rw) / 2;
+      var cx = startX, y = y0 + r * rowH;
+      row.forEach(function (it) {
+        g.append('rect').attr('x', cx).attr('y', y - dot*0.85).attr('width', dot).attr('height', dot).attr('rx', 3).attr('fill', it.color);
+        api.overlayRect(g, cx, y - dot*0.85, dot, dot, 3, it.tex, it.color);
+        styleText(g.append('text').attr('x', cx + dot + 8).attr('y', y).text(trunc(it.label, 40)));
+        cx += itemW(it);
+      });
+    });
   }
 
   /* ── shared: cartesian axes ───────────────────────────────────────────────── */
@@ -360,31 +615,53 @@
       }
     });
   }
-  /* Category tick labels (unrotated, thinned + truncated to stay vector-safe). */
+  /* Category tick labels — auto-fit: wrap into the column (horizontal bars),
+     angle 45° or wrap (vertical bars) when labels would collide, ellipsising
+     only as a last resort. All output is plain SVG <text> (rotate transforms and
+     tspans) so it exports vector-clean. */
   function drawCategoryAxis(api, plot, band, horizontal) {
-    var d3 = api.d3, cfg = api.cfg, ink = api.ink;
+    var cfg = api.cfg, ink = api.ink, sz = catSz(cfg), weight = cfg.labelWeight;
     if (!cfg.showAxes) return;
     var cats = band.domain();
-    var sz = clamp(cfg.labelSize, 11, 24);
     var g = api.root.append('g').attr('class', 'cat-axis');
+    var layout = resolveLayout(api, horizontal);
     if (horizontal) {
+      var maxW = Math.max(20, plot.x - api.box.x - 8);
       cats.forEach(function (c) {
-        var y = band(c) + band.bandwidth()/2;
-        g.append('text').attr('x', plot.x - 8).attr('y', y + sz*0.34).attr('text-anchor', 'end')
-          .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', ink).attr('opacity', 0.8)
-          .text(trunc(c, Math.max(6, Math.floor(plot.x / (sz*0.5)))));
+        var yc = band(c) + band.bandwidth() / 2;
+        drawTextLines(g, wrapToWidth(c, maxW, sz, weight, cfg.labelLines), plot.x - 8, yc, 'end', sz, weight, ink, 0.8, 'center');
       });
-    } else {
-      var maxChars = Math.max(3, Math.floor(band.bandwidth() / (sz * 0.5)));
-      var every = Math.ceil(cats.length / Math.max(1, Math.floor(plot.w / 52)));
-      cats.forEach(function (c, i) {
-        if (every > 1 && i % every !== 0) return;
-        var x = band(c) + band.bandwidth()/2;
-        g.append('text').attr('x', x).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
-          .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', ink).attr('opacity', 0.8)
-          .text(trunc(c, maxChars + 2));
-      });
+      return;
     }
+    if (layout === 'angled') {
+      var capH = (cfg.labelReserve > 0 ? cfg.labelReserve / 100 : AUTO_CAP_FRAC) * api.box.h;
+      var maxLen = capH / 0.7071, ay = plot.y + plot.h + sz * 0.6 + 4;
+      cats.forEach(function (c) {
+        var ax = band(c) + band.bandwidth() / 2;
+        g.append('text').attr('transform', 'rotate(-45 ' + ax + ' ' + ay + ')').attr('x', ax).attr('y', ay)
+          .attr('text-anchor', 'end').attr('font-size', sz).attr('font-weight', weight).attr('fill', ink).attr('opacity', 0.8)
+          .text(ellipsizeToWidth(c, maxLen, sz, weight));
+      });
+      return;
+    }
+    if (layout === 'wrap') {
+      var step = band.step();
+      cats.forEach(function (c) {
+        var xc = band(c) + band.bandwidth() / 2;
+        drawTextLines(g, wrapToWidth(c, Math.max(20, step - 2), sz, weight, cfg.labelLines), xc, plot.y + plot.h + 6, 'middle', sz, weight, ink, 0.8, 'top');
+      });
+      return;
+    }
+    // single horizontal line — thin out to avoid collisions, ellipsise to slot
+    var stepW = band.step();
+    var every = Math.ceil(cats.length / Math.max(1, Math.floor(plot.w / 52)));
+    cats.forEach(function (c, i) {
+      if (every > 1 && i % every !== 0) return;
+      var x = band(c) + band.bandwidth() / 2;
+      g.append('text').attr('x', x).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
+        .attr('font-size', sz).attr('font-weight', weight).attr('fill', ink).attr('opacity', 0.8)
+        .text(ellipsizeToWidth(c, stepW * (every > 1 ? every : 1) - 4, sz, weight));
+    });
   }
   function drawAxisTitles(api, plot, horizontal) {
     var cfg = api.cfg, ink = api.ink;
@@ -396,14 +673,21 @@
       .attr('text-anchor', 'start').attr('font-size', sz).attr('font-weight', 600).attr('fill', ink).attr('opacity', 0.75).text(cfg.yTitle);
   }
 
-  /* Inset the plot box to leave room for axes/labels. */
+  /* Inset the plot box to leave room for axes/labels. Category-label charts
+     (bar / lollipop / dumbbell) size the label side to the actual wrapped/angled
+     labels; every other chart keeps the original fixed margins. */
   function insetForAxes(api, horizontal) {
-    var cfg = api.cfg, b = api.box;
-    var sz = clamp(cfg.labelSize, 11, 24);
-    var left = cfg.showAxes ? (horizontal ? Math.min(b.w * 0.28, 200) : sz * 3.2) : 8;
-    var bottom = (cfg.showAxes ? sz * 2 + 8 : 8) + (cfg.xTitle ? sz + 12 : 0);
-    var top = cfg.yTitle ? sz + 14 : 6;
-    var right = 12;
+    var cfg = api.cfg, b = api.box, sz = clamp(cfg.labelSize, 11, 24);
+    var smart = !!CAT_LABEL_CHARTS[cfg.chartType];
+    var top = cfg.yTitle ? sz + 14 : 6, right = 12, left, bottom;
+    if (horizontal) {
+      left = cfg.showAxes ? (smart ? categoryMarginPx(api, true) : Math.min(b.w * 0.28, 200)) : 8;
+      bottom = (cfg.showAxes ? sz * 2 + 8 : 8) + (cfg.xTitle ? sz + 12 : 0);
+    } else {
+      left = cfg.showAxes ? sz * 3.2 : 8;
+      bottom = (cfg.showAxes ? (smart ? categoryMarginPx(api, false) : sz * 2 + 8) : 8) + (cfg.xTitle ? sz + 12 : 0);
+      if (smart && cfg.showAxes && resolveLayout(api, false) === 'angled') right = 44;
+    }
     return { x: b.x + left, y: b.y + top, w: Math.max(20, b.w - left - right), h: Math.max(20, b.h - top - bottom) };
   }
 
@@ -456,7 +740,7 @@
   function layoutGroupedBars(api, plot, horizontal, cats, series, dom, colorFor, rx, stroke) {
     var d3 = api.d3, cfg = api.cfg;
     var band = d3.scaleBand().domain(cats).range(horizontal ? [plot.y, plot.y + plot.h] : [plot.x, plot.x + plot.w]).padding(cfg.barPadding);
-    var inner = d3.scaleBand().domain(series.map(function (s){return s.name;})).range([0, band.bandwidth()]).padding(0.06);
+    var inner = d3.scaleBand().domain(series.map(function (s){return s.name;})).range([0, band.bandwidth()]).padding(clamp(cfg.barGap, 0, 0.8));
     var val = makeYScale(cfg.yScaleType, dom, horizontal ? [plot.x, plot.x + plot.w] : [plot.y + plot.h, plot.y], d3);
     drawValueAxis(api, plot, val, horizontal ? 'x' : 'y');
     drawCategoryAxis(api, plot, band, horizontal);
@@ -466,17 +750,22 @@
       series.forEach(function (s, si) {
         var v = +s.values[ci]; if (!isFinite(v)) return;
         var pv = val(v); if (!isFinite(pv)) return;               // log(≤0) etc.
-        var col = legible(colorFor(si, ci), api.guardBg);
+        var texIdx = api.barByCat ? ci : si;
+        var col = api.override(c, legible(colorFor(si, ci), api.guardBg));
         if (horizontal) {
-          var y = band(c) + inner(s.name), h = inner.bandwidth();
-          var x0 = Math.min(base, pv), x1 = Math.max(base, pv);
-          rect(g, x0, y, Math.max(0, x1 - x0), h, col, Math.min(rx, h/2), stroke);
-          if (cfg.showValues) valueLabel(api, x1 + 6, y + h/2 + 5, api.fmt(v), 'start', api.ink, 0.75);
+          var h0 = inner.bandwidth(), h = cfg.barThickness > 0 ? Math.min(h0, cfg.barThickness) : h0;
+          var y = band(c) + inner(s.name) + (h0 - h) / 2;
+          var x0 = Math.min(base, pv), x1 = Math.max(base, pv), ww = Math.max(0, x1 - x0);
+          api.tagMark(cfg.bar3d ? bar3d(g, x0, y, ww, h, col, barDepth(cfg, h)) : rect(g, x0, y, ww, h, col, Math.min(rx, h/2), stroke), c);
+          api.overlayRect(g, x0, y, ww, h, cfg.bar3d ? 0 : Math.min(rx, h/2), texIdx, col);
+          if (cfg.showValues) valueLabel(api, x1 + 6 + (cfg.bar3d ? barDepth(cfg, h) * 0.72 : 0), y + h/2 + 5, api.fmt(v), 'start', api.ink, 0.75);
         } else {
-          var x = band(c) + inner(s.name), w = inner.bandwidth();
-          var y0 = Math.min(base, pv), y1 = Math.max(base, pv);
-          rect(g, x, y0, w, Math.max(0, y1 - y0), col, Math.min(rx, w/2), stroke);
-          if (cfg.showValues) valueLabel(api, x + w/2, y0 - 6, api.fmt(v), 'middle', api.ink, 0.75);
+          var w0 = inner.bandwidth(), w = cfg.barThickness > 0 ? Math.min(w0, cfg.barThickness) : w0;
+          var x = band(c) + inner(s.name) + (w0 - w) / 2;
+          var y0 = Math.min(base, pv), y1 = Math.max(base, pv), hh = Math.max(0, y1 - y0);
+          api.tagMark(cfg.bar3d ? bar3d(g, x, y0, w, hh, col, barDepth(cfg, w)) : rect(g, x, y0, w, hh, col, Math.min(rx, w/2), stroke), c);
+          api.overlayRect(g, x, y0, w, hh, cfg.bar3d ? 0 : Math.min(rx, w/2), texIdx, col);
+          if (cfg.showValues) valueLabel(api, x + w/2, y0 - 6 - (cfg.bar3d ? barDepth(cfg, w) * 0.52 : 0), api.fmt(v), 'middle', api.ink, 0.75);
         }
       });
     });
@@ -499,21 +788,25 @@
     drawCategoryAxis(api, plot, band, horizontal);
     var g = api.root.append('g');
     stacked.forEach(function (layer, si) {
-      var col = legible(scf(si), api.guardBg);
+      var layerCol = legible(scf(si), api.guardBg);
       layer.forEach(function (d, ci) {
         var a = d[0], b = d[1]; if (!isFinite(a) || !isFinite(b) || b - a === 0) return;
-        var c = cats[ci];
+        var c = cats[ci], col = api.override(c, layerCol);
         /* Draw between the two pixel positions regardless of sign order, so a
            negative segment (a > b) renders on the correct side of the baseline. */
         var pa = val(a), pb = val(b);
         if (horizontal) {
-          var y = band(c), h = band.bandwidth();
-          rect(g, Math.min(pa, pb), y, Math.abs(pb - pa), h, col, 0, stroke);
-          if (cfg.showValues && Math.abs(pb - pa) > 26) valueLabel(api, (pa+pb)/2, y + h/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1);
+          var h0 = band.bandwidth(), h = cfg.barThickness > 0 ? Math.min(h0, cfg.barThickness) : h0;
+          var y = band(c) + (h0 - h) / 2, xx = Math.min(pa, pb), ww = Math.abs(pb - pa);
+          api.tagMark(cfg.bar3d ? bar3d(g, xx, y, ww, h, col, barDepth(cfg, h)) : rect(g, xx, y, ww, h, col, 0, stroke), c);
+          api.overlayRect(g, xx, y, ww, h, 0, si, col);
+          if (cfg.showValues && ww > 26) valueLabel(api, (pa+pb)/2, y + h/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1);
         } else {
-          var x = band(c), w = band.bandwidth();
-          rect(g, x, Math.min(pa, pb), w, Math.abs(pa - pb), col, 0, stroke);
-          if (cfg.showValues && Math.abs(pa - pb) > 22) valueLabel(api, x + w/2, (pa+pb)/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1);
+          var w0 = band.bandwidth(), w = cfg.barThickness > 0 ? Math.min(w0, cfg.barThickness) : w0;
+          var x = band(c) + (w0 - w) / 2, yy = Math.min(pa, pb), hh = Math.abs(pa - pb);
+          api.tagMark(cfg.bar3d ? bar3d(g, x, yy, w, hh, col, barDepth(cfg, w)) : rect(g, x, yy, w, hh, col, 0, stroke), c);
+          api.overlayRect(g, x, yy, w, hh, 0, si, col);
+          if (cfg.showValues && hh > 22) valueLabel(api, x + w/2, (pa+pb)/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1);
         }
       });
     });
@@ -655,14 +948,17 @@
     var R = Math.min(b.w, b.h)/2 * 0.92;
     var ir = isDonut ? R * cfg.donutRadius : 0;
     var ccf = api.catColorFn(cats.length);
+    if (cfg.pie3d) { drawPie3d(api, items, total, cx, cy, R, ir, ccf); return; }
     var pie = d3.pie().sort(null).value(function (d){ return d.value; }).padAngle(cfg.sliceGap / Math.max(R,1));
     var arc = d3.arc().innerRadius(ir).outerRadius(R).cornerRadius(clamp(cfg.cornerRadius, 0, 40));
     var g = api.root.append('g').attr('transform', 'translate(' + cx + ',' + cy + ')');
     var stroke = cfg.strokeWidth > 0 ? { s: cfg.strokeColor, w: cfg.strokeWidth } : null;
     pie(items).forEach(function (d, i) {
-      var col = legible(ccf(d.data.oi), api.guardBg);
+      var col = api.override(d.data.label, legible(ccf(d.data.oi), api.guardBg));
       var p = g.append('path').attr('d', arc(d)).attr('fill', col);
       if (stroke) p.attr('stroke', stroke.s).attr('stroke-width', stroke.w).attr('stroke-linejoin', 'round');
+      api.tagMark(p, d.data.label);
+      api.overlayPath(g, arc(d), i, col);
       var frac = d.data.value / total;
       if (cfg.showValues && frac > 0.03) {
         var c = arc.centroid(d);
@@ -672,6 +968,39 @@
       }
     });
     if (isDonut && cfg.heading === '' && cfg.subheading === '') { /* nothing centred by default */ }
+  }
+
+  /* Faux-3-D pie/donut: squash to a tilted ellipse and drop a darkened copy of
+     the disc behind + below to read as an extruded rim. Slice labels are placed
+     in un-squashed screen space so the type isn't vertically compressed. */
+  function drawPie3d(api, items, total, cx, cy, R, ir, ccf) {
+    var d3 = api.d3, cfg = api.cfg;
+    var k = 0.60;                                       // vertical squash → tilt
+    var dep = cfg.depth3d > 0 ? cfg.depth3d : clamp(R * 0.22, 10, 48);
+    var depLocal = dep / k;
+    var pieTop = d3.pie().sort(null).value(function (d) { return d.value; }).padAngle(cfg.sliceGap / Math.max(R, 1));
+    var pieBase = d3.pie().sort(null).value(function (d) { return d.value; }).padAngle(0);
+    var arcGen = d3.arc().innerRadius(ir).outerRadius(R).cornerRadius(0);
+    var topArcs = pieTop(items), baseArcs = pieBase(items);
+    var oy = cy - dep * 0.5;
+    var g = api.root.append('g').attr('transform', 'translate(' + cx + ',' + oy + ') scale(1,' + k + ')');
+    var baseG = g.append('g').attr('transform', 'translate(0,' + depLocal + ')');
+    baseArcs.forEach(function (d) { baseG.append('path').attr('d', arcGen(d)).attr('fill', shade(api.override(d.data.label, legible(ccf(d.data.oi), api.guardBg)), -0.30)); });
+    var stroke = cfg.strokeWidth > 0 ? { s: cfg.strokeColor, w: cfg.strokeWidth } : null;
+    topArcs.forEach(function (d, i) {
+      var col = api.override(d.data.label, legible(ccf(d.data.oi), api.guardBg));
+      var p = g.append('path').attr('d', arcGen(d)).attr('fill', col);
+      if (stroke) p.attr('stroke', stroke.s).attr('stroke-width', stroke.w).attr('stroke-linejoin', 'round');
+      api.tagMark(p, d.data.label);
+      api.overlayPath(g, arcGen(d), i, col);
+      var frac = d.data.value / total;
+      if (cfg.showValues && frac > 0.03) {
+        var c = arcGen.centroid(d);
+        var lab = (cfg.numberFormat === 'percent' || cfg.numberFormat === 'auto') ? Math.round(frac * 100) + '%' : api.fmt(d.data.value);
+        api.root.append('text').attr('x', cx + c[0]).attr('y', oy + k * c[1] + 6).attr('text-anchor', 'middle')
+          .attr('font-size', clamp(cfg.labelSize, 12, 30)).attr('font-weight', 700).attr('fill', autoText(col)).text(lab);
+      }
+    });
   }
 
   /* ── radial bar ───────────────────────────────────────────────────────────── */
@@ -1152,6 +1481,135 @@
 
 
   /* ── low-level draw helpers ───────────────────────────────────────────────── */
+  /* ── word cloud (label,count) ─────────────────────────────────────────────── */
+  /* Words sized by their count and packed on an Archimedean spiral with AABB
+     collision — self-contained (no d3-cloud), vector-clean SVG <text>. Ideal for
+     tallies of open-text / multiple-choice responses. */
+  function drawWordcloud(api) {
+    var d3 = api.d3, cfg = api.cfg, b = api.box;
+    var vals = (api.series[0] && api.series[0].values) || [];
+    var items = api.cats.map(function (c, i) { return { label: String(c == null ? '' : c).trim(), value: Math.abs(+vals[i]) || 0 }; })
+      .filter(function (d) { return d.label; });
+    if (!items.some(function (d) { return d.value > 0; })) items.forEach(function (d) { d.value = 1; });
+    items = items.filter(function (d) { return d.value > 0; });
+    if (!items.length) { message('Paste a label,count table to build a word cloud.'); return; }
+    items.sort(function (m, n) { return n.value - m.value; });
+    var maxV = items[0].value, minV = items[items.length - 1].value;
+    var minPx = clamp(Math.min(b.w, b.h) * 0.028, 12, 26);
+    var maxPx = clamp(Math.min(b.w, b.h) * 0.16, minPx + 8, 150);
+    var sizeOf = (maxV === minV) ? function () { return (minPx + maxPx) / 2; }
+      : d3.scaleSqrt().domain([minV, maxV]).range([minPx, maxPx]);
+    var ccf = api.catColorFn(items.length);
+    var cx = b.x + b.w / 2, cy = b.y + b.h / 2;
+    var placed = [], skipped = 0;
+    var g = api.root.append('g').attr('class', 'wordcloud');
+    items.forEach(function (d, idx) {
+      var sz = Math.round(sizeOf(d.value)), vertical = (idx % 7 === 3);
+      var box = placeWord(d.label, sz, vertical, placed, cx, cy, b);
+      if (!box) { sz = Math.round(sz * 0.7); vertical = false; box = placeWord(d.label, sz, false, placed, cx, cy, b); }
+      if (!box) { skipped++; return; }
+      placed.push(box);
+      var col = legible(ccf(idx), api.guardBg);
+      var t = g.append('text').attr('x', box.cx).attr('y', box.cy + sz * 0.34).attr('text-anchor', 'middle')
+        .attr('font-size', sz).attr('font-weight', clamp(cfg.labelWeight, 400, 900)).attr('fill', col).text(d.label);
+      if (vertical) t.attr('transform', 'rotate(-90 ' + box.cx + ' ' + box.cy + ')');
+      if (cfg.showValues) t.append('title').text(d.label + ': ' + api.fmt(d.value));
+    });
+    if (skipped > 0) api.root.append('text').attr('x', b.x).attr('y', b.y + b.h - 4)
+      .attr('font-size', 14).attr('fill', api.ink).attr('opacity', 0.5).text(skipped + (skipped > 1 ? ' words didn’t fit' : ' word didn’t fit'));
+  }
+  function placeWord(text, sz, vertical, placed, cx, cy, b) {
+    var wpx = measureText(text, sz, 600);
+    var w = vertical ? sz * 1.15 : wpx + 8;
+    var h = vertical ? wpx + 8 : sz * 1.12;
+    var step = Math.max(6, sz * 0.32);
+    for (var i = 0; i < 3000; i++) {
+      var th = i * 0.35, r = step * Math.sqrt(i) * 0.55;
+      var px = cx + r * Math.cos(th) * 1.4, py = cy + r * Math.sin(th) * 0.82;
+      var x = px - w / 2, y = py - h / 2;
+      if (x < b.x || y < b.y || x + w > b.x + b.w || y + h > b.y + b.h) continue;
+      var hit = false;
+      for (var j = 0; j < placed.length; j++) {
+        var q = placed[j];
+        if (x < q.x + q.w && x + w > q.x && y < q.y + q.h && y + h > q.y) { hit = true; break; }
+      }
+      if (!hit) return { cx: px, cy: py, x: x, y: y, w: w, h: h };
+    }
+    return null;
+  }
+
+  /* ── click-to-recolour picker ─────────────────────────────────────────────── */
+  /* Clicking a bar/slice (tagged data-recolor="<label>") opens a brand-swatch
+     popover; picking a swatch writes an override into the colorOverrides input via
+     the sidebar control (the exact path typing takes — URL sync / undo / save come
+     free). Many values can be highlighted at once (the override is a map). The
+     click listener is wired ONCE per svg (capture phase, so a mark click doesn't
+     also trigger the shell's click-to-focus); its state is refreshed each paint. */
+  function setupRecolor(svgEl, cfg, overrides) {
+    var enabled = ['bar', 'bar-horizontal', 'pie', 'donut'].indexOf(cfg.chartType) >= 0;
+    var swatches = (cfg.brandSwatches || []).filter(function (s) { return s && s.value && !/^#[0-9a-f]{6}00$/i.test(s.value); });
+    svgEl.__d3Recolor = { enabled: enabled && swatches.length > 0, swatches: swatches, overrides: overrides };
+    if (svgEl.__d3RecolorWired) return;
+    svgEl.__d3RecolorWired = true;
+    svgEl.addEventListener('click', function (ev) {
+      var st = svgEl.__d3Recolor; if (!st || !st.enabled) return;
+      var mark = ev.target && ev.target.closest && ev.target.closest('[data-recolor]');
+      if (!mark) return;
+      ev.preventDefault(); ev.stopPropagation();
+      openSwatchPopover(ev.clientX, ev.clientY, mark.getAttribute('data-recolor'), st);
+    }, true);
+  }
+  function closeSwatchPopover() {
+    var ex = document.getElementById('d3-recolor-pop'); if (ex && ex.parentNode) ex.parentNode.removeChild(ex);
+    if (window.__d3PopClose) { document.removeEventListener('mousedown', window.__d3PopClose, true); document.removeEventListener('keydown', window.__d3PopKey, true); window.__d3PopClose = null; window.__d3PopKey = null; }
+  }
+  /* Write a new overrides map to the sidebar input, riding the typing path. */
+  function writeOverride(label, hex, st) {
+    var ov = {}; for (var k in st.overrides) if (Object.prototype.hasOwnProperty.call(st.overrides, k)) ov[k] = st.overrides[k];
+    if (hex) ov[label] = hex; else delete ov[label];
+    var panel = document.getElementById('tool-inputs');           // scope, never a global query
+    var ctl = panel && panel.querySelector('[data-input-id="colorOverrides"]');
+    if (ctl) {
+      ctl.value = Object.keys(ov).length ? JSON.stringify(ov) : '';
+      ctl.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    closeSwatchPopover();
+  }
+  function openSwatchPopover(x, y, label, st) {
+    closeSwatchPopover();
+    var css = function (el, s) { el.setAttribute('style', s); };
+    var pop = document.createElement('div');
+    pop.id = 'd3-recolor-pop';
+    /* Canvas/CanvasText system colours → theme-aware (light + dark) with no JS. */
+    css(pop, 'position:fixed;z-index:2147483000;left:0;top:0;background:Canvas;color:CanvasText;border:1px solid rgba(128,128,128,.35);border-radius:12px;box-shadow:0 12px 34px rgba(0,0,0,.28);padding:11px;max-width:236px;font:13px/1.3 system-ui,-apple-system,sans-serif;');
+    var title = document.createElement('div');
+    title.textContent = label;
+    css(title, 'font-weight:600;margin:0 2px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:214px;');
+    pop.appendChild(title);
+    var grid = document.createElement('div');
+    css(grid, 'display:grid;grid-template-columns:repeat(6,1fr);gap:7px;');
+    st.swatches.forEach(function (s) {
+      var b = document.createElement('button');
+      b.type = 'button'; b.title = s.name;
+      css(b, 'width:26px;height:26px;border-radius:50%;border:1px solid rgba(128,128,128,.4);cursor:pointer;padding:0;background:' + s.value + ';');
+      b.addEventListener('click', function (e) { e.stopPropagation(); writeOverride(label, s.value, st); });
+      grid.appendChild(b);
+    });
+    pop.appendChild(grid);
+    var reset = document.createElement('button');
+    reset.type = 'button'; reset.textContent = 'Reset to palette';
+    css(reset, 'display:block;width:100%;margin-top:10px;padding:7px;border:1px solid rgba(128,128,128,.3);border-radius:8px;background:transparent;color:inherit;cursor:pointer;font:inherit;');
+    reset.addEventListener('click', function (e) { e.stopPropagation(); writeOverride(label, null, st); });
+    pop.appendChild(reset);
+    document.body.appendChild(pop);
+    var r = pop.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(x, window.innerWidth - r.width - 8)) + 'px';
+    pop.style.top = Math.max(8, Math.min(y + 8, window.innerHeight - r.height - 8)) + 'px';
+    window.__d3PopClose = function (e) { if (!pop.contains(e.target)) closeSwatchPopover(); };
+    window.__d3PopKey = function (e) { if (e.key === 'Escape') closeSwatchPopover(); };
+    setTimeout(function () { document.addEventListener('mousedown', window.__d3PopClose, true); document.addEventListener('keydown', window.__d3PopKey, true); }, 0);
+  }
+
   function rect(g, x, y, w, h, fill, rx, stroke) {
     var r = g.append('rect').attr('x', x).attr('y', y).attr('width', Math.max(0, w)).attr('height', Math.max(0, h)).attr('fill', fill);
     if (rx > 0) r.attr('rx', Math.min(rx, w/2, h/2)).attr('ry', Math.min(rx, w/2, h/2));

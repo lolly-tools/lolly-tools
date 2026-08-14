@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Tegnforklaring",
   "inputs.legendPosition.label": "Plassering av tegnforklaring",
   "inputs.legendPosition.section": "Tegnforklaring",
-  "inputs.legendPosition.options.bottom": "Nederst",
-  "inputs.legendPosition.options.top": "Øverst",
-  "inputs.legendPosition.options.right": "Høyre",
-  "inputs.legendPosition.options.left": "Venstre",
   "inputs.width.label": "Bredde",
   "inputs.height.label": "Høyde"
 }

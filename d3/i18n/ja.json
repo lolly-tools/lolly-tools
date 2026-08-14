@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "凡例",
   "inputs.legendPosition.label": "凡例の位置",
   "inputs.legendPosition.section": "凡例",
-  "inputs.legendPosition.options.bottom": "下",
-  "inputs.legendPosition.options.top": "上",
-  "inputs.legendPosition.options.right": "右",
-  "inputs.legendPosition.options.left": "左",
   "inputs.width.label": "幅",
   "inputs.height.label": "高さ"
 }

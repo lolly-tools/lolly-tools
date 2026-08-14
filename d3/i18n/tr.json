@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "Lejant",
   "inputs.legendPosition.label": "Gösterge konumu",
   "inputs.legendPosition.section": "Lejant",
-  "inputs.legendPosition.options.bottom": "Alt",
-  "inputs.legendPosition.options.top": "Üst",
-  "inputs.legendPosition.options.right": "Sağ",
-  "inputs.legendPosition.options.left": "Sol",
   "inputs.width.label": "Genişlik",
   "inputs.height.label": "Yükseklik"
 }

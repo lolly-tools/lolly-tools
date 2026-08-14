@@ -178,10 +178,6 @@
   "inputs.showLegend.section": "লেজেন্ড",
   "inputs.legendPosition.label": "লেজেন্ডের অবস্থান",
   "inputs.legendPosition.section": "লেজেন্ড",
-  "inputs.legendPosition.options.bottom": "নিচে",
-  "inputs.legendPosition.options.top": "উপরে",
-  "inputs.legendPosition.options.right": "ডানে",
-  "inputs.legendPosition.options.left": "বামে",
   "inputs.width.label": "প্রস্থ",
   "inputs.height.label": "উচ্চতা"
 }
