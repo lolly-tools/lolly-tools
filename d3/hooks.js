@@ -504,21 +504,21 @@ async function resolveBrandColors() {
     // primary → secondary → the brand's chromatic hues (spectrum/brand palette) →
     // tints & shades of the two lead hues (variations) → a few neutrals for
     // emphasis last. Near-greys are held back so brand HUES lead the picker.
+    // The FULL brand palette for the pickers: primary/secondary lead, then EVERY
+    // brand swatch (spectrum, brand hues, ramp steps) — chromatic hues first, then
+    // the neutral ramp steps — then tint/shade variations of the lead hues, then a
+    // few semantic neutrals. Generous cap so the whole palette is selectable.
     const swatches = [], sseen = new Set();
     const pushSwatch = (name, value, path) => {
       const v = toHex(value);
-      if (!v || sseen.has(v) || /^#[0-9a-f]{6}00$/i.test(v) || swatches.length >= 30) return;
+      if (!v || sseen.has(v) || /^#[0-9a-f]{6}00$/i.test(v) || swatches.length >= 64) return;
       sseen.add(v); swatches.push({ name: String(name || v), value: v, path: String(path || '') });
     };
     const primaryHex = toHex(primary), secondaryHex = toHex(secondary);
     const surfaceHex = toHex(surface) || '#ffffff', textHex = toHex(text) || '#111111';
     pushSwatch('Primary', primaryHex, 'color.semantic.primary');
     pushSwatch('Secondary', secondaryHex, 'color.semantic.secondary');
-    for (const s of swatchesRaw) {                 // brand hues (skip near-greys — added at the end)
-      const hx = toHex(s.value);
-      if (hx && chroma(hx) < 0.03) continue;
-      pushSwatch(s.name, s.value, s.path);
-    }
+    for (const s of swatchesRaw) { const hx = toHex(s.value); if (hx && chroma(hx) >= 0.03) pushSwatch(s.name, s.value, s.path); }   // brand hues
     if (c.mix) {                                    // tints + shades = variations of the lead hues
       for (const base of [primaryHex, secondaryHex]) {
         if (!base) continue;
@@ -527,6 +527,7 @@ async function resolveBrandColors() {
         pushSwatch('Dark', c.mix(base, textHex, 0.45));
       }
     }
+    for (const s of swatchesRaw) { const hx = toHex(s.value); if (hx && chroma(hx) < 0.03) pushSwatch(s.name, s.value, s.path); }   // neutral ramp steps last
     pushSwatch('Muted', toHex(await sem('muted')), 'color.semantic.muted');
     pushSwatch('Ink', textHex, 'color.semantic.text');
     pushSwatch('Paper', surfaceHex, 'color.semantic.surface');

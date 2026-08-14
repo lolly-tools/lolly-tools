@@ -1642,7 +1642,7 @@
     css(title, 'font-weight:600;margin:0 2px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:214px;');
     pop.appendChild(title);
     var grid = document.createElement('div');
-    css(grid, 'display:grid;grid-template-columns:repeat(6,1fr);gap:7px;');
+    css(grid, 'display:grid;grid-template-columns:repeat(6,1fr);gap:7px;max-height:46vh;overflow-y:auto;');
     st.swatches.forEach(function (s) {
       var b = document.createElement('button');
       b.type = 'button'; b.title = s.name;
