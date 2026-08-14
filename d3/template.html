@@ -939,11 +939,46 @@
       step: d3.curveStep, stepBefore: d3.curveStepBefore, stepAfter: d3.curveStepAfter, bumpX: d3.curveBumpX };
     return CURVES[name] || d3.curveMonotoneX;
   }
+  /* Parse the label column as dates (ISO, Y-M, D/M/Y, 'Jan 2024', 'Q1 2024', a
+     plain 4-digit year, …). Returns per-index Date|null + whether it reads as a
+     real time series (≥60% parse). Month-only labels ('Jan') stay categorical —
+     no year, and evenly spaced anyway. */
+  function parseCatDates(cats, d3) {
+    var qre1 = /^Q([1-4])[\s\-]?(\d{4})$/i, qre2 = /^(\d{4})[\s\-]?Q([1-4])$/i;
+    var parsers = [d3.isoParse,
+      d3.timeParse('%Y-%m-%d'), d3.timeParse('%Y/%m/%d'), d3.timeParse('%m/%d/%Y'), d3.timeParse('%d/%m/%Y'),
+      d3.timeParse('%d %b %Y'), d3.timeParse('%b %d, %Y'), d3.timeParse('%d %B %Y'), d3.timeParse('%B %d, %Y'),
+      d3.timeParse('%b %Y'), d3.timeParse('%B %Y'), d3.timeParse('%b-%Y'), d3.timeParse('%Y-%m'), d3.timeParse('%Y/%m')];
+    function one(s) {
+      s = String(s == null ? '' : s).trim(); if (!s) return null;
+      var q = s.match(qre1); if (q) return new Date(+q[2], (+q[1] - 1) * 3, 1);
+      q = s.match(qre2); if (q) return new Date(+q[1], (+q[2] - 1) * 3, 1);
+      if (/^\d{4}$/.test(s)) { var yr = +s; return (yr >= 1900 && yr <= 2100) ? new Date(yr, 0, 1) : null; }
+      for (var i = 0; i < parsers.length; i++) { var d = parsers[i](s); if (d && d.getFullYear() >= 1900 && d.getFullYear() <= 2100) return d; }
+      return null;
+    }
+    var dates = cats.map(one), valid = dates.filter(Boolean).length;
+    return { dates: dates, valid: valid, isTime: valid >= 2 && valid >= Math.ceil(cats.length * 0.6) };
+  }
   function drawLineArea(api, isArea) {
     var d3 = api.d3, cfg = api.cfg, cats = api.cats, series = api.series;
     var plot = insetForAxes(api, false);
     var stacked = isArea && series.length > 1 && cfg.stackMode !== 'grouped';
-    var x = d3.scalePoint().domain(cats).range([plot.x, plot.x + plot.w]).padding(0.5);
+    /* x positioning: a real time scale when the labels are dates (proportional
+       gaps + date ticks), else the evenly-spaced point scale. `pos[i]` is each
+       category's pixel x; `timeMode` switches the axis labels to time ticks. */
+    var td = cfg.timeAxis === 'off' ? { dates: [], valid: 0, isTime: false } : parseCatDates(cats, d3);
+    var timeMode = td.valid >= 2 && (cfg.timeAxis === 'on' || td.isTime);
+    var pos, xt = null;
+    if (timeMode) {
+      var ext = d3.extent(td.dates.filter(Boolean));
+      if (+ext[0] === +ext[1]) ext = [new Date(+ext[0] - 864e5), new Date(+ext[1] + 864e5)];
+      xt = d3.scaleTime(ext, [plot.x, plot.x + plot.w]);
+      pos = td.dates.map(function (dd) { return dd ? xt(dd) : null; });
+    } else {
+      var xp = d3.scalePoint().domain(cats).range([plot.x, plot.x + plot.w]).padding(0.5);
+      pos = cats.map(function (c) { return xp(c); });
+    }
     var scf = api.catColorFn(series.length);
     var curve = curveOf(d3, cfg.curve);
     var dom, layers = null;
@@ -964,21 +999,34 @@
     }
     var y = makeYScale(stacked ? 'linear' : cfg.yScaleType, dom, [plot.y + plot.h, plot.y], d3);
     drawValueAxis(api, plot, y, 'y');
-    /* category axis as point labels */
+    /* x axis: time ticks when in time mode, else evenly-spaced category labels */
     (function () {
       var sz = clamp(cfg.labelSize, 11, 24);
-      var every = Math.ceil(cats.length / Math.max(1, Math.floor(plot.w / 60)));
-      if (cfg.showAxes) cats.forEach(function (c, i) {
-        if (every > 1 && i % every !== 0) return;
-        api.root.append('text').attr('x', x(c)).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
-          .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', api.ink).attr('opacity', 0.8).text(trunc(c, 12));
-      });
+      if (!cfg.showAxes) return;
+      if (timeMode) {
+        var tf = xt.tickFormat();
+        /* Ask for a coarse count (d3 snaps to a nice interval), then thin to a
+           min pixel spacing so labels never collide whatever interval it picks. */
+        var lastX = -1e9;
+        xt.ticks(Math.max(2, Math.min(10, Math.floor(plot.w / 120)))).forEach(function (t) {
+          var xx = xt(t); if (xx - lastX < 74) return; lastX = xx;
+          api.root.append('text').attr('x', xx).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
+            .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', api.ink).attr('opacity', 0.8).text(tf(t));
+        });
+      } else {
+        var every = Math.ceil(cats.length / Math.max(1, Math.floor(plot.w / 60)));
+        cats.forEach(function (c, i) {
+          if (every > 1 && i % every !== 0) return;
+          api.root.append('text').attr('x', pos[i]).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
+            .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', api.ink).attr('opacity', 0.8).text(trunc(c, 12));
+        });
+      }
     })();
     var g = api.root.append('g');
     var fo = cfg.fillOpacity;
 
     if (stacked) {
-      var area = d3.area().x(function (d, i){ return x(cats[i]); }).y0(function (d){ return y(d[0]); }).y1(function (d){ return y(d[1]); }).curve(curve);
+      var area = d3.area().x(function (d, i){ return pos[i]; }).y0(function (d){ return y(d[0]); }).y1(function (d){ return y(d[1]); }).curve(curve);
       layers.forEach(function (layer, si) {
         var col = legible(scf(si), api.guardBg);
         api.markShadow(g.append('path').attr('d', area(layer)).attr('fill', col).attr('fill-opacity', clamp(fo, 0.15, 1))
@@ -987,22 +1035,22 @@
     } else {
       series.forEach(function (s, si) {
         var col = legible(scf(si), api.guardBg);
-        var pts = s.values.map(function (v, i){ return { c: cats[i], v: v }; });
+        var pts = s.values.map(function (v, i){ return { c: cats[i], v: v, xp: pos[i] }; });
         /* Also require a finite scaled y so a non-positive value under a log scale
            becomes a bridged GAP rather than an invalid (NaN) path coordinate. */
-        var defined = function (d){ return isFinite(d.v) && isFinite(y(d.v)); };
+        var defined = function (d){ return isFinite(d.v) && isFinite(y(d.v)) && isFinite(d.xp); };
         if (isArea) {
-          var area = d3.area().defined(defined).x(function (d){ return x(d.c); }).y0(y(dom[0] < 0 ? 0 : dom[0])).y1(function (d){ return y(d.v); }).curve(curve);
+          var area = d3.area().defined(defined).x(function (d){ return d.xp; }).y0(y(dom[0] < 0 ? 0 : dom[0])).y1(function (d){ return y(d.v); }).curve(curve);
           g.append('path').attr('d', area(pts)).attr('fill', col).attr('fill-opacity', clamp(fo, 0.08, 1)).attr('stroke', 'none');
         }
-        var line = d3.line().defined(defined).x(function (d){ return x(d.c); }).y(function (d){ return y(d.v); }).curve(curve);
+        var line = d3.line().defined(defined).x(function (d){ return d.xp; }).y(function (d){ return y(d.v); }).curve(curve);
         api.markShadow(g.append('path').attr('d', line(pts)).attr('fill', 'none').attr('stroke', col)
           .attr('stroke-width', cfg.lineWidth).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round'), col);
         if (cfg.showPoints) pts.forEach(function (d) {
-          if (!isFinite(d.v) || !isFinite(y(d.v))) return;
-          g.append('circle').attr('cx', x(d.c)).attr('cy', y(d.v)).attr('r', clamp(cfg.pointSize/2, 2, 20))
+          if (!isFinite(d.v) || !isFinite(y(d.v)) || !isFinite(d.xp)) return;
+          g.append('circle').attr('cx', d.xp).attr('cy', y(d.v)).attr('r', clamp(cfg.pointSize/2, 2, 20))
             .attr('fill', col).attr('stroke', api.guardBg).attr('stroke-width', 1.5);
-          if (cfg.showValues) valueLabel(api, x(d.c), y(d.v) - clamp(cfg.pointSize/2,2,20) - 6, api.fmt(d.v), 'middle', api.ink, 0.8, series.length > 1 ? d.c + ' · ' + s.name : d.c);
+          if (cfg.showValues) valueLabel(api, d.xp, y(d.v) - clamp(cfg.pointSize/2,2,20) - 6, api.fmt(d.v), 'middle', api.ink, 0.8, series.length > 1 ? d.c + ' · ' + s.name : d.c);
         });
       });
     }

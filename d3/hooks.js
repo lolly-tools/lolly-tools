@@ -350,6 +350,7 @@ function buildConfig(inp) {
     pieStyle:       String(inp.pieStyle || 'flat'),
     depth3d:        clamp(num(inp.depth3d, 0), 0, 160),
     reference:      String(inp.reference || ''),          // reference lines & bands (one per line)
+    timeAxis:       String(inp.timeAxis || 'auto'),        // auto / on / off — parse the label column as dates
     yScaleType:     String(inp.yScaleType || 'linear'),
     yZero:          inp.yZero !== false && inp.yZero !== 'false',
     yMax:           Math.max(0, num(inp.yMax, 0)),

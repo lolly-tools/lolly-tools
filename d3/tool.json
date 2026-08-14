@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.7.0",
+  "version": "1.8.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -951,6 +951,21 @@
           "marimekko"
         ]
       }
+    },
+    {
+      "id": "timeAxis",
+      "urlKey": "tax",
+      "label": "Time axis",
+      "section": "Axes & scale",
+      "type": "select",
+      "default": "auto",
+      "options": [
+        { "value": "auto", "label": "Auto-detect dates" },
+        { "value": "on", "label": "On (parse dates)" },
+        { "value": "off", "label": "Off (categories)" }
+      ],
+      "help": "When the label column holds dates (2024-01-15, Jan 2024, Q1 2024, a plain year…), plot them on a real time axis — proportional spacing that respects the actual gaps, with nice date ticks. Auto detects; off keeps evenly-spaced categories.",
+      "showIf": { "chartType": ["line", "area"] }
     },
     {
       "id": "reference",
