@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 \u2014 paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour \u2014 on-brand and vector-clean.",
-  "version": "1.16.0",
+  "version": "1.17.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -392,7 +392,8 @@
           "line",
           "area",
           "pie",
-          "donut"
+          "donut",
+          "scatter"
         ]
       }
     },
@@ -414,7 +415,8 @@
           "line",
           "area",
           "pie",
-          "donut"
+          "donut",
+          "scatter"
         ]
       }
     },
@@ -433,7 +435,130 @@
           "line",
           "area",
           "pie",
-          "donut"
+          "donut",
+          "scatter"
+        ]
+      }
+    },
+    {
+      "id": "frameLabelSize",
+      "urlKey": "fls",
+      "label": "Frame label size",
+      "section": "Animation",
+      "type": "number",
+      "display": "slider",
+      "default": 36,
+      "min": 10,
+      "max": 120,
+      "step": 1,
+      "help": "Font size (px) of the keyframe caption.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "pie",
+          "donut",
+          "scatter"
+        ]
+      }
+    },
+    {
+      "id": "frameLabelWeight",
+      "urlKey": "flw",
+      "label": "Frame label weight",
+      "section": "Animation",
+      "type": "select",
+      "default": "700",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Heavy"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "pie",
+          "donut",
+          "scatter"
+        ]
+      }
+    },
+    {
+      "id": "frameLabelColor",
+      "urlKey": "flc",
+      "label": "Frame label colour",
+      "section": "Animation",
+      "type": "color",
+      "default": "",
+      "help": "Blank = auto-contrast with the background.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "pie",
+          "donut",
+          "scatter"
+        ]
+      }
+    },
+    {
+      "id": "frameLabelPos",
+      "urlKey": "flp",
+      "label": "Frame label position",
+      "section": "Animation",
+      "type": "select",
+      "default": "tr",
+      "options": [
+        {
+          "value": "tl",
+          "label": "Top left"
+        },
+        {
+          "value": "tr",
+          "label": "Top right"
+        },
+        {
+          "value": "bl",
+          "label": "Bottom left"
+        },
+        {
+          "value": "br",
+          "label": "Bottom right"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "pie",
+          "donut",
+          "scatter"
         ]
       }
     },
@@ -466,7 +591,8 @@
           "line",
           "area",
           "pie",
-          "donut"
+          "donut",
+          "scatter"
         ]
       }
     },
@@ -495,7 +621,8 @@
           "line",
           "area",
           "pie",
-          "donut"
+          "donut",
+          "scatter"
         ]
       }
     },
@@ -1856,6 +1983,58 @@
       "help": "Font weight of the axis category labels and legend (100 Thin \u2192 900 Black)."
     },
     {
+      "id": "axisTitleSize",
+      "urlKey": "ats",
+      "label": "Axis title size",
+      "section": "Titles & labels",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "help": "Font size (px) of the x/y axis titles. 0 = auto."
+    },
+    {
+      "id": "axisTitleWeight",
+      "urlKey": "atw",
+      "label": "Axis title weight",
+      "section": "Titles & labels",
+      "type": "select",
+      "default": "600",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Heavy"
+        }
+      ]
+    },
+    {
+      "id": "axisTitleColor",
+      "urlKey": "atc",
+      "label": "Axis title colour",
+      "section": "Titles & labels",
+      "type": "color",
+      "default": "",
+      "help": "Blank = auto-contrast with the background."
+    },
+    {
       "id": "showLegend",
       "urlKey": "lg",
       "label": "Show legend",
@@ -2018,6 +2197,15 @@
       "showIf": {
         "showLegend": true
       }
+    },
+    {
+      "id": "legendColor",
+      "urlKey": "lgc",
+      "label": "Legend text colour",
+      "section": "Legend",
+      "type": "color",
+      "default": "",
+      "help": "Blank = auto-contrast with the background."
     },
     {
       "id": "width",

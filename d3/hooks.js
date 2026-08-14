@@ -361,6 +361,10 @@ function buildConfig(inp) {
     frameColumn:    String(inp.frameColumn || ''),        // column whose distinct values become animation keyframes
     animSpeed:      clamp(num(inp.animSpeed, 1.5), 0.3, 8),// seconds each keyframe holds before morphing
     frameLabelShow: inp.frameLabelShow !== false && inp.frameLabelShow !== 'false',
+    frameLabelSize: clamp(num(inp.frameLabelSize, 36), 8, 160),
+    frameLabelWeight: clamp(Math.round(num(inp.frameLabelWeight, 700)), 100, 900),
+    frameLabelColor: isHex(inp.frameLabelColor) ? inp.frameLabelColor.trim() : '',
+    frameLabelPos:  String(inp.frameLabelPos || 'tr'),      // tl / tr / bl / br
     animEase:       String(inp.animEase || 'smooth'),      // smooth / linear / steps
     animDirection:  String(inp.animDirection || 'loop'),   // loop / bounce (ping-pong)
     timeAxis:       String(inp.timeAxis || 'auto'),        // auto / on / off — parse the label column as dates
@@ -397,6 +401,9 @@ function buildConfig(inp) {
     titlePosition:  String(inp.titlePosition || 'top'),
     titleWeight:    clamp(Math.round(num(inp.titleWeight, 700)), 100, 900),
     labelWeight:    clamp(Math.round(num(inp.labelWeight, 500)), 100, 900),
+    axisTitleSize:  clamp(num(inp.axisTitleSize, 0), 0, 80),   // 0 = auto
+    axisTitleWeight: clamp(Math.round(num(inp.axisTitleWeight, 600)), 100, 900),
+    axisTitleColor: isHex(inp.axisTitleColor) ? inp.axisTitleColor.trim() : '',
     showLegend:     inp.showLegend !== false && inp.showLegend !== 'false',
     legendPosition: normLegendPos(inp.legendPosition),
     legendTextSize: clamp(num(inp.legendTextSize, 0), 0, 48),
@@ -406,6 +413,7 @@ function buildConfig(inp) {
     legendMono:     inp.legendMono === true || inp.legendMono === 'true',
     legendBold:     inp.legendBold === true || inp.legendBold === 'true',
     legendItalic:   inp.legendItalic === true || inp.legendItalic === 'true',
+    legendColor:    isHex(inp.legendColor) ? inp.legendColor.trim() : '',   // blank = auto ink
     width:          W,
     height:         H,
   };

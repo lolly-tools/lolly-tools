@@ -187,9 +187,13 @@
       var st = { cfg: cfg, data: { categories: data.categories, series: tweened,
         numericCols: cfg.chartType === 'scatter' ? tweened : [], errorValues: null } };
       try { render(st, d3); } catch (e) { console.error('[d3 anim]', e); return; }
-      if (cfg.frameLabelShow !== false && labels.length)
-        d3.select('#d3-plot').append('text').attr('x', cfg.width - 18).attr('y', 46).attr('text-anchor', 'end')
-          .attr('font-size', 36).attr('font-weight', 700).attr('fill', ink).attr('opacity', 0.92).text(labels[f.tw < 0.5 ? f.i : f.j]);
+      if (cfg.frameLabelShow !== false && labels.length) {
+        var fSz = clamp(cfg.frameLabelSize || 36, 8, 160), fPos = cfg.frameLabelPos || 'tr';
+        var left = (fPos === 'tl' || fPos === 'bl'), bottom = (fPos === 'bl' || fPos === 'br');
+        d3.select('#d3-plot').append('text').attr('x', left ? 18 : cfg.width - 18).attr('y', bottom ? cfg.height - 18 : fSz + 12)
+          .attr('text-anchor', left ? 'start' : 'end').attr('font-size', fSz).attr('font-weight', cfg.frameLabelWeight || 700)
+          .attr('fill', isHex(cfg.frameLabelColor) ? cfg.frameLabelColor : ink).attr('opacity', 0.92).text(labels[f.tw < 0.5 ? f.i : f.j]);
+      }
     }
     /* Deterministic EXPORT clock: the video/apng/webp-anim pipeline freezes this tool's
        rAF (sets __lollyFrameDriven) and calls __lollyFrameRender(t) to paint each exact
@@ -743,7 +747,7 @@
     var rx = clamp(cfg.legendRadius, 0, dot / 2);
     var g = api.root.append('g').attr('class', 'legend').attr('data-canvas-input', 'legendPosition');
     function styleText(t) {
-      t.attr('font-size', sz).attr('font-weight', cfg.legendBold ? 700 : cfg.labelWeight).attr('fill', ink).attr('opacity', 0.9);
+      t.attr('font-size', sz).attr('font-weight', cfg.legendBold ? 700 : cfg.labelWeight).attr('fill', isHex(cfg.legendColor) ? cfg.legendColor : ink).attr('opacity', 0.9);
       if (cfg.legendItalic) t.attr('font-style', 'italic');
       if (cfg.legendMono) t.attr('font-family', 'ui-monospace, SFMono-Regular, Menlo, monospace');
       return t;
@@ -1041,12 +1045,13 @@
   }
   function drawAxisTitles(api, plot, horizontal) {
     var cfg = api.cfg, ink = api.ink;
-    var sz = clamp(cfg.labelSize, 12, 22);
+    var sz = cfg.axisTitleSize > 0 ? clamp(cfg.axisTitleSize, 6, 80) : clamp(cfg.labelSize, 12, 22);
+    var w = cfg.axisTitleWeight || 600, col = isHex(cfg.axisTitleColor) ? cfg.axisTitleColor : ink;
     if (cfg.xTitle) api.root.append('text').attr('x', plot.x + plot.w/2).attr('y', plot.y + plot.h + sz*2 + 18).attr('data-canvas-input', 'xTitle')
-      .attr('text-anchor', 'middle').attr('font-size', sz).attr('font-weight', 600).attr('fill', ink).attr('opacity', 0.75).text(cfg.xTitle);
+      .attr('text-anchor', 'middle').attr('font-size', sz).attr('font-weight', w).attr('fill', col).attr('opacity', 0.75).text(cfg.xTitle);
     /* Y title kept horizontal (no rotation → survives vector export), above the axis. */
     if (cfg.yTitle) api.root.append('text').attr('x', plot.x).attr('y', plot.y - 10).attr('data-canvas-input', 'yTitle')
-      .attr('text-anchor', 'start').attr('font-size', sz).attr('font-weight', 600).attr('fill', ink).attr('opacity', 0.75).text(cfg.yTitle);
+      .attr('text-anchor', 'start').attr('font-size', sz).attr('font-weight', w).attr('fill', col).attr('opacity', 0.75).text(cfg.yTitle);
   }
 
   /* Inset the plot box to leave room for axes/labels. Category-label charts
@@ -1054,14 +1059,15 @@
      labels; every other chart keeps the original fixed margins. */
   function insetForAxes(api, horizontal) {
     var cfg = api.cfg, b = api.box, sz = clamp(cfg.labelSize, 11, 24);
+    var atSz = cfg.axisTitleSize > 0 ? clamp(cfg.axisTitleSize, 6, 80) : clamp(cfg.labelSize, 12, 22);   // reserve for the axis title's own size
     var smart = !!CAT_LABEL_CHARTS[cfg.chartType];
-    var top = cfg.yTitle ? sz + 14 : 6, right = 12, left, bottom;
+    var top = cfg.yTitle ? atSz + 14 : 6, right = 12, left, bottom;
     if (horizontal) {
       left = cfg.showAxes ? (smart ? categoryMarginPx(api, true) : Math.min(b.w * 0.28, 200)) : 8;
-      bottom = (cfg.showAxes ? sz * 2 + 8 : 8) + (cfg.xTitle ? sz + 12 : 0);
+      bottom = (cfg.showAxes ? sz * 2 + 8 : 8) + (cfg.xTitle ? atSz + 12 : 0);
     } else {
       left = cfg.showAxes ? sz * 3.2 : 8;
-      bottom = (cfg.showAxes ? (smart ? categoryMarginPx(api, false) : sz * 2 + 8) : 8) + (cfg.xTitle ? sz + 12 : 0);
+      bottom = (cfg.showAxes ? (smart ? categoryMarginPx(api, false) : sz * 2 + 8) : 8) + (cfg.xTitle ? atSz + 12 : 0);
       if (smart && cfg.showAxes && resolveLayout(api, false) === 'angled') right = 44;
     }
     return { x: b.x + left, y: b.y + top, w: Math.max(20, b.w - left - right), h: Math.max(20, b.h - top - bottom) };
@@ -1387,11 +1393,13 @@
     if (api.errors) drawErrorBars(api, xs.map(function (xv) { return isFinite(xv) ? x(xv) : NaN; }), ys, api.errors, y, false, api.ink);
     drawTrend(api, plot, x, y, xs, ys, api.ink, true);
     drawReferences(api, plot, y, 'y');
-    api.root.append('text').attr('x', plot.x + plot.w/2).attr('y', plot.y + plot.h + clamp(cfg.labelSize,12,22)*2 + 14).attr('data-canvas-input', 'xTitle')
-      .attr('text-anchor','middle').attr('font-size', clamp(cfg.labelSize,12,22)).attr('font-weight',600).attr('fill',api.ink).attr('opacity',0.75)
+    var atSz = cfg.axisTitleSize > 0 ? clamp(cfg.axisTitleSize, 6, 80) : clamp(cfg.labelSize, 12, 22);
+    var atW = cfg.axisTitleWeight || 600, atC = isHex(cfg.axisTitleColor) ? cfg.axisTitleColor : api.ink;
+    api.root.append('text').attr('x', plot.x + plot.w/2).attr('y', plot.y + plot.h + atSz*2 + 14).attr('data-canvas-input', 'xTitle')
+      .attr('text-anchor','middle').attr('font-size', atSz).attr('font-weight',atW).attr('fill',atC).attr('opacity',0.75)
       .text(cfg.xTitle || cols[0].name);
     api.root.append('text').attr('x', plot.x).attr('y', plot.y - 10).attr('data-canvas-input', 'yTitle')
-      .attr('text-anchor','start').attr('font-size', clamp(cfg.labelSize,12,22)).attr('font-weight',600).attr('fill',api.ink).attr('opacity',0.75)
+      .attr('text-anchor','start').attr('font-size', atSz).attr('font-weight',atW).attr('fill',atC).attr('opacity',0.75)
       .text(cfg.yTitle || cols[1].name);
   }
   function extentPad(d3, arr, zero) {
