@@ -1014,6 +1014,7 @@
     if (mode === 'grouped') {
       var maxV = d3.max(series, function (s) { return d3.max(s.values, function (v) { return +v || 0; }); }) || 1;
       var minV = Math.min(0, d3.min(series, function (s) { return d3.min(s.values, function (v) { return +v || 0; }); }) || 0);
+      if (cfg.animExtent) { maxV = cfg.animExtent[1]; minV = cfg.animExtent[0]; }   // fixed axis while animating
       var dom = [cfg.yZero ? Math.min(0, minV) : minV, cfg.yMax > 0 ? cfg.yMax : maxV];
       layoutGroupedBars(api, plot, horizontal, cats, series, dom, colorFor, rx, stroke);
     } else {
@@ -1024,6 +1025,7 @@
       var stacked = d3.stack().keys(keys).offset(offset)(rows);
       var maxT = d3.max(stacked, function (layer) { return d3.max(layer, function (d) { return d[1]; }); }) || 1;
       var minB = d3.min(stacked, function (layer) { return d3.min(layer, function (d) { return d[0]; }); }) || 0;
+      if (cfg.animExtent && !pct100) { maxT = cfg.animExtent[1]; minB = cfg.animExtent[0]; }   // fixed axis while animating
       var dom = [pct100 ? 0 : Math.min(0, minB), pct100 ? 1 : (cfg.yMax > 0 ? cfg.yMax : maxT)];
       layoutStackedBars(api, plot, horizontal, cats, stacked, dom, scf, rx, stroke, pct100);
     }
@@ -1173,11 +1175,13 @@
       layers = d3.stack().keys(series.map(function (s){return s.name;})).offset(pct ? d3.stackOffsetExpand : d3.stackOffsetDiverging)(rows);
       var maxT = d3.max(layers, function (l){ return d3.max(l, function (d){ return d[1]; }); }) || 1;
       var minB = d3.min(layers, function (l){ return d3.min(l, function (d){ return d[0]; }); }) || 0;
+      if (cfg.animExtent && !pct) { maxT = cfg.animExtent[1]; minB = cfg.animExtent[0]; }   // fixed axis while animating
       dom = [pct ? 0 : Math.min(0, minB), pct ? 1 : (cfg.yMax > 0 ? cfg.yMax : maxT)];
     } else {
       var maxV = d3.max(series, function (s){ return d3.max(s.values, function (v){ return isFinite(v) ? +v : -Infinity; }); }) || 1;
       var minV = d3.min(series, function (s){ return d3.min(s.values, function (v){ return isFinite(v) ? +v : Infinity; }); });
       minV = isFinite(minV) ? minV : 0;
+      if (cfg.animExtent) { maxV = cfg.animExtent[1]; minV = cfg.animExtent[0]; }   // fixed axis while animating
       dom = [cfg.yZero ? Math.min(0, minV) : minV, cfg.yMax > 0 ? cfg.yMax : maxV];
     }
     var y = makeYScale(stacked ? 'linear' : cfg.yScaleType, dom, [plot.y + plot.h, plot.y], d3);
