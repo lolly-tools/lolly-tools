@@ -1,12 +1,12 @@
 {
   "id": "d3",
   "name": "D3 Chart Studio",
-  "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.12.0",
+  "description": "Powerful data-driven charts with D3 \u2014 paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour \u2014 on-brand and vector-clean.",
+  "version": "1.12.1",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
-  "a11yLabel": "{{chartType}} chart{{#if heading}} — {{heading}}{{/if}}",
+  "a11yLabel": "{{chartType}} chart{{#if heading}} \u2014 {{heading}}{{/if}}",
   "tags": [
     "chart",
     "d3",
@@ -34,17 +34,83 @@
   ],
   "featured": {
     "order": 4,
-    "blurb": "Paste a table — D3 charts it, on-brand and vector-clean"
+    "blurb": "Paste a table \u2014 D3 charts it, on-brand and vector-clean"
   },
   "examples": [
-    { "label": "Trend line", "values": { "chartType": "line", "heading": "Signups are compounding", "data": "Month,Signups,Churned\nJan,120,30\nFeb,150,32\nMar,210,28\nApr,260,35\nMay,330,31\nJun,410,29", "showPoints": true, "palette": "cool" } },
-    { "label": "Donut of segments", "values": { "chartType": "donut", "data": "Segment,Share\nEnterprise,38\nSMB,27\nPartner,20\nSelf-serve,15", "palette": "warm", "showValues": true, "legendPosition": "right" } },
-    { "label": "Stacked bars", "values": { "chartType": "bar", "stackMode": "stacked", "data": "Quarter,North,South,East\nQ1,42,28,12\nQ2,49,35,18\nQ3,55,41,24\nQ4,61,48,31", "palette": "mono", "cornerRadius": 4 } },
-    { "label": "Radar profile", "values": { "chartType": "radar", "data": "Axis,Design,Engineering\nStrategy,7,5\nCraft,8,9\nSpeed,6,8\nRigour,7,9\nStory,9,6", "fillOpacity": 40, "palette": "diverging" } },
-    { "label": "Waffle share", "values": { "chartType": "waffle", "data": "Status,Count\nDone,68\nIn progress,22\nBlocked,10", "palette": "warm" } },
-    { "label": "Survey word cloud", "values": { "chartType": "wordcloud", "data": "Response,Count\nStrongly agree,42\nAgree,31\nIt depends on the context,26\nNeutral,18\nDisagree,11\nStrongly disagree,7\nPrefer not to say,4", "palette": "suse" } },
-    { "label": "3-D bars", "values": { "chartType": "bar", "barStyle": "iso3d", "data": "Team,Responses\nDesign,42\nEngineering,58\nSales,33\nSupport,27", "palette": "cool", "showValues": true } },
-    { "label": "Wrapped horizontal bars", "values": { "chartType": "bar-horizontal", "data": "Question,Responses\n\"How likely are you to recommend us to a friend or colleague?\",71\n\"The onboarding experience felt smooth and well paced\",54\n\"Support resolved my issue on the first contact\",38\n\"Pricing is clear and easy to understand\",22", "sort": "desc", "palette": "suse" } }
+    {
+      "label": "Trend line",
+      "values": {
+        "chartType": "line",
+        "heading": "Signups are compounding",
+        "data": "Month,Signups,Churned\nJan,120,30\nFeb,150,32\nMar,210,28\nApr,260,35\nMay,330,31\nJun,410,29",
+        "showPoints": true,
+        "palette": "cool"
+      }
+    },
+    {
+      "label": "Donut of segments",
+      "values": {
+        "chartType": "donut",
+        "data": "Segment,Share\nEnterprise,38\nSMB,27\nPartner,20\nSelf-serve,15",
+        "palette": "warm",
+        "showValues": true,
+        "legendPosition": "right"
+      }
+    },
+    {
+      "label": "Stacked bars",
+      "values": {
+        "chartType": "bar",
+        "stackMode": "stacked",
+        "data": "Quarter,North,South,East\nQ1,42,28,12\nQ2,49,35,18\nQ3,55,41,24\nQ4,61,48,31",
+        "palette": "mono",
+        "cornerRadius": 4
+      }
+    },
+    {
+      "label": "Radar profile",
+      "values": {
+        "chartType": "radar",
+        "data": "Axis,Design,Engineering\nStrategy,7,5\nCraft,8,9\nSpeed,6,8\nRigour,7,9\nStory,9,6",
+        "fillOpacity": 40,
+        "palette": "diverging"
+      }
+    },
+    {
+      "label": "Waffle share",
+      "values": {
+        "chartType": "waffle",
+        "data": "Status,Count\nDone,68\nIn progress,22\nBlocked,10",
+        "palette": "warm"
+      }
+    },
+    {
+      "label": "Survey word cloud",
+      "values": {
+        "chartType": "wordcloud",
+        "data": "Response,Count\nStrongly agree,42\nAgree,31\nIt depends on the context,26\nNeutral,18\nDisagree,11\nStrongly disagree,7\nPrefer not to say,4",
+        "palette": "suse"
+      }
+    },
+    {
+      "label": "3-D bars",
+      "values": {
+        "chartType": "bar",
+        "barStyle": "iso3d",
+        "data": "Team,Responses\nDesign,42\nEngineering,58\nSales,33\nSupport,27",
+        "palette": "cool",
+        "showValues": true
+      }
+    },
+    {
+      "label": "Wrapped horizontal bars",
+      "values": {
+        "chartType": "bar-horizontal",
+        "data": "Question,Responses\n\"How likely are you to recommend us to a friend or colleague?\",71\n\"The onboarding experience felt smooth and well paced\",54\n\"Support resolved my issue on the first contact\",38\n\"Pricing is clear and easy to understand\",22",
+        "sort": "desc",
+        "palette": "suse"
+      }
+    }
   ],
   "render": {
     "width": 1280,
@@ -92,11 +158,11 @@
       "options": [
         {
           "value": "bar",
-          "label": "Bar — vertical"
+          "label": "Bar \u2014 vertical"
         },
         {
           "value": "bar-horizontal",
-          "label": "Bar — horizontal"
+          "label": "Bar \u2014 horizontal"
         },
         {
           "value": "line",
@@ -228,7 +294,7 @@
       "dataSource": {},
       "rows": 9,
       "placeholder": "Quarter,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
-      "help": "Copy cells straight from Excel, Google Sheets or Numbers and paste here — they come across as a clean table (no fiddling with commas). Or type/paste CSV or TSV. First row = column headers; the first text column becomes the labels and every numeric column a series. The chart rebuilds automatically.",
+      "help": "Copy cells straight from Excel, Google Sheets or Numbers and paste here \u2014 they come across as a clean table (no fiddling with commas). Or type/paste CSV or TSV. First row = column headers; the first text column becomes the labels and every numeric column a series. The chart rebuilds automatically.",
       "default": "Quarter,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18\nQ3,55,41,24\nQ4,63,52,33"
     },
     {
@@ -286,7 +352,7 @@
       "type": "text",
       "default": "",
       "placeholder": "auto (first column)",
-      "help": "Which column holds the category / x-axis labels — a column name or its number (1 = first). Blank = the first column."
+      "help": "Which column holds the category / x-axis labels \u2014 a column name or its number (1 = first). Blank = the first column."
     },
     {
       "id": "seriesColumns",
@@ -316,8 +382,15 @@
       "type": "text",
       "default": "",
       "placeholder": "e.g. Quarter, Year, Wave",
-      "help": "Name (or 1-based number) of a frame / time column — its distinct values (e.g. Q1, Q2, Q3) become animation keyframes. The chart morphs between them and loops. Export as looping APNG, MP4/WebM, or animated SVG. Works with bar, horizontal bar, line and area.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+      "help": "Name (or 1-based number) of a frame / time column \u2014 its distinct values (e.g. Q1, Q2, Q3) become animation keyframes. The chart morphs between them and loops. Export as looping APNG, MP4/WebM, or animated SVG. Works with bar, horizontal bar, line and area.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area"
+        ]
+      }
     },
     {
       "id": "animSpeed",
@@ -329,8 +402,15 @@
       "min": 0.3,
       "max": 8,
       "step": 0.1,
-      "help": "How long each keyframe holds before morphing to the next. One full loop = frames × this. Set the export duration to a multiple for a seamless loop.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+      "help": "How long each keyframe holds before morphing to the next. One full loop = frames \u00d7 this. Set the export duration to a multiple for a seamless loop.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area"
+        ]
+      }
     },
     {
       "id": "frameLabelShow",
@@ -340,7 +420,14 @@
       "type": "boolean",
       "default": true,
       "help": "Show the current keyframe's name (e.g. the quarter) as a caption while the animation plays.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area"
+        ]
+      }
     },
     {
       "id": "animEase",
@@ -350,12 +437,28 @@
       "type": "select",
       "default": "smooth",
       "options": [
-        { "value": "smooth", "label": "Smooth (hold + ease)" },
-        { "value": "linear", "label": "Linear (constant)" },
-        { "value": "steps", "label": "Steps (snap between frames)" }
+        {
+          "value": "smooth",
+          "label": "Smooth (hold + ease)"
+        },
+        {
+          "value": "linear",
+          "label": "Linear (constant)"
+        },
+        {
+          "value": "steps",
+          "label": "Steps (snap between frames)"
+        }
       ],
       "help": "How values move between keyframes: Smooth holds each frame then eases across; Linear morphs at a constant rate; Steps snaps instantly (no in-between).",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area"
+        ]
+      }
     },
     {
       "id": "animDirection",
@@ -365,11 +468,24 @@
       "type": "select",
       "default": "loop",
       "options": [
-        { "value": "loop", "label": "Loop (jump back to start)" },
-        { "value": "bounce", "label": "Bounce (play back in reverse)" }
+        {
+          "value": "loop",
+          "label": "Loop (jump back to start)"
+        },
+        {
+          "value": "bounce",
+          "label": "Bounce (play back in reverse)"
+        }
       ],
       "help": "Loop restarts from the first frame each cycle; Bounce plays forward then back for a seamless ping-pong.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area"
+        ]
+      }
     },
     {
       "id": "stackMode",
@@ -422,7 +538,7 @@
         },
         {
           "value": "catmullRom",
-          "label": "Smooth (Catmull–Rom)"
+          "label": "Smooth (Catmull\u2013Rom)"
         },
         {
           "value": "cardinal",
@@ -707,7 +823,7 @@
         },
         {
           "value": "alpha",
-          "label": "A → Z by label"
+          "label": "A \u2192 Z by label"
         }
       ],
       "showIf": {
@@ -733,13 +849,32 @@
       "type": "select",
       "default": "auto",
       "options": [
-        { "value": "auto", "label": "Auto-fit" },
-        { "value": "horizontal", "label": "Horizontal" },
-        { "value": "angled", "label": "Angled (45°)" },
-        { "value": "wrap", "label": "Wrap to lines" }
+        {
+          "value": "auto",
+          "label": "Auto-fit"
+        },
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "angled",
+          "label": "Angled (45\u00b0)"
+        },
+        {
+          "value": "wrap",
+          "label": "Wrap to lines"
+        }
       ],
-      "help": "How long category labels are fitted. Auto wraps them into the label column on horizontal bars, and angles or wraps them on vertical bars when they'd collide — instead of truncating them.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "lollipop", "dumbbell"] }
+      "help": "How long category labels are fitted. Auto wraps them into the label column on horizontal bars, and angles or wraps them on vertical bars when they'd collide \u2014 instead of truncating them.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "lollipop",
+          "dumbbell"
+        ]
+      }
     },
     {
       "id": "labelReserve",
@@ -752,8 +887,15 @@
       "min": 0,
       "max": 60,
       "step": 1,
-      "help": "How much of the picture to hand to the category labels — the width of the label column on horizontal bars, or the height of the label strip on vertical bars. 0 fits automatically; raise it to give long labels more room (the bars take the rest).",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "lollipop", "dumbbell"] }
+      "help": "How much of the picture to hand to the category labels \u2014 the width of the label column on horizontal bars, or the height of the label strip on vertical bars. 0 fits automatically; raise it to give long labels more room (the bars take the rest).",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "lollipop",
+          "dumbbell"
+        ]
+      }
     },
     {
       "id": "labelLines",
@@ -767,7 +909,14 @@
       "max": 4,
       "step": 1,
       "help": "How many lines a wrapped category label may use before it's trimmed with an ellipsis.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "lollipop", "dumbbell"] }
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "lollipop",
+          "dumbbell"
+        ]
+      }
     },
     {
       "id": "barThickness",
@@ -781,7 +930,12 @@
       "max": 400,
       "step": 1,
       "help": "Cap the thickness of each bar. 0 lets bars fill their slot; a value makes them thinner and centres them, freeing space for labels.",
-      "showIf": { "chartType": ["bar", "bar-horizontal"] }
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal"
+        ]
+      }
     },
     {
       "id": "yScaleType",
@@ -982,7 +1136,7 @@
         },
         {
           "value": "currency",
-          "label": "Currency (€)"
+          "label": "Currency (\u20ac)"
         }
       ]
     },
@@ -1044,12 +1198,26 @@
       "type": "select",
       "default": "auto",
       "options": [
-        { "value": "auto", "label": "Auto-detect dates" },
-        { "value": "on", "label": "On (parse dates)" },
-        { "value": "off", "label": "Off (categories)" }
+        {
+          "value": "auto",
+          "label": "Auto-detect dates"
+        },
+        {
+          "value": "on",
+          "label": "On (parse dates)"
+        },
+        {
+          "value": "off",
+          "label": "Off (categories)"
+        }
       ],
-      "help": "When the label column holds dates (2024-01-15, Jan 2024, Q1 2024, a plain year…), plot them on a real time axis — proportional spacing that respects the actual gaps, with nice date ticks. Auto detects; off keeps evenly-spaced categories.",
-      "showIf": { "chartType": ["line", "area"] }
+      "help": "When the label column holds dates (2024-01-15, Jan 2024, Q1 2024, a plain year\u2026), plot them on a real time axis \u2014 proportional spacing that respects the actual gaps, with nice date ticks. Auto detects; off keeps evenly-spaced categories.",
+      "showIf": {
+        "chartType": [
+          "line",
+          "area"
+        ]
+      }
     },
     {
       "id": "reference",
@@ -1060,7 +1228,7 @@
       "rows": 3,
       "default": "",
       "placeholder": "avg\n100 Goal #30ba78\n80..120 Target",
-      "help": "Draw guide lines and shaded bands across the value axis — one per line. A number (e.g. 100) or a statistic (avg, median, min, max) draws a line; a range (80..120) draws a band. Add an optional label and a #colour: '100 Goal #30ba78'. Great for targets, thresholds and averages.",
+      "help": "Draw guide lines and shaded bands across the value axis \u2014 one per line. A number (e.g. 100) or a statistic (avg, median, min, max) draws a line; a range (80..120) draws a band. Add an optional label and a #colour: '100 Goal #30ba78'. Great for targets, thresholds and averages.",
       "showIf": {
         "chartType": [
           "bar",
@@ -1082,16 +1250,43 @@
       "type": "select",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "linear", "label": "Linear (least squares)" },
-        { "value": "poly2", "label": "Quadratic curve" },
-        { "value": "exp", "label": "Exponential" },
-        { "value": "log", "label": "Logarithmic" },
-        { "value": "power", "label": "Power" },
-        { "value": "movavg", "label": "Moving average" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "linear",
+          "label": "Linear (least squares)"
+        },
+        {
+          "value": "poly2",
+          "label": "Quadratic curve"
+        },
+        {
+          "value": "exp",
+          "label": "Exponential"
+        },
+        {
+          "value": "log",
+          "label": "Logarithmic"
+        },
+        {
+          "value": "power",
+          "label": "Power"
+        },
+        {
+          "value": "movavg",
+          "label": "Moving average"
+        }
       ],
-      "help": "Overlay a fitted trend line. Linear/quadratic/exponential/log/power are least-squares regressions (R² shown at the line's end); moving average smooths the series. Drawn dashed over each series (line/area) or the point cloud (scatter).",
-      "showIf": { "chartType": ["line", "area", "scatter"] }
+      "help": "Overlay a fitted trend line. Linear/quadratic/exponential/log/power are least-squares regressions (R\u00b2 shown at the line's end); moving average smooths the series. Drawn dashed over each series (line/area) or the point cloud (scatter).",
+      "showIf": {
+        "chartType": [
+          "line",
+          "area",
+          "scatter"
+        ]
+      }
     },
     {
       "id": "errorColumn",
@@ -1101,8 +1296,16 @@
       "type": "text",
       "default": "",
       "placeholder": "e.g. Error, StdDev, or 4",
-      "help": "Name (or 1-based number) of a column holding the ± error for each value — draws whiskers with end caps around every point/bar. The column is used for the error, not plotted as its own series. Leave blank for none.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area", "scatter"] }
+      "help": "Name (or 1-based number) of a column holding the \u00b1 error for each value \u2014 draws whiskers with end caps around every point/bar. The column is used for the error, not plotted as its own series. Leave blank for none.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter"
+        ]
+      }
     },
     {
       "id": "palette",
@@ -1114,15 +1317,15 @@
       "options": [
         {
           "value": "suse",
-          "label": "Brand — categorical"
+          "label": "Brand \u2014 categorical"
         },
         {
           "value": "pine",
-          "label": "Brand — sequential"
+          "label": "Brand \u2014 sequential"
         },
         {
           "value": "waterhole",
-          "label": "Brand — sequential (2nd hue)"
+          "label": "Brand \u2014 sequential (2nd hue)"
         },
         {
           "value": "warm",
@@ -1174,10 +1377,21 @@
       "type": "select",
       "default": "flat",
       "options": [
-        { "value": "flat", "label": "Flat" },
-        { "value": "iso3d", "label": "3-D (extruded)" }
+        {
+          "value": "flat",
+          "label": "Flat"
+        },
+        {
+          "value": "iso3d",
+          "label": "3-D (extruded)"
+        }
       ],
-      "showIf": { "chartType": ["bar", "bar-horizontal"] }
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal"
+        ]
+      }
     },
     {
       "id": "pieStyle",
@@ -1187,10 +1401,21 @@
       "type": "select",
       "default": "flat",
       "options": [
-        { "value": "flat", "label": "Flat" },
-        { "value": "iso3d", "label": "3-D (tilted)" }
+        {
+          "value": "flat",
+          "label": "Flat"
+        },
+        {
+          "value": "iso3d",
+          "label": "3-D (tilted)"
+        }
       ],
-      "showIf": { "chartType": ["pie", "donut"] }
+      "showIf": {
+        "chartType": [
+          "pie",
+          "donut"
+        ]
+      }
     },
     {
       "id": "depth3d",
@@ -1204,7 +1429,14 @@
       "max": 160,
       "step": 1,
       "help": "How far the 3-D bars or pie are extruded. 0 scales the depth to the chart.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "pie", "donut"] }
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut"
+        ]
+      }
     },
     {
       "id": "shadow",
@@ -1214,14 +1446,38 @@
       "type": "select",
       "default": "none",
       "options": [
-        { "value": "none", "label": "None" },
-        { "value": "soft", "label": "Soft" },
-        { "value": "medium", "label": "Medium" },
-        { "value": "strong", "label": "Strong" },
-        { "value": "glow", "label": "Glow (colour halo)" }
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "soft",
+          "label": "Soft"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "strong",
+          "label": "Strong"
+        },
+        {
+          "value": "glow",
+          "label": "Glow (colour halo)"
+        }
       ],
-      "help": "Lift marks off the background with a soft drop shadow — depth and better contrast between values — or a colour-matched glow for an on-screen dashboard look. SVG and PNG stay crisp; EMF/EPS keep a vector shadow; PDF rasterises the chart while a shadow is on.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "pie", "donut", "line", "area"] }
+      "help": "Lift marks off the background with a soft drop shadow \u2014 depth and better contrast between values \u2014 or a colour-matched glow for an on-screen dashboard look. SVG and PNG stay crisp; EMF/EPS keep a vector shadow; PDF rasterises the chart while a shadow is on.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut",
+          "line",
+          "area"
+        ]
+      }
     },
     {
       "id": "differentiate",
@@ -1231,12 +1487,28 @@
       "type": "select",
       "default": "auto",
       "options": [
-        { "value": "auto", "label": "Auto (patterns for monochrome brands)" },
-        { "value": "colour", "label": "Colour only" },
-        { "value": "both", "label": "Colour + pattern" }
+        {
+          "value": "auto",
+          "label": "Auto (patterns for monochrome brands)"
+        },
+        {
+          "value": "colour",
+          "label": "Colour only"
+        },
+        {
+          "value": "both",
+          "label": "Colour + pattern"
+        }
       ],
-      "help": "Add stripes, hatching and dots on top of colour so series stay distinct even with few brand hues — and in greyscale print or for colour-blind readers. Auto turns patterns on when the brand has a limited palette.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "pie", "donut"] }
+      "help": "Add stripes, hatching and dots on top of colour so series stay distinct even with few brand hues \u2014 and in greyscale print or for colour-blind readers. Auto turns patterns on when the brand has a limited palette.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut"
+        ]
+      }
     },
     {
       "id": "colorOverrides",
@@ -1246,8 +1518,15 @@
       "type": "text",
       "default": "",
       "placeholder": "click a bar or slice to recolour",
-      "help": "Click a bar or slice on the canvas to recolour it from your brand swatches — highlight one or several related values to draw the eye. Advanced: a JSON map of label → colour.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "pie", "donut"] }
+      "help": "Click a bar or slice on the canvas to recolour it from your brand swatches \u2014 highlight one or several related values to draw the eye. Advanced: a JSON map of label \u2192 colour.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut"
+        ]
+      }
     },
     {
       "id": "background",
@@ -1264,7 +1543,7 @@
       "section": "Colour & style",
       "type": "color",
       "default": "",
-      "help": "Leave blank to contrast automatically with the background — so setting a dark background flips the titles, axes, labels, legend and gridlines to a light ink without you colouring each one. Set a colour to override."
+      "help": "Leave blank to contrast automatically with the background \u2014 so setting a dark background flips the titles, axes, labels, legend and gridlines to a light ink without you colouring each one. Set a colour to override."
     },
     {
       "id": "strokeWidth",
@@ -1321,7 +1600,7 @@
       "section": "Custom palette",
       "type": "color",
       "default": "",
-      "help": "Set your categorical palette slot by slot — Colour 1 is the first series (or category), Colour 2 the second, and so on. Leave a slot blank to use the brand palette there. Great for leading with your primary set, then your other brand colours."
+      "help": "Set your categorical palette slot by slot \u2014 Colour 1 is the first series (or category), Colour 2 the second, and so on. Leave a slot blank to use the brand palette there. Great for leading with your primary set, then your other brand colours."
     },
     {
       "id": "palette2",
@@ -1372,8 +1651,15 @@
       "rows": 2,
       "default": "",
       "placeholder": "click a data label to annotate",
-      "help": "Click a data label (or category label) on a bar or line chart to attach a directional arrow + a short note — for statistical significance, an event, a small-sample flag, or any callout. Set a text or fill colour and the other contrasts automatically. Advanced: a JSON map of label → {icon, text, colours}.",
-      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+      "help": "Click a data label (or category label) on a bar or line chart to attach a directional arrow + a short note \u2014 for statistical significance, an event, a small-sample flag, or any callout. Set a text or fill colour and the other contrasts automatically. Advanced: a JSON map of label \u2192 {icon, text, colours}.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area"
+        ]
+      }
     },
     {
       "id": "heading",
@@ -1416,7 +1702,7 @@
       "min": 100,
       "max": 900,
       "step": 100,
-      "help": "Font weight of the chart title (100 Thin → 900 Black)."
+      "help": "Font weight of the chart title (100 Thin \u2192 900 Black)."
     },
     {
       "id": "titlePosition",
@@ -1426,8 +1712,14 @@
       "type": "select",
       "default": "top",
       "options": [
-        { "value": "top", "label": "Top" },
-        { "value": "bottom", "label": "Bottom" }
+        {
+          "value": "top",
+          "label": "Top"
+        },
+        {
+          "value": "bottom",
+          "label": "Bottom"
+        }
       ]
     },
     {
@@ -1438,9 +1730,18 @@
       "type": "select",
       "default": "left",
       "options": [
-        { "value": "left", "label": "Left" },
-        { "value": "center", "label": "Centre" },
-        { "value": "right", "label": "Right" }
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Centre"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
       ]
     },
     {
@@ -1474,7 +1775,7 @@
       "min": 100,
       "max": 900,
       "step": 100,
-      "help": "Font weight of the axis category labels and legend (100 Thin → 900 Black)."
+      "help": "Font weight of the axis category labels and legend (100 Thin \u2192 900 Black)."
     },
     {
       "id": "showLegend",
@@ -1492,18 +1793,54 @@
       "type": "select",
       "default": "bc",
       "options": [
-        { "value": "tl", "label": "Top · left" },
-        { "value": "tc", "label": "Top · centre" },
-        { "value": "tr", "label": "Top · right" },
-        { "value": "bl", "label": "Bottom · left" },
-        { "value": "bc", "label": "Bottom · centre" },
-        { "value": "br", "label": "Bottom · right" },
-        { "value": "lt", "label": "Left · top" },
-        { "value": "lc", "label": "Left · centre" },
-        { "value": "lb", "label": "Left · bottom" },
-        { "value": "rt", "label": "Right · top" },
-        { "value": "rc", "label": "Right · centre" },
-        { "value": "rb", "label": "Right · bottom" }
+        {
+          "value": "tl",
+          "label": "Top \u00b7 left"
+        },
+        {
+          "value": "tc",
+          "label": "Top \u00b7 centre"
+        },
+        {
+          "value": "tr",
+          "label": "Top \u00b7 right"
+        },
+        {
+          "value": "bl",
+          "label": "Bottom \u00b7 left"
+        },
+        {
+          "value": "bc",
+          "label": "Bottom \u00b7 centre"
+        },
+        {
+          "value": "br",
+          "label": "Bottom \u00b7 right"
+        },
+        {
+          "value": "lt",
+          "label": "Left \u00b7 top"
+        },
+        {
+          "value": "lc",
+          "label": "Left \u00b7 centre"
+        },
+        {
+          "value": "lb",
+          "label": "Left \u00b7 bottom"
+        },
+        {
+          "value": "rt",
+          "label": "Right \u00b7 top"
+        },
+        {
+          "value": "rc",
+          "label": "Right \u00b7 centre"
+        },
+        {
+          "value": "rb",
+          "label": "Right \u00b7 bottom"
+        }
       ],
       "showIf": {
         "showLegend": true
@@ -1520,7 +1857,9 @@
       "min": 0,
       "max": 48,
       "step": 1,
-      "showIf": { "showLegend": true }
+      "showIf": {
+        "showLegend": true
+      }
     },
     {
       "id": "legendSwatchSize",
@@ -1533,7 +1872,9 @@
       "min": 0,
       "max": 48,
       "step": 1,
-      "showIf": { "showLegend": true }
+      "showIf": {
+        "showLegend": true
+      }
     },
     {
       "id": "legendGap",
@@ -1546,8 +1887,10 @@
       "min": 0,
       "max": 80,
       "step": 1,
-      "help": "Space between legend items — horizontal spacing on top/bottom legends, row spacing on left/right legends.",
-      "showIf": { "showLegend": true }
+      "help": "Space between legend items \u2014 horizontal spacing on top/bottom legends, row spacing on left/right legends.",
+      "showIf": {
+        "showLegend": true
+      }
     },
     {
       "id": "legendRadius",
@@ -1560,8 +1903,10 @@
       "min": 0,
       "max": 24,
       "step": 1,
-      "help": "Corner radius of the legend indicator — 0 is a square, high values make a circular dot.",
-      "showIf": { "showLegend": true }
+      "help": "Corner radius of the legend indicator \u2014 0 is a square, high values make a circular dot.",
+      "showIf": {
+        "showLegend": true
+      }
     },
     {
       "id": "legendMono",
@@ -1570,7 +1915,9 @@
       "section": "Legend",
       "type": "boolean",
       "default": false,
-      "showIf": { "showLegend": true }
+      "showIf": {
+        "showLegend": true
+      }
     },
     {
       "id": "legendBold",
@@ -1579,7 +1926,9 @@
       "section": "Legend",
       "type": "boolean",
       "default": false,
-      "showIf": { "showLegend": true }
+      "showIf": {
+        "showLegend": true
+      }
     },
     {
       "id": "legendItalic",
@@ -1588,7 +1937,9 @@
       "section": "Legend",
       "type": "boolean",
       "default": false,
-      "showIf": { "showLegend": true }
+      "showIf": {
+        "showLegend": true
+      }
     },
     {
       "id": "width",

@@ -19,6 +19,13 @@
   <rect id="d3-bg" width="{{width}}" height="{{height}}" fill="{{_bgFill}}" pointer-events="all"/>
   <g id="d3-plot" data-canvas-input="data"></g>
 </svg>
+<!-- Export frame-clock carrier. The animated chart is rAF-driven SVG (no <canvas>), but
+     the video/apng/webp-anim pipeline seeks motion through a deterministic clock it finds
+     on a descendant <canvas> OR the export node itself (see createFrameSource →
+     frameClockCanvas). This hidden 1×1 canvas carries __lollyFrameRender so the export can
+     drive each exact phase; startAnim also puts the hook on #d3-svg for whichever element
+     the export captures. display:none → found by querySelectorAll, never rasterised. -->
+<canvas id="d3-clock" width="1" height="1" style="display:none" aria-hidden="true"></canvas>
 <script type="application/json" id="d3-state">{{{_state}}}</script>
 <script>
 (function () {
@@ -139,7 +146,11 @@
   function startAnim(baseState, d3) {
     if (window.__d3Raf) { cancelAnimationFrame(window.__d3Raf); window.__d3Raf = 0; }
     var data = baseState.data, cfg = baseState.cfg, frames = data.frames, labels = data.frameLabels || [];
-    if (!frames || frames.length < 2) { if (window.__lollyAnim) window.__lollyAnim.active = false; return; }
+    if (!frames || frames.length < 2) {
+      if (window.__lollyAnim) window.__lollyAnim.active = false;   // hide the transport
+      ['d3-clock', 'd3-svg'].forEach(function (id) { var el = document.getElementById(id); if (el) delete el.__lollyFrameRender; });  // a static chart must not be export-driven
+      return;
+    }
     var nF = frames.length, stepMs = clamp(cfg.animSpeed || 1.5, 0.3, 8) * 1000, holdFrac = 0.35, loopMs = nF * stepMs;
     var bounce = cfg.animDirection === 'bounce', easeMode = cfg.animEase || 'smooth';
     var guardBg = cfg.transparent ? '#ffffff' : (isHex(cfg.background) ? cfg.background : '#ffffff');
@@ -176,6 +187,14 @@
         d3.select('#d3-plot').append('text').attr('x', cfg.width - 18).attr('y', 46).attr('text-anchor', 'end')
           .attr('font-size', 36).attr('font-weight', 700).attr('fill', ink).attr('opacity', 0.92).text(labels[f.tw < 0.5 ? f.i : f.j]);
     }
+    /* Deterministic EXPORT clock: the video/apng/webp-anim pipeline freezes this tool's
+       rAF (sets __lollyFrameDriven) and calls __lollyFrameRender(t) to paint each exact
+       phase, so the exported motion FOLLOWS the animation instead of one held frame. The
+       hook rides both the hidden #d3-clock <canvas> (found via querySelectorAll) and
+       #d3-svg (the node itself), covering whichever element the export captures. */
+    var clockEls = [document.getElementById('d3-clock'), document.getElementById('d3-svg')].filter(Boolean);
+    clockEls.forEach(function (el) { el.__lollyFrameRender = function (t) { draw(clamp(+t || 0, 0, 0.999999)); }; });
+    var frameDriven = function () { for (var i = 0; i < clockEls.length; i++) if (clockEls[i].__lollyFrameDriven) return true; return false; };
     /* Publish/refresh the transport contract, carrying playing state + position over
        a re-paint so a pause or scrub survives an input tweak. */
     var prev = window.__lollyAnim || {};
@@ -184,6 +203,7 @@
     var clock = (prev.curT || 0) * loopMs, prevTs = null, lastDraw = -1e9, lastT = -1;
     function tick(ts) {
       if (!alive()) return;                                   // a newer paint owns the canvas now
+      if (frameDriven()) { window.__d3Raf = requestAnimationFrame(tick); return; }   // export owns the frame — don't clobber it
       if (prevTs == null) prevTs = ts;
       var dt = ts - prevTs; prevTs = ts;
       var t;
