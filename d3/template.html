@@ -131,6 +131,8 @@
     /* Brand-native ramps when the hook derived them (variations + combinations of
        the brand's own hues); the shipped hand-tuned set is the fallback. */
     var RAMPS = (cfg.brandRamps && cfg.brandRamps.suse) ? cfg.brandRamps : SHIPPED_RAMPS;
+    /* Reference lines & bands across the value axis (targets/averages/thresholds). */
+    var references = parseReferences(cfg.reference);
     /* Click-to-recolour overrides (label → hex) + pattern differentiation. */
     var overrides = parseOverrides(cfg.colorOverrides);
     var patternsOn = cfg.differentiate === 'both' || (cfg.differentiate === 'auto' && cfg.brandMono);
@@ -246,12 +248,18 @@
     var titleH = 0;
     if (cfg.heading && cfg.subheading) titleH = 78;
     else if (cfg.heading || cfg.subheading) titleH = 48;
+    /* Title position (top/bottom) + alignment (left/centre/right). */
+    var titleTop = cfg.titlePosition !== 'bottom';
+    var titleAlign = cfg.titleAlign || 'left';
+    var titleX = titleAlign === 'center' ? W / 2 : titleAlign === 'right' ? W - PAD : PAD;
+    var titleAnchor = titleAlign === 'center' ? 'middle' : titleAlign === 'right' ? 'end' : 'start';
+    var bandTop = titleTop ? PAD : H - PAD - titleH;
     if (cfg.heading) {
-      root.append('text').attr('x', PAD).attr('y', PAD + 34).attr('data-canvas-input', 'heading')
+      root.append('text').attr('x', titleX).attr('y', bandTop + 34).attr('text-anchor', titleAnchor).attr('data-canvas-input', 'heading')
         .attr('font-size', cfg.titleSize || 34).attr('font-weight', cfg.titleWeight).attr('fill', ink).text(cfg.heading);
     }
     if (cfg.subheading) {
-      root.append('text').attr('x', PAD).attr('y', PAD + (cfg.heading ? 66 : 30)).attr('data-canvas-input', 'subheading')
+      root.append('text').attr('x', titleX).attr('y', bandTop + (cfg.heading ? 66 : 30)).attr('text-anchor', titleAnchor).attr('data-canvas-input', 'subheading')
         .attr('font-size', 20).attr('font-weight', 400).attr('fill', ink).attr('opacity', 0.62).text(cfg.subheading);
     }
 
@@ -272,7 +280,7 @@
     }
 
     /* ── plot rect after title + legend ──────────────────────────────────────── */
-    var box = { x: PAD, y: PAD + titleH, w: W - 2*PAD, h: H - 2*PAD - titleH };
+    var box = { x: PAD, y: titleTop ? PAD + titleH : PAD, w: W - 2*PAD, h: H - 2*PAD - titleH };
     var legPos = cfg.legendPosition;               // 2-char side+alignment code
     var legSide = legPos.charAt(0);                 // t / b / l / r
     var legendReserve = 0;
@@ -293,7 +301,7 @@
                 box: box, ink: ink, guardBg: guardBg, fmt: fmt, catColorFn: catColorFn, seqColorFn: seqColorFn,
                 barByCat: barByCat, override: overrideColor, textureFor: textureFor,
                 overlayRect: overlayRect, overlayPath: overlayPath, patternsOn: patternsOn, swatches: cfg.brandSwatches,
-                recolorEnabled: recolorEnabled, tagMark: tagMark, markShadow: markShadow,
+                recolorEnabled: recolorEnabled, tagMark: tagMark, markShadow: markShadow, references: references,
                 annotEnabled: annotEnabled, annotations: annotations, tagAnnot: tagAnnot, labelAnnot: labelAnnot };
 
     /* ── dispatch ────────────────────────────────────────────────────────────── */
@@ -593,6 +601,7 @@
     var cfg = api.cfg, ink = api.ink, W = cfg.width, H = cfg.height;
     var side = pos.charAt(0), align = pos.charAt(1);
     var m = legendMetrics(cfg), sz = m.sz, dot = m.dot, gap = m.gap, rowH = sz + 12;
+    var rx = clamp(cfg.legendRadius, 0, dot / 2);
     var g = api.root.append('g').attr('class', 'legend').attr('data-canvas-input', 'legendPosition');
     function styleText(t) {
       t.attr('font-size', sz).attr('font-weight', cfg.legendBold ? 700 : cfg.labelWeight).attr('fill', ink).attr('opacity', 0.9);
@@ -604,13 +613,14 @@
 
     if (side === 'l' || side === 'r') {
       var lx = (side === 'l') ? PAD : W - reserve + 8;
-      var totalH = items.length * (sz + 12);
+      var pitch = Math.max(dot, sz) + gap;         // gap now applies to the row spacing
+      var totalH = items.length * pitch;
       var top = (align === 't') ? PAD + titleH : (align === 'b') ? H - PAD - totalH : api.box.y + api.box.h/2 - totalH/2;
       top = clamp(top, PAD + titleH, Math.max(PAD + titleH, H - PAD - totalH));
       items.forEach(function (it, i) {
-        var y = top + i * (sz + 12);
-        g.append('rect').attr('x', lx).attr('y', y).attr('width', dot).attr('height', dot).attr('rx', 3).attr('fill', it.color);
-        api.overlayRect(g, lx, y, dot, dot, 3, it.tex, it.color);
+        var y = top + i * pitch;
+        g.append('rect').attr('x', lx).attr('y', y).attr('width', dot).attr('height', dot).attr('rx', rx).attr('fill', it.color);
+        api.overlayRect(g, lx, y, dot, dot, rx, it.tex, it.color);
         styleText(g.append('text').attr('x', lx + dot + 8).attr('y', y + dot*0.82).text(trunc(it.label, 30)));
       });
       return;
@@ -628,8 +638,8 @@
       var startX = (align === 'l') ? PAD : (align === 'r') ? PAD + maxW - rw : PAD + (maxW - rw) / 2;
       var cx = startX, y = y0 + r * rowH;
       row.forEach(function (it) {
-        g.append('rect').attr('x', cx).attr('y', y - dot*0.85).attr('width', dot).attr('height', dot).attr('rx', 3).attr('fill', it.color);
-        api.overlayRect(g, cx, y - dot*0.85, dot, dot, 3, it.tex, it.color);
+        g.append('rect').attr('x', cx).attr('y', y - dot*0.85).attr('width', dot).attr('height', dot).attr('rx', rx).attr('fill', it.color);
+        api.overlayRect(g, cx, y - dot*0.85, dot, dot, rx, it.tex, it.color);
         styleText(g.append('text').attr('x', cx + dot + 8).attr('y', y).text(trunc(it.label, 40)));
         cx += itemW(it);
       });
@@ -664,6 +674,60 @@
           .attr('stroke', ink).attr('stroke-width', 1).attr('opacity', t === 0 ? 0.28 : 0.1);
         if (cfg.showAxes) g.append('text').attr('x', x).attr('y', plot.y + plot.h + clamp(cfg.labelSize,11,22) + 6).attr('text-anchor', 'middle')
           .attr('font-size', clamp(cfg.labelSize, 11, 22)).attr('fill', ink).attr('opacity', 0.6).text(api.fmt(t));
+      }
+    });
+  }
+
+  /* ── reference lines & bands ──────────────────────────────────────────────── */
+  /* One per input line: a number or a stat (avg/median/min/max) → a dashed guide
+     line; a range 'lo..hi' → a shaded band; optional label + trailing #colour. */
+  function parseReferences(s) {
+    var out = [];
+    String(s == null ? '' : s).split(/\r?\n/).forEach(function (line) {
+      line = line.trim(); if (!line) return;
+      var color = null, m = line.match(/(#[0-9a-fA-F]{3,8})\s*$/);
+      if (m) { color = m[1]; line = line.slice(0, m.index).trim(); }
+      var sp = line.indexOf(' '), head = sp < 0 ? line : line.slice(0, sp), label = sp < 0 ? '' : line.slice(sp + 1).trim();
+      var band = head.match(/^(-?\d*\.?\d+)\.\.(-?\d*\.?\d+)$/);
+      if (band) { out.push({ kind: 'band', v1: parseFloat(band[1]), v2: parseFloat(band[2]), label: label, color: color }); return; }
+      if (/^(avg|mean|median|min|max)$/i.test(head)) { out.push({ kind: 'stat', stat: /mean/i.test(head) ? 'avg' : head.toLowerCase(), label: label || head, color: color }); return; }
+      if (/^-?\d*\.?\d+$/.test(head)) out.push({ kind: 'line', v: parseFloat(head), label: label, color: color });
+    });
+    return out;
+  }
+  function drawReferences(api, plot, scale, dir) {
+    var refs = api.references; if (!refs || !refs.length || !scale) return;
+    var cfg = api.cfg, ink = api.ink, sz = clamp(cfg.labelSize, 11, 20);
+    var vals = []; (api.series || []).forEach(function (s) { (s.values || []).forEach(function (v) { if (isFinite(v)) vals.push(+v); }); });
+    function stat(name) {
+      if (!vals.length) return NaN;
+      if (name === 'min') return Math.min.apply(null, vals);
+      if (name === 'max') return Math.max.apply(null, vals);
+      if (name === 'median') { var a = vals.slice().sort(function (x, y) { return x - y; }), n = a.length; return n % 2 ? a[(n - 1) / 2] : (a[n / 2 - 1] + a[n / 2]) / 2; }
+      return vals.reduce(function (mm, v) { return mm + v; }, 0) / vals.length;   // avg
+    }
+    var g = api.root.append('g').attr('class', 'refs');
+    refs.forEach(function (r) {
+      var col = isHex(r.color) ? r.color : ink;
+      if (r.kind === 'band') {
+        var p1 = scale(r.v1), p2 = scale(r.v2); if (!isFinite(p1) || !isFinite(p2)) return;
+        var lo = Math.min(p1, p2), hi = Math.max(p1, p2);
+        if (dir === 'y') g.append('rect').attr('x', plot.x).attr('y', lo).attr('width', plot.w).attr('height', hi - lo).attr('fill', col).attr('opacity', 0.1);
+        else g.append('rect').attr('x', lo).attr('y', plot.y).attr('width', hi - lo).attr('height', plot.h).attr('fill', col).attr('opacity', 0.1);
+        if (r.label) {
+          if (dir === 'y') g.append('text').attr('x', plot.x + plot.w - 4).attr('y', (lo + hi) / 2 + sz * 0.34).attr('text-anchor', 'end').attr('font-size', sz).attr('font-weight', 600).attr('fill', col).attr('opacity', 0.85).text(r.label);
+          else g.append('text').attr('x', (lo + hi) / 2).attr('y', plot.y + sz).attr('text-anchor', 'middle').attr('font-size', sz).attr('font-weight', 600).attr('fill', col).attr('opacity', 0.85).text(r.label);
+        }
+        return;
+      }
+      var v = r.kind === 'stat' ? stat(r.stat) : r.v, p = scale(v); if (!isFinite(p)) return;
+      var lbl = ((r.label || '') + (r.kind === 'stat' && vals.length ? ' ' + api.fmt(v) : '')).trim();
+      if (dir === 'y') {
+        g.append('line').attr('x1', plot.x).attr('y1', p).attr('x2', plot.x + plot.w).attr('y2', p).attr('stroke', col).attr('stroke-width', 1.5).attr('stroke-dasharray', '5 4').attr('opacity', 0.85);
+        if (lbl) g.append('text').attr('x', plot.x + plot.w - 4).attr('y', p - 5).attr('text-anchor', 'end').attr('font-size', sz).attr('font-weight', 600).attr('fill', col).attr('opacity', 0.9).text(lbl);
+      } else {
+        g.append('line').attr('x1', p).attr('y1', plot.y).attr('x2', p).attr('y2', plot.y + plot.h).attr('stroke', col).attr('stroke-width', 1.5).attr('stroke-dasharray', '5 4').attr('opacity', 0.85);
+        if (lbl) g.append('text').attr('x', p + 4).attr('y', plot.y + sz).attr('text-anchor', 'start').attr('font-size', sz).attr('font-weight', 600).attr('fill', col).attr('opacity', 0.9).text(lbl);
       }
     });
   }
@@ -822,6 +886,7 @@
         }
       });
     });
+    drawReferences(api, plot, val, horizontal ? 'x' : 'y');
   }
 
   /* Pixel of the value baseline: 0 clamped into a linear domain, else the axis
@@ -863,6 +928,7 @@
         }
       });
     });
+    drawReferences(api, plot, val, horizontal ? 'x' : 'y');
   }
 
   /* ── line + area ──────────────────────────────────────────────────────────── */
@@ -940,6 +1006,7 @@
         });
       });
     }
+    drawReferences(api, plot, y, 'y');
     drawAxisTitles(api, plot, false);
   }
 
@@ -971,6 +1038,7 @@
       else c.attr('stroke', api.guardBg).attr('stroke-width', 1);
       if (cfg.showValues && cats[i]) valueLabel(api, px, py - r - 5, trunc(cats[i], 14), 'middle', api.ink, 0.8);
     });
+    drawReferences(api, plot, y, 'y');
     api.root.append('text').attr('x', plot.x + plot.w/2).attr('y', plot.y + plot.h + clamp(cfg.labelSize,12,22)*2 + 14).attr('data-canvas-input', 'xTitle')
       .attr('text-anchor','middle').attr('font-size', clamp(cfg.labelSize,12,22)).attr('font-weight',600).attr('fill',api.ink).attr('opacity',0.75)
       .text(cfg.xTitle || cols[0].name);

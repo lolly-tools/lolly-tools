@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.6.0",
+  "version": "1.7.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -953,6 +953,26 @@
       }
     },
     {
+      "id": "reference",
+      "urlKey": "rf",
+      "label": "Reference lines & bands",
+      "section": "Axes & scale",
+      "type": "longtext",
+      "rows": 3,
+      "default": "",
+      "placeholder": "avg\n100 Goal #30ba78\n80..120 Target",
+      "help": "Draw guide lines and shaded bands across the value axis — one per line. A number (e.g. 100) or a statistic (avg, median, min, max) draws a line; a range (80..120) draws a band. Add an optional label and a #colour: '100 Goal #30ba78'. Great for targets, thresholds and averages.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "line",
+          "area",
+          "scatter"
+        ]
+      }
+    },
+    {
       "id": "palette",
       "urlKey": "pl",
       "label": "Palette",
@@ -1267,6 +1287,31 @@
       "help": "Font weight of the chart title (100 Thin → 900 Black)."
     },
     {
+      "id": "titlePosition",
+      "urlKey": "tpo",
+      "label": "Title position",
+      "section": "Titles & labels",
+      "type": "select",
+      "default": "top",
+      "options": [
+        { "value": "top", "label": "Top" },
+        { "value": "bottom", "label": "Bottom" }
+      ]
+    },
+    {
+      "id": "titleAlign",
+      "urlKey": "tal",
+      "label": "Title alignment",
+      "section": "Titles & labels",
+      "type": "select",
+      "default": "left",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Centre" },
+        { "value": "right", "label": "Right" }
+      ]
+    },
+    {
       "id": "showValues",
       "urlKey": "sv",
       "label": "Show data labels",
@@ -1369,6 +1414,21 @@
       "min": 0,
       "max": 80,
       "step": 1,
+      "help": "Space between legend items — horizontal spacing on top/bottom legends, row spacing on left/right legends.",
+      "showIf": { "showLegend": true }
+    },
+    {
+      "id": "legendRadius",
+      "urlKey": "lrd",
+      "label": "Indicator radius",
+      "section": "Legend",
+      "type": "number",
+      "display": "slider",
+      "default": 3,
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "help": "Corner radius of the legend indicator — 0 is a square, high values make a circular dot.",
       "showIf": { "showLegend": true }
     },
     {
