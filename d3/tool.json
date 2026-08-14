@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.9.0",
+  "version": "1.10.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -132,6 +132,18 @@
         {
           "value": "histogram",
           "label": "Histogram"
+        },
+        {
+          "value": "box",
+          "label": "Box plot"
+        },
+        {
+          "value": "violin",
+          "label": "Violin"
+        },
+        {
+          "value": "beeswarm",
+          "label": "Beeswarm"
         },
         {
           "value": "lollipop",
@@ -983,7 +995,10 @@
           "bar-horizontal",
           "line",
           "area",
-          "scatter"
+          "scatter",
+          "box",
+          "violin",
+          "beeswarm"
         ]
       }
     },

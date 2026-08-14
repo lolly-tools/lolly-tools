@@ -154,10 +154,12 @@
     var needSeries = ['bar','bar-horizontal','line','area','radar','lollipop','dumbbell','slope','bump','stream','marimekko'].indexOf(cfg.chartType) >= 0;
     var needScatter = cfg.chartType === 'scatter' || cfg.chartType === 'parallel';
     var needHist = cfg.chartType === 'histogram';
+    var needDist = ['box','violin','beeswarm'].indexOf(cfg.chartType) >= 0;   // distribution charts run off numericCols
     if ((needSeries && (!cats.length || !series.length)) ||
         (needScatter && numericCols.length < 2) ||
         (needHist && !numericCols.length) ||
-        (!needSeries && !needScatter && !needHist && (!cats.length || !series.length))) {
+        (needDist && !numericCols.length) ||
+        (!needSeries && !needScatter && !needHist && !needDist && (!cats.length || !series.length))) {
       message(data.note || (needScatter ? 'This chart needs at least two numeric columns.' : 'Paste a table with a label column and numeric columns.'));
       return;
     }
@@ -320,6 +322,9 @@
       case 'pack':           drawHierarchy(api, 'pack'); break;
       case 'heatmap':        drawHeatmap(api); break;
       case 'histogram':      drawHistogram(api); break;
+      case 'box':            drawDistribution(api, 'box'); break;
+      case 'violin':         drawDistribution(api, 'violin'); break;
+      case 'beeswarm':       drawDistribution(api, 'beeswarm'); break;
       case 'lollipop':       drawLollipop(api); break;
       case 'dumbbell':       drawDumbbell(api); break;
       case 'slope':          drawSlope(api); break;
@@ -1253,6 +1258,105 @@
     /* Pad the low end too (don't push a zero baseline below zero) so the min point
        isn't drawn flush on the axis edge. */
     return [(zero && e[0] === 0) ? 0 : e[0] - pad, e[1] + pad];
+  }
+
+  /* ── distribution charts (box / violin / beeswarm) ─────────────────────────
+     Each NUMERIC column is one group's distribution (raw observations); or, for
+     tidy data (one numeric column + a repeated label column), the values grouped
+     by that label. Groups sit on a band x-axis over a shared value y-axis. */
+  function distGroups(api) {
+    var cats = api.cats, ncols = api.numericCols;
+    var uniq = {}; cats.forEach(function (c) { uniq[c] = 1; });
+    if (ncols.length === 1 && Object.keys(uniq).length < cats.length) {   // tidy: group the value column by label
+      var order = [], map = {};
+      cats.forEach(function (c, i) { var v = ncols[0].values[i]; if (!isFinite(v)) return; if (!(c in map)) { map[c] = []; order.push(c); } map[c].push(+v); });
+      return order.map(function (c) { return { name: c, values: map[c] }; });
+    }
+    return ncols.map(function (col) { return { name: col.name, values: col.values.filter(isFinite).map(Number) }; });
+  }
+  function quantiles(vals) {
+    var a = vals.filter(isFinite).slice().sort(function (x, y) { return x - y; });
+    if (!a.length) return null;
+    var q = function (p) { var idx = (a.length - 1) * p, lo = Math.floor(idx), hi = Math.ceil(idx); return a[lo] + (a[hi] - a[lo]) * (idx - lo); };
+    var q1 = q(0.25), med = q(0.5), q3 = q(0.75), iqr = q3 - q1, loF = q1 - 1.5 * iqr, hiF = q3 + 1.5 * iqr;
+    var inl = a.filter(function (v) { return v >= loF && v <= hiF; });
+    return { min: a[0], max: a[a.length - 1], q1: q1, med: med, q3: q3,
+      whiskLo: inl.length ? inl[0] : a[0], whiskHi: inl.length ? inl[inl.length - 1] : a[a.length - 1],
+      outliers: a.filter(function (v) { return v < loF || v > hiF; }), n: a.length };
+  }
+  function drawDistribution(api, mode) {
+    var d3 = api.d3, cfg = api.cfg;
+    var groups = distGroups(api).filter(function (g) { return g.values.length; });
+    if (!groups.length) return;
+    var plot = insetForAxes(api, false);
+    var band = d3.scaleBand().domain(groups.map(function (g) { return g.name; })).range([plot.x, plot.x + plot.w]).padding(0.3);
+    var allv = []; groups.forEach(function (g) { g.values.forEach(function (v) { allv.push(v); }); });
+    var e = d3.extent(allv), pad = ((e[1] - e[0]) || Math.abs(e[0]) || 1) * 0.06;
+    var dom = [cfg.yZero ? Math.min(0, e[0]) : e[0] - pad, cfg.yMax > 0 ? cfg.yMax : e[1] + pad];
+    var y = makeYScale(cfg.yScaleType, dom, [plot.y + plot.h, plot.y], d3);
+    drawValueAxis(api, plot, y, 'y');
+    drawCategoryAxis(api, plot, band, false);
+    var scf = api.catColorFn(groups.length), g = api.root.append('g');
+    groups.forEach(function (grp, gi) {
+      var cx = band(grp.name) + band.bandwidth() / 2, bw = band.bandwidth();
+      var col = api.override(grp.name, legible(scf(gi), api.guardBg));
+      if (mode === 'violin') drawViolin(api, g, grp, cx, bw, y, col, d3);
+      else if (mode === 'beeswarm') drawBeeswarm(api, g, grp, cx, bw, y, col);
+      else drawBox(api, g, grp, cx, bw, y, col);
+    });
+    drawReferences(api, plot, y, 'y');
+    drawAxisTitles(api, plot, false);
+  }
+  function drawBox(api, g, grp, cx, bw, y, col) {
+    var q = quantiles(grp.values); if (!q) return;
+    var w = Math.min(bw * 0.72, 96), x0 = cx - w / 2, capW = w * 0.5;
+    var stem = function (x1, y1, x2, y2) { g.append('line').attr('x1', x1).attr('y1', y1).attr('x2', x2).attr('y2', y2).attr('stroke', col).attr('stroke-width', 1.5); };
+    stem(cx, y(q.whiskLo), cx, y(q.whiskHi));                            // whisker
+    stem(cx - capW / 2, y(q.whiskLo), cx + capW / 2, y(q.whiskLo));      // lower cap
+    stem(cx - capW / 2, y(q.whiskHi), cx + capW / 2, y(q.whiskHi));      // upper cap
+    var yb = Math.min(y(q.q1), y(q.q3)), hb = Math.abs(y(q.q1) - y(q.q3));
+    api.tagMark(rect(g, x0, yb, w, hb, col, 2, null).attr('fill-opacity', clamp(api.cfg.fillOpacity, 0.25, 0.85)), grp.name);
+    g.append('line').attr('x1', x0).attr('y1', y(q.med)).attr('x2', x0 + w).attr('y2', y(q.med)).attr('stroke', api.guardBg).attr('stroke-width', 2);  // median
+    q.outliers.forEach(function (v) { g.append('circle').attr('cx', cx).attr('cy', y(v)).attr('r', 2.5).attr('fill', col).attr('fill-opacity', 0.85).attr('stroke', api.guardBg).attr('stroke-width', 0.5); });
+    if (api.cfg.showValues) valueLabel(api, cx, y(q.med) - 8, api.fmt(q.med), 'middle', api.ink, 0.85, grp.name);
+  }
+  function drawViolin(api, g, grp, cx, bw, y, col, d3) {
+    var vals = grp.values; if (vals.length < 2) { drawBox(api, g, grp, cx, bw, y, col); return; }
+    var dom = y.domain(), lo = Math.min(dom[0], dom[1]), hi = Math.max(dom[0], dom[1]);
+    var n = vals.length, sd = d3.deviation(vals) || (hi - lo) / 10 || 1, h = 1.06 * sd * Math.pow(n, -0.2) || (hi - lo) / 20;
+    var N = 48, half = Math.min(bw * 0.46, 80), dens = [], maxD = 0;   // Gaussian KDE, Silverman bandwidth
+    for (var i = 0; i <= N; i++) {
+      var yv = lo + (hi - lo) * i / N, s = 0;
+      for (var j = 0; j < n; j++) { var u = (yv - vals[j]) / h; s += Math.exp(-0.5 * u * u); }
+      s /= (n * h * Math.sqrt(2 * Math.PI)); dens.push([yv, s]); if (s > maxD) maxD = s;
+    }
+    if (maxD <= 0) return;
+    var right = dens.map(function (d) { return [cx + (d[1] / maxD) * half, y(d[0])]; });
+    var left = dens.slice().reverse().map(function (d) { return [cx - (d[1] / maxD) * half, y(d[0])]; });
+    var pts = right.concat(left);
+    api.tagMark(g.append('path').attr('d', 'M' + pts.map(function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); }).join('L') + 'Z')
+      .attr('fill', col).attr('fill-opacity', clamp(api.cfg.fillOpacity, 0.25, 0.8)).attr('stroke', col).attr('stroke-width', 1), grp.name);
+    var q = quantiles(vals);
+    if (q) g.append('line').attr('x1', cx - half * 0.3).attr('y1', y(q.med)).attr('x2', cx + half * 0.3).attr('y2', y(q.med)).attr('stroke', api.guardBg).attr('stroke-width', 2);
+  }
+  function drawBeeswarm(api, g, grp, cx, bw, y, col) {
+    var r = clamp(api.cfg.pointSize / 2, 2, 7), placed = [], half = Math.min(bw * 0.46, 90);
+    var step = Math.max(2, r * 1.6), minD2 = (2 * r) * (2 * r);
+    var vals = grp.values.slice().sort(function (a, b) { return a - b; });
+    if (vals.length > 600) { var keep = [], st = vals.length / 600; for (var t = 0; t < vals.length; t += st) keep.push(vals[Math.floor(t)]); vals = keep; }  // O(n²) packing cap
+    vals.forEach(function (v) {
+      var py = y(v); if (!isFinite(py)) return;
+      var px = cx, k = 0;
+      for (;;) {
+        var off = k === 0 ? 0 : (k % 2 ? 1 : -1) * Math.ceil(k / 2) * step;
+        var cand = cx + off, ok = Math.abs(off) <= half;
+        if (ok) for (var m = 0; m < placed.length; m++) { var dx = cand - placed[m][0], dy = py - placed[m][1]; if (dx * dx + dy * dy < minD2) { ok = false; break; } }
+        if (ok) { px = cand; break; }
+        if (++k > 180) { px = cx; break; }
+      }
+      placed.push([px, py]);
+      g.append('circle').attr('cx', px).attr('cy', py).attr('r', r).attr('fill', col).attr('fill-opacity', clamp(api.cfg.fillOpacity, 0.5, 1)).attr('stroke', api.guardBg).attr('stroke-width', 0.5);
+    });
   }
 
   /* ── pie / donut ──────────────────────────────────────────────────────────── */
