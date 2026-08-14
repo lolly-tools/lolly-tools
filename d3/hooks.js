@@ -178,6 +178,7 @@ function buildModel(text, opts) {
   // ── column roles (explicit overrides fall back to auto-detection) ──────────
   const labelIdx = orDefault(resolveColRef(opts.labelCol, header), 0);
   const pivotIdx = resolveColRef(opts.pivotCol, header);
+  const errIdx   = resolveColRef(opts.errorCol, header);   // ± error per value (not plotted as a series)
   const chosen   = resolveColList(opts.seriesCols, header);
 
   // Category / label column (col 0 by default; a numeric label like a Year still
@@ -190,8 +191,13 @@ function buildModel(text, opts) {
   // Series = the user's chosen columns (numeric only), else every numeric column
   // other than the label. numericCols keeps ALL numeric columns (scatter x/y/size).
   const colSeries = (cols) => cols.map((c) => ({ name: header[c], values: body.map((r) => nOrNull(parseNum(r[c], commaDecCol[c]))) }));
-  const series = colSeries((chosen.length ? chosen : range(width)).filter((c) => c !== labelIdx && c !== pivotIdx && numericFlag[c]));
+  const series = colSeries((chosen.length ? chosen : range(width)).filter((c) => c !== labelIdx && c !== pivotIdx && c !== errIdx && numericFlag[c]));
   const numericCols = colSeries(range(width).filter((c) => numericFlag[c]));
+  // ± error column → magnitudes aligned to rows (whiskers in the template). Only the
+  // standard wide path carries it; pivot/single-col reshapes return before this.
+  const errorValues = errIdx >= 0 && errIdx !== labelIdx
+    ? body.map((r) => { const e = nOrNull(parseNum(r[errIdx], commaDecCol[errIdx])); return e == null ? null : Math.abs(e); })
+    : null;
 
   // ── reshape: long/tidy → wide ──────────────────────────────────────────────
   // Explicit pivot (a column the user chose) OR auto (a REPEATED label column + a
@@ -228,7 +234,7 @@ function buildModel(text, opts) {
   } else if (!opts.hasHeader && firstRowLooksLikeHeader(body, numericFlag)) {
     note = appendNote(note, 'First row looks like column names — turn on “First row is a header”.');
   }
-  return { categories, series, numericCols, note };
+  return { categories, series, numericCols, errorValues, note };
 }
 
 function range(n) { const a = []; for (let i = 0; i < n; i++) a.push(i); return a; }
@@ -350,6 +356,8 @@ function buildConfig(inp) {
     pieStyle:       String(inp.pieStyle || 'flat'),
     depth3d:        clamp(num(inp.depth3d, 0), 0, 160),
     reference:      String(inp.reference || ''),          // reference lines & bands (one per line)
+    trend:          String(inp.trend || 'none'),          // none/linear/poly2/exp/log/power/movavg — fitted trend line
+    errorColumn:    String(inp.errorColumn || ''),        // column name/number holding the ± error per value
     timeAxis:       String(inp.timeAxis || 'auto'),        // auto / on / off — parse the label column as dates
     yScaleType:     String(inp.yScaleType || 'linear'),
     yZero:          inp.yZero !== false && inp.yZero !== 'false',
@@ -562,6 +570,7 @@ function compute(model) {
     labelCol:  String(inp.labelColumn || ''),
     seriesCols: String(inp.seriesColumns || ''),
     pivotCol:  String(inp.pivotColumn || ''),
+    errorCol:  String(inp.errorColumn || ''),
   });
   return {
     _state:  safeJson({ data, cfg }),

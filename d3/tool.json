@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.8.0",
+  "version": "1.9.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -986,6 +986,36 @@
           "scatter"
         ]
       }
+    },
+    {
+      "id": "trend",
+      "urlKey": "tr",
+      "label": "Trend / fit line",
+      "section": "Axes & scale",
+      "type": "select",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "linear", "label": "Linear (least squares)" },
+        { "value": "poly2", "label": "Quadratic curve" },
+        { "value": "exp", "label": "Exponential" },
+        { "value": "log", "label": "Logarithmic" },
+        { "value": "power", "label": "Power" },
+        { "value": "movavg", "label": "Moving average" }
+      ],
+      "help": "Overlay a fitted trend line. Linear/quadratic/exponential/log/power are least-squares regressions (R² shown at the line's end); moving average smooths the series. Drawn dashed over each series (line/area) or the point cloud (scatter).",
+      "showIf": { "chartType": ["line", "area", "scatter"] }
+    },
+    {
+      "id": "errorColumn",
+      "urlKey": "ec",
+      "label": "Error bar column",
+      "section": "Axes & scale",
+      "type": "text",
+      "default": "",
+      "placeholder": "e.g. Error, StdDev, or 4",
+      "help": "Name (or 1-based number) of a column holding the ± error for each value — draws whiskers with end caps around every point/bar. The column is used for the error, not plotted as its own series. Leave blank for none.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area", "scatter"] }
     },
     {
       "id": "palette",

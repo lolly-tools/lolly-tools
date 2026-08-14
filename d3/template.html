@@ -302,6 +302,7 @@
                 barByCat: barByCat, override: overrideColor, textureFor: textureFor,
                 overlayRect: overlayRect, overlayPath: overlayPath, patternsOn: patternsOn, swatches: cfg.brandSwatches,
                 recolorEnabled: recolorEnabled, tagMark: tagMark, markShadow: markShadow, references: references,
+                errors: (data.errorValues || null),
                 annotEnabled: annotEnabled, annotations: annotations, tagAnnot: tagAnnot, labelAnnot: labelAnnot };
 
     /* ── dispatch ────────────────────────────────────────────────────────────── */
@@ -731,6 +732,127 @@
       }
     });
   }
+  /* ── trend / regression fit ───────────────────────────────────────────────
+     Least-squares over cleaned (x,y) pairs. exp/log/power linearise in log space;
+     R² is always measured against the ORIGINAL y (a poor exp fit reports honestly).
+     Returns { predict, r2 } or null. */
+  function linFit(X, Y) {
+    var n = 0, sx = 0, sy = 0, sxx = 0, sxy = 0;
+    for (var i = 0; i < X.length; i++) {
+      var x = X[i], y = Y[i]; if (!isFinite(x) || !isFinite(y)) continue;
+      n++; sx += x; sy += y; sxx += x * x; sxy += x * y;
+    }
+    if (n < 2) return null;
+    var d = n * sxx - sx * sx; if (Math.abs(d) < 1e-12) return null;
+    var b = (n * sxy - sx * sy) / d;
+    return { a: (sy - b * sx) / n, b: b };
+  }
+  function det3(m) {
+    return m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
+         - m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
+         + m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
+  }
+  function poly2Fit(X, Y) {   // solve the 3×3 normal equations for a + b·x + c·x²
+    var S0 = 0, S1 = 0, S2 = 0, S3 = 0, S4 = 0, T0 = 0, T1 = 0, T2 = 0;
+    for (var i = 0; i < X.length; i++) {
+      var x = X[i], y = Y[i]; if (!isFinite(x) || !isFinite(y)) continue;
+      var x2 = x * x; S0++; S1 += x; S2 += x2; S3 += x2 * x; S4 += x2 * x2; T0 += y; T1 += x * y; T2 += x2 * y;
+    }
+    if (S0 < 3) return null;
+    var M = [[S0, S1, S2], [S1, S2, S3], [S2, S3, S4]], D = det3(M);
+    if (Math.abs(D) < 1e-9) return null;
+    var out = [], T = [T0, T1, T2];
+    for (var k = 0; k < 3; k++) {
+      var Mk = [M[0].slice(), M[1].slice(), M[2].slice()];
+      Mk[0][k] = T[0]; Mk[1][k] = T[1]; Mk[2][k] = T[2];
+      out.push(det3(Mk) / D);
+    }
+    return out;
+  }
+  function r2of(X, Y, predict) {
+    var yb = 0, n = 0, i;
+    for (i = 0; i < X.length; i++) if (isFinite(X[i]) && isFinite(Y[i])) { yb += Y[i]; n++; }
+    if (n < 2) return NaN; yb /= n;
+    var ssr = 0, sst = 0;
+    for (i = 0; i < X.length; i++) {
+      if (!isFinite(X[i]) || !isFinite(Y[i])) continue;
+      var p = predict(X[i]); if (!isFinite(p)) continue;
+      ssr += (Y[i] - p) * (Y[i] - p); sst += (Y[i] - yb) * (Y[i] - yb);
+    }
+    return sst > 0 ? 1 - ssr / sst : NaN;
+  }
+  function regress(xs, ys, type) {
+    var X = [], Y = [], i;
+    for (i = 0; i < xs.length; i++) if (isFinite(xs[i]) && isFinite(ys[i])) { X.push(+xs[i]); Y.push(+ys[i]); }
+    if (X.length < 2) return null;
+    var predict;
+    if (type === 'linear') {
+      var f = linFit(X, Y); if (!f) return null; predict = function (x) { return f.a + f.b * x; };
+    } else if (type === 'poly2') {
+      var c = poly2Fit(X, Y); if (!c) return null; predict = function (x) { return c[0] + c[1] * x + c[2] * x * x; };
+    } else if (type === 'exp') {              // y = a·e^{bx}, needs y > 0
+      var lx = [], ly = []; for (i = 0; i < X.length; i++) if (Y[i] > 0) { lx.push(X[i]); ly.push(Math.log(Y[i])); }
+      var fe = linFit(lx, ly); if (!fe) return null; var ae = Math.exp(fe.a), be = fe.b;
+      predict = function (x) { return ae * Math.exp(be * x); };
+    } else if (type === 'log') {              // y = a + b·ln(x), needs x > 0
+      var gx = [], gy = []; for (i = 0; i < X.length; i++) if (X[i] > 0) { gx.push(Math.log(X[i])); gy.push(Y[i]); }
+      var fl = linFit(gx, gy); if (!fl) return null; predict = function (x) { return x > 0 ? fl.a + fl.b * Math.log(x) : NaN; };
+    } else if (type === 'power') {            // y = a·x^b, needs x > 0, y > 0
+      var px = [], py = []; for (i = 0; i < X.length; i++) if (X[i] > 0 && Y[i] > 0) { px.push(Math.log(X[i])); py.push(Math.log(Y[i])); }
+      var fp = linFit(px, py); if (!fp) return null; var ap = Math.exp(fp.a), bp = fp.b;
+      predict = function (x) { return x > 0 ? ap * Math.pow(x, bp) : NaN; };
+    } else return null;
+    return { predict: predict, r2: r2of(X, Y, predict) };
+  }
+  /* Draw a fitted trend (or moving average) over one series/cloud. xScale/yScale
+     map DATA units → pixels; sampled to 48 points so curves render smooth. Plain
+     <path>/<text> → exports vector-clean. */
+  function drawTrend(api, plot, xScale, yScale, xdata, ydata, col, showR2) {
+    var type = api.cfg.trend; if (!type || type === 'none') return;
+    var g = api.root.append('g').attr('class', 'trend');
+    var toPath = function (pts) { return 'M' + pts.map(function (p) { return p[0].toFixed(2) + ' ' + p[1].toFixed(2); }).join('L'); };
+    if (type === 'movavg') {                  // centred window, scales with n, in data order
+      var pts = [], win = Math.max(2, Math.round(xdata.length / 6));
+      for (var i = 0; i < xdata.length; i++) {
+        var lo = Math.max(0, i - (win >> 1)), hi = Math.min(xdata.length - 1, lo + win - 1), s = 0, m = 0;
+        for (var j = lo; j <= hi; j++) if (isFinite(ydata[j])) { s += +ydata[j]; m++; }
+        if (!m || !isFinite(xdata[i])) continue;
+        var pxm = xScale(xdata[i]), pym = yScale(s / m); if (isFinite(pxm) && isFinite(pym)) pts.push([pxm, pym]);
+      }
+      if (pts.length >= 2) g.append('path').attr('d', toPath(pts)).attr('fill', 'none').attr('stroke', col)
+        .attr('stroke-width', 2).attr('stroke-dasharray', '6 4').attr('opacity', 0.9);
+      return;
+    }
+    var fit = regress(xdata, ydata, type); if (!fit) return;
+    var xv = xdata.filter(isFinite); if (xv.length < 2) return;
+    var xmin = Math.min.apply(null, xv), xmax = Math.max.apply(null, xv), N = 48, out = [], last = null;
+    for (var k = 0; k <= N; k++) {
+      var x = xmin + (xmax - xmin) * k / N, yy = fit.predict(x); if (!isFinite(yy)) continue;
+      var px = xScale(x), py = yScale(yy); if (isFinite(px) && isFinite(py)) { out.push([px, py]); last = [px, py]; }
+    }
+    if (out.length < 2) return;
+    g.append('path').attr('d', toPath(out)).attr('fill', 'none').attr('stroke', col)
+      .attr('stroke-width', 2).attr('stroke-dasharray', '6 4').attr('opacity', 0.92);
+    if (showR2 && isFinite(fit.r2) && last) {
+      var sz = clamp(api.cfg.labelSize, 10, 18);
+      g.append('text').attr('x', last[0] - 4).attr('y', last[1] - 5).attr('text-anchor', 'end')
+        .attr('font-size', sz).attr('font-weight', 600).attr('fill', col).attr('opacity', 0.9).text('R² ' + fit.r2.toFixed(2));
+    }
+  }
+  /* Error whiskers with end caps. `scale` maps value→pixel on the value axis;
+     `centers[i]` is the cross-axis pixel of point i; horizontal flips the axes. */
+  function drawErrorBars(api, centers, values, errs, scale, horizontal, col) {
+    if (!errs || !errs.length) return;
+    var g = api.root.append('g').attr('class', 'errbars'), cap = 4;
+    for (var i = 0; i < values.length; i++) {
+      var e = errs[i], v = values[i]; if (e == null || !isFinite(e) || e <= 0 || !isFinite(v)) continue;
+      var c = centers[i]; if (!isFinite(c)) continue;
+      var p1 = scale(v - e), p2 = scale(v + e); if (!isFinite(p1) || !isFinite(p2)) continue;
+      var whisk = function (x1, y1, x2, y2) { g.append('line').attr('x1', x1).attr('y1', y1).attr('x2', x2).attr('y2', y2).attr('stroke', col).attr('stroke-width', 1.5).attr('opacity', 0.85); };
+      if (horizontal) { whisk(p1, c, p2, c); whisk(p1, c - cap, p1, c + cap); whisk(p2, c - cap, p2, c + cap); }
+      else { whisk(c, p1, c, p2); whisk(c - cap, p1, c + cap, p1); whisk(c - cap, p2, c + cap, p2); }
+    }
+  }
   /* Category tick labels — auto-fit: wrap into the column (horizontal bars),
      angle 45° or wrap (vertical bars) when labels would collide, ellipsising
      only as a last resort. All output is plain SVG <text> (rotate transforms and
@@ -829,6 +951,8 @@
     var cats = order.map(function (i) { return api.cats[i]; });
     series = series.map(function (s) { return { name: s.name, values: order.map(function (i) { return s.values[i]; }) }; });
     function colorFor(si, ci) { return api.barByCat ? ccf(order[ci]) : scf(si); }
+    /* error magnitudes must ride the same reorder as the bars (single-series only). */
+    api.errorsOrdered = api.errors ? order.map(function (i) { return api.errors[i]; }) : null;
 
     /* Rows keyed by series for d3.stack. */
     var rows = cats.map(function (c, i) { var o = { _c: c }; series.forEach(function (s) { o[s.name] = +s.values[i] || 0; }); return o; });
@@ -886,6 +1010,8 @@
         }
       });
     });
+    if (api.errorsOrdered && series.length === 1)
+      drawErrorBars(api, cats.map(function (c) { return band(c) + band.bandwidth() / 2; }), series[0].values, api.errorsOrdered, val, horizontal, api.ink);
     drawReferences(api, plot, val, horizontal ? 'x' : 'y');
   }
 
@@ -954,6 +1080,10 @@
       var q = s.match(qre1); if (q) return new Date(+q[2], (+q[1] - 1) * 3, 1);
       q = s.match(qre2); if (q) return new Date(+q[1], (+q[2] - 1) * 3, 1);
       if (/^\d{4}$/.test(s)) { var yr = +s; return (yr >= 1900 && yr <= 2100) ? new Date(yr, 0, 1) : null; }
+      /* A bare number that isn't a 4-digit year is a sequence index / count, NOT a
+         date — guard before the parsers, since the browser Date fallback coerces
+         "1" → Jan 2001, "2" → 2002… and mislabels a plain 1,2,3… column as time. */
+      if (/^-?\d*\.?\d+$/.test(s)) return null;
       for (var i = 0; i < parsers.length; i++) { var d = parsers[i](s); if (d && d.getFullYear() >= 1900 && d.getFullYear() <= 2100) return d; }
       return null;
     }
@@ -1054,6 +1184,24 @@
         });
       });
     }
+    /* trend / error bars — non-stacked only. x in DATA units: date-ms in time mode
+       (fed through the time scale), else the category index mapped linearly across
+       the point band (equals pos[i] at integers). */
+    if (!stacked && (cfg.trend !== 'none' || api.errors)) {
+      var nC = cats.length, xdataT, xForTrend;
+      if (timeMode) {
+        xdataT = td.dates.map(function (dd) { return dd ? +dd : NaN; });
+        xForTrend = function (ms) { return xt(new Date(ms)); };
+      } else {
+        xdataT = cats.map(function (_, i) { return i; });
+        xForTrend = function (ix) { return nC > 1 ? pos[0] + (pos[nC - 1] - pos[0]) * ix / (nC - 1) : pos[0]; };
+      }
+      series.forEach(function (s, si) {
+        drawTrend(api, plot, xForTrend, y, xdataT, s.values, legible(scf(si), api.guardBg), series.length === 1);
+      });
+      if (api.errors && series.length === 1)
+        drawErrorBars(api, xdataT.map(function (xv) { return isFinite(xv) ? xForTrend(xv) : NaN; }), series[0].values, api.errors, y, false, api.ink);
+    }
     drawReferences(api, plot, y, 'y');
     drawAxisTitles(api, plot, false);
   }
@@ -1086,6 +1234,8 @@
       else c.attr('stroke', api.guardBg).attr('stroke-width', 1);
       if (cfg.showValues && cats[i]) valueLabel(api, px, py - r - 5, trunc(cats[i], 14), 'middle', api.ink, 0.8);
     });
+    if (api.errors) drawErrorBars(api, xs.map(function (xv) { return isFinite(xv) ? x(xv) : NaN; }), ys, api.errors, y, false, api.ink);
+    drawTrend(api, plot, x, y, xs, ys, api.ink, true);
     drawReferences(api, plot, y, 'y');
     api.root.append('text').attr('x', plot.x + plot.w/2).attr('y', plot.y + plot.h + clamp(cfg.labelSize,12,22)*2 + 14).attr('data-canvas-input', 'xTitle')
       .attr('text-anchor','middle').attr('font-size', clamp(cfg.labelSize,12,22)).attr('font-weight',600).attr('fill',api.ink).attr('opacity',0.75)
