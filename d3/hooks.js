@@ -699,3 +699,21 @@ async function onInput({ model }) {
   if (brandDegraded(BRAND)) { try { const b = await resolveBrandColors(); if (!brandDegraded(b)) BRAND = b; } catch (e) { /* keep prior */ } }
   return compute(model);
 }
+
+// Animated-SVG export: for an ANIMATED chart, swap a self-contained SMIL flipbook into
+// #d3-plot before an SVG export (the template owns the build; renderSvg clones the <svg>
+// verbatim so the <animate> survive), then restore the live render after. Presence-keyed
+// on window functions the template exposes, so a static chart / CLI (no window) is a
+// no-op and every other format is untouched.
+function beforeExport(ctx) {
+  try {
+    const w = (typeof window !== 'undefined') ? window : null;
+    if (w && (ctx.format === 'svg' || ctx.format === 'svgz') && typeof w.__d3BuildSmil === 'function') w.__d3BuildSmil();
+  } catch (e) { /* fall through to the normal static SVG */ }
+}
+function afterExport() {
+  try {
+    const w = (typeof window !== 'undefined') ? window : null;
+    if (w && typeof w.__d3RestoreLive === 'function') w.__d3RestoreLive();
+  } catch (e) { /* no-op */ }
+}

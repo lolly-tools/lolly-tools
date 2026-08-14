@@ -149,6 +149,7 @@
     if (!frames || frames.length < 2) {
       if (window.__lollyAnim) window.__lollyAnim.active = false;   // hide the transport
       ['d3-clock', 'd3-svg'].forEach(function (id) { var el = document.getElementById(id); if (el) delete el.__lollyFrameRender; });  // a static chart must not be export-driven
+      window.__d3BuildSmil = null; window.__d3RestoreLive = null; window.__d3SmilActive = false;   // clear a stale SMIL builder so a static SVG export stays static
       return;
     }
     var nF = frames.length, stepMs = clamp(cfg.animSpeed || 1.5, 0.3, 8) * 1000, holdFrac = 0.35, loopMs = nF * stepMs;
@@ -198,6 +199,40 @@
     var clockEls = [document.getElementById('d3-clock'), document.getElementById('d3-svg')].filter(Boolean);
     clockEls.forEach(function (el) { el.__lollyFrameRender = function (t) { draw(clamp(+t || 0, 0, 0.999999)); }; });
     var frameDriven = function () { for (var i = 0; i < clockEls.length; i++) if (clockEls[i].__lollyFrameDriven) return true; return false; };
+    /* Animated-SVG (SMIL) export: a sampled flipbook. Render draw(k/N) into N sibling
+       <g>s and cycle their visibility with discrete-opacity SMIL — reuses the exact live
+       renderer, so labels, hide-empties and every chart type come along for free, and a
+       self-contained looping vector SVG plays natively. Driven by the beforeExport hook
+       (format=svg); the rAF loop parks on __d3SmilActive so it can't clobber the build. */
+    window.__d3SmilActive = false;
+    var SVGNS = 'http://www.w3.org/2000/svg', loopSec = loopMs / 1000;
+    window.__d3BuildSmil = function () {
+      if (!frames || frames.length < 2) return false;
+      var plot = document.getElementById('d3-plot'); if (!plot) return false;
+      window.__d3SmilActive = true;
+      var N = Math.max(nF * 2, Math.min(60, Math.round(loopSec * 12)));   // ~12 fps, capped
+      var groups = [], k;
+      for (k = 0; k < N; k++) {
+        draw(k / N);
+        var g = document.createElementNS(SVGNS, 'g');
+        while (plot.firstChild) g.appendChild(plot.firstChild);
+        groups.push(g);
+      }
+      groups.forEach(function (g, i) {
+        g.setAttribute('opacity', i === 0 ? '1' : '0');
+        var an = document.createElementNS(SVGNS, 'animate');
+        an.setAttribute('attributeName', 'opacity');
+        an.setAttribute('values', '0;1;0;0');           // visible only during this frame's slot
+        an.setAttribute('keyTimes', '0;' + (i / N).toFixed(5) + ';' + ((i + 1) / N).toFixed(5) + ';1');
+        an.setAttribute('calcMode', 'discrete');
+        an.setAttribute('dur', loopSec + 's');
+        an.setAttribute('repeatCount', 'indefinite');
+        g.appendChild(an);
+        plot.appendChild(g);
+      });
+      return true;
+    };
+    window.__d3RestoreLive = function () { window.__d3SmilActive = false; try { draw((window.__lollyAnim && window.__lollyAnim.curT) || 0); } catch (e) { /* ignore */ } };
     /* Publish/refresh the transport contract, carrying playing state + position over
        a re-paint so a pause or scrub survives an input tweak. */
     var prev = window.__lollyAnim || {};
@@ -206,7 +241,7 @@
     var clock = (prev.curT || 0) * loopMs, prevTs = null, lastDraw = -1e9, lastT = -1;
     function tick(ts) {
       if (!alive()) return;                                   // a newer paint owns the canvas now
-      if (frameDriven()) { window.__d3Raf = requestAnimationFrame(tick); return; }   // export owns the frame — don't clobber it
+      if (frameDriven() || window.__d3SmilActive) { window.__d3Raf = requestAnimationFrame(tick); return; }   // export owns the frame — don't clobber it
       if (prevTs == null) prevTs = ts;
       var dt = ts - prevTs; prevTs = ts;
       var t;
