@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 \u2014 paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour \u2014 on-brand and vector-clean.",
-  "version": "1.15.0",
+  "version": "1.16.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -1763,6 +1763,72 @@
       "section": "Titles & labels",
       "type": "boolean",
       "default": true
+    },
+    {
+      "id": "valueSize",
+      "urlKey": "vsz",
+      "label": "Data label size",
+      "section": "Titles & labels",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "help": "Font size of the value labels on bars/points/slices, in px. 0 = auto (follows the label text size)."
+    },
+    {
+      "id": "valueOffset",
+      "urlKey": "voff",
+      "label": "Data label distance",
+      "section": "Titles & labels",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": -20,
+      "max": 80,
+      "step": 1,
+      "help": "Extra gap (px) between a value label and its bar/point. Positive pushes it further away; negative pulls it in over the mark."
+    },
+    {
+      "id": "valueWeight",
+      "urlKey": "vw",
+      "label": "Data label weight",
+      "section": "Titles & labels",
+      "type": "select",
+      "default": "600",
+      "options": [
+        {
+          "value": "400",
+          "label": "Regular"
+        },
+        {
+          "value": "500",
+          "label": "Medium"
+        },
+        {
+          "value": "600",
+          "label": "Semibold"
+        },
+        {
+          "value": "700",
+          "label": "Bold"
+        },
+        {
+          "value": "800",
+          "label": "Heavy"
+        }
+      ],
+      "help": "Font weight of the value labels."
+    },
+    {
+      "id": "valueColor",
+      "urlKey": "vc",
+      "label": "Data label colour",
+      "section": "Titles & labels",
+      "type": "color",
+      "default": "",
+      "help": "Colour of the value labels. Leave blank to auto-contrast with the background (dark bg \u2192 light labels, and legible text inside stacked bars)."
     },
     {
       "id": "labelSize",

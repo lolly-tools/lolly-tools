@@ -1144,14 +1144,14 @@
           var x0 = Math.min(base, pv), x1 = Math.max(base, pv), ww = Math.max(0, x1 - x0);
           api.markShadow(api.tagMark(cfg.bar3d ? bar3d(g, x0, y, ww, h, col, barDepth(cfg, h)) : rect(g, x0, y, ww, h, col, Math.min(rx, h/2), stroke), c), col);
           api.overlayRect(g, x0, y, ww, h, cfg.bar3d ? 0 : Math.min(rx, h/2), texIdx, col);
-          if (cfg.showValues) valueLabel(api, x1 + 6 + (cfg.bar3d ? barDepth(cfg, h) * 0.72 : 0), y + h/2 + 5, api.fmt(v), 'start', api.ink, 0.75, akey);
+          if (cfg.showValues) valueLabel(api, x1 + 6 + cfg.valueOffset + (cfg.bar3d ? barDepth(cfg, h) * 0.72 : 0), y + h/2 + 5, api.fmt(v), 'start', api.ink, 0.75, akey);
         } else {
           var w0 = inner.bandwidth(), w = cfg.barThickness > 0 ? Math.min(w0, cfg.barThickness) : w0;
           var x = band(c) + inner(s.name) + (w0 - w) / 2;
           var y0 = Math.min(base, pv), y1 = Math.max(base, pv), hh = Math.max(0, y1 - y0);
           api.markShadow(api.tagMark(cfg.bar3d ? bar3d(g, x, y0, w, hh, col, barDepth(cfg, w)) : rect(g, x, y0, w, hh, col, Math.min(rx, w/2), stroke), c), col);
           api.overlayRect(g, x, y0, w, hh, cfg.bar3d ? 0 : Math.min(rx, w/2), texIdx, col);
-          if (cfg.showValues) valueLabel(api, x + w/2, y0 - 6 - (cfg.bar3d ? barDepth(cfg, w) * 0.52 : 0), api.fmt(v), 'middle', api.ink, 0.75, akey);
+          if (cfg.showValues) valueLabel(api, x + w/2, y0 - 6 - cfg.valueOffset - (cfg.bar3d ? barDepth(cfg, w) * 0.52 : 0), api.fmt(v), 'middle', api.ink, 0.75, akey);
         }
       });
     });
@@ -1327,7 +1327,7 @@
           if (!isFinite(d.v) || !isFinite(y(d.v)) || !isFinite(d.xp)) return;
           g.append('circle').attr('cx', d.xp).attr('cy', y(d.v)).attr('r', clamp(cfg.pointSize/2, 2, 20))
             .attr('fill', col).attr('stroke', api.guardBg).attr('stroke-width', 1.5);
-          if (cfg.showValues) valueLabel(api, d.xp, y(d.v) - clamp(cfg.pointSize/2,2,20) - 6, api.fmt(d.v), 'middle', api.ink, 0.8, series.length > 1 ? d.c + ' · ' + s.name : d.c);
+          if (cfg.showValues) valueLabel(api, d.xp, y(d.v) - clamp(cfg.pointSize/2,2,20) - 6 - cfg.valueOffset, api.fmt(d.v), 'middle', api.ink, 0.8, series.length > 1 ? d.c + ' · ' + s.name : d.c);
         });
       });
     }
@@ -1382,7 +1382,7 @@
         .attr('fill', col).attr('fill-opacity', clamp(cfg.fillOpacity, 0.15, 1));
       if (cfg.strokeWidth > 0) c.attr('stroke', cfg.strokeColor).attr('stroke-width', cfg.strokeWidth);
       else c.attr('stroke', api.guardBg).attr('stroke-width', 1);
-      if (cfg.showValues && cats[i]) valueLabel(api, px, py - r - 5, trunc(cats[i], 14), 'middle', api.ink, 0.8);
+      if (cfg.showValues && cats[i]) valueLabel(api, px, py - r - 5 - cfg.valueOffset, trunc(cats[i], 14), 'middle', api.ink, 0.8);
     });
     if (api.errors) drawErrorBars(api, xs.map(function (xv) { return isFinite(xv) ? x(xv) : NaN; }), ys, api.errors, y, false, api.ink);
     drawTrend(api, plot, x, y, xs, ys, api.ink, true);
@@ -1463,7 +1463,7 @@
     api.tagMark(rect(g, x0, yb, w, hb, col, 2, null).attr('fill-opacity', clamp(api.cfg.fillOpacity, 0.25, 0.85)), grp.name);
     g.append('line').attr('x1', x0).attr('y1', y(q.med)).attr('x2', x0 + w).attr('y2', y(q.med)).attr('stroke', api.guardBg).attr('stroke-width', 2);  // median
     q.outliers.forEach(function (v) { g.append('circle').attr('cx', cx).attr('cy', y(v)).attr('r', 2.5).attr('fill', col).attr('fill-opacity', 0.85).attr('stroke', api.guardBg).attr('stroke-width', 0.5); });
-    if (api.cfg.showValues) valueLabel(api, cx, y(q.med) - 8, api.fmt(q.med), 'middle', api.ink, 0.85, grp.name);
+    if (api.cfg.showValues) valueLabel(api, cx, y(q.med) - 8 - api.cfg.valueOffset, api.fmt(q.med), 'middle', api.ink, 0.85, grp.name);
   }
   function drawViolin(api, g, grp, cx, bw, y, col, d3) {
     var vals = grp.values; if (vals.length < 2) { drawBox(api, g, grp, cx, bw, y, col); return; }
@@ -1745,7 +1745,7 @@
       var h = (plot.y + plot.h) - y(bn.length);
       if (h <= 0) return;
       rect(g, bx + gap/2, y(bn.length), Math.max(1, bw - gap), h, col, clamp(cfg.cornerRadius, 0, 14), cfg.strokeWidth>0?{s:cfg.strokeColor,w:cfg.strokeWidth}:null);
-      if (cfg.showValues && bw > 20) valueLabel(api, bx + bw/2, y(bn.length) - 6, String(bn.length), 'middle', api.ink, 0.75);
+      if (cfg.showValues && bw > 20) valueLabel(api, bx + bw/2, y(bn.length) - 6 - cfg.valueOffset, String(bn.length), 'middle', api.ink, 0.75);
     });
     drawAxisTitles(api, plot, false);
     if (!cfg.xTitle) api.root.append('text').attr('x', plot.x + plot.w/2).attr('y', plot.y + plot.h + clamp(cfg.labelSize,12,22)*2 + 14).attr('text-anchor','middle').attr('font-size', clamp(cfg.labelSize,12,22)).attr('font-weight',600).attr('fill',api.ink).attr('opacity',0.6).text(col0.name);
@@ -1782,7 +1782,7 @@
       var x = band(c) + inner(s.name) + inner.bandwidth() / 2, col = legible(scf(si), api.guardBg);
       g.append('line').attr('x1', x).attr('y1', base).attr('x2', x).attr('y2', pv).attr('stroke', col).attr('stroke-width', clamp(cfg.lineWidth, 2, 8));
       g.append('circle').attr('cx', x).attr('cy', pv).attr('r', r).attr('fill', col);
-      if (cfg.showValues) valueLabel(api, x, pv - r - 5, api.fmt(v), 'middle', api.ink, 0.8);
+      if (cfg.showValues) valueLabel(api, x, pv - r - 5 - cfg.valueOffset, api.fmt(v), 'middle', api.ink, 0.8);
     }); });
     drawAxisTitles(api, plot, false);
   }
@@ -1890,7 +1890,7 @@
     steps.forEach(function (s, i) { var c = cats[i], y0 = y(Math.max(s.start, s.end)), y1 = y(Math.min(s.start, s.end));
       rect(g, band(c), y0, band.bandwidth(), Math.max(1, y1 - y0), s.v >= 0 ? up : down, rx, null);
       if (i < steps.length - 1) g.append('line').attr('x1', band(c) + band.bandwidth()).attr('y1', y(s.end)).attr('x2', band(cats[i + 1])).attr('y2', y(s.end)).attr('stroke', api.ink).attr('opacity', 0.2);
-      if (cfg.showValues) valueLabel(api, band(c) + band.bandwidth() / 2, y0 - 6, (s.v >= 0 ? '+' : '') + api.fmt(s.v), 'middle', api.ink, 0.75);
+      if (cfg.showValues) valueLabel(api, band(c) + band.bandwidth() / 2, y0 - 6 - cfg.valueOffset, (s.v >= 0 ? '+' : '') + api.fmt(s.v), 'middle', api.ink, 0.75);
     });
     drawAxisTitles(api, plot, false);
   }
@@ -2345,8 +2345,14 @@
     return r;
   }
   function valueLabel(api, x, y, text, anchor, fill, opacity, annotKey) {
+    var cfg = api.cfg;
+    /* Data-label styling: own size (0 = auto, follows the label text size), weight and
+       colour (blank = the auto-contrast fill the caller computed). Distance from the mark
+       is applied at the call sites (it's directional). */
+    var sz = cfg.valueSize > 0 ? clamp(cfg.valueSize, 6, 80) : clamp(cfg.labelSize, 9, 30);
+    var col = isHex(cfg.valueColor) ? cfg.valueColor : fill;
     var sel = api.root.append('text').attr('x', x).attr('y', y).attr('text-anchor', anchor || 'middle').attr('data-canvas-input', 'showValues')
-      .attr('font-size', clamp(api.cfg.labelSize, 9, 30)).attr('font-weight', 600).attr('fill', fill).attr('opacity', opacity == null ? 1 : opacity).text(text);
+      .attr('font-size', sz).attr('font-weight', cfg.valueWeight || 600).attr('fill', col).attr('opacity', opacity == null ? 1 : opacity).text(text);
     if (annotKey != null) api.labelAnnot(sel, annotKey, x, y, anchor || 'middle', text);
     return sel;
   }

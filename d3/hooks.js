@@ -387,6 +387,10 @@ function buildConfig(inp) {
     heading:        String(inp.heading || ''),
     subheading:     String(inp.subheading || ''),
     showValues:     inp.showValues === true || inp.showValues === 'true',
+    valueSize:      clamp(num(inp.valueSize, 0), 0, 80),         // data-label font size (0 = auto)
+    valueOffset:    clamp(num(inp.valueOffset, 0), -40, 160),    // extra gap from the mark
+    valueWeight:    clamp(Math.round(num(inp.valueWeight, 600)), 100, 900),
+    valueColor:     isHex(inp.valueColor) ? inp.valueColor.trim() : '',   // blank = auto-contrast
     labelSize:      clamp(num(inp.labelSize, 22), 8, 56),
     titleSize:      clamp(num(inp.titleSize, 34), 14, 72),
     titleAlign:     String(inp.titleAlign || 'left'),
