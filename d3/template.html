@@ -210,14 +210,33 @@
     }
     /* Tag a mark so a click opens the brand-swatch recolour picker for its value. */
     var recolorEnabled = ['bar', 'bar-horizontal', 'pie', 'donut'].indexOf(cfg.chartType) >= 0;
-    function tagMark(sel, label) { if (recolorEnabled && sel && label != null) sel.attr('data-recolor', String(label)); }
+    function tagMark(sel, label) { if (recolorEnabled && sel && label != null) sel.attr('data-recolor', String(label)); return sel; }
+    /* Apply the chosen drop shadow / glow to a mark (glow tints to the mark's own colour). */
+    var shadowDefs = null, shadowCache = {};
+    function markShadow(sel, col) {
+      if (!sel || !cfg.shadow || cfg.shadow === 'none') return sel;
+      if (!shadowDefs) shadowDefs = root.append('defs').attr('class', 'd3-shadow');
+      var u = ensureShadow(shadowDefs, cfg.shadow, col, shadowCache);
+      if (u) sel.attr('filter', u);
+      return sel;
+    }
 
     /* Data-label annotations (arrow + note). Tag a value label so a click opens the
        annotation widget; draw the badge at the category's outer extent. */
     var annotEnabled = ['bar', 'bar-horizontal', 'line', 'area'].indexOf(cfg.chartType) >= 0;
     var annotations = parseAnnotations(cfg.annotations);
     function tagAnnot(sel, key) { if (annotEnabled && sel && key != null) sel.attr('data-annot', String(key)); return sel; }
-    function annotBadge(cat, x, y, dir) { var a = annotations[cat]; if (a) drawAnnotBadge(root, x, y, dir, a, clamp(cfg.labelSize, 12, 26), ink, guardBg); }
+    /* Tag a data label AND, if it has an annotation, draw the badge inline right
+       after it (sharing the label's baseline). x/anchor/text describe the label. */
+    function labelAnnot(sel, key, x, baselineY, anchor, text) {
+      if (!annotEnabled) return sel;
+      if (sel && key != null) sel.attr('data-annot', String(key));
+      var a = annotations[key]; if (!a || (!a.i && !a.t)) return sel;
+      var lsz = clamp(cfg.labelSize, 9, 30), w = measureText(String(text), lsz, 600);
+      var endX = (anchor === 'end') ? x : (anchor === 'middle') ? x + w / 2 : x + w;
+      drawAnnotInline(root, endX + 8, baselineY, a, clamp(cfg.labelSize, 12, 24), ink);
+      return sel;
+    }
 
     /* Number formatting. */
     var fmt = makeFmt(cfg.numberFormat, d3);
@@ -274,8 +293,8 @@
                 box: box, ink: ink, guardBg: guardBg, fmt: fmt, catColorFn: catColorFn, seqColorFn: seqColorFn,
                 barByCat: barByCat, override: overrideColor, textureFor: textureFor,
                 overlayRect: overlayRect, overlayPath: overlayPath, patternsOn: patternsOn, swatches: cfg.brandSwatches,
-                recolorEnabled: recolorEnabled, tagMark: tagMark,
-                annotEnabled: annotEnabled, annotations: annotations, tagAnnot: tagAnnot, annotBadge: annotBadge };
+                recolorEnabled: recolorEnabled, tagMark: tagMark, markShadow: markShadow,
+                annotEnabled: annotEnabled, annotations: annotations, tagAnnot: tagAnnot, labelAnnot: labelAnnot };
 
     /* ── dispatch ────────────────────────────────────────────────────────────── */
     switch (cfg.chartType) {
@@ -528,6 +547,29 @@
     return 'url(#' + id + ')';
   }
 
+  /* ── shadow / depth (feDropShadow) ─────────────────────────────────────────── */
+  /* Opt-in drop shadow (soft/medium/strong) to lift marks off the background and
+     sharpen the contrast between values, or a colour-matched glow. A neutral drop
+     shares one filter; a glow gets one per colour. SVG/PNG faithful, EMF/EPS keep
+     a vector shadow (engine gaussianShadowRings), PDF rasterises while a filter is
+     present — so this is opt-in (default none). */
+  var SHADOW_PRESETS = {
+    soft:   { dy: 1, blur: 5,  op: 0.20, glow: false },
+    medium: { dy: 2, blur: 10, op: 0.28, glow: false },
+    strong: { dy: 3, blur: 16, op: 0.36, glow: false },
+    glow:   { dy: 0, blur: 10, op: 0.60, glow: true }
+  };
+  function ensureShadow(defs, preset, color, cache) {
+    var p = SHADOW_PRESETS[preset]; if (!p || !defs) return null;
+    var col = p.glow ? (isHex(color) ? color : '#ffffff') : '#000000';
+    var id = 'd3sh-' + preset + (p.glow ? '-' + col.replace('#', '') : '');
+    if (cache[id]) return 'url(#' + id + ')';
+    cache[id] = true;
+    defs.append('filter').attr('id', id).attr('x', '-60%').attr('y', '-60%').attr('width', '220%').attr('height', '220%')
+      .append('feDropShadow').attr('dx', 0).attr('dy', p.dy).attr('stdDeviation', p.blur).attr('flood-color', col).attr('flood-opacity', p.op);
+    return 'url(#' + id + ')';
+  }
+
   /* ── shared: legend ───────────────────────────────────────────────────────── */
   /* Legend sizing: text size, indicator size (0 = auto from text), item gap. */
   function legendMetrics(cfg) {
@@ -762,29 +804,23 @@
         var pv = val(v); if (!isFinite(pv)) return;               // log(≤0) etc.
         var texIdx = api.barByCat ? ci : si;
         var col = api.override(c, legible(colorFor(si, ci), api.guardBg));
+        var akey = series.length > 1 ? c + ' · ' + s.name : c;
         if (horizontal) {
           var h0 = inner.bandwidth(), h = cfg.barThickness > 0 ? Math.min(h0, cfg.barThickness) : h0;
           var y = band(c) + inner(s.name) + (h0 - h) / 2;
           var x0 = Math.min(base, pv), x1 = Math.max(base, pv), ww = Math.max(0, x1 - x0);
-          api.tagMark(cfg.bar3d ? bar3d(g, x0, y, ww, h, col, barDepth(cfg, h)) : rect(g, x0, y, ww, h, col, Math.min(rx, h/2), stroke), c);
+          api.markShadow(api.tagMark(cfg.bar3d ? bar3d(g, x0, y, ww, h, col, barDepth(cfg, h)) : rect(g, x0, y, ww, h, col, Math.min(rx, h/2), stroke), c), col);
           api.overlayRect(g, x0, y, ww, h, cfg.bar3d ? 0 : Math.min(rx, h/2), texIdx, col);
-          if (cfg.showValues) api.tagAnnot(valueLabel(api, x1 + 6 + (cfg.bar3d ? barDepth(cfg, h) * 0.72 : 0), y + h/2 + 5, api.fmt(v), 'start', api.ink, 0.75), c);
+          if (cfg.showValues) valueLabel(api, x1 + 6 + (cfg.bar3d ? barDepth(cfg, h) * 0.72 : 0), y + h/2 + 5, api.fmt(v), 'start', api.ink, 0.75, akey);
         } else {
           var w0 = inner.bandwidth(), w = cfg.barThickness > 0 ? Math.min(w0, cfg.barThickness) : w0;
           var x = band(c) + inner(s.name) + (w0 - w) / 2;
           var y0 = Math.min(base, pv), y1 = Math.max(base, pv), hh = Math.max(0, y1 - y0);
-          api.tagMark(cfg.bar3d ? bar3d(g, x, y0, w, hh, col, barDepth(cfg, w)) : rect(g, x, y0, w, hh, col, Math.min(rx, w/2), stroke), c);
+          api.markShadow(api.tagMark(cfg.bar3d ? bar3d(g, x, y0, w, hh, col, barDepth(cfg, w)) : rect(g, x, y0, w, hh, col, Math.min(rx, w/2), stroke), c), col);
           api.overlayRect(g, x, y0, w, hh, cfg.bar3d ? 0 : Math.min(rx, w/2), texIdx, col);
-          if (cfg.showValues) api.tagAnnot(valueLabel(api, x + w/2, y0 - 6 - (cfg.bar3d ? barDepth(cfg, w) * 0.52 : 0), api.fmt(v), 'middle', api.ink, 0.75), c);
+          if (cfg.showValues) valueLabel(api, x + w/2, y0 - 6 - (cfg.bar3d ? barDepth(cfg, w) * 0.52 : 0), api.fmt(v), 'middle', api.ink, 0.75, akey);
         }
       });
-    });
-    if (api.annotEnabled) cats.forEach(function (c, ci) {
-      if (!api.annotations[c]) return;
-      var mx = -Infinity; series.forEach(function (s) { var vv = +s.values[ci]; if (isFinite(vv)) mx = Math.max(mx, vv); });
-      var pv = val(mx); if (!isFinite(pv)) return;
-      if (horizontal) api.annotBadge(c, pv, band(c) + band.bandwidth()/2, 'right');
-      else api.annotBadge(c, band(c) + band.bandwidth()/2, pv, 'up');
     });
   }
 
@@ -808,31 +844,24 @@
       var layerCol = legible(scf(si), api.guardBg);
       layer.forEach(function (d, ci) {
         var a = d[0], b = d[1]; if (!isFinite(a) || !isFinite(b) || b - a === 0) return;
-        var c = cats[ci], col = api.override(c, layerCol);
+        var c = cats[ci], col = api.override(c, layerCol), akey = stacked.length > 1 ? c + ' · ' + layer.key : c;
         /* Draw between the two pixel positions regardless of sign order, so a
            negative segment (a > b) renders on the correct side of the baseline. */
         var pa = val(a), pb = val(b);
         if (horizontal) {
           var h0 = band.bandwidth(), h = cfg.barThickness > 0 ? Math.min(h0, cfg.barThickness) : h0;
           var y = band(c) + (h0 - h) / 2, xx = Math.min(pa, pb), ww = Math.abs(pb - pa);
-          api.tagMark(cfg.bar3d ? bar3d(g, xx, y, ww, h, col, barDepth(cfg, h)) : rect(g, xx, y, ww, h, col, 0, stroke), c);
+          api.markShadow(api.tagMark(cfg.bar3d ? bar3d(g, xx, y, ww, h, col, barDepth(cfg, h)) : rect(g, xx, y, ww, h, col, 0, stroke), c), col);
           api.overlayRect(g, xx, y, ww, h, 0, si, col);
-          if (cfg.showValues && ww > 26) api.tagAnnot(valueLabel(api, (pa+pb)/2, y + h/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1), c);
+          if (cfg.showValues && ww > 26) valueLabel(api, (pa+pb)/2, y + h/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1, akey);
         } else {
           var w0 = band.bandwidth(), w = cfg.barThickness > 0 ? Math.min(w0, cfg.barThickness) : w0;
           var x = band(c) + (w0 - w) / 2, yy = Math.min(pa, pb), hh = Math.abs(pa - pb);
-          api.tagMark(cfg.bar3d ? bar3d(g, x, yy, w, hh, col, barDepth(cfg, w)) : rect(g, x, yy, w, hh, col, 0, stroke), c);
+          api.markShadow(api.tagMark(cfg.bar3d ? bar3d(g, x, yy, w, hh, col, barDepth(cfg, w)) : rect(g, x, yy, w, hh, col, 0, stroke), c), col);
           api.overlayRect(g, x, yy, w, hh, 0, si, col);
-          if (cfg.showValues && hh > 22) api.tagAnnot(valueLabel(api, x + w/2, (pa+pb)/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1), c);
+          if (cfg.showValues && hh > 22) valueLabel(api, x + w/2, (pa+pb)/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1, akey);
         }
       });
-    });
-    if (api.annotEnabled) cats.forEach(function (c, ci) {
-      if (!api.annotations[c]) return;
-      var top = -Infinity; stacked.forEach(function (layer) { var d = layer[ci]; if (d && isFinite(d[1])) top = Math.max(top, d[1]); });
-      var pv = val(top); if (!isFinite(pv)) return;
-      if (horizontal) api.annotBadge(c, pv, band(c) + band.bandwidth()/2, 'right');
-      else api.annotBadge(c, band(c) + band.bandwidth()/2, pv, 'up');
     });
   }
 
@@ -875,8 +904,8 @@
       var every = Math.ceil(cats.length / Math.max(1, Math.floor(plot.w / 60)));
       if (cfg.showAxes) cats.forEach(function (c, i) {
         if (every > 1 && i % every !== 0) return;
-        api.tagAnnot(api.root.append('text').attr('x', x(c)).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
-          .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', api.ink).attr('opacity', 0.8).text(trunc(c, 12)), c);
+        api.root.append('text').attr('x', x(c)).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
+          .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', api.ink).attr('opacity', 0.8).text(trunc(c, 12));
       });
     })();
     var g = api.root.append('g');
@@ -886,8 +915,8 @@
       var area = d3.area().x(function (d, i){ return x(cats[i]); }).y0(function (d){ return y(d[0]); }).y1(function (d){ return y(d[1]); }).curve(curve);
       layers.forEach(function (layer, si) {
         var col = legible(scf(si), api.guardBg);
-        g.append('path').attr('d', area(layer)).attr('fill', col).attr('fill-opacity', clamp(fo, 0.15, 1))
-          .attr('stroke', col).attr('stroke-width', 1);
+        api.markShadow(g.append('path').attr('d', area(layer)).attr('fill', col).attr('fill-opacity', clamp(fo, 0.15, 1))
+          .attr('stroke', col).attr('stroke-width', 1), col);
       });
     } else {
       series.forEach(function (s, si) {
@@ -901,22 +930,16 @@
           g.append('path').attr('d', area(pts)).attr('fill', col).attr('fill-opacity', clamp(fo, 0.08, 1)).attr('stroke', 'none');
         }
         var line = d3.line().defined(defined).x(function (d){ return x(d.c); }).y(function (d){ return y(d.v); }).curve(curve);
-        g.append('path').attr('d', line(pts)).attr('fill', 'none').attr('stroke', col)
-          .attr('stroke-width', cfg.lineWidth).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round');
+        api.markShadow(g.append('path').attr('d', line(pts)).attr('fill', 'none').attr('stroke', col)
+          .attr('stroke-width', cfg.lineWidth).attr('stroke-linejoin', 'round').attr('stroke-linecap', 'round'), col);
         if (cfg.showPoints) pts.forEach(function (d) {
           if (!isFinite(d.v) || !isFinite(y(d.v))) return;
           g.append('circle').attr('cx', x(d.c)).attr('cy', y(d.v)).attr('r', clamp(cfg.pointSize/2, 2, 20))
             .attr('fill', col).attr('stroke', api.guardBg).attr('stroke-width', 1.5);
-          if (cfg.showValues) api.tagAnnot(valueLabel(api, x(d.c), y(d.v) - clamp(cfg.pointSize/2,2,20) - 6, api.fmt(d.v), 'middle', api.ink, 0.8), d.c);
+          if (cfg.showValues) valueLabel(api, x(d.c), y(d.v) - clamp(cfg.pointSize/2,2,20) - 6, api.fmt(d.v), 'middle', api.ink, 0.8, series.length > 1 ? d.c + ' · ' + s.name : d.c);
         });
       });
     }
-    if (api.annotEnabled) cats.forEach(function (c, ci) {
-      if (!api.annotations[c]) return;
-      var top = Infinity;
-      series.forEach(function (s) { var v = s.values[ci]; if (isFinite(v) && isFinite(y(v))) top = Math.min(top, y(v)); });
-      if (isFinite(top)) api.annotBadge(c, x(c), top, 'up');
-    });
     drawAxisTitles(api, plot, false);
   }
 
@@ -987,7 +1010,7 @@
       var col = api.override(d.data.label, legible(ccf(d.data.oi), api.guardBg));
       var p = g.append('path').attr('d', arc(d)).attr('fill', col);
       if (stroke) p.attr('stroke', stroke.s).attr('stroke-width', stroke.w).attr('stroke-linejoin', 'round');
-      api.tagMark(p, d.data.label);
+      api.markShadow(api.tagMark(p, d.data.label), col);
       api.overlayPath(g, arc(d), i, col);
       var frac = d.data.value / total;
       if (cfg.showValues && frac > 0.03) {
@@ -1021,7 +1044,7 @@
       var col = api.override(d.data.label, legible(ccf(d.data.oi), api.guardBg));
       var p = g.append('path').attr('d', arcGen(d)).attr('fill', col);
       if (stroke) p.attr('stroke', stroke.s).attr('stroke-width', stroke.w).attr('stroke-linejoin', 'round');
-      api.tagMark(p, d.data.label);
+      api.markShadow(api.tagMark(p, d.data.label), col);
       api.overlayPath(g, arcGen(d), i, col);
       var frac = d.data.value / total;
       if (cfg.showValues && frac > 0.03) {
@@ -1689,22 +1712,24 @@
     if (ann.bg) return { fg: autoText(ann.bg), bg: ann.bg };
     return { fg: ink, bg: null };
   }
-  function drawAnnotBadge(g, x, y, dir, ann, sz, ink, guardBg) {
+  /* Render the badge INLINE starting at startX, with its text baseline on
+     baselineY — so it sits at the end of a data label, sharing that label's
+     baseline (the "↗ Big Jump" after "120" placement). */
+  function drawAnnotInline(g, startX, baselineY, ann, sz, ink) {
     if (!ann || (!ann.i && !ann.t)) return;
     var col = annotColors(ann, ink);
-    var iconS = sz * 0.95, pad = sz * 0.42, gapIT = (ann.i && ann.t) ? sz * 0.34 : 0;
+    var iconS = sz * 0.98, padX = sz * 0.5, padY = sz * 0.36, gapIT = (ann.i && ann.t) ? sz * 0.3 : 0;
     var textW = ann.t ? measureText(ann.t, sz, 600) : 0;
     var contentW = (ann.i ? iconS : 0) + gapIT + textW;
-    var bw = contentW + 2 * pad, bh = Math.max(iconS, sz) + pad * 1.2, m = 8, cx, cy;
-    if (dir === 'right') { cx = x + m + bw/2; cy = y; }
-    else if (dir === 'left') { cx = x - m - bw/2; cy = y; }
-    else if (dir === 'down') { cx = x; cy = y + m + bh/2; }
-    else { cx = x; cy = y - m - bh/2; }
+    var midY = baselineY - sz * 0.34;   // visual centre of a baseline-set text run
     var bge = g.append('g').attr('class', 'annot');
-    if (col.bg) bge.append('rect').attr('x', cx - bw/2).attr('y', cy - bh/2).attr('width', bw).attr('height', bh).attr('rx', Math.min(bh/2, 9)).attr('fill', col.bg);
-    var ix = cx - contentW/2;
-    if (ann.i) { drawIcon(bge, ix + iconS/2, cy, iconS, ann.i, col.fg); ix += iconS + gapIT; }
-    if (ann.t) bge.append('text').attr('x', ix).attr('y', cy + sz*0.34).attr('text-anchor', 'start').attr('font-size', sz).attr('font-weight', 600).attr('fill', col.fg).text(ann.t);
+    if (col.bg) {
+      var bh = Math.max(iconS, sz) + 2 * padY;
+      bge.append('rect').attr('x', startX - padX).attr('y', midY - bh/2).attr('width', contentW + 2 * padX).attr('height', bh).attr('rx', Math.min(bh/2, 9)).attr('fill', col.bg);
+    }
+    var ix = startX;
+    if (ann.i) { drawIcon(bge, ix + iconS/2, midY, iconS, ann.i, col.fg); ix += iconS + gapIT; }
+    if (ann.t) bge.append('text').attr('x', ix).attr('y', baselineY).attr('text-anchor', 'start').attr('font-size', sz).attr('font-weight', 600).attr('fill', col.fg).text(ann.t);
   }
 
   function closeAnnotWidget() {
@@ -1804,9 +1829,11 @@
     if (stroke && stroke.w > 0) r.attr('stroke', stroke.s).attr('stroke-width', stroke.w);
     return r;
   }
-  function valueLabel(api, x, y, text, anchor, fill, opacity) {
-    return api.root.append('text').attr('x', x).attr('y', y).attr('text-anchor', anchor || 'middle').attr('data-canvas-input', 'showValues')
+  function valueLabel(api, x, y, text, anchor, fill, opacity, annotKey) {
+    var sel = api.root.append('text').attr('x', x).attr('y', y).attr('text-anchor', anchor || 'middle').attr('data-canvas-input', 'showValues')
       .attr('font-size', clamp(api.cfg.labelSize, 9, 30)).attr('font-weight', 600).attr('fill', fill).attr('opacity', opacity == null ? 1 : opacity).text(text);
+    if (annotKey != null) api.labelAnnot(sel, annotKey, x, y, anchor || 'middle', text);
+    return sel;
   }
   function sortItems(items, order) {
     var a = items.slice();

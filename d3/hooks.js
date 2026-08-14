@@ -360,6 +360,7 @@ function buildConfig(inp) {
     yTitle:         String(inp.yTitle || ''),
     palette:        String(inp.palette || 'suse'),
     colorBy:        String(inp.colorBy || 'series'),
+    shadow:         String(inp.shadow || 'none'),          // none / soft / medium / strong / glow
     differentiate:  String(inp.differentiate || 'auto'),   // colour / pattern / both
     colorOverrides: String(inp.colorOverrides || ''),       // JSON map: value → hex (click-to-recolour)
     annotations:    String(inp.annotations || ''),          // JSON map: category → {i,t,fg,bg} (click a data label)

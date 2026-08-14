@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -1053,6 +1053,23 @@
       "step": 1,
       "help": "How far the 3-D bars or pie are extruded. 0 scales the depth to the chart.",
       "showIf": { "chartType": ["bar", "bar-horizontal", "pie", "donut"] }
+    },
+    {
+      "id": "shadow",
+      "urlKey": "sh",
+      "label": "Shadow / depth",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "None" },
+        { "value": "soft", "label": "Soft" },
+        { "value": "medium", "label": "Medium" },
+        { "value": "strong", "label": "Strong" },
+        { "value": "glow", "label": "Glow (colour halo)" }
+      ],
+      "help": "Lift marks off the background with a soft drop shadow — depth and better contrast between values — or a colour-matched glow for an on-screen dashboard look. SVG and PNG stay crisp; EMF/EPS keep a vector shadow; PDF rasterises the chart while a shadow is on.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "pie", "donut", "line", "area"] }
     },
     {
       "id": "differentiate",
