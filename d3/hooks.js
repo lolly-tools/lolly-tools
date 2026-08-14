@@ -602,7 +602,7 @@ function buildFrames(text, opts) {
   return { labels: frameOrder, categories: catOrder, frames };
 }
 
-const ANIMATABLE = ['bar', 'bar-horizontal', 'line', 'area', 'pie', 'donut'];
+const ANIMATABLE = ['bar', 'bar-horizontal', 'line', 'area', 'pie', 'donut', 'scatter'];
 
 function compute(model) {
   const inp = Object.fromEntries(model.map((i) => [i.id, i.value]));
@@ -625,26 +625,28 @@ function compute(model) {
     ? buildFrames(inp.data, Object.assign({ frameCol: cfg.frameColumn }, parseOpts)) : null;
   let data;
   if (frameData && frameData.frames.length >= 2) {
-    // Fixed value-axis extent over ALL frames so the gridlines/axis hold still while
-    // the bars animate within them (else the axis rescales every frame → jerky). Uses
-    // the stacked per-category sum when the chart stacks, else the max single value.
+    // Fixed axis extent(s) over ALL frames so the gridlines/axes hold still while the
+    // marks animate within them (else they rescale every frame → jerky).
     const cats = frameData.categories, frs = frameData.frames;
-    const stacked = frs[0].length > 1 && cfg.stackMode !== 'grouped'
-      && (cfg.chartType === 'area' || cfg.chartType === 'bar' || cfg.chartType === 'bar-horizontal');
-    let mn = Infinity, mx = -Infinity;
-    frs.forEach((fr) => {
-      for (let c = 0; c < cats.length; c++) {
-        if (stacked) {
-          let pos = 0, neg = 0;
-          fr.forEach((s) => { const v = Number(s.values[c]); if (Number.isFinite(v)) { if (v >= 0) pos += v; else neg += v; } });
-          if (pos > mx) mx = pos; if (neg < mn) mn = neg;
-        } else {
-          fr.forEach((s) => { const v = Number(s.values[c]); if (Number.isFinite(v)) { if (v > mx) mx = v; if (v < mn) mn = v; } });
+    const ext = (pick) => { let mn = Infinity, mx = -Infinity; frs.forEach((fr) => pick(fr, (v) => { const n = Number(v); if (Number.isFinite(n)) { if (n < mn) mn = n; if (n > mx) mx = n; } })); return [Number.isFinite(mn) ? mn : 0, Number.isFinite(mx) ? mx : 1]; };
+    if (cfg.chartType === 'scatter') {
+      // scatter: series[0]=X, series[1]=Y — fix BOTH axes independently.
+      cfg.animExtentX = ext((fr, add) => (fr[0] ? fr[0].values : []).forEach(add));
+      cfg.animExtent  = ext((fr, add) => (fr[1] ? fr[1].values : []).forEach(add));
+    } else {
+      // bar/line/area: stacked per-category sum when stacking, else the max single value.
+      const stacked = frs[0].length > 1 && cfg.stackMode !== 'grouped'
+        && (cfg.chartType === 'area' || cfg.chartType === 'bar' || cfg.chartType === 'bar-horizontal');
+      cfg.animExtent = ext((fr, add) => {
+        for (let c = 0; c < cats.length; c++) {
+          if (stacked) { let pos = 0, neg = 0; fr.forEach((s) => { const v = Number(s.values[c]); if (Number.isFinite(v)) { if (v >= 0) pos += v; else neg += v; } }); add(pos); add(neg); }
+          else fr.forEach((s) => add(s.values[c]));
         }
-      }
-    });
-    cfg.animExtent = [Number.isFinite(mn) ? mn : 0, Number.isFinite(mx) ? mx : 1];
-    data = { categories: frameData.categories, series: frameData.frames[0], numericCols: [], errorValues: null,
+      });
+    }
+    // scatter reads numericCols (x/y cols); bar/line/pie read series — populate the one each needs from frame 0.
+    data = { categories: frameData.categories, series: frameData.frames[0],
+      numericCols: cfg.chartType === 'scatter' ? frameData.frames[0] : [], errorValues: null,
       frames: frameData.frames, frameLabels: frameData.labels,
       note: `Animating ${frameData.frames.length} frames by “${cfg.frameColumn}”.` };
   } else {

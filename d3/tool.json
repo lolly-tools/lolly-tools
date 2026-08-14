@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 \u2014 paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour \u2014 on-brand and vector-clean.",
-  "version": "1.13.0",
+  "version": "1.14.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",

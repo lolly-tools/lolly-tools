@@ -181,7 +181,10 @@
     }
     function draw(t) {
       var f = frameFor(t);
-      var st = { cfg: cfg, data: { categories: data.categories, series: lerp(frames[f.i], frames[f.j], f.tw), numericCols: [], errorValues: null } };
+      var tweened = lerp(frames[f.i], frames[f.j], f.tw);
+      /* scatter reads numericCols (x/y); the others read series — feed the tween to the right one. */
+      var st = { cfg: cfg, data: { categories: data.categories, series: tweened,
+        numericCols: cfg.chartType === 'scatter' ? tweened : [], errorValues: null } };
       try { render(st, d3); } catch (e) { console.error('[d3 anim]', e); return; }
       if (cfg.frameLabelShow !== false && labels.length)
         d3.select('#d3-plot').append('text').attr('x', cfg.width - 18).attr('y', 46).attr('text-anchor', 'end')
@@ -1322,6 +1325,9 @@
     var xs = cols[0].values, ys = cols[1].values;
     var sizeVals = (cfg.sizeBy === 'auto' && cols[2]) ? cols[2].values : null;
     var xdom = extentPad(d3, xs, cfg.yZero), ydom = extentPad(d3, ys, cfg.yZero);
+    /* Fixed axes over ALL frames so both scales hold still while the points move. */
+    if (cfg.animExtentX) { var pxx = (cfg.animExtentX[1] - cfg.animExtentX[0]) * 0.06 || 1; xdom = [cfg.animExtentX[0] - pxx, cfg.animExtentX[1] + pxx]; }
+    if (cfg.animExtent)  { var pyy = (cfg.animExtent[1] - cfg.animExtent[0]) * 0.06 || 1; ydom = [cfg.animExtent[0] - pyy, cfg.animExtent[1] + pyy]; }
     if (cfg.yMax > 0) ydom[1] = cfg.yMax;
     var x = makeYScale(cfg.yScaleType === 'log' ? 'linear' : cfg.yScaleType, xdom, [plot.x, plot.x + plot.w], d3);
     var y = makeYScale(cfg.yScaleType, ydom, [plot.y + plot.h, plot.y], d3);
