@@ -182,6 +182,62 @@ function oklabToRgb01(L, a, b) {
 
 var LUM_R = 0.2126, LUM_G = 0.7152, LUM_B = 0.0722; // Rec.709 luma
 
+// ── HSL colour mixer (Lightroom-style per-hue-band Hue/Saturation/Luminance) ──
+// Eight named bands like the classic HSL panel. The weighting below is a smooth
+// partition of unity, so ANY centre set works — these uneven perceptual centres
+// or an evenly-spaced set (the door left open for a future "number of stops"
+// control). The order here is the manifest's band order and the swatch order the
+// injected sidebar CSS paints (template.html).
+var HSL_BAND_NAMES = ['Red', 'Orange', 'Yellow', 'Green', 'Aqua', 'Blue', 'Purple', 'Magenta'];
+var HSL_BAND_HUES = [0, 30, 60, 120, 180, 225, 280, 320]; // degrees on the hue wheel
+
+function rgbToHsl(r, g, b) {
+  var mx = Math.max(r, g, b), mn = Math.min(r, g, b), d = mx - mn;
+  var L = (mx + mn) / 2, H = 0, S = 0;
+  if (d > 1e-9) {
+    S = L > 0.5 ? d / (2 - mx - mn) : d / (mx + mn);
+    if (mx === r) H = (g - b) / d + (g < b ? 6 : 0);
+    else if (mx === g) H = (b - r) / d + 2;
+    else H = (r - g) / d + 4;
+    H *= 60;
+  }
+  return [H, S, L];
+}
+function hslHue2rgb(p, q, t) {
+  t = t - Math.floor(t);
+  if (t < 1 / 6) return p + (q - p) * 6 * t;
+  if (t < 1 / 2) return q;
+  if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6;
+  return p;
+}
+function hslToRgb(H, S, L) {
+  H = ((H % 360) + 360) % 360;
+  if (S <= 1e-9) return [L, L, L];
+  var q = L < 0.5 ? L * (1 + S) : L + S - L * S, p = 2 * L - q, h = H / 360;
+  return [hslHue2rgb(p, q, h + 1 / 3), hslHue2rgb(p, q, h), hslHue2rgb(p, q, h - 1 / 3)];
+}
+
+// Partition-of-unity band weights for a hue: the two centres bracketing the hue
+// share weight 1 via a raised-cosine ease (C¹-smooth, no banding at boundaries),
+// everything else 0. Handles wrap-around and any centre set.
+function hslBandWeights(H, centres) {
+  var N = centres.length, w = new Array(N);
+  for (var k = 0; k < N; k++) w[k] = 0;
+  for (var i = 0; i < N; i++) {
+    var a = centres[i], b = (i + 1 < N) ? centres[i + 1] : centres[0] + 360;
+    var hh = H;
+    if (hh < a) hh += 360;                       // wrap into the final [last, first+360] segment
+    if (hh >= a && hh <= b) {
+      var t = (b > a) ? (hh - a) / (b - a) : 0;
+      var e = 0.5 - 0.5 * Math.cos(Math.PI * t); // 0→1 across the segment
+      w[i] += 1 - e;
+      w[(i + 1) % N] += e;
+      return w;
+    }
+  }
+  return w; // segments cover the whole ring — unreached in practice
+}
+
 // Monotone-cubic curve through control points [[x,y]…] (Fritsch–Carlson), the
 // classic photo-curve interpolator: passes through every point, never
 // overshoots. Returns an evaluator over [0,1].
@@ -526,6 +582,22 @@ function resolveBrandStops() {
 // ── the colour pipeline ──────────────────────────────────────────────────────
 
 // Normalise every input into one params object (also the memo/cache key).
+// Read the 24 HSL-mixer sliders (8 bands × Hue/Sat/Lum) into normalised bands:
+// hue as a ±40° rotation, saturation/luminance as ±1 amounts. `active` is false
+// when every slider is centred, so the whole stage (and its LUT rebuild) is skipped.
+function hslBandsFrom(inputs) {
+  var bands = [], active = false;
+  for (var i = 0; i < HSL_BAND_NAMES.length; i++) {
+    var nm = HSL_BAND_NAMES[i];
+    var hv = clamp(n(inputs['hslHue' + nm], 0), -100, 100);
+    var sv = clamp(n(inputs['hslSat' + nm], 0), -100, 100);
+    var lv = clamp(n(inputs['hslLum' + nm], 0), -100, 100);
+    if (hv || sv || lv) active = true;
+    bands.push({ h: hv * 0.4, s: sv / 100, l: lv / 100 });
+  }
+  return { bands: bands, active: active };
+}
+
 function paramsFrom(inputs) {
   var fr = inputs.imageFraming || {};
   var lutFileId = null;
@@ -548,6 +620,7 @@ function paramsFrom(inputs) {
     shadows: clamp(n(inputs.shadows, 0), -100, 100) / 100,
     saturation: clamp(n(inputs.saturation, 100), 0, 200) / 100,
     vibrance: clamp(n(inputs.vibrance, 0), -100, 100) / 100,
+    hsl: hslBandsFrom(inputs),
     preset: PRESETS[inputs.preset] ? inputs.preset : 'none',
     presetStrength: clamp(n(inputs.presetStrength, 100), 0, 100) / 100,
     lutSource: lutSource,
@@ -586,7 +659,8 @@ function paramsFrom(inputs) {
 function colorKey(P, stops) {
   return JSON.stringify([
     P.temperature, P.tint, P.exposure, P.contrast, P.highlights, P.shadows,
-    P.saturation, P.vibrance, P.preset, P.presetStrength, P.lutId,
+    P.saturation, P.vibrance, P.hsl.active ? P.hsl.bands : 0,
+    P.preset, P.presetStrength, P.lutId,
     P.lutIntensity, P.treatment, P.treatmentAmount,
     P.treatShadow, P.treatMid, P.treatHighlight, stops,
   ]);
@@ -613,6 +687,8 @@ function makeColorFn(P, stops, userLut) {
   var labSh = tSh ? rgb01ToOklab(tSh[0], tSh[1], tSh[2]) : null;
   var labMd = tMd ? rgb01ToOklab(tMd[0], tMd[1], tMd[2]) : null;
   var labHi = tHi ? rgb01ToOklab(tHi[0], tHi[1], tHi[2]) : null;
+  // HSL colour mixer bands (see hslBandsFrom).
+  var hslBands = P.hsl.bands, hslActive = P.hsl.active;
 
   return function (r, g, b) {
     // 1. white balance + exposure in linear light
@@ -651,6 +727,31 @@ function makeColorFn(P, stops, userLut) {
       r = clamp(luma + (r - luma) * sat, 0, 1);
       g = clamp(luma + (g - luma) * sat, 0, 1);
       b = clamp(luma + (b - luma) * sat, 0, 1);
+    }
+
+    // 3.5 HSL colour mixer — per-hue-band hue rotation, saturation and luminance.
+    // Weighted across the bands the pixel's hue straddles and gated by its own
+    // saturation, so near-greys (no meaningful hue) are left untouched.
+    if (hslActive) {
+      var hsl = rgbToHsl(r, g, b);
+      var Hh = hsl[0], Ss = hsl[1], Ll = hsl[2];
+      var gate = smoothstep(0.04, 0.16, Ss);
+      if (gate > 0) {
+        var wts = hslBandWeights(Hh, HSL_BAND_HUES);
+        var dH = 0, mS = 0, dL = 0;
+        for (var bi = 0; bi < wts.length; bi++) {
+          var wv = wts[bi]; if (!wv) continue;
+          var bnd = hslBands[bi];
+          dH += wv * bnd.h; mS += wv * bnd.s; dL += wv * bnd.l;
+        }
+        if (dH !== 0 || mS !== 0 || dL !== 0) {
+          Hh += dH * gate;
+          Ss = clamp(Ss * (1 + mS * gate), 0, 1);
+          if (dL !== 0) { var dd = dL * gate; Ll = clamp(dd >= 0 ? Ll + dd * (1 - Ll) : Ll + dd * Ll, 0, 1); }
+          var mrgb = hslToRgb(Hh, Ss, Ll);
+          r = mrgb[0]; g = mrgb[1]; b = mrgb[2];
+        }
+      }
     }
 
     // 4. film-look preset (curves + mono mix + split tone), blended by strength
@@ -748,6 +849,7 @@ function buildPipelineLut(P, stops, userLut, N) {
 function colorActive(P, userLut) {
   return P.temperature !== 0 || P.tint !== 0 || P.exposure !== 0 || P.contrast !== 0
     || P.highlights !== 0 || P.shadows !== 0 || P.saturation !== 1 || P.vibrance !== 0
+    || P.hsl.active
     || (P.preset !== 'none' && P.presetStrength > 0)
     || (!!userLut && P.lutIntensity > 0)
     || (P.treatment !== 'none' && P.treatmentAmount > 0);

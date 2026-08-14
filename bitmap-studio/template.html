@@ -344,3 +344,38 @@
   apply();
 })();
 </script>
+<script>
+/* HSL / Colour mixer — paint each band's slider with a Lightroom-style coloured
+   gradient track. The sliders are ordinary declared inputs in the sidebar; a
+   tool can't inject controls there and its styles.css is scoped to #tool-canvas,
+   so we inject the track look ONCE, UNSCOPED, into <head> (head styles are never
+   re-scoped by the shell — same trick the histogram-float CSS uses). The rules
+   target the shell's own `.custom-slider .cs-track/.cs-fill/.cs-thumb` markup by
+   [data-input-id], so they only ever dress THESE sliders and never touch the
+   render (the SVG bitmap) or any export stage (which clones #tool-canvas, not the
+   sidebar). Injected once, guarded by id; IIFE + var since this re-runs each paint. */
+(function () {
+  if (document.getElementById('bs-hsl-mix-css')) return;
+  var names = ['Red', 'Orange', 'Yellow', 'Green', 'Aqua', 'Blue', 'Purple', 'Magenta'];
+  var hues = [0, 30, 60, 120, 180, 225, 280, 320];
+  function h(hh, s, l) { return 'hsl(' + ((hh % 360) + 360) % 360 + ' ' + s + '% ' + l + '%)'; }
+  var rules = [
+    // Common look for every mixer slider: a taller track, no coloured fill (the
+    // gradient IS the meaning), and a neutral knob that reads on any hue.
+    '.custom-slider[data-input-id^="hsl"] .cs-track{height:7px;border-radius:4px;}',
+    '.custom-slider[data-input-id^="hsl"] .cs-fill{background:transparent;}',
+    '.custom-slider[data-input-id^="hsl"] .cs-thumb{background:#fff;border:1.5px solid rgba(0,0,0,.55);box-shadow:0 1px 3px rgba(0,0,0,.5);}'
+  ];
+  for (var i = 0; i < names.length; i++) {
+    var c = hues[i];
+    // Hue: rotate through the neighbouring hues. Sat: grey → rich. Lum: dark → light.
+    rules.push('.custom-slider[data-input-id="hslHue' + names[i] + '"] .cs-track{background:linear-gradient(90deg,' + h(c - 45, 65, 50) + ',' + h(c, 85, 50) + ',' + h(c + 45, 65, 50) + ');}');
+    rules.push('.custom-slider[data-input-id="hslSat' + names[i] + '"] .cs-track{background:linear-gradient(90deg,' + h(c, 6, 55) + ',' + h(c, 90, 50) + ');}');
+    rules.push('.custom-slider[data-input-id="hslLum' + names[i] + '"] .cs-track{background:linear-gradient(90deg,' + h(c, 60, 12) + ',' + h(c, 55, 90) + ');}');
+  }
+  var st = document.createElement('style');
+  st.id = 'bs-hsl-mix-css';
+  st.textContent = rules.join('');
+  document.head.appendChild(st);
+})();
+</script>

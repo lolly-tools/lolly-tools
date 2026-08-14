@@ -110,6 +110,12 @@ function safeColor(v, fallback) {
   if (/^#[0-9a-fA-F]{3,8}$/.test(s)) return s;
   if (/^(rgb|rgba|hsl|hsla)\([0-9.,%\s/]+\)$/i.test(s)) return s;
   if (/^[a-zA-Z]+$/.test(s)) return s; // named colour (e.g. "transparent", "tomato")
+  // A brand-token CSS var with an OPTIONAL literal-colour fallback — the documented
+  // brand-inheritance path (brand-vars.ts injects --brand-primary/… onto the canvas root,
+  // so a template can carry var(--brand-primary, #hex)). Strict on purpose: a var name and
+  // at most one hex / named / rgb / hsl fallback, so nothing (no ; " ' < > { } or a nested
+  // function) can break out of the style="…" property this value is interpolated into.
+  if (/^var\(\s*--[a-zA-Z0-9-]+\s*(,\s*(#[0-9a-fA-F]{3,8}|[a-zA-Z]+|(?:rgb|rgba|hsl|hsla)\([0-9.,%\s/]+\)))?\s*\)$/.test(s)) return s;
   return fallback;
 }
 // === /lolly:shared safeColor ===
@@ -397,7 +403,7 @@ var BOX_ALIGN = { l: 'left', left: 'left', c: 'center', center: 'center', centre
 function boxAlign(v) { return BOX_ALIGN[str(v).toLowerCase()] || 'left'; }
 // Where the text sits VERTICALLY inside the box it was given — the counterpart to align.
 // Compact codes are what the overlay stores; the full words are what hand-written JSON and
-// layout-studio-shaped boxes use, so both are read. Absent → top (the flow default, which
+// design-shaped boxes use, so both are read. Absent → top (the flow default, which
 // is what every box authored before this field rendered as).
 var BOX_VALIGN = { t: 't', top: 't', m: 'm', middle: 'm', center: 'm', centre: 'm', b: 'b', bottom: 'b' };
 function boxValign(v) { return BOX_VALIGN[str(v).toLowerCase()] || 't'; }
