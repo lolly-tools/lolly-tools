@@ -361,6 +361,8 @@ function buildConfig(inp) {
     frameColumn:    String(inp.frameColumn || ''),        // column whose distinct values become animation keyframes
     animSpeed:      clamp(num(inp.animSpeed, 1.5), 0.3, 8),// seconds each keyframe holds before morphing
     frameLabelShow: inp.frameLabelShow !== false && inp.frameLabelShow !== 'false',
+    animEase:       String(inp.animEase || 'smooth'),      // smooth / linear / steps
+    animDirection:  String(inp.animDirection || 'loop'),   // loop / bounce (ping-pong)
     timeAxis:       String(inp.timeAxis || 'auto'),        // auto / on / off — parse the label column as dates
     yScaleType:     String(inp.yScaleType || 'linear'),
     yZero:          inp.yZero !== false && inp.yZero !== 'false',

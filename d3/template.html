@@ -129,15 +129,22 @@
      and redraws #d3-plot every call, so the DOM genuinely changes frame-to-frame —
      which is what lets the existing video pipeline (render.video) capture it as a
      looping APNG / MP4 / WebM, and what animates it live in the preview. The epoch
-     guard stops a stale loop the moment a new paint supersedes it. */
+     guard stops a stale loop the moment a new paint supersedes it.
+
+     Playback is driven by a normalised clock t∈[0,1). A shared `window.__lollyAnim`
+     is the CONTRACT with the shell's transport bar: the tool publishes {active,
+     labels, loopMs, curT} and reads back {playing, scrubT} so a generic play/pause/
+     scrub control can drive ANY animated tool without knowing its internals. When no
+     transport is present the tool just free-runs. */
   function startAnim(baseState, d3) {
     if (window.__d3Raf) { cancelAnimationFrame(window.__d3Raf); window.__d3Raf = 0; }
     var data = baseState.data, cfg = baseState.cfg, frames = data.frames, labels = data.frameLabels || [];
-    if (!frames || frames.length < 2) return;
-    var nF = frames.length, stepMs = clamp(cfg.animSpeed || 1.5, 0.3, 8) * 1000, holdFrac = 0.35;
+    if (!frames || frames.length < 2) { if (window.__lollyAnim) window.__lollyAnim.active = false; return; }
+    var nF = frames.length, stepMs = clamp(cfg.animSpeed || 1.5, 0.3, 8) * 1000, holdFrac = 0.35, loopMs = nF * stepMs;
+    var bounce = cfg.animDirection === 'bounce', easeMode = cfg.animEase || 'smooth';
     var guardBg = cfg.transparent ? '#ffffff' : (isHex(cfg.background) ? cfg.background : '#ffffff');
     var ink = isHex(cfg.textColor) ? cfg.textColor : autoInk(guardBg);
-    var ease = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
+    var easeIO = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
     /* Tween two frames' series element-wise; a value absent in one frame appears/
        disappears (uses the finite endpoint) rather than snapping through 0. */
     var lerp = function (A, B, tw) {
@@ -152,20 +159,40 @@
         }) };
       });
     };
-    var start = null, lastDraw = -1e9;
-    function tick(ts) {
-      if (!alive()) return;                                   // a newer paint owns the canvas now
-      if (start == null) start = ts;
-      if (ts - lastDraw < 32) { window.__d3Raf = requestAnimationFrame(tick); return; }   // ~30 fps cap
-      lastDraw = ts;
-      var loop = nF * stepMs, p = ((ts - start) % loop) / stepMs;
-      var i = Math.floor(p) % nF, j = (i + 1) % nF, local = p - Math.floor(p);
-      var tw = local < holdFrac ? 0 : ease((local - holdFrac) / (1 - holdFrac));   // hold, then ease to next
-      var st = { cfg: cfg, data: { categories: data.categories, series: lerp(frames[i], frames[j], tw), numericCols: [], errorValues: null } };
+    /* Map the clock t∈[0,1) → (frame i, frame j, tween tw), honouring direction +
+       easing. Bounce plays 0→last→0 without wrapping; loop wraps last→0. */
+    function frameFor(t) {
+      var i, j, local;
+      if (bounce) { var u = t < 0.5 ? t * 2 : (1 - t) * 2; var p = u * (nF - 1); i = Math.min(nF - 1, Math.floor(p)); j = Math.min(nF - 1, i + 1); local = p - i; }
+      else { var q = t * nF; i = Math.floor(q) % nF; j = (i + 1) % nF; local = q - Math.floor(q); }
+      var tw = easeMode === 'steps' ? 0 : easeMode === 'linear' ? local : (local < holdFrac ? 0 : easeIO((local - holdFrac) / (1 - holdFrac)));
+      return { i: i, j: j, tw: tw };
+    }
+    function draw(t) {
+      var f = frameFor(t);
+      var st = { cfg: cfg, data: { categories: data.categories, series: lerp(frames[f.i], frames[f.j], f.tw), numericCols: [], errorValues: null } };
       try { render(st, d3); } catch (e) { console.error('[d3 anim]', e); return; }
       if (cfg.frameLabelShow !== false && labels.length)
         d3.select('#d3-plot').append('text').attr('x', cfg.width - 18).attr('y', 46).attr('text-anchor', 'end')
-          .attr('font-size', 36).attr('font-weight', 700).attr('fill', ink).attr('opacity', 0.92).text(labels[tw < 0.5 ? i : j]);
+          .attr('font-size', 36).attr('font-weight', 700).attr('fill', ink).attr('opacity', 0.92).text(labels[f.tw < 0.5 ? f.i : f.j]);
+    }
+    /* Publish/refresh the transport contract, carrying playing state + position over
+       a re-paint so a pause or scrub survives an input tweak. */
+    var prev = window.__lollyAnim || {};
+    var A = window.__lollyAnim = { active: true, labels: labels, loopMs: loopMs, curT: prev.curT || 0,
+      playing: prev.playing !== false, scrubT: (prev.scrubT != null ? prev.scrubT : null), gen: (prev.gen || 0) + 1 };
+    var clock = (prev.curT || 0) * loopMs, prevTs = null, lastDraw = -1e9, lastT = -1;
+    function tick(ts) {
+      if (!alive()) return;                                   // a newer paint owns the canvas now
+      if (prevTs == null) prevTs = ts;
+      var dt = ts - prevTs; prevTs = ts;
+      var t;
+      if (A.scrubT != null) { t = clamp(A.scrubT, 0, 1); clock = t * loopMs; }       // scrubbing: hold at position
+      else if (A.playing !== false) { clock = (clock + dt) % loopMs; t = clock / loopMs; }  // playing
+      else { t = clock / loopMs; }                                                   // paused: hold
+      var playing = A.scrubT == null && A.playing !== false;
+      if ((playing && ts - lastDraw >= 32) || (!playing && Math.abs(t - lastT) > 0.0005) || lastT < 0) { draw(t); lastDraw = ts; lastT = t; }
+      A.curT = t; A.active = true;
       window.__d3Raf = requestAnimationFrame(tick);
     }
     window.__d3Raf = requestAnimationFrame(tick);

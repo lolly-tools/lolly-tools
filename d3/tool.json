@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.11.1",
+  "version": "1.12.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -340,6 +340,35 @@
       "type": "boolean",
       "default": true,
       "help": "Show the current keyframe's name (e.g. the quarter) as a caption while the animation plays.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+    },
+    {
+      "id": "animEase",
+      "urlKey": "ae",
+      "label": "Motion",
+      "section": "Animation",
+      "type": "select",
+      "default": "smooth",
+      "options": [
+        { "value": "smooth", "label": "Smooth (hold + ease)" },
+        { "value": "linear", "label": "Linear (constant)" },
+        { "value": "steps", "label": "Steps (snap between frames)" }
+      ],
+      "help": "How values move between keyframes: Smooth holds each frame then eases across; Linear morphs at a constant rate; Steps snaps instantly (no in-between).",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+    },
+    {
+      "id": "animDirection",
+      "urlKey": "ad",
+      "label": "Loop style",
+      "section": "Animation",
+      "type": "select",
+      "default": "loop",
+      "options": [
+        { "value": "loop", "label": "Loop (jump back to start)" },
+        { "value": "bounce", "label": "Bounce (play back in reverse)" }
+      ],
+      "help": "Loop restarts from the first frame each cycle; Bounce plays forward then back for a seamless ping-pong.",
       "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
     },
     {
