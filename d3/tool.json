@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.10.0",
+  "version": "1.11.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -60,8 +60,17 @@
       "tiff",
       "pptx",
       "webp",
-      "jpg"
+      "jpg",
+      "apng",
+      "webp-anim",
+      "gif",
+      "webm",
+      "mp4"
     ],
+    "video": {
+      "wait": 0.3,
+      "duration": 6
+    },
     "actions": [
       "copy",
       "download",
@@ -298,6 +307,40 @@
       "default": "",
       "placeholder": "auto (for long data)",
       "help": "For long / tidy data (one row per observation): the column whose values become the separate series. Blank = auto-detect."
+    },
+    {
+      "id": "frameColumn",
+      "urlKey": "fc",
+      "label": "Animate by column",
+      "section": "Columns",
+      "type": "text",
+      "default": "",
+      "placeholder": "e.g. Quarter, Year, Wave",
+      "help": "Name (or 1-based number) of a frame / time column — its distinct values (e.g. Q1, Q2, Q3) become animation keyframes. The chart morphs between them and loops. Export as looping APNG, MP4/WebM, or animated SVG. Works with bar, horizontal bar, line and area.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+    },
+    {
+      "id": "animSpeed",
+      "urlKey": "as",
+      "label": "Seconds per frame",
+      "section": "Animation",
+      "type": "number",
+      "default": 1.5,
+      "min": 0.3,
+      "max": 8,
+      "step": 0.1,
+      "help": "How long each keyframe holds before morphing to the next. One full loop = frames × this. Set the export duration to a multiple for a seamless loop.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
+    },
+    {
+      "id": "frameLabelShow",
+      "urlKey": "fl",
+      "label": "Show frame label",
+      "section": "Animation",
+      "type": "boolean",
+      "default": true,
+      "help": "Show the current keyframe's name (e.g. the quarter) as a caption while the animation plays.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
     },
     {
       "id": "stackMode",

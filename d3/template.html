@@ -55,7 +55,7 @@
     /* Loaded but no global (e.g. an SPA fallback served index.html at the lib URL)
        — surface it rather than leaving a silently blank canvas. */
     if (!window.d3) { message('Chart library failed to load.'); return; }
-    try { render(state, window.d3); }
+    try { render(state, window.d3); startAnim(state, window.d3); }
     catch (err) { console.error('[d3] render error:', err); message(String(err && err.message || err)); }
   }).catch(function (e) { console.error('[d3]', e); message('Chart library failed to load.'); });
 
@@ -121,6 +121,54 @@
     g.append('text').attr('x', W/2).attr('y', H/2).attr('text-anchor','middle')
       .attr('font-size', 26).attr('font-weight', 500)
       .attr('fill', state.cfg.textColor).attr('opacity', 0.6).text(text || 'No data');
+  }
+
+  /* ── keyframe animation ──────────────────────────────────────────────────────
+     When the data carries frames (a frame/time column), morph the chart between
+     them on a loop by re-rendering with tweened series each tick. render() clears
+     and redraws #d3-plot every call, so the DOM genuinely changes frame-to-frame —
+     which is what lets the existing video pipeline (render.video) capture it as a
+     looping APNG / MP4 / WebM, and what animates it live in the preview. The epoch
+     guard stops a stale loop the moment a new paint supersedes it. */
+  function startAnim(baseState, d3) {
+    if (window.__d3Raf) { cancelAnimationFrame(window.__d3Raf); window.__d3Raf = 0; }
+    var data = baseState.data, cfg = baseState.cfg, frames = data.frames, labels = data.frameLabels || [];
+    if (!frames || frames.length < 2) return;
+    var nF = frames.length, stepMs = clamp(cfg.animSpeed || 1.5, 0.3, 8) * 1000, holdFrac = 0.35;
+    var guardBg = cfg.transparent ? '#ffffff' : (isHex(cfg.background) ? cfg.background : '#ffffff');
+    var ink = isHex(cfg.textColor) ? cfg.textColor : autoInk(guardBg);
+    var ease = function (t) { return t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; };
+    /* Tween two frames' series element-wise; a value absent in one frame appears/
+       disappears (uses the finite endpoint) rather than snapping through 0. */
+    var lerp = function (A, B, tw) {
+      return A.map(function (sa, si) {
+        var sb = B[si] || sa;
+        return { name: sa.name, values: sa.values.map(function (va, ci) {
+          var a = isFinite(va) ? +va : null, vb = sb.values[ci], b = isFinite(vb) ? +vb : null;
+          if (a == null && b == null) return null;
+          if (a == null) return b;
+          if (b == null) return a;
+          return a + (b - a) * tw;
+        }) };
+      });
+    };
+    var start = null, lastDraw = -1e9;
+    function tick(ts) {
+      if (!alive()) return;                                   // a newer paint owns the canvas now
+      if (start == null) start = ts;
+      if (ts - lastDraw < 32) { window.__d3Raf = requestAnimationFrame(tick); return; }   // ~30 fps cap
+      lastDraw = ts;
+      var loop = nF * stepMs, p = ((ts - start) % loop) / stepMs;
+      var i = Math.floor(p) % nF, j = (i + 1) % nF, local = p - Math.floor(p);
+      var tw = local < holdFrac ? 0 : ease((local - holdFrac) / (1 - holdFrac));   // hold, then ease to next
+      var st = { cfg: cfg, data: { categories: data.categories, series: lerp(frames[i], frames[j], tw), numericCols: [], errorValues: null } };
+      try { render(st, d3); } catch (e) { console.error('[d3 anim]', e); return; }
+      if (cfg.frameLabelShow !== false && labels.length)
+        d3.select('#d3-plot').append('text').attr('x', cfg.width - 18).attr('y', 46).attr('text-anchor', 'end')
+          .attr('font-size', 36).attr('font-weight', 700).attr('fill', ink).attr('opacity', 0.92).text(labels[tw < 0.5 ? i : j]);
+      window.__d3Raf = requestAnimationFrame(tick);
+    }
+    window.__d3Raf = requestAnimationFrame(tick);
   }
 
   /* ── render ────────────────────────────────────────────────────────────────── */

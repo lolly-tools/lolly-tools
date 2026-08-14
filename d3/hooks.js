@@ -358,6 +358,9 @@ function buildConfig(inp) {
     reference:      String(inp.reference || ''),          // reference lines & bands (one per line)
     trend:          String(inp.trend || 'none'),          // none/linear/poly2/exp/log/power/movavg — fitted trend line
     errorColumn:    String(inp.errorColumn || ''),        // column name/number holding the ± error per value
+    frameColumn:    String(inp.frameColumn || ''),        // column whose distinct values become animation keyframes
+    animSpeed:      clamp(num(inp.animSpeed, 1.5), 0.3, 8),// seconds each keyframe holds before morphing
+    frameLabelShow: inp.frameLabelShow !== false && inp.frameLabelShow !== 'false',
     timeAxis:       String(inp.timeAxis || 'auto'),        // auto / on / off — parse the label column as dates
     yScaleType:     String(inp.yScaleType || 'linear'),
     yZero:          inp.yZero !== false && inp.yZero !== 'false',
@@ -556,6 +559,49 @@ async function resolveBrandColors() {
   }
 }
 
+// Split the pasted table into animation keyframes by a frame/time column. Each
+// distinct frame value (first-seen order) yields one keyframe of series aligned to
+// the UNION of category labels across all frames — so a bar/line morphs between
+// them. Returns null when there's no frame column, <2 frames, or no numeric series.
+// (Only built for the tweenable chart types; scatter/pie fall back to buildModel.)
+function buildFrames(text, opts) {
+  const raw = String(text || '').trim(); if (!raw) return null;
+  const delim = opts.delimiter === 'auto' ? detectDelim(raw) : (DELIM_MAP[opts.delimiter] || ',');
+  const semicolon = delim === ';';
+  let grid = splitTable(raw, delim);
+  if (opts.transpose) grid = transposeGrid(grid);
+  if (grid.length < 2) return null;
+  const width = Math.min(MAX_COLS, grid.reduce((m, r) => Math.max(m, r.length), 0));
+  grid = grid.map((r) => { const c = r.slice(0, width); while (c.length < width) c.push(''); return c; });
+  let header, body;
+  if (opts.hasHeader) { header = grid[0].map((h, i) => String(h).trim() || `Column ${i + 1}`); body = grid.slice(1); }
+  else { header = grid[0].map((_, i) => (i === 0 ? 'Category' : `Series ${i}`)); body = grid; }
+  if (!body.length) return null;
+  if (body.length > MAX_ROWS) body = body.slice(0, MAX_ROWS);
+  const commaDecCol = [], numericFlag = [];
+  for (let c = 0; c < width; c++) { commaDecCol[c] = semicolon || columnCommaDecimal(body.map((r) => r[c])); numericFlag[c] = columnIsNumeric(body, c, commaDecCol[c]); }
+  const frameIdx = resolveColRef(opts.frameCol, header);
+  if (frameIdx < 0) return null;
+  const labelIdx = orDefault(resolveColRef(opts.labelCol, header), (frameIdx === 0 ? 1 : 0));
+  const chosen = resolveColList(opts.seriesCols, header);
+  const seriesCols = (chosen.length ? chosen : range(width)).filter((c) => c !== labelIdx && c !== frameIdx && numericFlag[c]);
+  if (!seriesCols.length) return null;
+  const cell = (r, i) => String(r[i] == null ? '' : r[i]).trim();
+  const frameOrder = [], frameRows = {};
+  body.forEach((r) => { const f = cell(r, frameIdx) || '—'; if (!(f in frameRows)) { frameRows[f] = []; frameOrder.push(f); } frameRows[f].push(r); });
+  if (frameOrder.length < 2) return null;
+  const catOrder = [], seen = {};
+  body.forEach((r) => { const c = cell(r, labelIdx) || '?'; if (!(c in seen)) { seen[c] = 1; catOrder.push(c); } });
+  const frames = frameOrder.map((f) => {
+    const byCat = {}; frameRows[f].forEach((r) => { byCat[cell(r, labelIdx) || '?'] = r; });
+    return seriesCols.map((c) => ({ name: header[c],
+      values: catOrder.map((cat) => { const r = byCat[cat]; return r ? nOrNull(parseNum(r[c], commaDecCol[c])) : null; }) }));
+  });
+  return { labels: frameOrder, categories: catOrder, frames };
+}
+
+const ANIMATABLE = ['bar', 'bar-horizontal', 'line', 'area'];
+
 function compute(model) {
   const inp = Object.fromEntries(model.map((i) => [i.id, i.value]));
   const cfg = buildConfig(inp);
@@ -563,7 +609,7 @@ function compute(model) {
   cfg.brandRamps    = BRAND && BRAND.ramps;        // sequential/diverging/mono ramps
   cfg.brandSwatches = (BRAND && BRAND.swatches) || null;  // click-to-recolour picker
   cfg.brandMono     = !!(BRAND && BRAND.monochrome);      // few hues → auto patterns
-  const data = buildModel(inp.data, {
+  const parseOpts = {
     delimiter: String(inp.delimiter || 'auto'),
     hasHeader: inp.hasHeader !== false && inp.hasHeader !== 'false',
     transpose: inp.transpose === true || inp.transpose === 'true',
@@ -571,7 +617,18 @@ function compute(model) {
     seriesCols: String(inp.seriesColumns || ''),
     pivotCol:  String(inp.pivotColumn || ''),
     errorCol:  String(inp.errorColumn || ''),
-  });
+  };
+  // Keyframe animation: only for the tweenable chart types + a frame column set.
+  const frameData = (cfg.frameColumn && ANIMATABLE.indexOf(cfg.chartType) >= 0)
+    ? buildFrames(inp.data, Object.assign({ frameCol: cfg.frameColumn }, parseOpts)) : null;
+  let data;
+  if (frameData && frameData.frames.length >= 2) {
+    data = { categories: frameData.categories, series: frameData.frames[0], numericCols: [], errorValues: null,
+      frames: frameData.frames, frameLabels: frameData.labels,
+      note: `Animating ${frameData.frames.length} frames by “${cfg.frameColumn}”.` };
+  } else {
+    data = buildModel(inp.data, parseOpts);
+  }
   return {
     _state:  safeJson({ data, cfg }),
     _bgFill: cfg.transparent ? 'none' : cfg.background,
