@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -1193,6 +1193,18 @@
       "section": "Custom palette",
       "type": "color",
       "default": ""
+    },
+    {
+      "id": "annotations",
+      "urlKey": "an",
+      "label": "Annotations",
+      "section": "Annotations",
+      "type": "longtext",
+      "rows": 2,
+      "default": "",
+      "placeholder": "click a data label to annotate",
+      "help": "Click a data label (or category label) on a bar or line chart to attach a directional arrow + a short note — for statistical significance, an event, a small-sample flag, or any callout. Set a text or fill colour and the other contrasts automatically. Advanced: a JSON map of label → {icon, text, colours}.",
+      "showIf": { "chartType": ["bar", "bar-horizontal", "line", "area"] }
     },
     {
       "id": "heading",

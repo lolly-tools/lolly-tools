@@ -12,6 +12,8 @@
       #d3-svg [data-canvas-input] { cursor: pointer; }
       /* Click-to-recolour: bars/slices open a brand-swatch picker on click. */
       #d3-svg [data-recolor] { cursor: pointer; }
+      /* Click a data label to annotate it (arrow + note). */
+      #d3-svg [data-annot] { cursor: pointer; }
     </style>
   </defs>
   <rect id="d3-bg" width="{{width}}" height="{{height}}" fill="{{_bgFill}}" pointer-events="all"/>
@@ -210,6 +212,13 @@
     var recolorEnabled = ['bar', 'bar-horizontal', 'pie', 'donut'].indexOf(cfg.chartType) >= 0;
     function tagMark(sel, label) { if (recolorEnabled && sel && label != null) sel.attr('data-recolor', String(label)); }
 
+    /* Data-label annotations (arrow + note). Tag a value label so a click opens the
+       annotation widget; draw the badge at the category's outer extent. */
+    var annotEnabled = ['bar', 'bar-horizontal', 'line', 'area'].indexOf(cfg.chartType) >= 0;
+    var annotations = parseAnnotations(cfg.annotations);
+    function tagAnnot(sel, key) { if (annotEnabled && sel && key != null) sel.attr('data-annot', String(key)); return sel; }
+    function annotBadge(cat, x, y, dir) { var a = annotations[cat]; if (a) drawAnnotBadge(root, x, y, dir, a, clamp(cfg.labelSize, 12, 26), ink, guardBg); }
+
     /* Number formatting. */
     var fmt = makeFmt(cfg.numberFormat, d3);
 
@@ -265,7 +274,8 @@
                 box: box, ink: ink, guardBg: guardBg, fmt: fmt, catColorFn: catColorFn, seqColorFn: seqColorFn,
                 barByCat: barByCat, override: overrideColor, textureFor: textureFor,
                 overlayRect: overlayRect, overlayPath: overlayPath, patternsOn: patternsOn, swatches: cfg.brandSwatches,
-                recolorEnabled: recolorEnabled, tagMark: tagMark };
+                recolorEnabled: recolorEnabled, tagMark: tagMark,
+                annotEnabled: annotEnabled, annotations: annotations, tagAnnot: tagAnnot, annotBadge: annotBadge };
 
     /* ── dispatch ────────────────────────────────────────────────────────────── */
     switch (cfg.chartType) {
@@ -758,16 +768,23 @@
           var x0 = Math.min(base, pv), x1 = Math.max(base, pv), ww = Math.max(0, x1 - x0);
           api.tagMark(cfg.bar3d ? bar3d(g, x0, y, ww, h, col, barDepth(cfg, h)) : rect(g, x0, y, ww, h, col, Math.min(rx, h/2), stroke), c);
           api.overlayRect(g, x0, y, ww, h, cfg.bar3d ? 0 : Math.min(rx, h/2), texIdx, col);
-          if (cfg.showValues) valueLabel(api, x1 + 6 + (cfg.bar3d ? barDepth(cfg, h) * 0.72 : 0), y + h/2 + 5, api.fmt(v), 'start', api.ink, 0.75);
+          if (cfg.showValues) api.tagAnnot(valueLabel(api, x1 + 6 + (cfg.bar3d ? barDepth(cfg, h) * 0.72 : 0), y + h/2 + 5, api.fmt(v), 'start', api.ink, 0.75), c);
         } else {
           var w0 = inner.bandwidth(), w = cfg.barThickness > 0 ? Math.min(w0, cfg.barThickness) : w0;
           var x = band(c) + inner(s.name) + (w0 - w) / 2;
           var y0 = Math.min(base, pv), y1 = Math.max(base, pv), hh = Math.max(0, y1 - y0);
           api.tagMark(cfg.bar3d ? bar3d(g, x, y0, w, hh, col, barDepth(cfg, w)) : rect(g, x, y0, w, hh, col, Math.min(rx, w/2), stroke), c);
           api.overlayRect(g, x, y0, w, hh, cfg.bar3d ? 0 : Math.min(rx, w/2), texIdx, col);
-          if (cfg.showValues) valueLabel(api, x + w/2, y0 - 6 - (cfg.bar3d ? barDepth(cfg, w) * 0.52 : 0), api.fmt(v), 'middle', api.ink, 0.75);
+          if (cfg.showValues) api.tagAnnot(valueLabel(api, x + w/2, y0 - 6 - (cfg.bar3d ? barDepth(cfg, w) * 0.52 : 0), api.fmt(v), 'middle', api.ink, 0.75), c);
         }
       });
+    });
+    if (api.annotEnabled) cats.forEach(function (c, ci) {
+      if (!api.annotations[c]) return;
+      var mx = -Infinity; series.forEach(function (s) { var vv = +s.values[ci]; if (isFinite(vv)) mx = Math.max(mx, vv); });
+      var pv = val(mx); if (!isFinite(pv)) return;
+      if (horizontal) api.annotBadge(c, pv, band(c) + band.bandwidth()/2, 'right');
+      else api.annotBadge(c, band(c) + band.bandwidth()/2, pv, 'up');
     });
   }
 
@@ -800,15 +817,22 @@
           var y = band(c) + (h0 - h) / 2, xx = Math.min(pa, pb), ww = Math.abs(pb - pa);
           api.tagMark(cfg.bar3d ? bar3d(g, xx, y, ww, h, col, barDepth(cfg, h)) : rect(g, xx, y, ww, h, col, 0, stroke), c);
           api.overlayRect(g, xx, y, ww, h, 0, si, col);
-          if (cfg.showValues && ww > 26) valueLabel(api, (pa+pb)/2, y + h/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1);
+          if (cfg.showValues && ww > 26) api.tagAnnot(valueLabel(api, (pa+pb)/2, y + h/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1), c);
         } else {
           var w0 = band.bandwidth(), w = cfg.barThickness > 0 ? Math.min(w0, cfg.barThickness) : w0;
           var x = band(c) + (w0 - w) / 2, yy = Math.min(pa, pb), hh = Math.abs(pa - pb);
           api.tagMark(cfg.bar3d ? bar3d(g, x, yy, w, hh, col, barDepth(cfg, w)) : rect(g, x, yy, w, hh, col, 0, stroke), c);
           api.overlayRect(g, x, yy, w, hh, 0, si, col);
-          if (cfg.showValues && hh > 22) valueLabel(api, x + w/2, (pa+pb)/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1);
+          if (cfg.showValues && hh > 22) api.tagAnnot(valueLabel(api, x + w/2, (pa+pb)/2 + 5, pct ? Math.round((b-a)*100)+'%' : api.fmt(b-a), 'middle', autoText(col), 1), c);
         }
       });
+    });
+    if (api.annotEnabled) cats.forEach(function (c, ci) {
+      if (!api.annotations[c]) return;
+      var top = -Infinity; stacked.forEach(function (layer) { var d = layer[ci]; if (d && isFinite(d[1])) top = Math.max(top, d[1]); });
+      var pv = val(top); if (!isFinite(pv)) return;
+      if (horizontal) api.annotBadge(c, pv, band(c) + band.bandwidth()/2, 'right');
+      else api.annotBadge(c, band(c) + band.bandwidth()/2, pv, 'up');
     });
   }
 
@@ -851,8 +875,8 @@
       var every = Math.ceil(cats.length / Math.max(1, Math.floor(plot.w / 60)));
       if (cfg.showAxes) cats.forEach(function (c, i) {
         if (every > 1 && i % every !== 0) return;
-        api.root.append('text').attr('x', x(c)).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
-          .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', api.ink).attr('opacity', 0.8).text(trunc(c, 12));
+        api.tagAnnot(api.root.append('text').attr('x', x(c)).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
+          .attr('font-size', sz).attr('font-weight', cfg.labelWeight).attr('fill', api.ink).attr('opacity', 0.8).text(trunc(c, 12)), c);
       });
     })();
     var g = api.root.append('g');
@@ -883,10 +907,16 @@
           if (!isFinite(d.v) || !isFinite(y(d.v))) return;
           g.append('circle').attr('cx', x(d.c)).attr('cy', y(d.v)).attr('r', clamp(cfg.pointSize/2, 2, 20))
             .attr('fill', col).attr('stroke', api.guardBg).attr('stroke-width', 1.5);
-          if (cfg.showValues) valueLabel(api, x(d.c), y(d.v) - clamp(cfg.pointSize/2,2,20) - 6, api.fmt(d.v), 'middle', api.ink, 0.8);
+          if (cfg.showValues) api.tagAnnot(valueLabel(api, x(d.c), y(d.v) - clamp(cfg.pointSize/2,2,20) - 6, api.fmt(d.v), 'middle', api.ink, 0.8), d.c);
         });
       });
     }
+    if (api.annotEnabled) cats.forEach(function (c, ci) {
+      if (!api.annotations[c]) return;
+      var top = Infinity;
+      series.forEach(function (s) { var v = s.values[ci]; if (isFinite(v) && isFinite(y(v))) top = Math.min(top, y(v)); });
+      if (isFinite(top)) api.annotBadge(c, x(c), top, 'up');
+    });
     drawAxisTitles(api, plot, false);
   }
 
@@ -1547,16 +1577,18 @@
      also trigger the shell's click-to-focus); its state is refreshed each paint. */
   function setupRecolor(svgEl, cfg, overrides) {
     var enabled = ['bar', 'bar-horizontal', 'pie', 'donut'].indexOf(cfg.chartType) >= 0;
+    var annotEnabled = ['bar', 'bar-horizontal', 'line', 'area'].indexOf(cfg.chartType) >= 0;
     var swatches = (cfg.brandSwatches || []).filter(function (s) { return s && s.value && !/^#[0-9a-f]{6}00$/i.test(s.value); });
-    svgEl.__d3Recolor = { enabled: enabled && swatches.length > 0, swatches: swatches, overrides: overrides };
+    svgEl.__d3Recolor = { enabled: enabled && swatches.length > 0, swatches: swatches, overrides: overrides,
+                          annotEnabled: annotEnabled, annotations: parseAnnotations(cfg.annotations) };
     if (svgEl.__d3RecolorWired) return;
     svgEl.__d3RecolorWired = true;
     svgEl.addEventListener('click', function (ev) {
-      var st = svgEl.__d3Recolor; if (!st || !st.enabled) return;
+      var st = svgEl.__d3Recolor; if (!st) return;
       var mark = ev.target && ev.target.closest && ev.target.closest('[data-recolor]');
-      if (!mark) return;
-      ev.preventDefault(); ev.stopPropagation();
-      openSwatchPopover(ev.clientX, ev.clientY, mark.getAttribute('data-recolor'), st);
+      if (mark && st.enabled) { ev.preventDefault(); ev.stopPropagation(); openSwatchPopover(ev.clientX, ev.clientY, mark.getAttribute('data-recolor'), st); return; }
+      var lbl = ev.target && ev.target.closest && ev.target.closest('[data-annot]');
+      if (lbl && st.annotEnabled) { ev.preventDefault(); ev.stopPropagation(); openAnnotWidget(ev.clientX, ev.clientY, lbl.getAttribute('data-annot'), st); }
     }, true);
   }
   function closeSwatchPopover() {
@@ -1610,6 +1642,162 @@
     setTimeout(function () { document.addEventListener('mousedown', window.__d3PopClose, true); document.addEventListener('keydown', window.__d3PopKey, true); }, 0);
   }
 
+  /* ── data-label annotations (arrows + notes) ──────────────────────────────── */
+  /* Click a value label (tagged data-annot="<category>") → a floating widget:
+     a directional-arrow icon + a short note + optional text/fill colours (set one
+     and the other auto-contrasts). The statistician's end-of-bar/line marker —
+     significance, an event, a small-sample flag. Writes an `annotations` JSON map
+     (category → {i,t,fg,bg}) through the sidebar input (URL sync / undo / save). */
+  function parseAnnotations(s) {
+    s = String(s == null ? '' : s).trim();
+    if (!s || s.charAt(0) !== '{') return {};
+    try {
+      var o = JSON.parse(s), out = {};
+      for (var k in o) {
+        if (!Object.prototype.hasOwnProperty.call(o, k)) continue;
+        var a = o[k]; if (!a || typeof a !== 'object') continue;
+        out[k] = { i: typeof a.i === 'string' ? a.i : '', t: typeof a.t === 'string' ? a.t : '',
+                   fg: isHex(a.fg) ? a.fg : '', bg: isHex(a.bg) ? a.bg : '' };
+      }
+      return out;
+    } catch (e) { return {}; }
+  }
+  var ARROW_ANGLE = { up: 0, 'up-right': 45, right: 90, 'down-right': 135, down: 180, 'down-left': 225, left: 270, 'up-left': 315 };
+  var ANNOT_ICONS = ['up', 'up-right', 'right', 'down-right', 'down', 'down-left', 'left', 'up-left', 'star', 'dot'];
+  /* Canonical icon geometry centred on the origin (arrows point up, rotated by dir). */
+  function iconPath(key, s) {
+    if (key === 'star') {
+      var d = '', R = s * 0.5, r = s * 0.21;
+      for (var i = 0; i < 10; i++) { var ang = -Math.PI/2 + i * Math.PI/5, rad = (i % 2 === 0) ? R : r; d += (i ? ' L' : 'M') + (Math.cos(ang)*rad).toFixed(2) + ' ' + (Math.sin(ang)*rad).toFixed(2); }
+      return { d: d + ' Z', fill: true };
+    }
+    if (key === 'dot') { var rr = s * 0.3; return { d: 'M' + (-rr) + ' 0a' + rr + ' ' + rr + ' 0 1 0 ' + (2*rr) + ' 0a' + rr + ' ' + rr + ' 0 1 0 ' + (-2*rr) + ' 0Z', fill: true }; }
+    var h = s * 0.5;   // up arrow: shaft + chevron head
+    return { d: 'M0 ' + h + ' L0 ' + (-h) + ' M' + (-s*0.32) + ' ' + (-h*0.36) + ' L0 ' + (-h) + ' L' + (s*0.32) + ' ' + (-h*0.36), fill: false };
+  }
+  function drawIcon(g, cx, cy, s, key, color) {
+    var ic = iconPath(key, s), ang = ARROW_ANGLE[key] || 0;
+    var el = g.append('path').attr('d', ic.d).attr('transform', 'translate(' + cx + ' ' + cy + ') rotate(' + ang + ')');
+    if (ic.fill) el.attr('fill', color).attr('stroke', 'none');
+    else el.attr('fill', 'none').attr('stroke', color).attr('stroke-width', Math.max(1.6, s * 0.16)).attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round');
+    return el;
+  }
+  /* One colour set → the other contrasts; neither → plain ink, no fill. */
+  function annotColors(ann, ink) {
+    if (ann.fg && ann.bg) return { fg: ann.fg, bg: ann.bg };
+    if (ann.fg) return { fg: ann.fg, bg: (lum(ann.fg) > 0.5 ? '#111111' : '#ffffff') };
+    if (ann.bg) return { fg: autoText(ann.bg), bg: ann.bg };
+    return { fg: ink, bg: null };
+  }
+  function drawAnnotBadge(g, x, y, dir, ann, sz, ink, guardBg) {
+    if (!ann || (!ann.i && !ann.t)) return;
+    var col = annotColors(ann, ink);
+    var iconS = sz * 0.95, pad = sz * 0.42, gapIT = (ann.i && ann.t) ? sz * 0.34 : 0;
+    var textW = ann.t ? measureText(ann.t, sz, 600) : 0;
+    var contentW = (ann.i ? iconS : 0) + gapIT + textW;
+    var bw = contentW + 2 * pad, bh = Math.max(iconS, sz) + pad * 1.2, m = 8, cx, cy;
+    if (dir === 'right') { cx = x + m + bw/2; cy = y; }
+    else if (dir === 'left') { cx = x - m - bw/2; cy = y; }
+    else if (dir === 'down') { cx = x; cy = y + m + bh/2; }
+    else { cx = x; cy = y - m - bh/2; }
+    var bge = g.append('g').attr('class', 'annot');
+    if (col.bg) bge.append('rect').attr('x', cx - bw/2).attr('y', cy - bh/2).attr('width', bw).attr('height', bh).attr('rx', Math.min(bh/2, 9)).attr('fill', col.bg);
+    var ix = cx - contentW/2;
+    if (ann.i) { drawIcon(bge, ix + iconS/2, cy, iconS, ann.i, col.fg); ix += iconS + gapIT; }
+    if (ann.t) bge.append('text').attr('x', ix).attr('y', cy + sz*0.34).attr('text-anchor', 'start').attr('font-size', sz).attr('font-weight', 600).attr('fill', col.fg).text(ann.t);
+  }
+
+  function closeAnnotWidget() {
+    var ex = document.getElementById('d3-annot-pop'); if (ex && ex.parentNode) ex.parentNode.removeChild(ex);
+    if (window.__d3AnnClose) { document.removeEventListener('mousedown', window.__d3AnnClose, true); document.removeEventListener('keydown', window.__d3AnnKey, true); window.__d3AnnClose = null; window.__d3AnnKey = null; }
+  }
+  /* Merge one category's annotation into the current input map and write it back. */
+  function writeAnnotation(key, ann) {
+    var panel = document.getElementById('tool-inputs');
+    var ctl = panel && panel.querySelector('[data-input-id="annotations"]');
+    if (!ctl) return;
+    var map = {};
+    try { var cur = JSON.parse(ctl.value || '{}'); if (cur && typeof cur === 'object') map = cur; } catch (e) {}
+    var clean = {};
+    if (ann.i) clean.i = ann.i;
+    if (ann.t) clean.t = ann.t;
+    if (ann.fg) clean.fg = ann.fg;
+    if (ann.bg) clean.bg = ann.bg;
+    if (Object.keys(clean).length) map[key] = clean; else delete map[key];
+    ctl.value = Object.keys(map).length ? JSON.stringify(map) : '';
+    ctl.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+  function openAnnotWidget(x, y, key, st) {
+    closeSwatchPopover(); closeAnnotWidget();
+    var ann = { i: '', t: '', fg: '', bg: '' }, cur = st.annotations && st.annotations[key];
+    if (cur) { ann.i = cur.i || ''; ann.t = cur.t || ''; ann.fg = cur.fg || ''; ann.bg = cur.bg || ''; }
+    var css = function (el, s) { el.setAttribute('style', s); };
+    var pop = document.createElement('div'); pop.id = 'd3-annot-pop';
+    css(pop, 'position:fixed;z-index:2147483000;left:0;top:0;background:Canvas;color:CanvasText;border:1px solid rgba(128,128,128,.35);border-radius:12px;box-shadow:0 12px 34px rgba(0,0,0,.28);padding:12px;width:264px;font:13px/1.35 system-ui,-apple-system,sans-serif;');
+    var title = document.createElement('div'); title.textContent = 'Annotate: ' + key;
+    css(title, 'font-weight:600;margin:0 2px 9px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;');
+    pop.appendChild(title);
+    var iconGrid = document.createElement('div'); css(iconGrid, 'display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:9px;');
+    function renderIcons() {
+      iconGrid.innerHTML = '';
+      var none = document.createElement('button'); none.type = 'button'; none.textContent = '∅'; none.title = 'no icon';
+      css(none, 'height:30px;border-radius:7px;border:1px solid rgba(128,128,128,.35);background:' + (ann.i ? 'transparent' : 'rgba(128,128,128,.22)') + ';cursor:pointer;font:inherit;color:inherit;');
+      none.addEventListener('click', function (e) { e.stopPropagation(); ann.i = ''; writeAnnotation(key, ann); renderIcons(); });
+      iconGrid.appendChild(none);
+      ANNOT_ICONS.forEach(function (ik) {
+        var b = document.createElement('button'); b.type = 'button'; b.title = ik;
+        css(b, 'height:30px;border-radius:7px;border:1px solid rgba(128,128,128,.35);background:' + (ann.i === ik ? 'rgba(128,128,128,.25)' : 'transparent') + ';cursor:pointer;padding:0;color:inherit;');
+        var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); svg.setAttribute('viewBox', '-12 -12 24 24'); svg.setAttribute('width', '20'); svg.setAttribute('height', '20');
+        var ic = iconPath(ik, 18), ang = ARROW_ANGLE[ik] || 0;
+        var p = document.createElementNS('http://www.w3.org/2000/svg', 'path'); p.setAttribute('d', ic.d); p.setAttribute('transform', 'rotate(' + ang + ')');
+        if (ic.fill) { p.setAttribute('fill', 'currentColor'); } else { p.setAttribute('fill', 'none'); p.setAttribute('stroke', 'currentColor'); p.setAttribute('stroke-width', '2.4'); p.setAttribute('stroke-linecap', 'round'); p.setAttribute('stroke-linejoin', 'round'); }
+        svg.appendChild(p); b.appendChild(svg);
+        b.addEventListener('click', function (e) { e.stopPropagation(); ann.i = ik; writeAnnotation(key, ann); renderIcons(); });
+        iconGrid.appendChild(b);
+      });
+    }
+    renderIcons(); pop.appendChild(iconGrid);
+    var txt = document.createElement('input'); txt.type = 'text'; txt.placeholder = 'note (e.g. p<.05, n=12, launch)'; txt.value = ann.t;
+    css(txt, 'width:100%;box-sizing:border-box;padding:6px 8px;border:1px solid rgba(128,128,128,.35);border-radius:8px;background:transparent;color:inherit;font:inherit;margin-bottom:9px;');
+    txt.addEventListener('click', function (e) { e.stopPropagation(); });
+    txt.addEventListener('input', function () { ann.t = txt.value; writeAnnotation(key, ann); });
+    pop.appendChild(txt);
+    var colourWrap = document.createElement('div');
+    function colourRow(label, get, set) {
+      var wrap = document.createElement('div'); css(wrap, 'margin-bottom:8px;');
+      var lab = document.createElement('div'); lab.textContent = label; css(lab, 'font-size:11px;opacity:.7;margin:0 2px 4px;'); wrap.appendChild(lab);
+      var row = document.createElement('div'); css(row, 'display:flex;flex-wrap:wrap;gap:5px;align-items:center;');
+      var auto = document.createElement('button'); auto.type = 'button'; auto.textContent = 'auto';
+      css(auto, 'height:22px;padding:0 9px;border-radius:20px;border:1px solid rgba(128,128,128,.35);background:' + (get() ? 'transparent' : 'rgba(128,128,128,.25)') + ';cursor:pointer;font:11px system-ui;color:inherit;');
+      auto.addEventListener('click', function (e) { e.stopPropagation(); set(''); writeAnnotation(key, ann); rebuild(); });
+      row.appendChild(auto);
+      (st.swatches || []).slice(0, 12).forEach(function (sw) {
+        var b = document.createElement('button'); b.type = 'button'; b.title = sw.name;
+        css(b, 'width:22px;height:22px;border-radius:50%;border:' + (get() === sw.value ? '2px solid CanvasText' : '1px solid rgba(128,128,128,.4)') + ';cursor:pointer;padding:0;background:' + sw.value + ';');
+        b.addEventListener('click', function (e) { e.stopPropagation(); set(sw.value); writeAnnotation(key, ann); rebuild(); });
+        row.appendChild(b);
+      });
+      wrap.appendChild(row); return wrap;
+    }
+    function rebuild() {
+      colourWrap.innerHTML = '';
+      colourWrap.appendChild(colourRow('Text colour', function () { return ann.fg; }, function (v) { ann.fg = v; }));
+      colourWrap.appendChild(colourRow('Fill colour', function () { return ann.bg; }, function (v) { ann.bg = v; }));
+    }
+    rebuild(); pop.appendChild(colourWrap);
+    var rm = document.createElement('button'); rm.type = 'button'; rm.textContent = 'Remove annotation';
+    css(rm, 'display:block;width:100%;margin-top:6px;padding:7px;border:1px solid rgba(128,128,128,.3);border-radius:8px;background:transparent;color:inherit;cursor:pointer;font:inherit;');
+    rm.addEventListener('click', function (e) { e.stopPropagation(); ann = { i: '', t: '', fg: '', bg: '' }; writeAnnotation(key, ann); closeAnnotWidget(); });
+    pop.appendChild(rm);
+    document.body.appendChild(pop);
+    var r = pop.getBoundingClientRect();
+    pop.style.left = Math.max(8, Math.min(x, window.innerWidth - r.width - 8)) + 'px';
+    pop.style.top = Math.max(8, Math.min(y + 8, window.innerHeight - r.height - 8)) + 'px';
+    window.__d3AnnClose = function (e) { if (!pop.contains(e.target)) closeAnnotWidget(); };
+    window.__d3AnnKey = function (e) { if (e.key === 'Escape') closeAnnotWidget(); };
+    setTimeout(function () { document.addEventListener('mousedown', window.__d3AnnClose, true); document.addEventListener('keydown', window.__d3AnnKey, true); }, 0);
+  }
+
   function rect(g, x, y, w, h, fill, rx, stroke) {
     var r = g.append('rect').attr('x', x).attr('y', y).attr('width', Math.max(0, w)).attr('height', Math.max(0, h)).attr('fill', fill);
     if (rx > 0) r.attr('rx', Math.min(rx, w/2, h/2)).attr('ry', Math.min(rx, w/2, h/2));
@@ -1617,7 +1805,7 @@
     return r;
   }
   function valueLabel(api, x, y, text, anchor, fill, opacity) {
-    api.root.append('text').attr('x', x).attr('y', y).attr('text-anchor', anchor || 'middle').attr('data-canvas-input', 'showValues')
+    return api.root.append('text').attr('x', x).attr('y', y).attr('text-anchor', anchor || 'middle').attr('data-canvas-input', 'showValues')
       .attr('font-size', clamp(api.cfg.labelSize, 9, 30)).attr('font-weight', 600).attr('fill', fill).attr('opacity', opacity == null ? 1 : opacity).text(text);
   }
   function sortItems(items, order) {

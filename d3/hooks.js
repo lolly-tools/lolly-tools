@@ -362,6 +362,7 @@ function buildConfig(inp) {
     colorBy:        String(inp.colorBy || 'series'),
     differentiate:  String(inp.differentiate || 'auto'),   // colour / pattern / both
     colorOverrides: String(inp.colorOverrides || ''),       // JSON map: value → hex (click-to-recolour)
+    annotations:    String(inp.annotations || ''),          // JSON map: category → {i,t,fg,bg} (click a data label)
     background,
     textColor,
     transparent,
@@ -588,8 +589,17 @@ function d3Md(inp) {
   return out.join('\n\n') + '\n';
 }
 
+// A brand result is "degraded" when tokens weren't ready at resolve time (no
+// primary / spectrum / ramps) — e.g. a cold first paint before the brand pack
+// loads. Re-attempt on the next input so the chart picks the brand up rather than
+// being stuck on the shipped fallback palette for the session.
+function brandDegraded(b) { return !b || (!b.primary && !b.spectrum && !b.ramps); }
+
 async function onInit({ model }) {
   BRAND = await resolveBrandColors();
   return compute(model);
 }
-function onInput({ model }) { return compute(model); }
+async function onInput({ model }) {
+  if (brandDegraded(BRAND)) { try { const b = await resolveBrandColors(); if (!brandDegraded(b)) BRAND = b; } catch (e) { /* keep prior */ } }
+  return compute(model);
+}
