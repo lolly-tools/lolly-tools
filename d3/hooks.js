@@ -602,7 +602,7 @@ function buildFrames(text, opts) {
   return { labels: frameOrder, categories: catOrder, frames };
 }
 
-const ANIMATABLE = ['bar', 'bar-horizontal', 'line', 'area'];
+const ANIMATABLE = ['bar', 'bar-horizontal', 'line', 'area', 'pie', 'donut'];
 
 function compute(model) {
   const inp = Object.fromEntries(model.map((i) => [i.id, i.value]));

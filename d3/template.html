@@ -163,9 +163,9 @@
         var sb = B[si] || sa;
         return { name: sa.name, values: sa.values.map(function (va, ci) {
           var a = isFinite(va) ? +va : null, vb = sb.values[ci], b = isFinite(vb) ? +vb : null;
-          if (a == null && b == null) return null;
-          if (a == null) return b;
-          if (b == null) return a;
+          if (a == null && b == null) return null;   // absent in BOTH → stays hidden (null)
+          if (a == null) return b * tw;              // appearing: grow 0 → b
+          if (b == null) return a * (1 - tw);        // leaving: shrink a → 0
           return a + (b - a) * tw;
         }) };
       });
@@ -1090,7 +1090,12 @@
     var g = api.root.append('g');
     cats.forEach(function (c, ci) {
       series.forEach(function (s, si) {
-        var v = +s.values[ci]; if (!isFinite(v)) return;
+        var raw = s.values[ci], v = +raw;
+        /* While animating, drop a bar (and its label) for a category a frame has no
+           data for — absent (null) or ~empty — so blanks don't clutter as '0 0 0 0'.
+           Gated on animExtent so a static chart's genuine zeros are unaffected. */
+        if (cfg.animExtent) { var eps = Math.max(1e-9, (cfg.animExtent[1] - cfg.animExtent[0]) * 0.002); if (raw == null || !isFinite(v) || Math.abs(v) < eps) return; }
+        if (!isFinite(v)) return;
         var pv = val(v); if (!isFinite(pv)) return;               // log(≤0) etc.
         var texIdx = api.barByCat ? ci : si;
         var col = api.override(c, legible(colorFor(si, ci), api.guardBg));
