@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "جليدي (Icicle)",
   "inputs.chartType.options.chord": "وتري (Chord)",
   "inputs.data.label": "الصق جدولك",
-  "inputs.data.placeholder": "الربع,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "الربع,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "انسخ الخلايا مباشرة من Excel أو Google Sheets أو Numbers والصقها هنا — تصل كجدول نظيف (دون عناء الفواصل). أو اكتب/الصق CSV أو TSV. الصف الأول = عناوين الأعمدة؛ يصبح أول عمود نصي هو التسميات وكل عمود رقمي سلسلة. يعاد بناء المخطط تلقائيا.",
   "inputs.hasHeader.label": "الصف الأول عنوان",
   "inputs.hasHeader.section": "البيانات",

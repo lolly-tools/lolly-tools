@@ -34,7 +34,7 @@
   "inputs.chartType.options.chord": "Хордова діаграма",
   "inputs.data.label": "Вставте свою таблицю",
   "inputs.data.help": "Скопіюйте клітинки прямо з Excel, Google Sheets або Numbers і вставте тут — вони перетворяться на чисту таблицю (без клопоту з комами). Або введіть/вставте CSV чи TSV. Перший рядок = заголовки колонок; перша текстова колонка стає підписами, а кожна числова колонка — серією. Діаграма перебудовується автоматично.",
-  "inputs.data.placeholder": "Quarter,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Quarter,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.hasHeader.label": "Перший рядок — заголовок",
   "inputs.hasHeader.section": "Дані",
   "inputs.delimiter.label": "Роздільник колонок",

@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "আইসিকল",
   "inputs.chartType.options.chord": "কর্ড",
   "inputs.data.label": "আপনার টেবিল পেস্ট করুন",
-  "inputs.data.placeholder": "ত্রৈমাসিক,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "ত্রৈমাসিক,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Excel, Google Sheets বা Numbers থেকে সরাসরি সেল কপি করে এখানে পেস্ট করুন — সেগুলি পরিষ্কার টেবিল হিসেবে চলে আসে (কমা নিয়ে ঝামেলা নেই)। অথবা CSV বা TSV টাইপ/পেস্ট করুন। প্রথম সারি = কলাম হেডার; প্রথম টেক্সট কলামটি লেবেল হয়ে যায় এবং প্রতিটি সাংখ্যিক কলাম একটি করে সিরিজ। চার্টটি স্বয়ংক্রিয়ভাবে নতুন করে তৈরি হয়।",
   "inputs.hasHeader.label": "প্রথম সারি একটি হেডার",
   "inputs.hasHeader.section": "ডেটা",

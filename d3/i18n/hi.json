@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "आइसिकल",
   "inputs.chartType.options.chord": "कॉर्ड",
   "inputs.data.label": "अपनी टेबल पेस्ट करें",
-  "inputs.data.placeholder": "तिमाही,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "तिमाही,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Excel, Google Sheets या Numbers से सेल सीधे कॉपी करके यहाँ पेस्ट करें — वे एक साफ़ तालिका के रूप में आ जाती हैं (कॉमा से जूझना नहीं पड़ता)। या CSV या TSV टाइप/पेस्ट करें। पहली पंक्ति = कॉलम हेडर; पहला टेक्स्ट कॉलम लेबल बनता है और हर संख्यात्मक कॉलम एक सीरीज़। चार्ट अपने आप फिर से बन जाता है।",
   "inputs.hasHeader.label": "पहली पंक्ति हेडर है",
   "inputs.hasHeader.section": "डेटा",

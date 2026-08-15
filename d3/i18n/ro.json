@@ -26,7 +26,7 @@
   "inputs.chartType.options.waffle": "Waffle / pictogramă",
   "inputs.data.label": "Lipește tabelul",
   "inputs.data.help": "Copiază celulele direct din Excel, Google Sheets sau Numbers și lipește aici — se transformă într-un tabel clar (fără bătaie de cap cu virgule). Sau scrie/lipește CSV ori TSV. Primul rând = antetele coloanelor; prima coloană de text devine etichetele, iar fiecare coloană numerică devine o serie. Graficul se reconstruiește automat.",
-  "inputs.data.placeholder": "Trimestru,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Trimestru,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.hasHeader.label": "Primul rând este un antet",
   "inputs.hasHeader.section": "Date",
   "inputs.delimiter.label": "Separator de coloane",

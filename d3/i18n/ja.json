@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "アイシクルチャート",
   "inputs.chartType.options.chord": "コードダイアグラム",
   "inputs.data.label": "表を貼り付け",
-  "inputs.data.placeholder": "四半期,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "四半期,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Excel、Google Sheets、Numbersからセルをそのままコピーして貼り付けられます — カンマを気にせず、きれいな表として取り込まれます。CSVやTSVを入力・貼り付けすることもできます。先頭行 = 列見出し、最初のテキスト列がラベルになり、数値の列はそれぞれシリーズになります。チャートは自動的に再構築されます。",
   "inputs.hasHeader.label": "先頭行をヘッダーとして扱う",
   "inputs.hasHeader.section": "データ",

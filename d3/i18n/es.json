@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "Icicle",
   "inputs.chartType.options.chord": "Acordes",
   "inputs.data.label": "Pega tu tabla",
-  "inputs.data.placeholder": "Trimestre,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Trimestre,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Copia las celdas directamente desde Excel, Google Sheets o Numbers y pégalas aquí — se convierten en una tabla limpia (sin complicarte con comas). O escribe/pega CSV o TSV. La primera fila son los encabezados de columna; la primera columna de texto se convierte en las etiquetas y cada columna numérica en una serie. El gráfico se reconstruye automáticamente.",
   "inputs.hasHeader.label": "La primera fila es un encabezado",
   "inputs.hasHeader.section": "Datos",

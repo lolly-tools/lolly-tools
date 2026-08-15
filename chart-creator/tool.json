@@ -443,10 +443,10 @@
         { "id": "color", "urlKey": "c", "label": "Color", "type": "color", "placeholder": "#30ba78" }
       ],
       "default": [
-        { "label": "Public cloud", "value": "38", "color": "#008657" },
-        { "label": "Data center",  "value": "31", "color": "#2453ff" },
-        { "label": "Edge sites",   "value": "19", "color": "#fe7c3f" },
-        { "label": "Air-gapped",   "value": "12", "color": "#00bda7" }
+        { "label": "Housing",   "value": "38", "color": "#008657" },
+        { "label": "Food",      "value": "31", "color": "#2453ff" },
+        { "label": "Transport", "value": "19", "color": "#fe7c3f" },
+        { "label": "Savings",   "value": "12", "color": "#00bda7" }
       ]
     },
     { "id": "width",  "label": "Width",  "type": "number", "default": 1080, "min": 100, "max": 8000, "group": "export" },

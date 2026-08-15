@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "Icicle",
   "inputs.chartType.options.chord": "Accordo",
   "inputs.data.label": "Incolla la tua tabella",
-  "inputs.data.placeholder": "Trimestre,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Trimestre,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Copia le celle direttamente da Excel, Google Sheets o Numbers e incollale qui — diventano una tabella pulita (niente virgole da sistemare a mano). Oppure digita o incolla dati CSV o TSV. La prima riga = intestazioni di colonna; la prima colonna di testo diventa le etichette e ogni colonna numerica una serie. Il grafico si ricostruisce automaticamente.",
   "inputs.hasHeader.label": "La prima riga è un'intestazione",
   "inputs.hasHeader.section": "Dati",

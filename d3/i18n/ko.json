@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "아이시클 차트",
   "inputs.chartType.options.chord": "코드 다이어그램",
   "inputs.data.label": "표를 붙여넣으세요",
-  "inputs.data.placeholder": "분기,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "분기,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Excel, Google Sheets, Numbers에서 셀을 그대로 복사해서 붙여넣으세요 — 쉼표를 신경 쓰지 않아도 깔끔한 표로 인식돼요. CSV나 TSV 데이터를 입력하거나 붙여넣어도 좋아요. 첫 번째 행은 열 머리글이 되고, 첫 번째 텍스트 열은 레이블이, 숫자로 된 각 열은 하나의 계열이 돼요. 차트는 자동으로 다시 그려져요.",
   "inputs.hasHeader.label": "첫 번째 행은 머리글이에요",
   "inputs.hasHeader.section": "데이터",

@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "آئسیکل",
   "inputs.chartType.options.chord": "کورڈ",
   "inputs.data.label": "اپنا ٹیبل پیسٹ کریں",
-  "inputs.data.placeholder": "سہ ماہی,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "سہ ماہی,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Excel، Google Sheets یا Numbers سے سیلز براہ راست کاپی کریں اور یہاں پیسٹ کریں — وہ ایک صاف ٹیبل کی صورت میں آ جاتے ہیں (کاماز کی الجھن کے بغیر)۔ یا CSV یا TSV ٹائپ/پیسٹ کریں۔ پہلی قطار = کالم ہیڈرز؛ پہلا متنی کالم لیبلز بن جاتا ہے اور ہر عددی کالم ایک سیریز بنتا ہے۔ چارٹ خودکار طور پر دوبارہ بن جاتا ہے۔",
   "inputs.hasHeader.label": "پہلی قطار ہیڈر ہے",
   "inputs.hasHeader.section": "ڈیٹا",

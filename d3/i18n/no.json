@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "Icicle",
   "inputs.chartType.options.chord": "Akkord",
   "inputs.data.label": "Lim inn tabellen din",
-  "inputs.data.placeholder": "Kvartal,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Kvartal,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Kopier celler direkte fra Excel, Google Sheets eller Numbers og lim inn her — de kommer over som en ren tabell (ingen fikling med komma). Eller skriv/lim inn CSV- eller TSV-data. Første rad = kolonneoverskrifter; første tekstkolonne blir etikettene, og hver tallkolonne blir en serie. Diagrammet bygges automatisk på nytt.",
   "inputs.hasHeader.label": "Første rad er en overskrift",
   "inputs.hasHeader.section": "Data",

@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "Icicle",
   "inputs.chartType.options.chord": "Dây cung",
   "inputs.data.label": "Dán bảng của bạn",
-  "inputs.data.placeholder": "Quý,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Quý,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Sao chép các ô trực tiếp từ Excel, Google Sheets hoặc Numbers rồi dán vào đây — chúng sẽ hiện thành một bảng gọn gàng (không cần lo về dấu phẩy). Hoặc gõ/dán CSV hay TSV. Hàng đầu tiên = tiêu đề cột; cột văn bản đầu tiên trở thành nhãn và mỗi cột số trở thành một chuỗi dữ liệu. Biểu đồ sẽ tự động dựng lại.",
   "inputs.hasHeader.label": "Hàng đầu tiên là tiêu đề",
   "inputs.hasHeader.section": "Dữ liệu",

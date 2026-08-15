@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "冰柱圖",
   "inputs.chartType.options.chord": "弦圖",
   "inputs.data.label": "貼上你的表格",
-  "inputs.data.placeholder": "季度,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "季度,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "直接從 Excel、Google 試算表或 Numbers 複製儲存格並貼到這裡——會自動整理成乾淨的表格（不必處理逗號問題）。也可以直接輸入或貼上 CSV 或 TSV 格式的內容。第一列為欄位標題；第一個文字欄位會作為標籤，其餘每個數值欄位則各自成為一組數列。圖表會自動重新產生。",
   "inputs.hasHeader.label": "第一列為標題",
   "inputs.hasHeader.section": "資料",

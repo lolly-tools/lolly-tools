@@ -299,9 +299,10 @@ var MAX_CELLS = 26000;
 // at a lower fps (the runtime's drop-overlap throttle absorbs the cost visibly)
 // instead of being quietly coarsened.
 var LIVE_MAX_CELLS = MAX_CELLS;
-// The default source image shown until the user picks one. A Lolly tool URL (the
-// bag-video tool rendered to a PNG), resolved lazily via host.compose so the tool
-// shows a real halftone on first paint. A plain catalog id still works too — the
+// The default source image shown until the user picks one: the lolly/demo/lolly-spin
+// catalog asset (the brand-hued Lolly mark, present in every profile), so the tool
+// shows a real halftone on first paint. A Lolly tool URL works too (e.g. pose-geeko
+// rendered to a PNG on the SUSE profile), resolved lazily via host.compose — the
 // resolver below branches on whether this is a URL (see compute()).
 var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
@@ -1254,8 +1255,8 @@ var LIVE_MAX_CELLS = MAX_CELLS;
 // Live canvas size from the width/height inputs (synced from the export bar by the shell).
 function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_EDGE); }
 function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
-// Default source image until the user picks one: a Lolly tool URL (bag-video → PNG),
-// resolved via host.compose. A plain catalog id still works (see resolver below).
+// Default source image until the user picks one: the shared lolly/demo/lolly-spin
+// catalog asset. A Lolly tool URL works too, resolved via host.compose (see resolver below).
 var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
 var _imgCache = { url: null, promise: null };
@@ -1962,18 +1963,18 @@ var FX_posterize = (function () {
  * it degrades to a friendly placeholder rather than throwing — a browser effect.
  *
  * Demo image: shares the same default as the sibling filters (filter-duotone/
- * -halftone/-scanline) — the bag-video render — so every filter opens on the same
- * graphic. Note posterize splits LUMINANCE into bands and fills each with its
- * band's mean colour, so a tonally flat source (the Geeko on a solid dark-green
- * field) separates into fewer, closer tones than a photo would; high-contrast
+ * -halftone/-scanline) — the lolly/demo/lolly-spin mark — so every filter opens on
+ * the same graphic. Note posterize splits LUMINANCE into bands and fills each with
+ * its band's mean colour, so a tonally flat source (a flat vector mark) separates
+ * into fewer, closer tones than a photo would; high-contrast
  * PHOTOS (cf. tool.json: "Headshots and high-contrast photos trace best") still
  * give the richest separations. (The illustrative gallery preview — a Warhol grid
  * of a posterized portrait — is committed at tools/filter-posterize/card.svg.)
  */
 
-// A Lolly tool URL (bag-video → PNG), resolved via host.compose.renderUrl — matches
-// the sibling filters so every filter opens on the same demo graphic. A plain
-// catalog id still works (resolveDefault branches on '://').
+// The shared lolly/demo/lolly-spin catalog asset — matches the sibling filters so
+// every filter opens on the same demo graphic. A Lolly tool URL also works,
+// resolved via host.compose.renderUrl (resolveDefault branches on '://').
 var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 var _defaultUrl = null;
 
@@ -3963,8 +3964,8 @@ var STILL_MAX = 1440; // working-canvas long edge for stills — the SVG <image>
 var LIVE_MAX = 960;   // live: OKLab per-pixel is heavier than a smear, so trade a little
                       // sharpness for frame rate (overlapping frames are dropped anyway).
 
-// Default source image until the user picks one: a Lolly tool URL (bag-video -> PNG),
-// resolved via host.compose. Same default as the sibling effects, kept in sync.
+// Default source image until the user picks one: the shared lolly/demo/lolly-spin
+// catalog asset. Same default as the sibling effects, kept in sync.
 var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
 var _imgCache = { url: null, promise: null };
@@ -4713,8 +4714,8 @@ var LIVE_MAX = 1080;  // raster output, so keep the live working canvas near the
                       // size — the camera frame is requested at high res (render.liveMaxEdge)
                       // and overlapping frames are dropped, so this trades fps for sharpness.
 
-// Default source image until the user picks one: a Lolly tool URL (bag-video → PNG),
-// resolved via host.compose. A plain catalog id still works (see resolver below).
+// Default source image until the user picks one: the shared lolly/demo/lolly-spin
+// catalog asset (see resolver below — a Lolly tool URL also works via host.compose).
 // Same default as the sibling filter-* tools, kept in sync deliberately.
 var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 

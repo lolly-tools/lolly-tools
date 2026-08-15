@@ -34,7 +34,7 @@
   "inputs.chartType.options.chord": "Chordový diagram",
   "inputs.data.label": "Vlož svou tabulku",
   "inputs.data.help": "Zkopíruj buňky přímo z Excelu, Google Sheets nebo Numbers a vlož je sem — převedou se na čistou tabulku (žádné trápení s čárkami). Nebo napiš/vlož CSV či TSV. První řádek = záhlaví sloupců; první textový sloupec se stane popisky a každý číselný sloupec jednou řadou. Graf se automaticky přebuduje.",
-  "inputs.data.placeholder": "Čtvrtletí,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Čtvrtletí,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.hasHeader.label": "První řádek je záhlaví",
   "inputs.hasHeader.section": "Data",
   "inputs.delimiter.label": "Oddělovač sloupců",

@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "Icicle",
   "inputs.chartType.options.chord": "Ackord",
   "inputs.data.label": "Klistra in din tabell",
-  "inputs.data.placeholder": "Kvartal,SLES,Rancher,Edge\nK1,42,28,12\nK2,49,35,18",
+  "inputs.data.placeholder": "Kvartal,Coffee,Tea,Juice\nK1,42,28,12\nK2,49,35,18",
   "inputs.data.help": "Kopiera celler direkt från Excel, Google Sheets eller Numbers och klistra in här – de kommer över som en ren tabell (inget krångel med kommatecken). Eller skriv/klistra in CSV eller TSV. Första raden = kolumnrubriker; den första textkolumnen blir etiketterna och varje numerisk kolumn en serie. Diagrammet byggs om automatiskt.",
   "inputs.hasHeader.label": "Första raden är en rubrik",
   "inputs.hasHeader.section": "Data",

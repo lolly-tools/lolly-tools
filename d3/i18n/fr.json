@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "Icicle",
   "inputs.chartType.options.chord": "Cordes",
   "inputs.data.label": "Colle ton tableau",
-  "inputs.data.placeholder": "Trimestre,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Trimestre,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Copie des cellules directement depuis Excel, Google Sheets ou Numbers et colle-les ici — elles arrivent sous forme de tableau propre (sans te soucier des virgules). Ou saisis/colle du CSV ou du TSV. La première ligne = les en-têtes de colonnes ; la première colonne de texte devient les libellés et chaque colonne numérique une série. Le graphique se reconstruit automatiquement.",
   "inputs.hasHeader.label": "La première ligne est un en-tête",
   "inputs.hasHeader.section": "Données",

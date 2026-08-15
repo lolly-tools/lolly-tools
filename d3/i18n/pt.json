@@ -34,7 +34,7 @@
   "inputs.chartType.options.chord": "Acorde",
   "inputs.data.label": "Cole sua tabela",
   "inputs.data.help": "Copie as células diretamente do Excel, Google Sheets ou Numbers e cole aqui — elas viram uma tabela limpa automaticamente (sem se preocupar com vírgulas). Ou digite/cole CSV ou TSV. A primeira linha = cabeçalhos das colunas; a primeira coluna de texto vira os rótulos, e cada coluna numérica vira uma série. O gráfico se reconstrói automaticamente.",
-  "inputs.data.placeholder": "Trimestre,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Trimestre,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.hasHeader.label": "Primeira linha é um cabeçalho",
   "inputs.hasHeader.section": "Dados",
   "inputs.delimiter.label": "Separador de coluna",

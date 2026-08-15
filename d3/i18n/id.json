@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "Icicle",
   "inputs.chartType.options.chord": "Chord",
   "inputs.data.label": "Tempel tabel Anda",
-  "inputs.data.placeholder": "Kuartal,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Kuartal,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Salin sel langsung dari Excel, Google Sheets, atau Numbers lalu tempel di sini — hasilnya langsung berupa tabel rapi (tanpa perlu repot dengan koma). Atau ketik/tempel CSV atau TSV. Baris pertama = header kolom; kolom teks pertama menjadi label dan setiap kolom numerik menjadi seri. Grafik dibangun ulang secara otomatis.",
   "inputs.hasHeader.label": "Baris pertama adalah header",
   "inputs.hasHeader.section": "Data",

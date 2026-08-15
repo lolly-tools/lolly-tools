@@ -5,7 +5,7 @@
   "a11yLabel": "Screenshot of {{default url \"(no URL set)\"}}",
   "version": "0.1.0",
   "engineVersion": "^1.0.0",
-  "status": "experimental",
+  "status": "official",
   "category": "utility",
   "tags": ["url", "screenshot", "capture", "web", "preview", "developer", "qa"],
   "capabilities": ["capture"],

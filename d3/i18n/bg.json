@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "Висулки",
   "inputs.chartType.options.chord": "Хордова",
   "inputs.data.label": "Постави таблицата си",
-  "inputs.data.placeholder": "Тримесечие,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Тримесечие,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Копирай клетки директно от Excel, Google Sheets или Numbers и ги постави тук — пренасят се като чиста таблица (без разправии със запетаи). Или напиши/постави CSV или TSV. Първи ред = заглавия на колони; първата текстова колона става етикетите, а всяка числова колона — серия. Диаграмата се преизгражда автоматично.",
   "inputs.hasHeader.label": "Първият ред е заглавен",
   "inputs.hasHeader.section": "Данни",

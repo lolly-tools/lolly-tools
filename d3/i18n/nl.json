@@ -33,7 +33,7 @@
   "inputs.chartType.options.icicle": "Icicle",
   "inputs.chartType.options.chord": "Akkoorddiagram",
   "inputs.data.label": "Plak je tabel",
-  "inputs.data.placeholder": "Kwartaal,SLES,Rancher,Edge\nQ1,42,28,12\nQ2,49,35,18",
+  "inputs.data.placeholder": "Kwartaal,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
   "inputs.data.help": "Kopieer cellen rechtstreeks uit Excel, Google Sheets of Numbers en plak ze hier — ze komen binnen als een nette tabel (geen gepriegel met komma's). Of typ/plak CSV of TSV. Eerste rij = kolomkoppen; de eerste tekstkolom wordt de labels en elke numerieke kolom een reeks. De grafiek wordt automatisch opnieuw opgebouwd.",
   "inputs.hasHeader.label": "Eerste rij is een koprij",
   "inputs.hasHeader.section": "Gegevens",
