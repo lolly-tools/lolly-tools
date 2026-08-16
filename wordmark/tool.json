@@ -1,7 +1,7 @@
 {
   "id": "wordmark",
   "name": "Wordmark",
-  "description": "Type a word, get a pure-path vector wordmark in your brand font — recipients never need the font installed.",
+  "description": "Type a word, get a pure-path vector wordmark in your brand font - recipients never need the font installed.",
   "a11yLabel": "Wordmark reading {{default text \"Wordmark\"}}",
   "version": "1.0.1",
   "engineVersion": "^1.60.0",
@@ -68,7 +68,7 @@
       "min": 40,
       "max": 400,
       "step": 10,
-      "help": "Font size the outlines are shaped at — tracking is relative to this."
+      "help": "Font size the outlines are shaped at - tracking is relative to this."
     },
     {
       "id": "color",

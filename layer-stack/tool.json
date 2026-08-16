@@ -1,7 +1,7 @@
 {
   "id": "layer-stack",
   "name": "Layers",
-  "description": "Open a Photoshop or GIMP file as individual layers — lock each one down with exact X/Y coordinates, visibility, opacity and blend mode, then export flat images or a layered PSD.",
+  "description": "Open a Photoshop or GIMP file as individual layers - lock each one down with exact X/Y coordinates, visibility, opacity and blend mode, then export flat images or a layered PSD.",
   "version": "1.0.0",
   "engineVersion": "^1.12.0",
   "status": "community",
@@ -30,7 +30,7 @@
       "labelledFields": true,
       "itemLabel": "Layer",
       "dropToAdd": { "field": "img", "accept": "image/*" },
-      "help": "Bottom to top — later layers paint on top. Drag to restack; drop a PSD or XCF on the canvas (or use the gallery) to import a whole file.",
+      "help": "Bottom to top - later layers paint on top. Drag to restack; drop a PSD or XCF on the canvas (or use the gallery) to import a whole file.",
       "default": [],
       "fields": [
         {

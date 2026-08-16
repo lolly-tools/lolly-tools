@@ -1,7 +1,7 @@
 {
   "id": "slides",
   "name": "Slides",
-  "description": "Build a deck where every slide arranges other Lolly tools in a chosen layout, with its own title, background and speaker notes — then export to PowerPoint, PDF, GIF or MP4.",
+  "description": "Build a deck where every slide arranges other Lolly tools in a chosen layout, with its own title, background and speaker notes - then export to PowerPoint, PDF, GIF or MP4.",
   "a11yLabel": "Slide deck with {{slideCount}} slides",
   "version": "1.0.0",
   "engineVersion": "^1.3.0",
@@ -50,7 +50,7 @@
       "label": "Deck size",
       "type": "select",
       "default": "wide",
-      "help": "One size for the whole deck — PowerPoint gives every slide the same size. Override it in pixels in the export bar.",
+      "help": "One size for the whole deck - PowerPoint gives every slide the same size. Override it in pixels in the export bar.",
       "options": [
         { "value": "wide",    "label": "16:9 · 1920 × 1080", "width": 1920, "height": 1080, "unit": "px" },
         { "value": "classic", "label": "4:3 · 1440 × 1080",  "width": 1440, "height": 1080, "unit": "px" },
@@ -64,7 +64,7 @@
       "type": "select",
       "default": "fade",
       "section": "Animation",
-      "help": "How each slide arrives over the one before it. Only GIF, MP4 and WebM carry the motion — PowerPoint and PDF get every slide still.",
+      "help": "How each slide arrives over the one before it. Only GIF, MP4 and WebM carry the motion - PowerPoint and PDF get every slide still.",
       "options": [
         { "value": "cut",   "label": "Cut" },
         { "value": "fade",  "label": "Fade" },
@@ -117,7 +117,7 @@
       "max": 40,
       "step": 1,
       "default": 0,
-      "help": "0 plays the whole deck in the preview. Set a slide number to hold it there while you edit — exports still play."
+      "help": "0 plays the whole deck in the preview. Set a slide number to hold it there while you edit - exports still play."
     },
     {
       "id": "deck",
@@ -164,7 +164,7 @@
         },
         {
           "id": "media1",
-          "label": "Slot 1 — tool or image",
+          "label": "Slot 1 - tool or image",
           "type": "asset",
           "assetType": "any",
           "allowUpload": true,
@@ -201,7 +201,7 @@
           "type": "text",
           "default": "",
           "rows": 3,
-          "placeholder": "Presenter notes — never shown on the slide.",
+          "placeholder": "Presenter notes - never shown on the slide.",
           "help": "Travels into PowerPoint's notes pane. Never rendered on the slide, in any format.",
           "multilineFor": ["title", "full", "hero", "split", "stack", "golden", "cols3", "grid4"]
         }
@@ -212,19 +212,19 @@
           "title": "Slides",
           "subtitle": "Every slide can hold another Lolly tool.",
           "bg": "#141b2d",
-          "notes": "Open with why the deck exists — the agenda can wait."
+          "notes": "Open with why the deck exists - the agenda can wait."
         },
         {
           "layout": "full",
           "title": "One layout per slide",
           "subtitle": "Title, hero, split, columns, grid",
           "bg": "#2f6df6",
-          "notes": "Pick the layout from the Add slide menu — it is fixed once the slide exists."
+          "notes": "Pick the layout from the Add slide menu - it is fixed once the slide exists."
         },
         {
           "layout": "title",
           "title": "Drop a tool into a slot",
-          "subtitle": "A QR code, a chart, a map — rendered straight into the slide.",
+          "subtitle": "A QR code, a chart, a map - rendered straight into the slide.",
           "bg": "#f3f1ec",
           "notes": "Slots read from the asset picker's Tools tab, so a slot stays live: change the tool link and the slide re-renders."
         },

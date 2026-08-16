@@ -203,7 +203,7 @@
       "section": "Texture & Motion",
       "type": "boolean",
       "default": false,
-      "help": "Slow, looping drift of the colour points — export as WebM/MP4 for a live background."
+      "help": "Slow, looping drift of the colour points - export as WebM/MP4 for a live background."
     },
     {
       "id": "distance",
@@ -229,7 +229,7 @@
       "max": 24,
       "step": 1,
       "showIf": { "animate": true },
-      "help": "Seconds per drift loop — higher is slower. Video exports capture one loop where the frame budget allows (long loops are shortened at 60 fps)."
+      "help": "Seconds per drift loop - higher is slower. Video exports capture one loop where the frame budget allows (long loops are shortened at 60 fps)."
     }
   ],
   "hooks": {

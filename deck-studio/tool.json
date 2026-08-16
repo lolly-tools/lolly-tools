@@ -1,7 +1,7 @@
 {
   "id": "deck-studio",
   "name": "Markdown Slides",
-  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
+  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck - real text, bullets, tables and brand theme - in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Presentation deck with {{_slideCount}} slides",
   "version": "1.0.0",
   "engineVersion": "^1.56.0",
@@ -31,7 +31,7 @@
       "label": "Deck size",
       "type": "select",
       "default": "wide",
-      "help": "One size for the whole deck — PowerPoint gives every slide the same size.",
+      "help": "One size for the whole deck - PowerPoint gives every slide the same size.",
       "options": [
         { "value": "wide", "label": "16:9 · widescreen" },
         { "value": "classic", "label": "4:3 · classic" },
@@ -51,11 +51,11 @@
       "label": "Brand logo",
       "type": "boolean",
       "default": true,
-      "help": "Place the active brand's logo on each slide — automatically the light or dark version to suit the slide's background. Override per slide in the builder."
+      "help": "Place the active brand's logo on each slide - automatically the light or dark version to suit the slide's background. Override per slide in the builder."
     },
     {
       "id": "spec",
-      "label": "Paste a deck — Markdown or JSON",
+      "label": "Paste a deck - Markdown or JSON",
       "type": "longtext",
       "default": "",
       "rows": 4,
@@ -104,7 +104,7 @@
         },
         {
           "id": "visual",
-          "label": "Visual — a Lolly tool link or image",
+          "label": "Visual - a Lolly tool link or image",
           "type": "asset",
           "assetType": "any",
           "allowUpload": true,
@@ -140,14 +140,14 @@
           "type": "text",
           "default": "",
           "rows": 3,
-          "placeholder": "Presenter notes — travel into PowerPoint's notes pane, never shown on the slide.",
+          "placeholder": "Presenter notes - travel into PowerPoint's notes pane, never shown on the slide.",
           "multilineFor": ["title", "section", "content", "two-col", "split", "table", "visual", "full-image", "quote"]
         }
       ],
       "default": [
         { "layout": "title", "heading": "Deck Studio", "subtitle": "Native PowerPoint, on brand", "body": "", "notes": "Open with why the deck exists." },
-        { "layout": "content", "heading": "One model, many ways in", "subtitle": "", "body": "Type in the builder\nPaste **Markdown** — one slide per heading\n  each bullet becomes editable text\nOr paste a JSON spec", "notes": "Every entry mode lands in the same deck." },
-        { "layout": "table", "heading": "Native editable tables", "data": "Metric,Q1,Q2\nRevenue,$1.2M,$1.6M\nGrowth,+18%,+33%", "notes": "This is a real PowerPoint table — click to edit." },
+        { "layout": "content", "heading": "One model, many ways in", "subtitle": "", "body": "Type in the builder\nPaste **Markdown** - one slide per heading\n  each bullet becomes editable text\nOr paste a JSON spec", "notes": "Every entry mode lands in the same deck." },
+        { "layout": "table", "heading": "Native editable tables", "data": "Metric,Q1,Q2\nRevenue,$1.2M,$1.6M\nGrowth,+18%,+33%", "notes": "This is a real PowerPoint table - click to edit." },
         { "layout": "split", "heading": "Charts from your tools", "body": "Drop a **D3** or **Flow Chart** link into the visual slot\nIt renders as a crisp vector\nNo chart engine to learn", "notes": "Compose any Lolly tool as a slide visual." }
       ]
     }

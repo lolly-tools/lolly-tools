@@ -1,7 +1,7 @@
 {
   "id": "audiogram",
   "name": "Audiogram",
-  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
+  "description": "Turn a voice clip or song into a branded video that actually moves with the sound - bars, spectrum, ring, ridgeline or scope, ready for social.",
   "a11yLabel": "Audiogram card for {{default title \"an audio clip\"}} with a waveform animated from the audio",
   "version": "2.5.0",
   "engineVersion": "^1.71.0",
@@ -27,7 +27,7 @@
   },
   "examples": [
     {
-      "label": "Podcast quote — bars",
+      "label": "Podcast quote - bars",
       "values": {
         "title": "Slow is smooth, smooth is fast",
         "subtitle": "The Build Notes podcast · Ep. 41",
@@ -35,7 +35,7 @@
       }
     },
     {
-      "label": "Broadcast — wave",
+      "label": "Broadcast - wave",
       "values": {
         "title": "Morning briefing",
         "subtitle": "Live weekdays · 06:00",
@@ -43,7 +43,7 @@
       }
     },
     {
-      "label": "Release — ring",
+      "label": "Release - ring",
       "values": {
         "title": "New episode out now",
         "subtitle": "Listen anywhere",
@@ -51,7 +51,7 @@
       }
     },
     {
-      "label": "Music — spectrum",
+      "label": "Music - spectrum",
       "values": {
         "title": "Tide Pool",
         "subtitle": "Out now everywhere",
@@ -113,21 +113,21 @@
       "type": "asset",
       "assetType": "audio",
       "allowUpload": true,
-      "help": "Pick a track from your library, upload a clip, or tap Record to speak one now. It's decoded on your device to drive the animation — the audio never leaves the browser. The animation and the exported video run the full length of the clip; very long clips (over about 10 minutes) still work but get a coarser animation. Leave empty for a placeholder waveform. To hear it in the export, choose \"This tool's audio\" as the Audio track in the download options."
+      "help": "Pick a track from your library, upload a clip, or tap Record to speak one now. It's decoded on your device to drive the animation - the audio never leaves the browser. The animation and the exported video run the full length of the clip; very long clips (over about 10 minutes) still work but get a coarser animation. Leave empty for a placeholder waveform. To hear it in the export, choose \"This tool's audio\" as the Audio track in the download options."
     },
     {
       "id": "title",
       "label": "Title",
       "type": "text",
       "default": "Now playing",
-      "help": "The headline on the card — an episode name or a pull-quote."
+      "help": "The headline on the card - an episode name or a pull-quote."
     },
     {
       "id": "subtitle",
       "label": "Subtitle",
       "type": "text",
       "default": "",
-      "help": "A smaller line under the title — show name, guest, or where to listen."
+      "help": "A smaller line under the title - show name, guest, or where to listen."
     },
     {
       "id": "style",

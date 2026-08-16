@@ -1,8 +1,8 @@
 {
   "id": "bitmap-studio",
   "name": "Bitmap Studio",
-  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
-  "a11yLabel": "Graded photo preview — {{default preset \"custom\"}} look",
+  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture - then bake your look as a LUT any editor can use.",
+  "a11yLabel": "Graded photo preview - {{default preset \"custom\"}} look",
   "version": "1.3.0",
   "engineVersion": "^1.4.0",
   "status": "community",
@@ -46,7 +46,7 @@
       "type": "asset",
       "assetType": "image",
       "allowUpload": true,
-      "help": "Pick a photo or SVG, or upload your own — vectors are rasterised on selection. Everything is processed on your device — the pixels never leave the browser. Leave empty to grade the animated Lolly swirl, or hit “Go live” to grade your camera."
+      "help": "Pick a photo or SVG, or upload your own - vectors are rasterised on selection. Everything is processed on your device - the pixels never leave the browser. Leave empty to grade the animated Lolly swirl, or hit “Go live” to grade your camera."
     },
     {
       "id": "imageFraming",
@@ -105,7 +105,7 @@
       "min": -100,
       "max": 100,
       "step": 1,
-      "help": "A smooth S-curve around mid-grey — push the tones apart or flatten them."
+      "help": "A smooth S-curve around mid-grey - push the tones apart or flatten them."
     },
     {
       "id": "highlights",
@@ -155,7 +155,7 @@
       "step": 1,
       "help": "Smart saturation: boosts muted colours first and eases off where colour is already rich."
     },
-    {"id":"hslMode","label":"Colour mix","section":"HSL / Colour","type":"select","display":"segmented","default":"hue","options":[{"value":"hue","label":"Hue"},{"value":"saturation","label":"Saturation"},{"value":"luminance","label":"Luminance"}],"help":"A Lightroom-style HSL mixer. Pick which property to adjust, then push each colour band. Hue rotates that band, Saturation makes it richer or greyer, Luminance brightens or darkens it. Only colours near each band move — greys stay put — and the whole mix bakes into the .cube LUT."},
+    {"id":"hslMode","label":"Colour mix","section":"HSL / Colour","type":"select","display":"segmented","default":"hue","options":[{"value":"hue","label":"Hue"},{"value":"saturation","label":"Saturation"},{"value":"luminance","label":"Luminance"}],"help":"A Lightroom-style HSL mixer. Pick which property to adjust, then push each colour band. Hue rotates that band, Saturation makes it richer or greyer, Luminance brightens or darkens it. Only colours near each band move - greys stay put - and the whole mix bakes into the .cube LUT."},
     {"id":"hslHueRed","label":"Red","section":"HSL / Colour","type":"number","display":"slider","default":0,"min":-100,"max":100,"step":1,"urlKey":"mh0","showIf":{"hslMode":["hue"]},"help":"Rotate the red band. 0 leaves it untouched."},
     {"id":"hslHueOrange","label":"Orange","section":"HSL / Colour","type":"number","display":"slider","default":0,"min":-100,"max":100,"step":1,"urlKey":"mh1","showIf":{"hslMode":["hue"]},"help":"Rotate the orange band. 0 leaves it untouched."},
     {"id":"hslHueYellow","label":"Yellow","section":"HSL / Colour","type":"number","display":"slider","default":0,"min":-100,"max":100,"step":1,"urlKey":"mh2","showIf":{"hslMode":["hue"]},"help":"Rotate the yellow band. 0 leaves it untouched."},
@@ -199,7 +199,7 @@
         { "value": "bw-hard",     "label": "B&W high contrast" },
         { "value": "sepia",       "label": "Sepia" }
       ],
-      "help": "Original film-inspired looks built from open, procedural curves — no sampled stock, so they're safe to ship anywhere."
+      "help": "Original film-inspired looks built from open, procedural curves - no sampled stock, so they're safe to ship anywhere."
     },
     {
       "id": "presetStrength",
@@ -225,7 +225,7 @@
         { "value": "preset", "label": "Open preset LUT" },
         { "value": "custom", "label": "Upload your own" }
       ],
-      "help": "Preset LUTs are open, public-domain looks you can apply and also download. Choose Upload for your own commercial or personal LUTs — those stay on your device and never travel in a share link, so a preset is what makes a look shareable in a URL."
+      "help": "Preset LUTs are open, public-domain looks you can apply and also download. Choose Upload for your own commercial or personal LUTs - those stay on your device and never travel in a share link, so a preset is what makes a look shareable in a URL."
     },
     {
       "id": "lutPreset",
@@ -250,7 +250,7 @@
       "accept": [".cube", ".3dl", "text/plain"],
       "maxSize": 16777216,
       "showIf": { "lutSource": ["custom"] },
-      "help": "Load your own colour LUT — Adobe/IRIDAS .cube (1D or 3D) or Autodesk .3dl. Applied on your device with tetrahedral interpolation, after Develop and the film look. Your file never leaves the browser, and an uploaded LUT is not part of a share link."
+      "help": "Load your own colour LUT - Adobe/IRIDAS .cube (1D or 3D) or Autodesk .3dl. Applied on your device with tetrahedral interpolation, after Develop and the film look. Your file never leaves the browser, and an uploaded LUT is not part of a share link."
     },
     {
       "id": "lutIntensity",
@@ -272,7 +272,7 @@
       "type": "boolean",
       "default": false,
       "showIf": { "lutSource": ["preset"] },
-      "help": "Save the selected open preset as a .cube for DaVinci Resolve, Premiere, Final Cut or Photoshop. These LUTs are public domain (CC0) — see the tool's NOTICE. The switch flips itself back off."
+      "help": "Save the selected open preset as a .cube for DaVinci Resolve, Premiere, Final Cut or Photoshop. These LUTs are public domain (CC0) - see the tool's NOTICE. The switch flips itself back off."
     },
     {
       "id": "bakeSize",
@@ -281,9 +281,9 @@
       "type": "select",
       "default": "33",
       "options": [
-        { "value": "17", "label": "17³ — small" },
-        { "value": "33", "label": "33³ — standard" },
-        { "value": "65", "label": "65³ — fine" }
+        { "value": "17", "label": "17³ - small" },
+        { "value": "33", "label": "33³ - standard" },
+        { "value": "65", "label": "65³ - fine" }
       ],
       "help": "Grid size of the .cube this tool bakes. 33 is the industry default and loads everywhere."
     },
@@ -293,7 +293,7 @@
       "section": "LUT",
       "type": "boolean",
       "default": false,
-      "help": "Bakes the whole colour pipeline — Develop, film look, the preset or uploaded LUT and brand treatment — into one .cube LUT for DaVinci Resolve, Premiere, Final Cut or Photoshop, and downloads it. The switch flips itself back off. Texture effects (grain, vignette…) are spatial and can't live in a LUT."
+      "help": "Bakes the whole colour pipeline - Develop, film look, the preset or uploaded LUT and brand treatment - into one .cube LUT for DaVinci Resolve, Premiere, Final Cut or Photoshop, and downloads it. The switch flips itself back off. Texture effects (grain, vignette…) are spatial and can't live in a LUT."
     },
     {
       "id": "treatment",
@@ -360,7 +360,7 @@
       "min": 0,
       "max": 100,
       "step": 1,
-      "help": "Seeded, luminance-weighted monochrome grain — strongest in the midtones, like real stock."
+      "help": "Seeded, luminance-weighted monochrome grain - strongest in the midtones, like real stock."
     },
     {
       "id": "grainSize",
@@ -444,7 +444,7 @@
       "min": 0,
       "max": 100,
       "step": 1,
-      "help": "Seeded specks, fibres and hairline scratches — the imperfections of a well-loved print."
+      "help": "Seeded specks, fibres and hairline scratches - the imperfections of a well-loved print."
     },
     {
       "id": "seed",
@@ -463,7 +463,7 @@
       "section": "View",
       "type": "boolean",
       "default": false,
-      "help": "Lay the untouched image over the graded result behind a divider you can drag and rotate. A raster export bakes the divider exactly as placed — handy for approval decks."
+      "help": "Lay the untouched image over the graded result behind a divider you can drag and rotate. A raster export bakes the divider exactly as placed - handy for approval decks."
     },
     {
       "id": "histogram",
@@ -471,7 +471,7 @@
       "section": "View",
       "type": "boolean",
       "default": false,
-      "help": "Live RGB + luminance histogram over the canvas. Screen only — never part of the export."
+      "help": "Live RGB + luminance histogram over the canvas. Screen only - never part of the export."
     },
     { "id": "width",  "label": "Width",  "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" },
     { "id": "height", "label": "Height", "type": "number", "default": 1080, "min": 1, "max": 8000, "group": "export" }

@@ -31,7 +31,7 @@
       "label": "City",
       "type": "select",
       "default": "nuremberg",
-      "help": "Add more cities offline with scripts/build-street-clips.ts — no API at render time.",
+      "help": "Add more cities offline with scripts/build-street-clips.ts - no API at render time.",
       "options": [
         { "value": "amsterdam", "label": "Amsterdam" },
         { "value": "athens", "label": "Athens" },

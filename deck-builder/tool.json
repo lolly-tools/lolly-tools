@@ -1,7 +1,7 @@
 {
   "id": "deck-builder",
   "name": "Deck Builder",
-  "description": "Build a slide deck with a live on-canvas editor — edit text, colours and images directly on each slide.",
+  "description": "Build a slide deck with a live on-canvas editor - edit text, colours and images directly on each slide.",
   "a11yLabel": "Slide deck with {{slideCount}} slides",
   "version": "1.0.0",
   "engineVersion": "^1.3.0",
@@ -49,7 +49,7 @@
       "label": "Deck size",
       "type": "select",
       "default": "wide",
-      "help": "One size for the whole deck — PowerPoint gives every slide the same size. Override it in pixels in the export bar.",
+      "help": "One size for the whole deck - PowerPoint gives every slide the same size. Override it in pixels in the export bar.",
       "options": [
         {
           "value": "wide",
@@ -87,7 +87,7 @@
       "type": "select",
       "default": "none",
       "section": "Animation",
-      "help": "Animation is OFF by default (None) — the deck sits still. Pick a transition to make slides animate in; only GIF, MP4 and WebM carry the motion (PowerPoint and PDF are always still).",
+      "help": "Animation is OFF by default (None) - the deck sits still. Pick a transition to make slides animate in; only GIF, MP4 and WebM carry the motion (PowerPoint and PDF are always still).",
       "options": [
         {
           "value": "none",
@@ -162,7 +162,7 @@
       "max": 40,
       "step": 1,
       "default": 0,
-      "help": "0 plays the whole deck in the preview. Set a slide number to hold it there while you edit — exports still play."
+      "help": "0 plays the whole deck in the preview. Set a slide number to hold it there while you edit - exports still play."
     },
     {
       "id": "theme",
@@ -224,7 +224,7 @@
       "type": "boolean",
       "default": false,
       "section": "Style",
-      "help": "Turn on per-element type controls. Pick an element chip to set its size, weight and brand font — applied across every slide (layout and freeform), on top of the automatic shrink-to-fit."
+      "help": "Turn on per-element type controls. Pick an element chip to set its size, weight and brand font - applied across every slide (layout and freeform), on top of the automatic shrink-to-fit."
     },
     {
       "id": "h1On",
@@ -1188,7 +1188,7 @@
           "showIf": {
             "mode": "layout"
           },
-          "help": "Where the text sits on the slide. Only the Title-only layout has free space to move it into — every other layout pins the text above its images.",
+          "help": "Where the text sits on the slide. Only the Title-only layout has free space to move it into - every other layout pins the text above its images.",
           "options": [
             {
               "value": "top",
@@ -1209,7 +1209,7 @@
           "label": "Background",
           "type": "color",
           "default": "",
-          "help": "Optional — overrides the theme background for this slide. Leave empty to use the theme."
+          "help": "Optional - overrides the theme background for this slide. Leave empty to use the theme."
         },
         {
           "id": "logo",
@@ -1234,7 +1234,7 @@
         },
         {
           "id": "media1",
-          "label": "Slot 1 — tool or image",
+          "label": "Slot 1 - tool or image",
           "type": "asset",
           "assetType": "any",
           "allowUpload": true,
@@ -1290,7 +1290,7 @@
           "type": "text",
           "default": "",
           "rows": 3,
-          "placeholder": "Presenter notes — never shown on the slide.",
+          "placeholder": "Presenter notes - never shown on the slide.",
           "help": "Travels into PowerPoint's notes pane. Never rendered on the slide, in any format.",
           "multilineFor": [
             "title",
@@ -1330,7 +1330,7 @@
             "mode": "freeform"
           },
           "placeholder": "[]",
-          "help": "The freeform canvas contents — a JSON array of positioned boxes, edited directly on the slide. Coordinates are pixels on the 1920 × 1920 native canvas.",
+          "help": "The freeform canvas contents - a JSON array of positioned boxes, edited directly on the slide. Coordinates are pixels on the 1920 × 1920 native canvas.",
           "multilineFor": [
             "title",
             "full",

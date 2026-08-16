@@ -194,7 +194,7 @@
       "type": "asset",
       "assetType": "image",
       "allowUpload": true,
-      "help": "Pick a photo or upload your own. It's processed on your device — the pixels never leave the browser."
+      "help": "Pick a photo or upload your own. It's processed on your device - the pixels never leave the browser."
     },
     {
       "id": "ht_gridSize",
@@ -330,7 +330,7 @@
       "label": "Invert",
       "type": "boolean",
       "default": false,
-      "help": "Grow dots for the light areas instead of the dark — ideal for a light colour on a dark background.",
+      "help": "Grow dots for the light areas instead of the dark - ideal for a light colour on a dark background.",
       "showIf": {
         "effect": "halftone"
       }
@@ -456,7 +456,7 @@
       "label": "Separate pixels",
       "type": "boolean",
       "default": false,
-      "help": "Add a gap between cells too, so each one is a distinct square — an LED/pixel-matrix look instead of solid scanline bars.",
+      "help": "Add a gap between cells too, so each one is a distinct square - an LED/pixel-matrix look instead of solid scanline bars.",
       "showIf": {
         "effect": "scanline"
       }
@@ -466,7 +466,7 @@
       "label": "Fill every line",
       "type": "boolean",
       "default": false,
-      "help": "Draw every line with no gaps — the same as setting the gap height to zero. Off = classic scanlines; on = a solid posterised image.",
+      "help": "Draw every line with no gaps - the same as setting the gap height to zero. Off = classic scanlines; on = a solid posterised image.",
       "showIf": {
         "effect": "scanline"
       }
@@ -580,7 +580,7 @@
       "label": "Threshold (1 ink)",
       "type": "boolean",
       "default": false,
-      "help": "Collapse the photo to a single ink over paper — one hard cut between dark and light instead of graded separations. Pair with Transparent background for ink on nothing.",
+      "help": "Collapse the photo to a single ink over paper - one hard cut between dark and light instead of graded separations. Pair with Transparent background for ink on nothing.",
       "showIf": {
         "effect": "posterize"
       }
@@ -609,7 +609,7 @@
       "max": 100,
       "step": 1,
       "default": 0,
-      "help": "Lighten or darken the photo before it is separated — shifts every tone up or down, moving detail between the light and dark separations.",
+      "help": "Lighten or darken the photo before it is separated - shifts every tone up or down, moving detail between the light and dark separations.",
       "showIf": {
         "effect": "posterize"
       }
@@ -623,7 +623,7 @@
       "max": 200,
       "step": 1,
       "default": 95,
-      "help": "Tracing resolution — higher samples the photo at a finer grid and captures more detail. Above 100 pushes into very fine, slower traces.",
+      "help": "Tracing resolution - higher samples the photo at a finer grid and captures more detail. Above 100 pushes into very fine, slower traces.",
       "showIf": {
         "effect": "posterize"
       }
@@ -647,7 +647,7 @@
       "label": "Invert tones",
       "type": "boolean",
       "default": false,
-      "help": "Trace from inverted tones — the photo's bright areas become the foreground separations (a tonal negative). Useful for a light subject on a dark background.",
+      "help": "Trace from inverted tones - the photo's bright areas become the foreground separations (a tonal negative). Useful for a light subject on a dark background.",
       "showIf": {
         "effect": "posterize"
       }
@@ -657,7 +657,7 @@
       "label": "Separation colours",
       "type": "blocks",
       "labelledFields": true,
-      "help": "One swatch per tone, darkest first and the lightest (paper) last. Auto-sampled from your photo — edit any swatch to recolour that separation.",
+      "help": "One swatch per tone, darkest first and the lightest (paper) last. Auto-sampled from your photo - edit any swatch to recolour that separation.",
       "fields": [
         {
           "id": "color",
@@ -738,7 +738,7 @@
       "max": 5,
       "step": 0.1,
       "default": 1,
-      "help": "Lloyd relaxation — nudges cells toward equal size and rounder shapes. Higher is calmer and more uniform.",
+      "help": "Lloyd relaxation - nudges cells toward equal size and rounder shapes. Higher is calmer and more uniform.",
       "showIf": {
         "effect": "voronoi"
       }
@@ -797,7 +797,7 @@
       "label": "Background",
       "type": "color",
       "default": "",
-      "help": "The colour behind the mesh — the border and any export margins. Leave empty to follow the edge colour.",
+      "help": "The colour behind the mesh - the border and any export margins. Leave empty to follow the edge colour.",
       "showIf": {
         "effect": "voronoi"
       }
@@ -1386,7 +1386,7 @@
       "section": "Overlay",
       "type": "boolean",
       "default": false,
-      "help": "Show the original photo or live camera feed untouched — handy for placing just a logo / lower-third over the raw footage."
+      "help": "Show the original photo or live camera feed untouched - handy for placing just a logo / lower-third over the raw footage."
     },
     {
       "id": "showLogo",
@@ -1567,7 +1567,7 @@
       "showIf": {
         "lowerThird": true
       },
-      "help": "Optional line below the name — e.g. a role or event."
+      "help": "Optional line below the name - e.g. a role or event."
     },
     {
       "id": "nameWeight",

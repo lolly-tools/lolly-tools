@@ -1,7 +1,7 @@
 {
   "id": "color-palette",
   "name": "Palette Lab",
-  "description": "Grow a palette from one seed colour — harmony accents, perceptual OKLab ramps and WCAG/APCA readability badges, with DTCG tokens and CSV export.",
+  "description": "Grow a palette from one seed colour - harmony accents, perceptual OKLab ramps and WCAG/APCA readability badges, with DTCG tokens and CSV export.",
   "version": "2.2.0",
   "engineVersion": "^1.0.0",
   "status": "community",
@@ -45,7 +45,7 @@
       "label": "Seed colour",
       "type": "color",
       "default": "{color.semantic.primary}",
-      "help": "The colour the whole palette grows from — defaults to your brand primary."
+      "help": "The colour the whole palette grows from - defaults to your brand primary."
     },
     {
       "id": "harmony",
@@ -126,7 +126,7 @@
       "label": "Background",
       "type": "color",
       "default": "{color.semantic.surface}",
-      "help": "The surface the palette sits on. In Contrast mode every step is solved for readability against it — defaults to your brand surface (white in a neutral brand)."
+      "help": "The surface the palette sits on. In Contrast mode every step is solved for readability against it - defaults to your brand surface (white in a neutral brand)."
     },
     {
       "id": "contrastCurve",

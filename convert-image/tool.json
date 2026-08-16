@@ -1,7 +1,7 @@
 {
   "id": "convert-image",
   "name": "Convert Image",
-  "description": "Turn HEIC, TIFF or any photo into WebP, JPEG or PNG — on your device.",
+  "description": "Turn HEIC, TIFF or any photo into WebP, JPEG or PNG - on your device.",
   "version": "1.0.0",
   "engineVersion": "^1.0.0",
   "status": "community",
@@ -37,9 +37,9 @@
       "type": "select",
       "default": "webp",
       "options": [
-        { "value": "webp", "label": "WebP — smallest, keeps transparency" },
-        { "value": "jpeg", "label": "JPEG — universal, for photos" },
-        { "value": "png", "label": "PNG — lossless, keeps transparency" }
+        { "value": "webp", "label": "WebP - smallest, keeps transparency" },
+        { "value": "jpeg", "label": "JPEG - universal, for photos" },
+        { "value": "png", "label": "PNG - lossless, keeps transparency" }
       ],
       "help": "The output format. WebP is usually the smallest; PNG is lossless."
     },

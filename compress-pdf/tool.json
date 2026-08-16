@@ -1,7 +1,7 @@
 {
   "id": "compress-pdf",
   "name": "Compress PDF",
-  "description": "Shrink a PDF by recompressing its images — on your device.",
+  "description": "Shrink a PDF by recompressing its images - on your device.",
   "version": "1.0.0",
   "engineVersion": "^1.0.0",
   "status": "official",
@@ -37,9 +37,9 @@
       "type": "select",
       "default": "balanced",
       "options": [
-        { "value": "light", "label": "Light — keep quality high" },
+        { "value": "light", "label": "Light - keep quality high" },
         { "value": "balanced", "label": "Balanced" },
-        { "value": "strong", "label": "Strong — smallest file" }
+        { "value": "strong", "label": "Strong - smallest file" }
       ],
       "help": "How hard to compress embedded images. Stronger means smaller files and softer images."
     },
@@ -48,7 +48,7 @@
       "label": "Convert images to grayscale",
       "type": "boolean",
       "default": false,
-      "help": "Drop colour from images for extra savings — useful for scanned text documents."
+      "help": "Drop colour from images for extra savings - useful for scanned text documents."
     }
   ]
 }
