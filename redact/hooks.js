@@ -2338,7 +2338,7 @@ function onInput(ctx) { return patch(ctx); }
 // canRaster was an unmarked, independently-drifted copy of _shared/raster.js's
 // (const vs var); it now routes through host.raster AND is brought under the
 // lolly:shared drift guard, so a future edit to the canonical can't silently
-// re-drift it (plans/86 §6.1). decodeImage below keeps its own bytes+SVG decode
+// re-drift it (plans/86 section 6.1). decodeImage below keeps its own bytes+SVG decode
 // for now — its OffscreenCanvas migration (and moving off unguarded `document`)
 // is M2, not M1.
 // === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720">
-  <!-- A layered app-screenshot mock. Each top-level <g> is one lift layer (plans/104 §7):
+  <!-- A layered app-screenshot mock. Each top-level <g> is one lift layer (plans/104 section 7):
        background, window chrome, the three cards, and the call-to-action. The Flythrough
        tool stands them off each other in real z and flies a camera through the stack. -->
   <g id="bg">

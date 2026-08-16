@@ -8,7 +8,7 @@
  * consumer; `npm run validate:catalog` fails if any consumer drifts.
  *
  * Both regions delegate to the `host.raster` bridge API (engine v1.105,
- * plans/86-worker-isolation-hooks.md §6.1) instead of probing the DOM directly.
+ * plans/86-worker-isolation-hooks.md section 6.1) instead of probing the DOM directly.
  * `host` is in lexical scope in every hooks.js (the whole file is one
  * `new Function('host', ...)` body), so these keep their signatures — 0-arg
  * `canRaster()`, 1-URL-arg `loadImage(url)` — and NO consumer call site changes.
