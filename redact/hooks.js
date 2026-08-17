@@ -2442,7 +2442,7 @@ function drawRedacted(img, W, H, rects, grayscale, mark) {
       ctx.fillStyle = labelInk;
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
-      ctx.font = `600 ${lay.size}px system-ui, sans-serif`;
+      ctx.font = `600 ${lay.size}px SUSE, system-ui, sans-serif`;
       ctx.fillText(label, lay.cx, lay.cy);
     }
   }

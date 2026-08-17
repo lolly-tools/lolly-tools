@@ -427,7 +427,7 @@ function buildSvg(args) {
     // label. Solid #000000, no knockout, in a documented strippable group: never
     // paint white over plate geometry.
     pl += '<g id="fp-plate-annotation">'
-      + '<text x="24" y="' + (H - 20) + '" font-family="system-ui, sans-serif" font-size="22" fill="#000000">'
+      + '<text x="24" y="' + (H - 20) + '" font-family="SUSE, system-ui, sans-serif" font-size="22" fill="#000000">'
       + esc(label + ' · prints as spot plate — overprint') + '</text></g>';
     pl += '</svg>';
     return pl;

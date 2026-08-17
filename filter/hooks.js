@@ -33,7 +33,7 @@ function _psSvg(p, W, H) {
     : '';
   var head = '<svg xmlns="http://www.w3.org/2000/svg" id="ps-svg"' + keyAttr + ' viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">';
   if (!p || !p.outSrc) {
-    return head + '<rect width="' + W + '" height="' + H + '" fill="#0f0f12"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="system-ui, sans-serif" font-size="34" fill="#9ca3af">' + _esc(p && p.note ? p.note : 'Choose an image to stretch') + '</text></svg>';
+    return head + '<rect width="' + W + '" height="' + H + '" fill="#0f0f12"/><text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="SUSE, system-ui, sans-serif" font-size="34" fill="#9ca3af">' + _esc(p && p.note ? p.note : 'Choose an image to stretch') + '</text></svg>';
   }
   return head
     + (p.prevSrc ? '<image href="' + p.prevSrc + '" x="0" y="0" width="' + W + '" height="' + H + '" preserveAspectRatio="none"/>' : '')
@@ -116,7 +116,7 @@ function _stillNote(message, W, H) {
   return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block">'
     + '<rect width="' + W + '" height="' + H + '" fill="#f4f4f5"/>'
     + '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" dominant-baseline="middle" '
-    + 'font-family="system-ui, sans-serif" font-size="' + Math.max(16, Math.round(W / 34)) + '" fill="#9ca3af">'
+    + 'font-family="SUSE, system-ui, sans-serif" font-size="' + Math.max(16, Math.round(W / 34)) + '" fill="#9ca3af">'
     + _esc(message) + '</text></svg>';
 }
 

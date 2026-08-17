@@ -1,5 +1,5 @@
 .fc {
-  font-family: var(--font-sans, system-ui, sans-serif);
+  font-family: var(--font-brand, SUSE, system-ui, sans-serif);
   color: hsl(var(--foreground));
   padding: 24px;
   min-height: 100%;

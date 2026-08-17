@@ -26,7 +26,7 @@
   text-align: center;
   padding: 32px;
   color: #667;
-  font-family: system-ui, sans-serif;
+  font-family: SUSE, system-ui, sans-serif;
   border: 2px dashed #aab;
   border-radius: 12px;
 }
@@ -51,7 +51,7 @@
   border-radius: 999px;
   background: rgba(20, 22, 30, 0.82);
   color: #fff;
-  font: 500 13px/1 system-ui, sans-serif;
+  font: 500 13px/1 SUSE, system-ui, sans-serif;
   cursor: pointer;
   opacity: 0.35;
   transition: opacity 0.15s ease;

@@ -11,7 +11,7 @@
   position: absolute;
   inset: 0;
   pointer-events: none;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: SUSE, system-ui, -apple-system, sans-serif;
 }
 
 .bs-chip {
