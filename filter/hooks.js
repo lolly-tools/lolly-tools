@@ -67,7 +67,10 @@ var EFFECT_META = {
   "voronoi": { prefix: "vo_", img: "image" },
   "duotone": { prefix: "du_", img: "image" },
   "pixel-stretch": { prefix: "px_", img: "image" },
-  "imperfections": { prefix: "im_", img: "image" }
+  "imperfections": { prefix: "im_", img: "image" },
+  "dither": { prefix: "di_", img: "image" },
+  "ascii": { prefix: "as_", img: "image" },
+  "glitch": { prefix: "gl_", img: "image" }
 };
 
 function _effectOf(model) { var e = inputsFrom(model).effect; return EFFECT_META[e] ? e : 'halftone'; }
@@ -166,7 +169,7 @@ function onFrame(ctx) { return _run(ctx, 'onFrame'); }
 // works, just at the old speed. Only vector effects benefit (raster effects already emit a
 // single <image> base); raster/pixel-stretch/duotone/imperfections are skipped.
 var _MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
-var _VECTOR_EFFECTS = { halftone: 1, scanline: 1, posterize: 1, voronoi: 1 };
+var _VECTOR_EFFECTS = { halftone: 1, scanline: 1, posterize: 1, voronoi: 1, dither: 1, ascii: 1 };
 var _baseRaster = null; // { svg, removed:[{node,next}], image } — for afterExport restore
 
 function _rasterizeBaseForMotion(ctx) {
@@ -252,6 +255,14 @@ function afterExport(ctx)  {
   _restoreBaseRaster();
   var m = EFFECT_MOD[_activeEffect];
   return m && m.afterExport ? m.afterExport(ctx) : undefined;
+}
+// Format-gated bytes producer (engine's exportStill contract): delegate to the
+// active effect's optional producer (ascii owns .txt/.md, emitting the raw ASCII
+// grid as text). It returns null for every other format → the export falls through
+// to the normal render path, so the seven shipping effects are byte-identical.
+function exportStill(ctx) {
+  var m = EFFECT_MOD[_activeEffect];
+  return m && m.exportStill ? m.exportStill(ctx) : null;
 }
 
 
@@ -6344,6 +6355,2453 @@ return {
 };
 })();
 
+// ===== effect module: dither (community/filter — palette dither) =====
+var FX_dither = (function () {
+/**
+ * Palette Dither Filter (effect value "dither") — hooks.
+ *
+ * Quantizes a photo to a small, named colour palette using deterministic
+ * dithering: Floyd–Steinberg error diffusion (in LINEAR RGB), ordered (Bayer)
+ * dithering, or index-seeded noise dithering — nearest-colour matching always
+ * happens in OKLab, so perceptual distance (not raw channel distance) decides
+ * which palette entry a pixel snaps to. Emits a vector <svg> of one <rect> per
+ * virtual pixel (sized by "Scale"), so the result is a crisp, scalable
+ * deliverable rather than a baked bitmap.
+ *
+ * Pixel decoding needs a real <canvas> (browser only). In a headless shell
+ * (CLI/jsdom) there's no 2D context, so the hook degrades to a friendly
+ * placeholder instead of throwing.
+ */
+
+var VIEW = 1000;
+var MAX_EDGE = 8000;
+// Dither emits ONE cheap <rect> per virtual pixel (no per-glyph path work like
+// ascii, no per-dot geometry like halftone), so its grid budget is far larger:
+// at 26 000 the requested cols×rows overflowed below ~scale 6 on a 1000px canvas,
+// which pinned the whole low end of "Scale" to the same coarse grid. 120 000 rects
+// (a ~350×350 grid) still serialise + rasterise fast, and let small scales keep
+// getting finer instead of plateauing (task 8).
+var MAX_CELLS = 120000;
+
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
+var _imgCache = { url: null, promise: null };
+var _defaultUrl = null;
+var _memoKey = null;
+var _memoResult = null;
+var _brandPalette = null; // { count, hexes } — resolved once per colour count
+var _lastOv = null, _lastW = VIEW, _lastH = VIEW; // overlay params + box (read by beforeExport)
+
+function inputsFrom(model) { var o = {}; model.forEach(function (i) { o[i.id] = i.value; }); return o; }
+function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function f2(v) { return Math.round(v * 100) / 100; }
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_EDGE); }
+function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
+
+function svgOpen(W, H, extra) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" '
+    + 'width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block;"'
+    + (extra || '') + '>';
+}
+function placeholder(message, W, H) {
+  W = W || VIEW; H = H || VIEW;
+  return svgOpen(W, H)
+    + '<rect width="' + W + '" height="' + H + '" fill="#f4f4f5"/>'
+    + '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" '
+    + 'dominant-baseline="middle" font-family="sans-serif" font-size="34" '
+    + 'fill="#9ca3af">' + esc(message) + '</text></svg>';
+}
+
+// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+function canRaster() {
+  return !!(host.raster && host.raster.canRaster());
+}
+// === /lolly:shared canRaster ===
+// === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+function loadImage(url) {
+  if (!host.raster) return Promise.reject(new Error('no raster'));
+  return host.raster.decode(url);
+}
+// === /lolly:shared loadImage ===
+function getImage(url) {
+  if (_imgCache.url === url && _imgCache.promise) return _imgCache.promise;
+  var promise = loadImage(url);
+  _imgCache = { url: url, promise: promise };
+  promise.catch(function () { if (_imgCache.url === url) _imgCache = { url: null, promise: null }; });
+  return promise;
+}
+
+// ── Colour grade + treatment (shared shape with the sibling filter effects) ──
+// Wires the tool's Colour section (hue/saturation/lightness/contrast +
+// treatmentColor/blendMode/intensity) into this effect. Grade is applied to the
+// sampled sRGB before quantization; the treatment tints the emitted palette hexes.
+function _hex2rgb(hex) {
+  var s = (typeof hex === 'string' ? hex : '').trim().replace(/^#/, '');
+  if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+  return { r: parseInt(s.slice(0, 2), 16), g: parseInt(s.slice(2, 4), 16), b: parseInt(s.slice(4, 6), 16) };
+}
+function _gHx(v) { v = v < 0 ? 0 : v > 255 ? 255 : Math.round(v); var h = v.toString(16); return h.length < 2 ? '0' + h : h; }
+function _mul3(a, b) {
+  var o = new Array(9);
+  for (var r = 0; r < 3; r++) for (var c = 0; c < 3; c++)
+    o[r * 3 + c] = a[r * 3] * b[c] + a[r * 3 + 1] * b[3 + c] + a[r * 3 + 2] * b[6 + c];
+  return o;
+}
+function _hueSatMatrix(hueDeg, sat) {
+  var h = hueDeg * Math.PI / 180, c = Math.cos(h), s = Math.sin(h);
+  var hm = [
+    0.213 + c * 0.787 - s * 0.213, 0.715 - c * 0.715 - s * 0.715, 0.072 - c * 0.072 + s * 0.928,
+    0.213 - c * 0.213 + s * 0.143, 0.715 + c * 0.285 + s * 0.140, 0.072 - c * 0.072 - s * 0.283,
+    0.213 - c * 0.213 - s * 0.787, 0.715 - c * 0.715 + s * 0.715, 0.072 + c * 0.928 + s * 0.072,
+  ];
+  var sm = [
+    0.213 + 0.787 * sat, 0.715 - 0.715 * sat, 0.072 - 0.072 * sat,
+    0.213 - 0.213 * sat, 0.715 + 0.285 * sat, 0.072 - 0.072 * sat,
+    0.213 - 0.213 * sat, 0.715 - 0.715 * sat, 0.072 + 0.928 * sat,
+  ];
+  return _mul3(sm, hm);
+}
+function treatmentFrom(inputs) {
+  var ov = _hex2rgb(inputs.treatmentColor);
+  var amt = clamp(n(inputs.treatmentIntensity, 20), 0, 100) / 100;
+  var mode = typeof inputs.blendMode === 'string' ? inputs.blendMode : 'multiply';
+  return { ov: ov, amt: amt, mode: mode, on: !!(ov && amt > 0) };
+}
+function parseGrade(inputs) {
+  var hue = clamp(n(inputs.hue, 0), -180, 180);
+  var sat = clamp(n(inputs.saturation, 100), 0, 200) / 100;
+  var light = clamp(n(inputs.lightness, 0), -100, 100) / 100;
+  var contrast = clamp(n(inputs.contrast, 0), -100, 100);
+  var m = (hue === 0 && sat === 1) ? null : _hueSatMatrix(hue, sat);
+  var cf = (259 * (contrast + 255)) / (255 * (259 - contrast));
+  return { m: m, cf: cf, light: light, on: !!(m || cf !== 1 || light !== 0), treat: treatmentFrom(inputs) };
+}
+function gradeRGB(r, g, b, G) {
+  if (G.cf !== 1) { r = G.cf * (r - 128) + 128; g = G.cf * (g - 128) + 128; b = G.cf * (b - 128) + 128; }
+  if (G.m) { var nr = G.m[0] * r + G.m[1] * g + G.m[2] * b, ng = G.m[3] * r + G.m[4] * g + G.m[5] * b, nb = G.m[6] * r + G.m[7] * g + G.m[8] * b; r = nr; g = ng; b = nb; }
+  if (G.light > 0) { r += (255 - r) * G.light; g += (255 - g) * G.light; b += (255 - b) * G.light; }
+  else if (G.light < 0) { var k = 1 + G.light; r *= k; g *= k; b *= k; }
+  return [r < 0 ? 0 : r > 255 ? 255 : r, g < 0 ? 0 : g > 255 ? 255 : g, b < 0 ? 0 : b > 255 ? 255 : b];
+}
+function gradeColorGrid(grid, G) {
+  if (!G.on) return;
+  for (var i = 0; i < grid.r.length; i++) {
+    var o = gradeRGB(grid.r[i], grid.g[i], grid.b[i], G);
+    grid.r[i] = o[0]; grid.g[i] = o[1]; grid.b[i] = o[2];
+  }
+}
+function _bl(mode, b, s) {
+  switch (mode) {
+    case 'multiply': return b * s;
+    case 'screen': return b + s - b * s;
+    case 'overlay': return b < 0.5 ? 2 * b * s : 1 - 2 * (1 - b) * (1 - s);
+    case 'hard-light': return s < 0.5 ? 2 * b * s : 1 - 2 * (1 - b) * (1 - s);
+    case 'soft-light': return s <= 0.5 ? b - (1 - 2 * s) * b * (1 - b)
+      : b + (2 * s - 1) * ((b <= 0.25 ? ((16 * b - 12) * b + 4) * b : Math.sqrt(b)) - b);
+    case 'darken': return b < s ? b : s;
+    case 'lighten': return b > s ? b : s;
+    case 'color-dodge': return s >= 1 ? 1 : Math.min(1, b / (1 - s));
+    case 'color-burn': return s <= 0 ? 0 : Math.max(0, 1 - (1 - b) / s);
+    case 'difference': return b > s ? b - s : s - b;
+    case 'exclusion': return b + s - 2 * b * s;
+    default: return s;
+  }
+}
+function _lum(c) { return 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]; }
+function _clipColor(c) {
+  var l = _lum(c), mn = Math.min(c[0], c[1], c[2]), mx = Math.max(c[0], c[1], c[2]), o = [c[0], c[1], c[2]], i;
+  if (mn < 0) for (i = 0; i < 3; i++) o[i] = l + (o[i] - l) * l / (l - mn);
+  if (mx > 1) for (i = 0; i < 3; i++) o[i] = l + (o[i] - l) * (1 - l) / (mx - l);
+  return o;
+}
+function _setLum(c, l) { var d = l - _lum(c); return _clipColor([c[0] + d, c[1] + d, c[2] + d]); }
+function _sat(c) { return Math.max(c[0], c[1], c[2]) - Math.min(c[0], c[1], c[2]); }
+function _setSat(c, s) {
+  var ix = [0, 1, 2].sort(function (a, b) { return c[a] - c[b]; }), lo = ix[0], mid = ix[1], hi = ix[2], o = [0, 0, 0];
+  if (c[hi] > c[lo]) { o[mid] = (c[mid] - c[lo]) * s / (c[hi] - c[lo]); o[hi] = s; }
+  return o;
+}
+function _blendNonSep(mode, Cb, Cs) {
+  switch (mode) {
+    case 'hue': return _setLum(_setSat(Cs, _sat(Cb)), _lum(Cb));
+    case 'saturation': return _setLum(_setSat(Cb, _sat(Cs)), _lum(Cb));
+    case 'color': return _setLum(Cs, _lum(Cb));
+    case 'luminosity': return _setLum(Cb, _lum(Cs));
+    default: return null;
+  }
+}
+function treatHex(hex, T) {
+  if (!T || !T.on) return hex;
+  var b = _hex2rgb(hex); if (!b) return hex;
+  var Cb = [b.r / 255, b.g / 255, b.b / 255], Cs = [T.ov.r / 255, T.ov.g / 255, T.ov.b / 255];
+  var ns = _blendNonSep(T.mode, Cb, Cs), o = [0, 0, 0], i;
+  for (i = 0; i < 3; i++) o[i] = Cb[i] * (1 - T.amt) + (ns ? ns[i] : _bl(T.mode, Cb[i], Cs[i])) * T.amt;
+  return '#' + _gHx(o[0] * 255) + _gHx(o[1] * 255) + _gHx(o[2] * 255);
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Brand overlay — SUSE logo + lower-third card. Synced from
+// community/_shared/overlay.js (npm run sync:shared); do not hand-edit inside.
+// ══════════════════════════════════════════════════════════════════════════════
+// === lolly:shared overlay — generated from community/_shared/overlay.js; edit there and run npm run sync:shared ===
+var LOGO_ASPECT = 210.179 / 37.666;   // SUSE horizontal lockup, from its own viewBox
+var _logoCache = {};                  // variantId -> url | null (resolved once per variant)
+var _profileHeadshotUrl;              // undefined = not looked up; null = none; string = url
+var _liveOvStart = null;              // frame.t when the overlay first became active while live
+
+function ovEsc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;';
+  });
+}
+function ovNum(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+function ovClamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function ovF2(v) { return Math.round(v * 100) / 100; }
+function ovEaseOut(p) { p = ovClamp(p, 0, 1); return 1 - Math.pow(1 - p, 3); }
+
+// Normalise the overlay-related inputs into one flat object (reused by still + live).
+function overlayInputs(inp) {
+  return {
+    noFilter: !!inp.noFilter,
+    showLogo: !!inp.showLogo,
+    logoPosition: inp.logoPosition || 'top-right',
+    logoStyle: inp.logoStyle || 'white',
+    logoScale: inp.logoScale,
+    lowerThird: !!inp.lowerThird,
+    ltTheme: inp.ltTheme || 'bar',
+    ltPosition: inp.ltPosition || 'left',
+    firstname: inp.firstname,
+    lastname: inp.lastname,
+    title: inp.title,
+    nameWeight: inp.nameWeight,
+    subtitleWeight: inp.subtitleWeight,
+  };
+}
+function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
+
+// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
+// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+function logoVariantId(style) {
+  return style === 'green' ? 'suse/logo/hor-neg-green'
+    : style === 'black' ? 'suse/logo/hor-pos-black'
+      : 'suse/logo/hor-neg-white';
+}
+// Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
+// compute/onInit; call WITHOUT await from onFrame — it just warms the cache.
+function resolveLogoUrl(style) {
+  var id = logoVariantId(style);
+  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
+  return host.assets.get(id)
+    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
+    .catch(function () { return (_logoCache[id] = null); });
+}
+function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
+
+// Resolve the user's PROFILE headshot to a URL once (async). Used as the auto default
+// for the lower-third chip when the headshot input is empty. null = none / unavailable.
+function resolveProfileHeadshot() {
+  if (_profileHeadshotUrl !== undefined) return Promise.resolve(_profileHeadshotUrl);
+  _profileHeadshotUrl = null;
+  if (!host.profile || !host.profile.get) return Promise.resolve(null);
+  return host.profile.get().then(function (p) {
+    if (p && p.headshot && p.headshot.id) {
+      return host.assets.get(p.headshot.id).then(function (r) { _profileHeadshotUrl = (r && r.url) || null; });
+    }
+  }).catch(function () { }).then(function () { return _profileHeadshotUrl; });
+}
+
+// Build the overlay SVG children. OW/OH = the output coordinate box (viewBox units).
+// o = normalised overlay inputs + { logoUrl, headshotUrl, mode:'still'|'live', elapsed }.
+function buildOverlaySvg(OW, OH, o) {
+  if (!overlayActive(o)) return '';
+  var live = o.mode === 'live';
+  var elapsed = live ? ovNum(o.elapsed, 1e9) : 1e9;
+  var out = '';
+
+  // ── SUSE logo ──────────────────────────────────────────────────────────────
+  if (o.showLogo && o.logoUrl) {
+    var pos = o.logoPosition || 'top-right';
+    var m = OW * 0.045;
+    var scale = ovClamp(ovNum(o.logoScale, 1), 0.25, 3);
+    var w = pos === 'full' ? ovClamp(OW * 0.72 * scale, 40, OW)
+      : ovClamp(OW * 0.2 * scale, 24, OW - m * 2);
+    var h = w / LOGO_ASPECT;
+    var x = (pos === 'top-left' || pos === 'bottom-left') ? m
+      : (pos === 'top-right' || pos === 'bottom-right') ? OW - m - w
+        : (OW - w) / 2;
+    var y = (pos === 'top-left' || pos === 'top-right' || pos === 'top') ? m
+      : (pos === 'bottom-left' || pos === 'bottom-right' || pos === 'bottom') ? OH - m - h
+        : (OH - h) / 2;
+    var lop = live ? ovEaseOut(elapsed / 460) : 1;
+    out += '<image href="' + ovEsc(o.logoUrl) + '" x="' + ovF2(x) + '" y="' + ovF2(y)
+      + '" width="' + ovF2(w) + '" height="' + ovF2(h) + '" preserveAspectRatio="xMidYMid meet"'
+      + (lop < 1 ? ' opacity="' + ovF2(lop) + '"' : '') + '/>';
+  }
+
+  // ── lower-third name card ────────────────────────────────────────────────────
+  if (o.lowerThird) {
+    var name = [String(o.firstname || '').trim(), String(o.lastname || '').trim()].filter(Boolean).join(' ') || 'Your name';
+    var title = String(o.title || '').trim();
+    var theme = o.ltTheme || 'bar';
+    var lp = o.ltPosition || 'left';
+    var hasShot = !!o.headshotUrl;
+
+    var p = live ? ovEaseOut(elapsed / 560) : 1;
+    var mg = OW * 0.045;
+    var padX = OH * 0.032, padY = OH * 0.028;
+    var nameSize = OH * 0.045, titleSize = OH * 0.028;
+    var lineH = nameSize + (title ? titleSize * 1.5 : 0);
+    var cardH = lineH + padY * 2;
+    var chip = hasShot ? cardH - padY * 0.9 : 0;
+    var gap = hasShot ? padX * 0.7 : 0;
+    var nameW = name.length * nameSize * 0.6;
+    var titleW = title.length * titleSize * 0.58;
+    var textW = Math.max(nameW, titleW, OW * 0.14);
+    var cardW = ovClamp(padX + (hasShot ? chip + gap : 0) + textW + padX, OW * 0.22, OW - mg * 2);
+
+    var cx = lp === 'center' ? (OW - cardW) / 2 : lp === 'right' ? OW - mg - cardW : mg;
+    var cy = OH - mg - cardH;
+    var dy = (1 - p) * (OH * 0.035);
+
+    var accent = '#30ba78';
+    var r = Math.min(cardH * 0.2, 22);
+    var g = '<g transform="translate(' + ovF2(cx) + ' ' + ovF2(cy + dy) + ')"'
+      + (p < 1 ? ' opacity="' + ovF2(p) + '"' : '') + '>';
+
+    if (theme === 'bar') {
+      g += ovRRect(0, 0, cardW, cardH, r, '#111111', 0.97);
+    } else if (theme === 'glass') {
+      g += ovRRect(0, 0, cardW, cardH, r, '#0b1512', 0.34);
+      g += '<rect x="0.75" y="0.75" width="' + ovF2(cardW - 1.5) + '" height="' + ovF2(cardH - 1.5)
+        + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="none" stroke="#ffffff" stroke-opacity="0.3" stroke-width="1.4"/>';
+    } // 'minimal' → no plate; text carries a soft outline for legibility
+
+    var textX = padX + (hasShot ? chip + gap : 0);
+    var blockTop = (cardH - lineH) / 2;
+    var nameY = blockTop + nameSize * 0.82;
+    var titleY = nameY + titleSize * 1.4;
+    var titleColor = theme === 'bar' ? '#a9e3c8' : '#e6f0ec';
+    var shadow = theme === 'minimal'
+      ? ' style="paint-order:stroke;stroke:#0b1512;stroke-opacity:0.55;stroke-width:' + ovF2(nameSize * 0.14) + 'px;stroke-linejoin:round"'
+      : '';
+    var titleShadow = theme === 'minimal'
+      ? ' style="paint-order:stroke;stroke:#0b1512;stroke-opacity:0.55;stroke-width:' + ovF2(titleSize * 0.16) + 'px;stroke-linejoin:round"'
+      : '';
+    var FONT = 'SUSE, system-ui, -apple-system, sans-serif';
+
+    if (hasShot) {
+      var cxs = padX + chip / 2, cys = cardH / 2, rad = chip / 2;
+      g += '<clipPath id="lollyShot"><circle cx="' + ovF2(cxs) + '" cy="' + ovF2(cys) + '" r="' + ovF2(rad) + '"/></clipPath>';
+      g += '<image href="' + ovEsc(o.headshotUrl) + '" x="' + ovF2(padX) + '" y="' + ovF2(cys - rad)
+        + '" width="' + ovF2(chip) + '" height="' + ovF2(chip) + '" preserveAspectRatio="xMidYMid slice" clip-path="url(#lollyShot)"/>';
+      g += '<circle cx="' + ovF2(cxs) + '" cy="' + ovF2(cys) + '" r="' + ovF2(rad) + '" fill="none" stroke="' + accent + '" stroke-width="' + ovF2(rad * 0.09) + '"/>';
+    }
+
+    g += '<text x="' + ovF2(textX) + '" y="' + ovF2(nameY) + '" font-family="' + FONT + '" font-size="' + ovF2(nameSize)
+      + '" font-weight="' + ovClamp(Math.round(ovNum(o.nameWeight, 700)), 100, 900) + '" fill="#ffffff"' + shadow + '>' + ovEsc(name) + '</text>';
+    if (title) {
+      g += '<text x="' + ovF2(textX) + '" y="' + ovF2(titleY) + '" font-family="' + FONT + '" font-size="' + ovF2(titleSize)
+        + '" font-weight="' + ovClamp(Math.round(ovNum(o.subtitleWeight, 500)), 100, 900) + '" fill="' + titleColor + '"' + titleShadow + '>' + ovEsc(title) + '</text>';
+    }
+    var ulY = (title ? titleY : nameY) + (title ? titleSize * 0.55 : nameSize * 0.4);
+    var ulW = Math.min(nameW, cardW - textX - padX) * (live ? p : 1);
+    g += '<rect x="' + ovF2(textX) + '" y="' + ovF2(ulY) + '" width="' + ovF2(Math.max(0, ulW)) + '" height="' + ovF2(Math.max(2, nameSize * 0.08)) + '" rx="' + ovF2(nameSize * 0.04) + '" fill="' + accent + '"/>';
+
+    g += '</g>';
+    out += g;
+  }
+
+  return out;
+}
+// A rounded rect (rx clamped) shared by the overlay themes.
+function ovRRect(x, y, w, h, r, fill, op) {
+  r = Math.min(r, w / 2, h / 2);
+  return '<rect x="' + ovF2(x) + '" y="' + ovF2(y) + '" width="' + ovF2(w) + '" height="' + ovF2(h)
+    + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="' + fill + '"'
+    + (op != null && op < 1 ? ' fill-opacity="' + ovF2(op) + '"' : '') + '/>';
+}
+
+// ── Export frame clock (motion formats only) ─────────────────────────────────
+// A still export always renders the overlay at rest (mode:'still' → fully faded
+// in, no offset) — correct for png/svg/pdf/etc. But a gif/webm/mp4 export of a
+// STILL photo previously held that same resting pose for the whole clip: the
+// intro ease-in buildOverlaySvg already does for 'live' (camera) mode never
+// played, because nothing called it with mode:'live' + an advancing elapsed.
+// armOverlayClock wires that up: register __lollyFrameRender on the tool's
+// inert clock-anchor canvas (see docs on <canvas data-ov-clock> in template.html
+// — the same anchor-element convention as the slides tool, required because the
+// capture loop only drives a t through a <canvas> carrying that property), and
+// on each captured frame rebuild JUST the overlay markup (via the untouched
+// buildOverlaySvg) at that frame's elapsed ms, splicing it into a stable slot
+// (`<g id="lolly-ov-slot">`, wrapped once around every buildOverlaySvg() call
+// site in the tool's buildSvg()). The expensive filtered-image content is never
+// touched — only the overlay's own small SVG fragment is rebuilt per frame.
+// getOv(t) returns a full overlay-input object (mode:'live', elapsed: t*clipMs) —
+// callers build it from their own cached _lastOv (see armFilterOverlayExport).
+// W/H are the SAME viewBox-units box the tool's own buildOverlaySvg(W, H, …) call
+// used for the still render — a fixed VIEW constant for the square-canvas tools,
+// or the tool's own current width/height for the ones with dynamic W/H inputs.
+function armOverlayClock(root, W, H, getOv) {
+  var canvas = root && root.querySelector && root.querySelector('[data-ov-clock]');
+  var slot = root && root.querySelector && root.querySelector('#lolly-ov-slot');
+  if (!canvas || !slot) return null;
+  canvas.__lollyFrameRender = function (t) {
+    try {
+      var ov = getOv(t);
+      slot.innerHTML = ov ? buildOverlaySvg(W, H, ov) : '';
+    } catch (e) { /* leave the last good frame in place */ }
+  };
+  return canvas;
+}
+function disarmOverlayClock(canvas) {
+  if (!canvas) return;
+  try { delete canvas.__lollyFrameRender; } catch (e) { canvas.__lollyFrameRender = undefined; }
+}
+// Formats the clock should arm for — every other export (png/svg/pdf/jpg/webp/…)
+// captures the still, at-rest overlay exactly as before.
+var OV_MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
+// Serialise the overlay's export state (its box + the FULLY-RESOLVED overlay
+// params, logo/headshot URLs included) for the render patch. The template stamps
+// it onto the clock anchor as data-ov-params; armFilterOverlayExport reads it back
+// from the DOM. This is the isolation-safe channel (plans/86 section 18): the render hook
+// — which alone holds the resolved URLs — writes the state into its patch, which
+// reaches the DOM whether the hook ran in this realm or in a Worker, so the
+// in-realm export hook never depends on a module var a Worker-side hook wrote.
+// Empty string when the overlay is inactive, so the attribute costs nothing then.
+function overlayExportParams(W, H, ov) {
+  return (ov && overlayActive(ov)) ? JSON.stringify({ W: W, H: H, ov: ov }) : '';
+}
+// Shared beforeExport/afterExport glue: arms the clock for a motion export.
+// Two call forms:
+//   armFilterOverlayExport(ctx)                 — isolation-safe: recover W/H/ov
+//     from the clock anchor's data-ov-params (written via overlayExportParams).
+//   armFilterOverlayExport(ctx, W, H, lastOv)   — legacy: params from the tool's
+//     own module state (only correct when the render hook ran in THIS realm).
+// The DOM path is preferred; the legacy path stays until every filter migrates.
+var _ovClock = null;
+function armFilterOverlayExport(ctx, W, H, lastOv) {
+  if (W == null && lastOv == null) {
+    var el = ctx.node && ctx.node.querySelector && ctx.node.querySelector('[data-ov-clock]');
+    var raw = el && el.getAttribute && el.getAttribute('data-ov-params');
+    if (!raw) return;
+    var parsed; try { parsed = JSON.parse(raw); } catch (e) { return; }
+    W = parsed.W; H = parsed.H; lastOv = parsed.ov;
+  }
+  if (!lastOv || !overlayActive(lastOv) || !OV_MOTION_FORMATS[ctx.format]) return;
+  var clipMs = ((ctx.opts && ctx.opts.duration) || 5) * 1000;
+  _ovClock = armOverlayClock(ctx.node, W, H, function (t) {
+    return Object.assign({}, lastOv, { mode: 'live', elapsed: t * clipMs });
+  });
+}
+function disarmFilterOverlayExport() {
+  disarmOverlayClock(_ovClock);
+  _ovClock = null;
+}
+// === /lolly:shared overlay ===
+
+// Downsample the image to a cols×rows grid of sRGB colour (0..255), transparency
+// composited onto white. Same shape as the halftone effect's sampleGrid, minus
+// the luminance channel (dither works entirely in colour).
+function sampleColorGrid(img, cols, rows, fit) {
+  if (typeof document === 'undefined' || !document.createElement) return null;
+  var c = document.createElement('canvas');
+  c.width = cols; c.height = rows;
+  var ctx = c.getContext && c.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return null;
+  ctx.imageSmoothingEnabled = true;
+  if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = 'high';
+  var iw = img.naturalWidth || img.width;
+  var ih = img.naturalHeight || img.height;
+  if (!iw || !ih) return null;
+  if (fit === 'cover') {
+    var s = Math.max(cols / iw, rows / ih);
+    var dw = iw * s, dh = ih * s;
+    ctx.drawImage(img, (cols - dw) / 2, (rows - dh) / 2, dw, dh);
+  } else {
+    ctx.drawImage(img, 0, 0, cols, rows);
+  }
+  var data;
+  try { data = ctx.getImageData(0, 0, cols, rows).data; } catch (e) { return null; }
+  var rArr = new Float32Array(cols * rows), gArr = new Float32Array(cols * rows), bArr = new Float32Array(cols * rows);
+  for (var i = 0, p = 0; i < rArr.length; i++, p += 4) {
+    var a = data[p + 3] / 255;
+    var R = data[p], G = data[p + 1], B = data[p + 2];
+    if (a < 1) { R = R * a + 255 * (1 - a); G = G * a + 255 * (1 - a); B = B * a + 255 * (1 - a); }
+    rArr[i] = R; gArr[i] = G; bArr[i] = B;
+  }
+  return { r: rArr, g: gArr, b: bArr, cols: cols, rows: rows };
+}
+
+// ── OKLab (Björn Ottosson) — ported the same way every sibling effect ports it ──
+function srgbToLinear(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
+function linRgbToOklab(r, g, b) {
+  var l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  var m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  var s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ];
+}
+function hexToRgb01(hex) {
+  var h = (typeof hex === 'string' ? hex : '').trim().replace(/^#/, '');
+  if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return null;
+  var v = parseInt(h, 16);
+  return [((v >> 16) & 255) / 255, ((v >> 8) & 255) / 255, (v & 255) / 255];
+}
+function oklabLOf(hex) {
+  var rgb = hexToRgb01(hex);
+  if (!rgb) return 0;
+  return linRgbToOklab(srgbToLinear(rgb[0]), srgbToLinear(rgb[1]), srgbToLinear(rgb[2]))[0];
+}
+function hex2(v) { var h = Math.round(clamp(v, 0, 255)).toString(16); return h.length < 2 ? '0' + h : h; }
+function rgb01ToHex(r, g, b) { return '#' + hex2(r * 255) + hex2(g * 255) + hex2(b * 255); }
+
+// ── fixed palettes — named descriptively, never by trademark ────────────────
+function grayPalette(count) {
+  var out = [];
+  for (var i = 0; i < count; i++) {
+    var v = count > 1 ? Math.round(i * 255 / (count - 1)) : 0;
+    out.push('#' + hex2(v) + hex2(v) + hex2(v));
+  }
+  return out;
+}
+function hslToHex(h, s, l) {
+  h = ((h % 360) + 360) % 360;
+  var c = (1 - Math.abs(2 * l - 1)) * s;
+  var x = c * (1 - Math.abs((h / 60) % 2 - 1));
+  var m = l - c / 2;
+  var r = 0, g = 0, b = 0;
+  if (h < 60) { r = c; g = x; } else if (h < 120) { r = x; g = c; }
+  else if (h < 180) { g = c; b = x; } else if (h < 240) { g = x; b = c; }
+  else if (h < 300) { r = x; b = c; } else { r = c; b = x; }
+  return rgb01ToHex(r + m, g + m, b + m);
+}
+// A 6-hue × 3-lightness × 3-saturation HSL sweep — 54 deterministic swatches
+// evoking an 8-bit console gamut without reproducing any real device's table.
+function buildRetro54() {
+  var hues = [0, 32, 95, 150, 205, 268];
+  var lights = [0.32, 0.52, 0.74];
+  var sats = [0.45, 0.68, 0.92];
+  var out = [];
+  for (var hi = 0; hi < hues.length; hi++)
+    for (var li = 0; li < lights.length; li++)
+      for (var si = 0; si < sats.length; si++)
+        out.push(hslToHex(hues[hi], sats[si], lights[li]));
+  return out;
+}
+var PALETTES = {
+  mono: ['#000000', '#ffffff'],
+  handheld4: ['#0f380f', '#306230', '#8bac0f', '#9bbc0f'],
+  retro16: [
+    '#000000', '#ffffff', '#883932', '#67b6bd', '#8b3f96', '#55a049', '#40318d', '#bfce72',
+    '#8b5429', '#574200', '#b86962', '#505050', '#787878', '#94e089', '#7869c4', '#9f9f9f',
+  ],
+  retro54: null, // built lazily by buildRetro54()
+  gray4: grayPalette(4),
+  gray8: grayPalette(8),
+};
+
+// Resolve a palette id + colour count to a flat hex array. 'brand' is the only
+// async path (reads the active brand's colour tokens); everything else resolves
+// synchronously, wrapped in a Promise for one uniform call site.
+function resolveBrandPalette(count) {
+  if (_brandPalette && _brandPalette.count === count) return Promise.resolve(_brandPalette.hexes);
+  var fallback = grayPalette(count);
+  if (!host.tokens || !host.tokens.colors) { _brandPalette = { count: count, hexes: fallback }; return Promise.resolve(fallback); }
+  return host.tokens.colors().then(function (swatches) {
+    var seen = {}, hexes = [];
+    (swatches || []).forEach(function (sw) {
+      var v = sw && sw.value;
+      if (v && hexToRgb01(v) && !seen[v]) { seen[v] = 1; hexes.push(v); }
+    });
+    if (!hexes.length) { hexes = fallback; } else {
+      // Deterministic ordering (perceptual lightness), then an EVEN downsample
+      // to `count` entries — never a random pick.
+      hexes.sort(function (a, b) { return oklabLOf(a) - oklabLOf(b); });
+      if (hexes.length > count) {
+        var picked = [];
+        for (var i = 0; i < count; i++) {
+          var idx = count > 1 ? Math.round(i * (hexes.length - 1) / (count - 1)) : 0;
+          picked.push(hexes[idx]);
+        }
+        hexes = picked;
+      }
+    }
+    _brandPalette = { count: count, hexes: hexes };
+    return hexes;
+  }).catch(function () { _brandPalette = { count: count, hexes: fallback }; return fallback; });
+}
+function resolvePalette(id, count) {
+  if (id === 'retro54') return Promise.resolve(PALETTES.retro54 || (PALETTES.retro54 = buildRetro54()));
+  if (id === 'brand') return resolveBrandPalette(clamp(Math.round(n(count, 8)), 2, 16));
+  return Promise.resolve(PALETTES[id] || PALETTES.mono);
+}
+
+// Palette entries pre-converted to linear RGB + OKLab, once per render.
+function entriesFor(hexes) {
+  return hexes.map(function (hex) {
+    var rgb = hexToRgb01(hex) || [0, 0, 0];
+    var lin = [srgbToLinear(rgb[0]), srgbToLinear(rgb[1]), srgbToLinear(rgb[2])];
+    return { hex: hex, lin: lin, lab: linRgbToOklab(lin[0], lin[1], lin[2]) };
+  });
+}
+function nearestIndex(lab, entries) {
+  var bestI = 0, bestD = Infinity;
+  for (var i = 0; i < entries.length; i++) {
+    var e = entries[i].lab;
+    var dl = lab[0] - e[0], da = lab[1] - e[1], db = lab[2] - e[2];
+    var d = dl * dl + da * da + db * db;
+    if (d < bestD) { bestD = d; bestI = i; }
+  }
+  return bestI;
+}
+
+// ── dithering algorithms — all deterministic, NO Math.random anywhere ───────
+
+// Error diffusion in LINEAR RGB; nearest-colour matching in OKLab. rl/gl/bl are
+// mutated in place — accumulated error can push a value outside 0..1, clamped
+// only at the moment of matching, exactly like the classic algorithm.
+function ditherFloydPalette(rl, gl, bl, idxArr, cols, rows, entries) {
+  for (var row = 0; row < rows; row++) {
+    for (var col = 0; col < cols; col++) {
+      var idx = row * cols + col;
+      var or_ = rl[idx], og = gl[idx], ob = bl[idx];
+      var cr = clamp(or_, 0, 1), cg = clamp(og, 0, 1), cb = clamp(ob, 0, 1);
+      var pi = nearestIndex(linRgbToOklab(cr, cg, cb), entries);
+      idxArr[idx] = pi;
+      var pick = entries[pi].lin;
+      var er = or_ - pick[0], eg = og - pick[1], eb = ob - pick[2];
+      if (col + 1 < cols) { rl[idx + 1] += er * 7 / 16; gl[idx + 1] += eg * 7 / 16; bl[idx + 1] += eb * 7 / 16; }
+      if (row + 1 < rows) {
+        if (col - 1 >= 0) { rl[idx + cols - 1] += er * 3 / 16; gl[idx + cols - 1] += eg * 3 / 16; bl[idx + cols - 1] += eb * 3 / 16; }
+        rl[idx + cols] += er * 5 / 16; gl[idx + cols] += eg * 5 / 16; bl[idx + cols] += eb * 5 / 16;
+        if (col + 1 < cols) { rl[idx + cols + 1] += er * 1 / 16; gl[idx + cols + 1] += eg * 1 / 16; bl[idx + cols + 1] += eb * 1 / 16; }
+      }
+    }
+  }
+}
+var BAYER4 = [[0, 8, 2, 10], [12, 4, 14, 6], [3, 11, 1, 9], [15, 7, 13, 5]];
+function ditherOrderedPalette(rl, gl, bl, idxArr, cols, rows, entries) {
+  var amt = 0.22;
+  for (var row = 0; row < rows; row++) {
+    for (var col = 0; col < cols; col++) {
+      var idx = row * cols + col;
+      var t = ((BAYER4[row & 3][col & 3] + 0.5) / 16 - 0.5) * amt;
+      var cr = clamp(rl[idx] + t, 0, 1), cg = clamp(gl[idx] + t, 0, 1), cb = clamp(bl[idx] + t, 0, 1);
+      idxArr[idx] = nearestIndex(linRgbToOklab(cr, cg, cb), entries);
+    }
+  }
+}
+// Index-seeded pseudo-random — the SAME formula the halftone effect's
+// ditherNoise uses — so the grain is stable across re-renders and exports.
+// Deliberately NOT Math.random: same input always gives the same texture.
+function seededNoise01(i) {
+  var s = Math.sin(i * 12.9898) * 43758.5453;
+  return s - Math.floor(s);
+}
+function ditherNoisePalette(rl, gl, bl, idxArr, cols, rows, entries) {
+  var amt = 0.16;
+  for (var i = 0; i < rl.length; i++) {
+    var nr = (seededNoise01(i * 3) - 0.5) * 2 * amt;
+    var ng = (seededNoise01(i * 3 + 1) - 0.5) * 2 * amt;
+    var nb = (seededNoise01(i * 3 + 2) - 0.5) * 2 * amt;
+    var cr = clamp(rl[i] + nr, 0, 1), cg = clamp(gl[i] + ng, 0, 1), cb = clamp(bl[i] + nb, 0, 1);
+    idxArr[i] = nearestIndex(linRgbToOklab(cr, cg, cb), entries);
+  }
+}
+
+function buildSvg(W, H, cols, rows, idxArr, fills, rootExtra, overlaySvg) {
+  var cellW = W / cols, cellH = H / rows;
+  var out = svgOpen(W, H, rootExtra);
+  for (var row = 0; row < rows; row++) {
+    for (var col = 0; col < cols; col++) {
+      var hex = fills[idxArr[row * cols + col]];
+      out += '<rect x="' + f2(col * cellW) + '" y="' + f2(row * cellH) + '" width="' + f2(cellW + 0.75)
+        + '" height="' + f2(cellH + 0.75) + '" fill="' + hex + '"/>';
+    }
+  }
+  return out + '<g id="lolly-ov-slot">' + (overlaySvg || '') + '</g></svg>';
+}
+
+// Raw source + overlay only (the "No filter" toggle) — a URL <image>, no dithering.
+function buildRawSvg(W, H, url, fit, rootExtra, overlaySvg) {
+  var out = svgOpen(W, H, rootExtra);
+  if (url) out += '<image href="' + esc(url) + '" x="0" y="0" width="100%" height="100%" preserveAspectRatio="'
+    + (fit === 'contain' ? 'xMidYMid meet' : 'xMidYMid slice') + '"/>';
+  return out + '<g id="lolly-ov-slot">' + (overlaySvg || '') + '</g></svg>';
+}
+
+// ── lifecycle ────────────────────────────────────────────────────────────────
+
+async function compute(model) {
+  var inputs = inputsFrom(model);
+  if (!canRaster()) return { svgContent: placeholder('Preview renders in the browser') };
+  var W = dimW(inputs), H = dimH(inputs);
+
+  var ref = inputs.image;
+  var url = ref && typeof ref === 'object' ? ref.url : null;
+  var isUserPick = !!url;
+  if (!url) {
+    if (!_defaultUrl) {
+      try {
+        var def = (DEFAULT_IMAGE_ID.indexOf('://') !== -1)
+          ? (host.compose && host.compose.renderUrl ? await host.compose.renderUrl(DEFAULT_IMAGE_ID) : null)
+          : await host.assets.get(DEFAULT_IMAGE_ID);
+        _defaultUrl = def && def.url;
+      } catch (e) { if (host.log) host.log('warn', 'filter dither: default image unavailable', { error: String(e) }); }
+    }
+    url = _defaultUrl;
+  }
+  if (!url) return { svgContent: placeholder('Choose an image to dither') };
+
+  var paletteId = inputs.palette || 'mono';
+  var algorithm = inputs.algorithm || 'floyd';
+  var scale = clamp(n(inputs.scale, 6), 0.5, 60);
+  var fit = inputs.fit === 'contain' ? 'contain' : 'cover';
+  var colorCount = clamp(Math.round(n(inputs.colorCount, 8)), 2, 16);
+  var grade = parseGrade(inputs);
+
+  var ovi = overlayInputs(inputs);
+  if (ovi.showLogo) await resolveLogoUrl(ovi.logoStyle);
+  var headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || '';
+  if (ovi.lowerThird && !headUrl) headUrl = (await resolveProfileHeadshot()) || '';
+  var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: 'still' });
+  _lastOv = ov; _lastW = W; _lastH = H;
+
+  var rootExtra = ' data-img-key="' + esc(isUserPick ? url : '') + '"';
+  var memoKey = JSON.stringify({
+    url: url, W: W, H: H, paletteId: paletteId, algorithm: algorithm, scale: scale, fit: fit, colorCount: colorCount,
+    hue: inputs.hue, sat: inputs.saturation, light: inputs.lightness, con: inputs.contrast,
+    tc: inputs.treatmentColor, bm: inputs.blendMode, ti: inputs.treatmentIntensity, ov: ov, nf: !!ovi.noFilter,
+  });
+  if (memoKey === _memoKey) return _memoResult;
+
+  var overlaySvg = buildOverlaySvg(W, H, ov);
+  var svgContent;
+  try {
+    if (ovi.noFilter) {
+      svgContent = buildRawSvg(W, H, url, fit, rootExtra, overlaySvg);
+    } else {
+      var img = await getImage(url);
+      var g = gridDims(W, H, scale);
+      var hexes = await resolvePalette(paletteId, colorCount);
+      svgContent = renderDitherSvg(img, W, H, g.cols, g.rows, fit, hexes, algorithm, grade, rootExtra, overlaySvg)
+        || placeholder('Preview renders in the browser', W, H);
+    }
+  } catch (e) {
+    if (host.log) host.log('warn', 'filter dither: render failed', { error: String(e) });
+    svgContent = placeholder('Could not read this image', W, H);
+  }
+
+  _memoKey = memoKey;
+  _memoResult = { svgContent: svgContent };
+  return _memoResult;
+}
+
+// cols×rows for a scale, capped by MAX_CELLS.
+function gridDims(W, H, scale) {
+  var cols = Math.max(1, Math.round(W / scale)), rows = Math.max(1, Math.round(H / scale));
+  if (cols * rows > MAX_CELLS) {
+    var k = Math.sqrt(MAX_CELLS / (cols * rows));
+    cols = Math.max(1, Math.floor(cols * k));
+    rows = Math.max(1, Math.floor(rows * k));
+  }
+  return { cols: cols, rows: rows };
+}
+
+// Sample → grade → dither → SVG. Shared by compute (decoded image) and onFrame
+// (a live camera frame drawn onto a canvas). Returns null when sampling fails.
+function renderDitherSvg(source, W, H, cols, rows, fit, hexes, algorithm, grade, rootExtra, overlaySvg) {
+  var grid = sampleColorGrid(source, cols, rows, fit);
+  if (!grid) return null;
+  gradeColorGrid(grid, grade);
+  var entries = entriesFor(hexes.length ? hexes : ['#000000', '#ffffff']);
+  var fills = entries.map(function (e) { return treatHex(e.hex, grade.treat); });
+  var rl = new Float32Array(cols * rows), gl = new Float32Array(cols * rows), bl = new Float32Array(cols * rows);
+  for (var i = 0; i < rl.length; i++) {
+    rl[i] = srgbToLinear(grid.r[i] / 255);
+    gl[i] = srgbToLinear(grid.g[i] / 255);
+    bl[i] = srgbToLinear(grid.b[i] / 255);
+  }
+  var idxArr = new Uint8Array(cols * rows);
+  if (algorithm === 'ordered') ditherOrderedPalette(rl, gl, bl, idxArr, cols, rows, entries);
+  else if (algorithm === 'noise') ditherNoisePalette(rl, gl, bl, idxArr, cols, rows, entries);
+  else ditherFloydPalette(rl, gl, bl, idxArr, cols, rows, entries);
+  return buildSvg(W, H, cols, rows, idxArr, fills, rootExtra, overlaySvg);
+}
+
+// Synchronous palette resolve for the live path (onFrame can't await). Everything
+// but 'brand' is synchronous anyway; 'brand' uses the cached swatches (warmed by
+// the still path / a background resolve) and falls back to grayscale until then.
+function resolvePaletteSync(id, count) {
+  if (id === 'retro54') return PALETTES.retro54 || (PALETTES.retro54 = buildRetro54());
+  if (id === 'brand') return (_brandPalette && _brandPalette.hexes) || grayPalette(clamp(Math.round(n(count, 8)), 2, 16));
+  return PALETTES[id] || PALETTES.mono;
+}
+
+function onInit(ctx) { return compute(ctx.model); }
+function onInput(ctx) { return compute(ctx.model); }
+
+// Live camera (engine v1.4): run the SAME sample → dither pipeline per frame.
+function onFrame(ctx) {
+  var frame = ctx.frame;
+  if (!frame || !frame.data || !frame.width || !frame.height) return null;
+  if (!canRaster() || typeof ImageData === 'undefined') return null;
+  var inputs = inputsFrom(ctx.model);
+  var W = dimW(inputs), H = dimH(inputs);
+  _lastW = W; _lastH = H;
+  var paletteId = inputs.palette || 'mono';
+  var algorithm = inputs.algorithm || 'floyd';
+  var scale = clamp(n(inputs.scale, 6), 0.5, 60);
+  var fit = inputs.fit === 'contain' ? 'contain' : 'cover';
+  var colorCount = clamp(Math.round(n(inputs.colorCount, 8)), 2, 16);
+  var grade = parseGrade(inputs);
+  if (paletteId === 'brand' && !_brandPalette) resolveBrandPalette(colorCount); // warm for later frames
+
+  var ovi = overlayInputs(inputs);
+  if (overlayActive(ovi)) { if (_liveOvStart == null) _liveOvStart = frame.t; } else _liveOvStart = null;
+  if (ovi.showLogo && _logoCache[logoVariantId(ovi.logoStyle)] === undefined) resolveLogoUrl(ovi.logoStyle);
+  if (ovi.lowerThird && _profileHeadshotUrl === undefined) resolveProfileHeadshot();
+  var headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || _profileHeadshotUrl || '';
+  var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl,
+    mode: 'live', elapsed: frame.t - (_liveOvStart == null ? frame.t : _liveOvStart) });
+  _lastOv = ov;
+
+  var svgContent;
+  try {
+    var overlaySvg = buildOverlaySvg(W, H, ov);
+    if (ovi.noFilter) {
+      var src = document.createElement('canvas');
+      src.width = frame.width; src.height = frame.height;
+      src.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
+      svgContent = buildRawSvg(W, H, src.toDataURL('image/jpeg', 0.85), fit, '', overlaySvg);
+    } else {
+      var srcC = document.createElement('canvas');
+      srcC.width = frame.width; srcC.height = frame.height;
+      srcC.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
+      var g2 = gridDims(W, H, scale);
+      svgContent = renderDitherSvg(srcC, W, H, g2.cols, g2.rows, fit, resolvePaletteSync(paletteId, colorCount), algorithm, grade, '', overlaySvg)
+        || placeholder('Preview renders in the browser', W, H);
+    }
+  } catch (e) { return null; }
+
+  _memoKey = null; // a live frame supersedes the still memo
+  return { svgContent: svgContent };
+}
+
+// Animation on a static source is DELIBERATELY SKIPPED for dither (Andy allowed
+// skipping when it's too expensive or not meaningful). Two reasons: (1) the
+// dispatcher freezes a vector effect's base to ONE raster for a motion export
+// (_rasterizeBaseForMotion), so a per-frame base change wouldn't survive anyway;
+// (2) re-diffusing the grid and re-serialising up to MAX_CELLS <rect>s every frame
+// is far too costly, and only the 'noise' sub-mode would shimmer meaningfully.
+// So beforeExport only arms the overlay's resting-pose export (glitch, a raster
+// effect whose <image> base is NOT frozen, is where the shimmer lives).
+function beforeExport(ctx) { armFilterOverlayExport(ctx, _lastW, _lastH, _lastOv); }
+function afterExport() { disarmFilterOverlayExport(); }
+
+return {
+  compute:      typeof compute      !== 'undefined' ? compute      : null,
+  onInit:       typeof onInit        !== 'undefined' ? onInit        : null,
+  onInput:      typeof onInput       !== 'undefined' ? onInput       : null,
+  onFrame:      typeof onFrame       !== 'undefined' ? onFrame       : null,
+  beforeExport: typeof beforeExport  !== 'undefined' ? beforeExport  : null,
+  afterExport:  typeof afterExport   !== 'undefined' ? afterExport   : null
+};
+})();
+
+// ===== effect module: ascii (community/filter — ASCII art) =====
+var FX_ascii = (function () {
+/**
+ * ASCII Art Filter (effect value "ascii") — hooks.
+ *
+ * Samples a photo into a character grid and draws each cell as a real <text>
+ * glyph (not a rasterised character) — so the vector/PDF/EMF export runs the
+ * text through the shared text-outline path and the ASCII art stays a true,
+ * scalable vector deliverable. Luminance drives which character from the
+ * chosen ramp is drawn; colour mode chooses between one ink, an ink-on-plate
+ * "terminal" look, or full per-cell colour sampled from the photo.
+ *
+ * Pixel decoding needs a real <canvas> (browser only); a headless shell
+ * degrades to a friendly placeholder instead of throwing.
+ */
+
+var VIEW = 1000;
+var MAX_EDGE = 8000;
+// Text nodes are far pricier than a <rect> (each glyph becomes a path on vector
+// export), so ASCII's cell budget is much tighter than the dot/dither grids.
+var MAX_CELLS = 6000;
+
+var RAMPS = {
+  classic: ' .:-=+*#%@',
+  blocks: ' ░▒▓█',
+  minimal: ' .*#',
+};
+
+// Selectable glyph weights → their numeric font-weight (task: as_fontWeight).
+var FONT_WEIGHTS = { '300': '300', '400': '400', '500': '500', '700': '700' };
+
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
+var _imgCache = { url: null, promise: null };
+var _defaultUrl = null;
+var _memoKey = null;
+var _memoResult = null;
+var _monoFont = null;
+var _lastOv = null, _lastW = VIEW, _lastH = VIEW; // overlay params + box (read by beforeExport)
+var _lastText = null; // { cols, rows, chars } of the last render — the .txt/.md text producer
+
+function inputsFrom(model) { var o = {}; model.forEach(function (i) { o[i.id] = i.value; }); return o; }
+function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function f2(v) { return Math.round(v * 100) / 100; }
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+function color(v, fallback) { var s = (typeof v === 'string' ? v : '').trim(); return s ? s : fallback; }
+// Bias the light→character mapping. piv = threshold/100; 0.5 is identity, lower
+// pivots push more of the image toward the dense end of the ramp, higher toward light.
+function pivotRemap(x, piv) {
+  if (piv <= 0) return 1;
+  if (piv >= 1) return 0;
+  return x <= piv ? (x / piv) * 0.5 : 0.5 + (x - piv) / (1 - piv) * 0.5;
+}
+
+function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_EDGE); }
+function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
+
+function svgOpen(W, H, extra) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" '
+    + 'width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block;"'
+    + (extra || '') + '>';
+}
+function placeholder(message, W, H) {
+  W = W || VIEW; H = H || VIEW;
+  return svgOpen(W, H)
+    + '<rect width="' + W + '" height="' + H + '" fill="#f4f4f5"/>'
+    + '<text x="' + (W / 2) + '" y="' + (H / 2) + '" text-anchor="middle" '
+    + 'dominant-baseline="middle" font-family="sans-serif" font-size="34" '
+    + 'fill="#9ca3af">' + esc(message) + '</text></svg>';
+}
+
+// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+function canRaster() {
+  return !!(host.raster && host.raster.canRaster());
+}
+// === /lolly:shared canRaster ===
+// === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+function loadImage(url) {
+  if (!host.raster) return Promise.reject(new Error('no raster'));
+  return host.raster.decode(url);
+}
+// === /lolly:shared loadImage ===
+function getImage(url) {
+  if (_imgCache.url === url && _imgCache.promise) return _imgCache.promise;
+  var promise = loadImage(url);
+  _imgCache = { url: url, promise: promise };
+  promise.catch(function () { if (_imgCache.url === url) _imgCache = { url: null, promise: null }; });
+  return promise;
+}
+
+// ── Colour grade + treatment (shared shape with the sibling filter effects) ──
+// Wires the tool's Colour section (hue/saturation/lightness/contrast +
+// treatmentColor/blendMode/intensity) into this effect. Same maths the halftone
+// effect uses; kept self-contained (tools ship no imports).
+function _hex2rgb(hex) {
+  var s = (typeof hex === 'string' ? hex : '').trim().replace(/^#/, '');
+  if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+  return { r: parseInt(s.slice(0, 2), 16), g: parseInt(s.slice(2, 4), 16), b: parseInt(s.slice(4, 6), 16) };
+}
+function _gHx(v) { v = v < 0 ? 0 : v > 255 ? 255 : Math.round(v); var h = v.toString(16); return h.length < 2 ? '0' + h : h; }
+function _mul3(a, b) {
+  var o = new Array(9);
+  for (var r = 0; r < 3; r++) for (var c = 0; c < 3; c++)
+    o[r * 3 + c] = a[r * 3] * b[c] + a[r * 3 + 1] * b[3 + c] + a[r * 3 + 2] * b[6 + c];
+  return o;
+}
+function _hueSatMatrix(hueDeg, sat) {
+  var h = hueDeg * Math.PI / 180, c = Math.cos(h), s = Math.sin(h);
+  var hm = [
+    0.213 + c * 0.787 - s * 0.213, 0.715 - c * 0.715 - s * 0.715, 0.072 - c * 0.072 + s * 0.928,
+    0.213 - c * 0.213 + s * 0.143, 0.715 + c * 0.285 + s * 0.140, 0.072 - c * 0.072 - s * 0.283,
+    0.213 - c * 0.213 - s * 0.787, 0.715 - c * 0.715 + s * 0.715, 0.072 + c * 0.928 + s * 0.072,
+  ];
+  var sm = [
+    0.213 + 0.787 * sat, 0.715 - 0.715 * sat, 0.072 - 0.072 * sat,
+    0.213 - 0.213 * sat, 0.715 + 0.285 * sat, 0.072 - 0.072 * sat,
+    0.213 - 0.213 * sat, 0.715 - 0.715 * sat, 0.072 + 0.928 * sat,
+  ];
+  return _mul3(sm, hm);
+}
+function treatmentFrom(inputs) {
+  var ov = _hex2rgb(inputs.treatmentColor);
+  var amt = clamp(n(inputs.treatmentIntensity, 20), 0, 100) / 100;
+  var mode = typeof inputs.blendMode === 'string' ? inputs.blendMode : 'multiply';
+  return { ov: ov, amt: amt, mode: mode, on: !!(ov && amt > 0) };
+}
+function parseGrade(inputs) {
+  var hue = clamp(n(inputs.hue, 0), -180, 180);
+  var sat = clamp(n(inputs.saturation, 100), 0, 200) / 100;
+  var light = clamp(n(inputs.lightness, 0), -100, 100) / 100;
+  var contrast = clamp(n(inputs.contrast, 0), -100, 100);
+  var m = (hue === 0 && sat === 1) ? null : _hueSatMatrix(hue, sat);
+  var cf = (259 * (contrast + 255)) / (255 * (259 - contrast));
+  return { m: m, cf: cf, light: light, on: !!(m || cf !== 1 || light !== 0), treat: treatmentFrom(inputs) };
+}
+function gradeRGB(r, g, b, G) {
+  if (G.cf !== 1) { r = G.cf * (r - 128) + 128; g = G.cf * (g - 128) + 128; b = G.cf * (b - 128) + 128; }
+  if (G.m) { var nr = G.m[0] * r + G.m[1] * g + G.m[2] * b, ng = G.m[3] * r + G.m[4] * g + G.m[5] * b, nb = G.m[6] * r + G.m[7] * g + G.m[8] * b; r = nr; g = ng; b = nb; }
+  if (G.light > 0) { r += (255 - r) * G.light; g += (255 - g) * G.light; b += (255 - b) * G.light; }
+  else if (G.light < 0) { var k = 1 + G.light; r *= k; g *= k; b *= k; }
+  return [r < 0 ? 0 : r > 255 ? 255 : r, g < 0 ? 0 : g > 255 ? 255 : g, b < 0 ? 0 : b > 255 ? 255 : b];
+}
+function _bl(mode, b, s) {
+  switch (mode) {
+    case 'multiply': return b * s;
+    case 'screen': return b + s - b * s;
+    case 'overlay': return b < 0.5 ? 2 * b * s : 1 - 2 * (1 - b) * (1 - s);
+    case 'hard-light': return s < 0.5 ? 2 * b * s : 1 - 2 * (1 - b) * (1 - s);
+    case 'soft-light': return s <= 0.5 ? b - (1 - 2 * s) * b * (1 - b)
+      : b + (2 * s - 1) * ((b <= 0.25 ? ((16 * b - 12) * b + 4) * b : Math.sqrt(b)) - b);
+    case 'darken': return b < s ? b : s;
+    case 'lighten': return b > s ? b : s;
+    case 'color-dodge': return s >= 1 ? 1 : Math.min(1, b / (1 - s));
+    case 'color-burn': return s <= 0 ? 0 : Math.max(0, 1 - (1 - b) / s);
+    case 'difference': return b > s ? b - s : s - b;
+    case 'exclusion': return b + s - 2 * b * s;
+    default: return s;
+  }
+}
+function _lum(c) { return 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]; }
+function _clipColor(c) {
+  var l = _lum(c), mn = Math.min(c[0], c[1], c[2]), mx = Math.max(c[0], c[1], c[2]), o = [c[0], c[1], c[2]], i;
+  if (mn < 0) for (i = 0; i < 3; i++) o[i] = l + (o[i] - l) * l / (l - mn);
+  if (mx > 1) for (i = 0; i < 3; i++) o[i] = l + (o[i] - l) * (1 - l) / (mx - l);
+  return o;
+}
+function _setLum(c, l) { var d = l - _lum(c); return _clipColor([c[0] + d, c[1] + d, c[2] + d]); }
+function _sat(c) { return Math.max(c[0], c[1], c[2]) - Math.min(c[0], c[1], c[2]); }
+function _setSat(c, s) {
+  var ix = [0, 1, 2].sort(function (a, b) { return c[a] - c[b]; }), lo = ix[0], mid = ix[1], hi = ix[2], o = [0, 0, 0];
+  if (c[hi] > c[lo]) { o[mid] = (c[mid] - c[lo]) * s / (c[hi] - c[lo]); o[hi] = s; }
+  return o;
+}
+function _blendNonSep(mode, Cb, Cs) {
+  switch (mode) {
+    case 'hue': return _setLum(_setSat(Cs, _sat(Cb)), _lum(Cb));
+    case 'saturation': return _setLum(_setSat(Cb, _sat(Cs)), _lum(Cb));
+    case 'color': return _setLum(Cs, _lum(Cb));
+    case 'luminosity': return _setLum(Cb, _lum(Cs));
+    default: return null;
+  }
+}
+function treatHex(hex, T) {
+  if (!T || !T.on) return hex;
+  var b = _hex2rgb(hex); if (!b) return hex;
+  var Cb = [b.r / 255, b.g / 255, b.b / 255], Cs = [T.ov.r / 255, T.ov.g / 255, T.ov.b / 255];
+  var ns = _blendNonSep(T.mode, Cb, Cs), o = [0, 0, 0], i;
+  for (i = 0; i < 3; i++) o[i] = Cb[i] * (1 - T.amt) + (ns ? ns[i] : _bl(T.mode, Cb[i], Cs[i])) * T.amt;
+  return '#' + _gHx(o[0] * 255) + _gHx(o[1] * 255) + _gHx(o[2] * 255);
+}
+// Grade the sampled grid in place (r/g/b + recomputed luminance) — no-op at identity.
+function gradeGrid(sm, G) {
+  if (!G.on) return;
+  for (var i = 0; i < sm.lum.length; i++) {
+    var o = gradeRGB(sm.r[i], sm.g[i], sm.b[i], G);
+    sm.r[i] = o[0]; sm.g[i] = o[1]; sm.b[i] = o[2];
+    sm.lum[i] = 0.299 * o[0] + 0.587 * o[1] + 0.114 * o[2];
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Brand overlay — SUSE logo + lower-third card. Synced from
+// community/_shared/overlay.js (npm run sync:shared); do not hand-edit inside.
+// ══════════════════════════════════════════════════════════════════════════════
+// === lolly:shared overlay — generated from community/_shared/overlay.js; edit there and run npm run sync:shared ===
+var LOGO_ASPECT = 210.179 / 37.666;   // SUSE horizontal lockup, from its own viewBox
+var _logoCache = {};                  // variantId -> url | null (resolved once per variant)
+var _profileHeadshotUrl;              // undefined = not looked up; null = none; string = url
+var _liveOvStart = null;              // frame.t when the overlay first became active while live
+
+function ovEsc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;';
+  });
+}
+function ovNum(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+function ovClamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function ovF2(v) { return Math.round(v * 100) / 100; }
+function ovEaseOut(p) { p = ovClamp(p, 0, 1); return 1 - Math.pow(1 - p, 3); }
+
+// Normalise the overlay-related inputs into one flat object (reused by still + live).
+function overlayInputs(inp) {
+  return {
+    noFilter: !!inp.noFilter,
+    showLogo: !!inp.showLogo,
+    logoPosition: inp.logoPosition || 'top-right',
+    logoStyle: inp.logoStyle || 'white',
+    logoScale: inp.logoScale,
+    lowerThird: !!inp.lowerThird,
+    ltTheme: inp.ltTheme || 'bar',
+    ltPosition: inp.ltPosition || 'left',
+    firstname: inp.firstname,
+    lastname: inp.lastname,
+    title: inp.title,
+    nameWeight: inp.nameWeight,
+    subtitleWeight: inp.subtitleWeight,
+  };
+}
+function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
+
+// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
+// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+function logoVariantId(style) {
+  return style === 'green' ? 'suse/logo/hor-neg-green'
+    : style === 'black' ? 'suse/logo/hor-pos-black'
+      : 'suse/logo/hor-neg-white';
+}
+// Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
+// compute/onInit; call WITHOUT await from onFrame — it just warms the cache.
+function resolveLogoUrl(style) {
+  var id = logoVariantId(style);
+  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
+  return host.assets.get(id)
+    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
+    .catch(function () { return (_logoCache[id] = null); });
+}
+function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
+
+// Resolve the user's PROFILE headshot to a URL once (async). Used as the auto default
+// for the lower-third chip when the headshot input is empty. null = none / unavailable.
+function resolveProfileHeadshot() {
+  if (_profileHeadshotUrl !== undefined) return Promise.resolve(_profileHeadshotUrl);
+  _profileHeadshotUrl = null;
+  if (!host.profile || !host.profile.get) return Promise.resolve(null);
+  return host.profile.get().then(function (p) {
+    if (p && p.headshot && p.headshot.id) {
+      return host.assets.get(p.headshot.id).then(function (r) { _profileHeadshotUrl = (r && r.url) || null; });
+    }
+  }).catch(function () { }).then(function () { return _profileHeadshotUrl; });
+}
+
+// Build the overlay SVG children. OW/OH = the output coordinate box (viewBox units).
+// o = normalised overlay inputs + { logoUrl, headshotUrl, mode:'still'|'live', elapsed }.
+function buildOverlaySvg(OW, OH, o) {
+  if (!overlayActive(o)) return '';
+  var live = o.mode === 'live';
+  var elapsed = live ? ovNum(o.elapsed, 1e9) : 1e9;
+  var out = '';
+
+  // ── SUSE logo ──────────────────────────────────────────────────────────────
+  if (o.showLogo && o.logoUrl) {
+    var pos = o.logoPosition || 'top-right';
+    var m = OW * 0.045;
+    var scale = ovClamp(ovNum(o.logoScale, 1), 0.25, 3);
+    var w = pos === 'full' ? ovClamp(OW * 0.72 * scale, 40, OW)
+      : ovClamp(OW * 0.2 * scale, 24, OW - m * 2);
+    var h = w / LOGO_ASPECT;
+    var x = (pos === 'top-left' || pos === 'bottom-left') ? m
+      : (pos === 'top-right' || pos === 'bottom-right') ? OW - m - w
+        : (OW - w) / 2;
+    var y = (pos === 'top-left' || pos === 'top-right' || pos === 'top') ? m
+      : (pos === 'bottom-left' || pos === 'bottom-right' || pos === 'bottom') ? OH - m - h
+        : (OH - h) / 2;
+    var lop = live ? ovEaseOut(elapsed / 460) : 1;
+    out += '<image href="' + ovEsc(o.logoUrl) + '" x="' + ovF2(x) + '" y="' + ovF2(y)
+      + '" width="' + ovF2(w) + '" height="' + ovF2(h) + '" preserveAspectRatio="xMidYMid meet"'
+      + (lop < 1 ? ' opacity="' + ovF2(lop) + '"' : '') + '/>';
+  }
+
+  // ── lower-third name card ────────────────────────────────────────────────────
+  if (o.lowerThird) {
+    var name = [String(o.firstname || '').trim(), String(o.lastname || '').trim()].filter(Boolean).join(' ') || 'Your name';
+    var title = String(o.title || '').trim();
+    var theme = o.ltTheme || 'bar';
+    var lp = o.ltPosition || 'left';
+    var hasShot = !!o.headshotUrl;
+
+    var p = live ? ovEaseOut(elapsed / 560) : 1;
+    var mg = OW * 0.045;
+    var padX = OH * 0.032, padY = OH * 0.028;
+    var nameSize = OH * 0.045, titleSize = OH * 0.028;
+    var lineH = nameSize + (title ? titleSize * 1.5 : 0);
+    var cardH = lineH + padY * 2;
+    var chip = hasShot ? cardH - padY * 0.9 : 0;
+    var gap = hasShot ? padX * 0.7 : 0;
+    var nameW = name.length * nameSize * 0.6;
+    var titleW = title.length * titleSize * 0.58;
+    var textW = Math.max(nameW, titleW, OW * 0.14);
+    var cardW = ovClamp(padX + (hasShot ? chip + gap : 0) + textW + padX, OW * 0.22, OW - mg * 2);
+
+    var cx = lp === 'center' ? (OW - cardW) / 2 : lp === 'right' ? OW - mg - cardW : mg;
+    var cy = OH - mg - cardH;
+    var dy = (1 - p) * (OH * 0.035);
+
+    var accent = '#30ba78';
+    var r = Math.min(cardH * 0.2, 22);
+    var g = '<g transform="translate(' + ovF2(cx) + ' ' + ovF2(cy + dy) + ')"'
+      + (p < 1 ? ' opacity="' + ovF2(p) + '"' : '') + '>';
+
+    if (theme === 'bar') {
+      g += ovRRect(0, 0, cardW, cardH, r, '#111111', 0.97);
+    } else if (theme === 'glass') {
+      g += ovRRect(0, 0, cardW, cardH, r, '#0b1512', 0.34);
+      g += '<rect x="0.75" y="0.75" width="' + ovF2(cardW - 1.5) + '" height="' + ovF2(cardH - 1.5)
+        + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="none" stroke="#ffffff" stroke-opacity="0.3" stroke-width="1.4"/>';
+    } // 'minimal' → no plate; text carries a soft outline for legibility
+
+    var textX = padX + (hasShot ? chip + gap : 0);
+    var blockTop = (cardH - lineH) / 2;
+    var nameY = blockTop + nameSize * 0.82;
+    var titleY = nameY + titleSize * 1.4;
+    var titleColor = theme === 'bar' ? '#a9e3c8' : '#e6f0ec';
+    var shadow = theme === 'minimal'
+      ? ' style="paint-order:stroke;stroke:#0b1512;stroke-opacity:0.55;stroke-width:' + ovF2(nameSize * 0.14) + 'px;stroke-linejoin:round"'
+      : '';
+    var titleShadow = theme === 'minimal'
+      ? ' style="paint-order:stroke;stroke:#0b1512;stroke-opacity:0.55;stroke-width:' + ovF2(titleSize * 0.16) + 'px;stroke-linejoin:round"'
+      : '';
+    var FONT = 'SUSE, system-ui, -apple-system, sans-serif';
+
+    if (hasShot) {
+      var cxs = padX + chip / 2, cys = cardH / 2, rad = chip / 2;
+      g += '<clipPath id="lollyShot"><circle cx="' + ovF2(cxs) + '" cy="' + ovF2(cys) + '" r="' + ovF2(rad) + '"/></clipPath>';
+      g += '<image href="' + ovEsc(o.headshotUrl) + '" x="' + ovF2(padX) + '" y="' + ovF2(cys - rad)
+        + '" width="' + ovF2(chip) + '" height="' + ovF2(chip) + '" preserveAspectRatio="xMidYMid slice" clip-path="url(#lollyShot)"/>';
+      g += '<circle cx="' + ovF2(cxs) + '" cy="' + ovF2(cys) + '" r="' + ovF2(rad) + '" fill="none" stroke="' + accent + '" stroke-width="' + ovF2(rad * 0.09) + '"/>';
+    }
+
+    g += '<text x="' + ovF2(textX) + '" y="' + ovF2(nameY) + '" font-family="' + FONT + '" font-size="' + ovF2(nameSize)
+      + '" font-weight="' + ovClamp(Math.round(ovNum(o.nameWeight, 700)), 100, 900) + '" fill="#ffffff"' + shadow + '>' + ovEsc(name) + '</text>';
+    if (title) {
+      g += '<text x="' + ovF2(textX) + '" y="' + ovF2(titleY) + '" font-family="' + FONT + '" font-size="' + ovF2(titleSize)
+        + '" font-weight="' + ovClamp(Math.round(ovNum(o.subtitleWeight, 500)), 100, 900) + '" fill="' + titleColor + '"' + titleShadow + '>' + ovEsc(title) + '</text>';
+    }
+    var ulY = (title ? titleY : nameY) + (title ? titleSize * 0.55 : nameSize * 0.4);
+    var ulW = Math.min(nameW, cardW - textX - padX) * (live ? p : 1);
+    g += '<rect x="' + ovF2(textX) + '" y="' + ovF2(ulY) + '" width="' + ovF2(Math.max(0, ulW)) + '" height="' + ovF2(Math.max(2, nameSize * 0.08)) + '" rx="' + ovF2(nameSize * 0.04) + '" fill="' + accent + '"/>';
+
+    g += '</g>';
+    out += g;
+  }
+
+  return out;
+}
+// A rounded rect (rx clamped) shared by the overlay themes.
+function ovRRect(x, y, w, h, r, fill, op) {
+  r = Math.min(r, w / 2, h / 2);
+  return '<rect x="' + ovF2(x) + '" y="' + ovF2(y) + '" width="' + ovF2(w) + '" height="' + ovF2(h)
+    + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="' + fill + '"'
+    + (op != null && op < 1 ? ' fill-opacity="' + ovF2(op) + '"' : '') + '/>';
+}
+
+// ── Export frame clock (motion formats only) ─────────────────────────────────
+// A still export always renders the overlay at rest (mode:'still' → fully faded
+// in, no offset) — correct for png/svg/pdf/etc. But a gif/webm/mp4 export of a
+// STILL photo previously held that same resting pose for the whole clip: the
+// intro ease-in buildOverlaySvg already does for 'live' (camera) mode never
+// played, because nothing called it with mode:'live' + an advancing elapsed.
+// armOverlayClock wires that up: register __lollyFrameRender on the tool's
+// inert clock-anchor canvas (see docs on <canvas data-ov-clock> in template.html
+// — the same anchor-element convention as the slides tool, required because the
+// capture loop only drives a t through a <canvas> carrying that property), and
+// on each captured frame rebuild JUST the overlay markup (via the untouched
+// buildOverlaySvg) at that frame's elapsed ms, splicing it into a stable slot
+// (`<g id="lolly-ov-slot">`, wrapped once around every buildOverlaySvg() call
+// site in the tool's buildSvg()). The expensive filtered-image content is never
+// touched — only the overlay's own small SVG fragment is rebuilt per frame.
+// getOv(t) returns a full overlay-input object (mode:'live', elapsed: t*clipMs) —
+// callers build it from their own cached _lastOv (see armFilterOverlayExport).
+// W/H are the SAME viewBox-units box the tool's own buildOverlaySvg(W, H, …) call
+// used for the still render — a fixed VIEW constant for the square-canvas tools,
+// or the tool's own current width/height for the ones with dynamic W/H inputs.
+function armOverlayClock(root, W, H, getOv) {
+  var canvas = root && root.querySelector && root.querySelector('[data-ov-clock]');
+  var slot = root && root.querySelector && root.querySelector('#lolly-ov-slot');
+  if (!canvas || !slot) return null;
+  canvas.__lollyFrameRender = function (t) {
+    try {
+      var ov = getOv(t);
+      slot.innerHTML = ov ? buildOverlaySvg(W, H, ov) : '';
+    } catch (e) { /* leave the last good frame in place */ }
+  };
+  return canvas;
+}
+function disarmOverlayClock(canvas) {
+  if (!canvas) return;
+  try { delete canvas.__lollyFrameRender; } catch (e) { canvas.__lollyFrameRender = undefined; }
+}
+// Formats the clock should arm for — every other export (png/svg/pdf/jpg/webp/…)
+// captures the still, at-rest overlay exactly as before.
+var OV_MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
+// Serialise the overlay's export state (its box + the FULLY-RESOLVED overlay
+// params, logo/headshot URLs included) for the render patch. The template stamps
+// it onto the clock anchor as data-ov-params; armFilterOverlayExport reads it back
+// from the DOM. This is the isolation-safe channel (plans/86 section 18): the render hook
+// — which alone holds the resolved URLs — writes the state into its patch, which
+// reaches the DOM whether the hook ran in this realm or in a Worker, so the
+// in-realm export hook never depends on a module var a Worker-side hook wrote.
+// Empty string when the overlay is inactive, so the attribute costs nothing then.
+function overlayExportParams(W, H, ov) {
+  return (ov && overlayActive(ov)) ? JSON.stringify({ W: W, H: H, ov: ov }) : '';
+}
+// Shared beforeExport/afterExport glue: arms the clock for a motion export.
+// Two call forms:
+//   armFilterOverlayExport(ctx)                 — isolation-safe: recover W/H/ov
+//     from the clock anchor's data-ov-params (written via overlayExportParams).
+//   armFilterOverlayExport(ctx, W, H, lastOv)   — legacy: params from the tool's
+//     own module state (only correct when the render hook ran in THIS realm).
+// The DOM path is preferred; the legacy path stays until every filter migrates.
+var _ovClock = null;
+function armFilterOverlayExport(ctx, W, H, lastOv) {
+  if (W == null && lastOv == null) {
+    var el = ctx.node && ctx.node.querySelector && ctx.node.querySelector('[data-ov-clock]');
+    var raw = el && el.getAttribute && el.getAttribute('data-ov-params');
+    if (!raw) return;
+    var parsed; try { parsed = JSON.parse(raw); } catch (e) { return; }
+    W = parsed.W; H = parsed.H; lastOv = parsed.ov;
+  }
+  if (!lastOv || !overlayActive(lastOv) || !OV_MOTION_FORMATS[ctx.format]) return;
+  var clipMs = ((ctx.opts && ctx.opts.duration) || 5) * 1000;
+  _ovClock = armOverlayClock(ctx.node, W, H, function (t) {
+    return Object.assign({}, lastOv, { mode: 'live', elapsed: t * clipMs });
+  });
+}
+function disarmFilterOverlayExport() {
+  disarmOverlayClock(_ovClock);
+  _ovClock = null;
+}
+// === /lolly:shared overlay ===
+
+// Downsample to a cols×rows luminance + colour grid (mirrors the halftone
+// effect's sampleGrid exactly — same composite-onto-white transparency rule).
+function sampleGrid(img, cols, rows, fit) {
+  if (typeof document === 'undefined' || !document.createElement) return null;
+  var c = document.createElement('canvas');
+  c.width = cols; c.height = rows;
+  var ctx = c.getContext && c.getContext('2d', { willReadFrequently: true });
+  if (!ctx) return null;
+  ctx.imageSmoothingEnabled = true;
+  if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = 'high';
+  var iw = img.naturalWidth || img.width;
+  var ih = img.naturalHeight || img.height;
+  if (!iw || !ih) return null;
+  if (fit === 'cover') {
+    var s = Math.max(cols / iw, rows / ih);
+    var dw = iw * s, dh = ih * s;
+    ctx.drawImage(img, (cols - dw) / 2, (rows - dh) / 2, dw, dh);
+  } else {
+    ctx.drawImage(img, 0, 0, cols, rows);
+  }
+  var data;
+  try { data = ctx.getImageData(0, 0, cols, rows).data; } catch (e) { return null; }
+  var lumArr = new Float32Array(cols * rows);
+  var rArr = new Uint8ClampedArray(cols * rows), gArr = new Uint8ClampedArray(cols * rows), bArr = new Uint8ClampedArray(cols * rows);
+  for (var i = 0, p = 0; i < lumArr.length; i++, p += 4) {
+    var a = data[p + 3] / 255;
+    var R = data[p], G = data[p + 1], B = data[p + 2];
+    var lum = 0.299 * R + 0.587 * G + 0.114 * B;
+    if (a < 1) lum = lum * a + 255 * (1 - a);
+    lumArr[i] = lum;
+    rArr[i] = R; gArr[i] = G; bArr[i] = B;
+  }
+  return { lum: lumArr, r: rArr, g: gArr, b: bArr, cols: cols, rows: rows };
+}
+
+function hex2(v) { var h = Math.round(clamp(v, 0, 255)).toString(16); return h.length < 2 ? '0' + h : h; }
+function rgbHex(r, g, b) { return '#' + hex2(r) + hex2(g) + hex2(b); }
+
+// Read a monospace stack off the brand's font tokens (any fontFamily token
+// whose value/path mentions "mono"); a generic system stack otherwise. Cached
+// once per mount since brand tokens don't change mid-session.
+function resolveMonoFontStack() {
+  if (_monoFont) return Promise.resolve(_monoFont);
+  var fallback = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
+  if (!host.tokens || !host.tokens.get) return Promise.resolve((_monoFont = fallback));
+  return host.tokens.get().then(function (ts) {
+    var entries = ts && ts.query ? ts.query({ type: 'fontFamily' }) : [];
+    var mono = null;
+    (entries || []).forEach(function (e) {
+      if (mono) return;
+      var val = typeof e.value === 'string' ? e.value : '';
+      if (/mono/i.test(val) || /mono/i.test(e.path || '')) mono = val;
+    });
+    _monoFont = mono ? ("'" + mono + "', " + fallback) : fallback;
+    return _monoFont;
+  }).catch(function () { return (_monoFont = fallback); });
+}
+
+function buildSvg(W, H, cols, rows, cellW, cellH, offX, offY, chars, colorMode, fg, bgColor, sm, fontFamily, fontWeight, T, rootExtra, overlaySvg) {
+  var out = svgOpen(W, H, rootExtra);
+  if (bgColor) out += '<rect width="100%" height="100%" fill="' + esc(bgColor) + '"/>';
+  // Width-bind the glyph so its advance (~0.6em for a monospace) equals the cell
+  // width → columns tile edge-to-edge; the tighter cellH (see compute) then makes
+  // the ~0.75em ink fill the row so there are no vertical gaps in the classic ramp.
+  var fontSize = f2(cellW / 0.6);
+  out += '<g font-family="' + esc(fontFamily) + '" font-size="' + fontSize + '" font-weight="' + esc(fontWeight)
+    + '" text-anchor="middle" dominant-baseline="central">';
+  for (var row = 0; row < rows; row++) {
+    for (var col = 0; col < cols; col++) {
+      var idx = row * cols + col;
+      var ch = chars[idx];
+      if (!ch || ch === ' ') continue; // nothing to draw — keeps the SVG lean
+      var cx = offX + (col + 0.5) * cellW, cy = offY + (row + 0.5) * cellH;
+      var fill = colorMode === 'per-cell' ? treatHex(rgbHex(sm.r[idx], sm.g[idx], sm.b[idx]), T) : fg;
+      out += '<text x="' + f2(cx) + '" y="' + f2(cy) + '" fill="' + esc(fill) + '">' + esc(ch) + '</text>';
+    }
+  }
+  out += '</g><g id="lolly-ov-slot">' + (overlaySvg || '') + '</g></svg>';
+  return out;
+}
+
+// Raw source + overlay only (the "No filter" toggle) — a URL <image>, no sampling.
+function buildRawSvg(W, H, url, fit, bgColor, rootExtra, overlaySvg) {
+  var out = svgOpen(W, H, rootExtra);
+  if (bgColor) out += '<rect width="100%" height="100%" fill="' + esc(bgColor) + '"/>';
+  if (url) out += '<image href="' + esc(url) + '" x="0" y="0" width="100%" height="100%" preserveAspectRatio="'
+    + (fit === 'contain' ? 'xMidYMid meet' : 'xMidYMid slice') + '"/>';
+  out += '<g id="lolly-ov-slot">' + (overlaySvg || '') + '</g></svg>';
+  return out;
+}
+
+// ── lifecycle ────────────────────────────────────────────────────────────────
+
+async function compute(model) {
+  var inputs = inputsFrom(model);
+  if (!canRaster()) return { svgContent: placeholder('Preview renders in the browser') };
+  var W = dimW(inputs), H = dimH(inputs);
+
+  var ref = inputs.image;
+  var url = ref && typeof ref === 'object' ? ref.url : null;
+  var isUserPick = !!url;
+  if (!url) {
+    if (!_defaultUrl) {
+      try {
+        var def = (DEFAULT_IMAGE_ID.indexOf('://') !== -1)
+          ? (host.compose && host.compose.renderUrl ? await host.compose.renderUrl(DEFAULT_IMAGE_ID) : null)
+          : await host.assets.get(DEFAULT_IMAGE_ID);
+        _defaultUrl = def && def.url;
+      } catch (e) { if (host.log) host.log('warn', 'filter ascii: default image unavailable', { error: String(e) }); }
+    }
+    url = _defaultUrl;
+  }
+  if (!url) return { svgContent: placeholder('Choose an image to render as ASCII') };
+
+  var ovi = overlayInputs(inputs);
+  if (ovi.showLogo) await resolveLogoUrl(ovi.logoStyle);
+  var headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || '';
+  if (ovi.lowerThird && !headUrl) headUrl = (await resolveProfileHeadshot()) || '';
+  var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: 'still' });
+  _lastOv = ov; _lastW = W; _lastH = H;
+
+  var rootExtra = ' data-img-key="' + esc(isUserPick ? url : '') + '"';
+  var memoKey = JSON.stringify({
+    url: url, W: W, H: H, ramp: inputs.ramp, cellSize: inputs.cellSize, colorMode: inputs.colorMode,
+    fit: inputs.fit, invert: !!inputs.invert, fgColor: inputs.fgColor, bgColor: inputs.bgColor,
+    fontWeight: inputs.fontWeight, threshold: inputs.threshold,
+    hue: inputs.hue, sat: inputs.saturation, light: inputs.lightness, con: inputs.contrast,
+    tc: inputs.treatmentColor, bm: inputs.blendMode, ti: inputs.treatmentIntensity, ov: ov, nf: !!ovi.noFilter,
+  });
+  if (memoKey === _memoKey) return _memoResult;
+
+  var overlaySvg = buildOverlaySvg(W, H, ov);
+  var svgContent;
+  try {
+    if (ovi.noFilter) {
+      _lastText = null;
+      var bgnf = typeof inputs.bgColor === 'string' && inputs.bgColor.trim() ? treatHex(inputs.bgColor.trim(), treatmentFrom(inputs)) : '';
+      svgContent = buildRawSvg(W, H, url, inputs.fit === 'contain' ? 'contain' : 'cover', bgnf, rootExtra, overlaySvg);
+    } else {
+      var img = await getImage(url);
+      var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+      if (!iw || !ih) throw new Error('unreadable image');
+      var fontFamily = await resolveMonoFontStack();
+      var r = renderAscii(img, iw, ih, inputs);
+      svgContent = r
+        ? buildSvg(r.W, r.H, r.cols, r.rows, r.cellW, r.cellH, r.offX, r.offY, r.chars, r.colorMode, r.fgColor, r.bgColor, r.sm, fontFamily, r.fontWeight, r.grade.treat, rootExtra, overlaySvg)
+        : placeholder('Preview renders in the browser', W, H);
+    }
+  } catch (e) {
+    if (host.log) host.log('warn', 'filter ascii: render failed', { error: String(e) });
+    svgContent = placeholder('Could not read this image', W, H);
+  }
+
+  _memoKey = memoKey;
+  _memoResult = { svgContent: svgContent };
+  return _memoResult;
+}
+
+// The shared render core: geometry → sample → grade → char grid. Returns the
+// render data (and stashes the char grid for the .txt/.md export), or null when
+// the shell can't sample pixels. Reused by compute (decoded image) and onFrame
+// (a live camera frame drawn onto a canvas).
+function renderAscii(source, iw, ih, inputs) {
+  var W = dimW(inputs), H = dimH(inputs);
+  var ramp = RAMPS[inputs.ramp] || RAMPS.classic;
+  var cellSize = clamp(n(inputs.cellSize, 12), 6, 40);
+  var colorMode = (inputs.colorMode === 'mono' || inputs.colorMode === 'fg-bg') ? inputs.colorMode : 'per-cell';
+  var fit = inputs.fit === 'contain' ? 'contain' : 'cover';
+  var invert = !!inputs.invert;
+  var threshold = clamp(n(inputs.threshold, 50), 0, 100) / 100;
+  var fontWeight = FONT_WEIGHTS[String(inputs.fontWeight)] || '400';
+  var grade = parseGrade(inputs);
+  var fgColor = treatHex(color(inputs.fgColor, '#e6e6e6'), grade.treat);
+  var bgColor = typeof inputs.bgColor === 'string' && inputs.bgColor.trim() ? treatHex(inputs.bgColor.trim(), grade.treat) : '';
+
+  if (!iw || !ih) return null;
+  var ar = iw / ih, frameAR = W / H;
+  // Row pitch tighter than the em (0.8·cellSize) so the ~0.75em glyph ink fills
+  // the row and columns still read continuously (see buildSvg's width-bound font).
+  var cellW = cellSize * 0.6, cellH = cellSize * 0.8;
+  var regionW, regionH;
+  if (fit === 'cover') { regionW = W; regionH = H; }
+  else if (ar >= frameAR) { regionW = W; regionH = W / ar; }
+  else { regionH = H; regionW = H * ar; }
+
+  var cols = Math.max(1, Math.round(regionW / cellW));
+  var rows = Math.max(1, Math.round(regionH / cellH));
+  if (cols * rows > MAX_CELLS) {
+    var k = Math.sqrt(MAX_CELLS / (cols * rows));
+    cols = Math.max(1, Math.floor(cols * k));
+    rows = Math.max(1, Math.floor(rows * k));
+  }
+  cellW = regionW / cols; cellH = regionH / rows;
+  var offX = (W - regionW) / 2, offY = (H - regionH) / 2;
+
+  var sm = sampleGrid(source, cols, rows, fit);
+  if (!sm) return null;
+  gradeGrid(sm, grade);
+  var rampLen = ramp.length;
+  var chars = new Array(cols * rows);
+  for (var i = 0; i < chars.length; i++) {
+    var norm = pivotRemap(clamp(sm.lum[i] / 255, 0, 1), threshold);
+    var t = invert ? norm : (1 - norm);
+    var ci = clamp(Math.round(t * (rampLen - 1)), 0, rampLen - 1);
+    chars[i] = ramp.charAt(ci);
+  }
+  _lastText = { cols: cols, rows: rows, chars: chars };
+  return { W: W, H: H, cols: cols, rows: rows, cellW: cellW, cellH: cellH, offX: offX, offY: offY,
+    chars: chars, sm: sm, colorMode: colorMode, fgColor: fgColor, bgColor: bgColor, grade: grade, fontWeight: fontWeight, fit: fit };
+}
+
+function onInit(ctx) { return compute(ctx.model); }
+function onInput(ctx) { return compute(ctx.model); }
+
+// Live camera (engine v1.4): run the SAME render core per frame. Degrades to null.
+function onFrame(ctx) {
+  var frame = ctx.frame;
+  if (!frame || !frame.data || !frame.width || !frame.height) return null;
+  if (!canRaster() || typeof ImageData === 'undefined') return null;
+  var inputs = inputsFrom(ctx.model);
+  var W = dimW(inputs), H = dimH(inputs);
+  _lastW = W; _lastH = H;
+
+  var ovi = overlayInputs(inputs);
+  if (overlayActive(ovi)) { if (_liveOvStart == null) _liveOvStart = frame.t; } else _liveOvStart = null;
+  if (ovi.showLogo && _logoCache[logoVariantId(ovi.logoStyle)] === undefined) resolveLogoUrl(ovi.logoStyle);
+  if (ovi.lowerThird && _profileHeadshotUrl === undefined) resolveProfileHeadshot();
+  var headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || _profileHeadshotUrl || '';
+  var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl,
+    mode: 'live', elapsed: frame.t - (_liveOvStart == null ? frame.t : _liveOvStart) });
+  _lastOv = ov;
+
+  var svgContent;
+  try {
+    var overlaySvg = buildOverlaySvg(W, H, ov);
+    if (ovi.noFilter) {
+      _lastText = null;
+      var src = document.createElement('canvas');
+      src.width = frame.width; src.height = frame.height;
+      src.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
+      svgContent = buildRawSvg(W, H, src.toDataURL('image/jpeg', 0.85), inputs.fit === 'contain' ? 'contain' : 'cover', '', '', overlaySvg);
+    } else {
+      var srcC = document.createElement('canvas');
+      srcC.width = frame.width; srcC.height = frame.height;
+      srcC.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
+      var fontFamily = _monoFont || 'ui-monospace, SFMono-Regular, Menlo, Consolas, monospace';
+      if (!_monoFont) resolveMonoFontStack(); // warm for later frames
+      var r = renderAscii(srcC, frame.width, frame.height, inputs);
+      svgContent = r
+        ? buildSvg(r.W, r.H, r.cols, r.rows, r.cellW, r.cellH, r.offX, r.offY, r.chars, r.colorMode, r.fgColor, r.bgColor, r.sm, fontFamily, r.fontWeight, r.grade.treat, '', overlaySvg)
+        : placeholder('Preview renders in the browser', W, H);
+    }
+  } catch (e) { return null; }
+
+  _memoKey = null; // a live frame supersedes the still memo
+  return { svgContent: svgContent };
+}
+
+// Animation on a static source is DELIBERATELY SKIPPED for ASCII (same reasons as
+// dither): the dispatcher freezes the vector base to one raster for a motion
+// export, and re-sampling + re-emitting up to MAX_CELLS <text> glyphs per frame
+// (each an outlined path on vector export) is prohibitively expensive for no
+// meaningful motion. beforeExport only arms the overlay's resting-pose export.
+function beforeExport(ctx) { armFilterOverlayExport(ctx, _lastW, _lastH, _lastOv); }
+function afterExport() { disarmFilterOverlayExport(); }
+
+// Text export (.txt / .md): the ASCII IS text, so own those two formats and emit
+// the exact character grid the SVG shows (spaces preserved), declining every other
+// format so the normal render path produces the SVG/PDF/PNG (exportStill contract).
+function exportStill(ctx) {
+  var fmt = ctx.format;
+  if (fmt !== 'txt' && fmt !== 'md') return null;
+  var g = _lastText;
+  if (!g || !g.chars) return null;
+  var lines = [];
+  for (var row = 0; row < g.rows; row++) {
+    var s = '';
+    for (var col = 0; col < g.cols; col++) s += (g.chars[row * g.cols + col] || ' ');
+    lines.push(s);
+  }
+  var text = lines.join('\n') + '\n';
+  if (fmt === 'md') text = '```\n' + text + '```\n';
+  return { bytes: new TextEncoder().encode(text), mime: fmt === 'md' ? 'text/markdown' : 'text/plain' };
+}
+
+return {
+  compute:      typeof compute      !== 'undefined' ? compute      : null,
+  onInit:       typeof onInit        !== 'undefined' ? onInit        : null,
+  onInput:      typeof onInput       !== 'undefined' ? onInput       : null,
+  onFrame:      typeof onFrame       !== 'undefined' ? onFrame       : null,
+  beforeExport: typeof beforeExport  !== 'undefined' ? beforeExport  : null,
+  afterExport:  typeof afterExport   !== 'undefined' ? afterExport   : null,
+  exportStill:  typeof exportStill   !== 'undefined' ? exportStill   : null
+};
+})();
+
+// ===== effect module: glitch (community/filter — datamosh-style glitch) =====
+var FX_glitch = (function () {
+/**
+ * Glitch Filter (effect value "glitch") — hooks.
+ *
+ * Three composable corruptions on a decoded photo, applied on a working
+ * <canvas> (pixel work needs a real 2D context — a headless shell degrades to
+ * a note card): per-channel RGB pixel offset, row/column pixel sorting above a
+ * brightness threshold, and block corruption. Block corruption MUST look
+ * random but never IS — every decision (which blocks corrupt, and how) comes
+ * from an index+seed-fed deterministic noise function (the same formula the
+ * halftone effect's ditherNoise uses), so the same inputs always bake the
+ * SAME bytes. No Math.random anywhere in this module.
+ *
+ * Bakes to a PNG data URL (lossless — pixel-sort edges alias badly under
+ * JPEG), wrapped in a single <svg><image> so the template's one-drawable-root
+ * contract holds, matching the pixel-stretch/duotone effects' own bitmap wrap.
+ */
+
+var STILL_MAX = 1600; // working-canvas long edge
+var LIVE_MAX = 1024;  // live camera: the glitch passes are heavier per pixel than a smear
+// Frames the shimmer walks across a motion export of a STILL. Discrete steps —
+// block corruption is chaotic per seed, so a stepped seed reads as datamosh jitter.
+var GL_ANIM_STEPS = 24;
+
+var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
+var _imgCache = { url: null, promise: null };
+var _defaultUrl = null;
+var _memoKey = null;
+var _memoResult = null;
+var _lastOv = null, _lastW = 1080, _lastH = 1080; // most recent overlay params + box — read by beforeExport
+// Stashed graded, cover-framed base pixels (still path only) so a motion export can
+// re-bake the corruption per frame with a clock-advanced seed. Cleared while live.
+var _animState = null;
+var _animCanvas = null;
+
+function inputsFrom(model) { var o = {}; model.forEach(function (i) { o[i.id] = i.value; }); return o; }
+function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+function dimW(inputs) { return clamp(Math.round(n(inputs.width, 1080)), 1, 8000); }
+function dimH(inputs) { return clamp(Math.round(n(inputs.height, 1080)), 1, 8000); }
+
+function svgOpen(W, H, extra) {
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + W + ' ' + H + '" '
+    + 'width="' + W + '" height="' + H + '" style="width:100%;height:auto;display:block;"'
+    + (extra || '') + '>';
+}
+function wrapImg(outSrc, W, H, rootExtra, note, overlaySvg, preserve) {
+  if (!outSrc) {
+    return svgOpen(W, H, rootExtra || '') + '<rect width="' + W + '" height="' + H + '" fill="#0f0f12"/>'
+      + '<text x="50%" y="50%" text-anchor="middle" dominant-baseline="middle" font-family="sans-serif" font-size="34" fill="#9ca3af">'
+      + esc(note || 'Choose an image to glitch') + '</text>'
+      + '<g id="lolly-ov-slot">' + (overlaySvg || '') + '</g></svg>';
+  }
+  // data-glitch-base marks the baked bitmap so the motion-export shimmer clock can
+  // swap just this <image>'s href per frame (see armGlitchExport).
+  return svgOpen(W, H, rootExtra || '')
+    + '<image data-glitch-base="1" href="' + esc(outSrc) + '" x="0" y="0" width="' + W + '" height="' + H
+    + '" preserveAspectRatio="' + (preserve || 'none') + '"/>'
+    + '<g id="lolly-ov-slot">' + (overlaySvg || '') + '</g></svg>';
+}
+
+// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+function canRaster() {
+  return !!(host.raster && host.raster.canRaster());
+}
+// === /lolly:shared canRaster ===
+// === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+function loadImage(url) {
+  if (!host.raster) return Promise.reject(new Error('no raster'));
+  return host.raster.decode(url);
+}
+// === /lolly:shared loadImage ===
+function getImage(url) {
+  if (_imgCache.url === url && _imgCache.promise) return _imgCache.promise;
+  var promise = loadImage(url);
+  _imgCache = { url: url, promise: promise };
+  promise.catch(function () { if (_imgCache.url === url) _imgCache = { url: null, promise: null }; });
+  return promise;
+}
+
+// ── Colour grade + treatment (shared shape with the sibling filter effects) ──
+// Wires the tool's Colour section (hue/saturation/lightness/contrast +
+// treatmentColor/blendMode/intensity) into this effect. Same maths the
+// halftone/duotone effects use; kept self-contained (tools ship no imports).
+function _hex2rgb(hex) {
+  var s = (typeof hex === 'string' ? hex : '').trim().replace(/^#/, '');
+  if (s.length === 3) s = s[0] + s[0] + s[1] + s[1] + s[2] + s[2];
+  if (!/^[0-9a-fA-F]{6}$/.test(s)) return null;
+  return { r: parseInt(s.slice(0, 2), 16), g: parseInt(s.slice(2, 4), 16), b: parseInt(s.slice(4, 6), 16) };
+}
+function _gHx(v) { v = v < 0 ? 0 : v > 255 ? 255 : Math.round(v); var h = v.toString(16); return h.length < 2 ? '0' + h : h; }
+function _mul3(a, b) {
+  var o = new Array(9);
+  for (var r = 0; r < 3; r++) for (var c = 0; c < 3; c++)
+    o[r * 3 + c] = a[r * 3] * b[c] + a[r * 3 + 1] * b[3 + c] + a[r * 3 + 2] * b[6 + c];
+  return o;
+}
+function _hueSatMatrix(hueDeg, sat) {
+  var h = hueDeg * Math.PI / 180, c = Math.cos(h), s = Math.sin(h);
+  var hm = [
+    0.213 + c * 0.787 - s * 0.213, 0.715 - c * 0.715 - s * 0.715, 0.072 - c * 0.072 + s * 0.928,
+    0.213 - c * 0.213 + s * 0.143, 0.715 + c * 0.285 + s * 0.140, 0.072 - c * 0.072 - s * 0.283,
+    0.213 - c * 0.213 - s * 0.787, 0.715 - c * 0.715 + s * 0.715, 0.072 + c * 0.928 + s * 0.072,
+  ];
+  var sm = [
+    0.213 + 0.787 * sat, 0.715 - 0.715 * sat, 0.072 - 0.072 * sat,
+    0.213 - 0.213 * sat, 0.715 + 0.285 * sat, 0.072 - 0.072 * sat,
+    0.213 - 0.213 * sat, 0.715 - 0.715 * sat, 0.072 + 0.928 * sat,
+  ];
+  return _mul3(sm, hm);
+}
+function treatmentFrom(inputs) {
+  var ov = _hex2rgb(inputs.treatmentColor);
+  var amt = clamp(n(inputs.treatmentIntensity, 20), 0, 100) / 100;
+  var mode = typeof inputs.blendMode === 'string' ? inputs.blendMode : 'multiply';
+  return { ov: ov, amt: amt, mode: mode, on: !!(ov && amt > 0) };
+}
+// Parse the Colour-section inputs into one grade state (used by still + live).
+function parseGrade(inputs) {
+  var hue = clamp(n(inputs.hue, 0), -180, 180);
+  var sat = clamp(n(inputs.saturation, 100), 0, 200) / 100;
+  var light = clamp(n(inputs.lightness, 0), -100, 100) / 100;
+  var contrast = clamp(n(inputs.contrast, 0), -100, 100);
+  var m = (hue === 0 && sat === 1) ? null : _hueSatMatrix(hue, sat);
+  var cf = (259 * (contrast + 255)) / (255 * (259 - contrast));
+  return { m: m, cf: cf, light: light, on: !!(m || cf !== 1 || light !== 0), treat: treatmentFrom(inputs) };
+}
+// ── treatment-colour blend (separable + non-separable, W3C compositing) ──────
+function _bl(mode, b, s) {
+  switch (mode) {
+    case 'multiply': return b * s;
+    case 'screen': return b + s - b * s;
+    case 'overlay': return b < 0.5 ? 2 * b * s : 1 - 2 * (1 - b) * (1 - s);
+    case 'hard-light': return s < 0.5 ? 2 * b * s : 1 - 2 * (1 - b) * (1 - s);
+    case 'soft-light': return s <= 0.5 ? b - (1 - 2 * s) * b * (1 - b)
+      : b + (2 * s - 1) * ((b <= 0.25 ? ((16 * b - 12) * b + 4) * b : Math.sqrt(b)) - b);
+    case 'darken': return b < s ? b : s;
+    case 'lighten': return b > s ? b : s;
+    case 'color-dodge': return s >= 1 ? 1 : Math.min(1, b / (1 - s));
+    case 'color-burn': return s <= 0 ? 0 : Math.max(0, 1 - (1 - b) / s);
+    case 'difference': return b > s ? b - s : s - b;
+    case 'exclusion': return b + s - 2 * b * s;
+    default: return s;
+  }
+}
+function _lum(c) { return 0.3 * c[0] + 0.59 * c[1] + 0.11 * c[2]; }
+function _clipColor(c) {
+  var l = _lum(c), mn = Math.min(c[0], c[1], c[2]), mx = Math.max(c[0], c[1], c[2]), o = [c[0], c[1], c[2]], i;
+  if (mn < 0) for (i = 0; i < 3; i++) o[i] = l + (o[i] - l) * l / (l - mn);
+  if (mx > 1) for (i = 0; i < 3; i++) o[i] = l + (o[i] - l) * (1 - l) / (mx - l);
+  return o;
+}
+function _setLum(c, l) { var d = l - _lum(c); return _clipColor([c[0] + d, c[1] + d, c[2] + d]); }
+function _sat(c) { return Math.max(c[0], c[1], c[2]) - Math.min(c[0], c[1], c[2]); }
+function _setSat(c, s) {
+  var ix = [0, 1, 2].sort(function (a, b) { return c[a] - c[b]; }), lo = ix[0], mid = ix[1], hi = ix[2], o = [0, 0, 0];
+  if (c[hi] > c[lo]) { o[mid] = (c[mid] - c[lo]) * s / (c[hi] - c[lo]); o[hi] = s; }
+  return o;
+}
+function _blendNonSep(mode, Cb, Cs) {
+  switch (mode) {
+    case 'hue': return _setLum(_setSat(Cs, _sat(Cb)), _lum(Cb));
+    case 'saturation': return _setLum(_setSat(Cb, _sat(Cs)), _lum(Cb));
+    case 'color': return _setLum(Cs, _lum(Cb));
+    case 'luminosity': return _setLum(Cb, _lum(Cs));
+    default: return null;
+  }
+}
+// Grade every pixel of an RGBA buffer in place (contrast → hue/sat → lightness).
+function gradeRasterInPlace(d, G) {
+  var cf = G.cf, m = G.m, light = G.light;
+  for (var i = 0; i < d.length; i += 4) {
+    var r = d[i], g = d[i + 1], b = d[i + 2];
+    if (cf !== 1) { r = cf * (r - 128) + 128; g = cf * (g - 128) + 128; b = cf * (b - 128) + 128; }
+    if (m) { var nr = m[0] * r + m[1] * g + m[2] * b, ng = m[3] * r + m[4] * g + m[5] * b, nb = m[6] * r + m[7] * g + m[8] * b; r = nr; g = ng; b = nb; }
+    if (light > 0) { r += (255 - r) * light; g += (255 - g) * light; b += (255 - b) * light; }
+    else if (light < 0) { var k = 1 + light; r *= k; g *= k; b *= k; }
+    d[i] = r < 0 ? 0 : r > 255 ? 255 : r; d[i + 1] = g < 0 ? 0 : g > 255 ? 255 : g; d[i + 2] = b < 0 ? 0 : b > 255 ? 255 : b;
+  }
+}
+// Flood the treatment colour over every pixel of an RGBA buffer in place.
+function treatRasterInPlace(d, T) {
+  var ovr = T.ov.r / 255, ovg = T.ov.g / 255, ovb = T.ov.b / 255, amt = T.amt, mode = T.mode;
+  for (var i = 0; i < d.length; i += 4) {
+    var Cb0 = d[i] / 255, Cb1 = d[i + 1] / 255, Cb2 = d[i + 2] / 255;
+    var ns = _blendNonSep(mode, [Cb0, Cb1, Cb2], [ovr, ovg, ovb]);
+    d[i] = (Cb0 * (1 - amt) + (ns ? ns[0] : _bl(mode, Cb0, ovr)) * amt) * 255;
+    d[i + 1] = (Cb1 * (1 - amt) + (ns ? ns[1] : _bl(mode, Cb1, ovg)) * amt) * 255;
+    d[i + 2] = (Cb2 * (1 - amt) + (ns ? ns[2] : _bl(mode, Cb2, ovb)) * amt) * 255;
+  }
+}
+
+// ══════════════════════════════════════════════════════════════════════════════
+// Brand overlay — SUSE logo + lower-third card. Synced from
+// community/_shared/overlay.js (npm run sync:shared); do not hand-edit inside.
+// ══════════════════════════════════════════════════════════════════════════════
+// === lolly:shared overlay — generated from community/_shared/overlay.js; edit there and run npm run sync:shared ===
+var LOGO_ASPECT = 210.179 / 37.666;   // SUSE horizontal lockup, from its own viewBox
+var _logoCache = {};                  // variantId -> url | null (resolved once per variant)
+var _profileHeadshotUrl;              // undefined = not looked up; null = none; string = url
+var _liveOvStart = null;              // frame.t when the overlay first became active while live
+
+function ovEsc(s) {
+  return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+    return c === '&' ? '&amp;' : c === '<' ? '&lt;' : c === '>' ? '&gt;' : c === '"' ? '&quot;' : '&#39;';
+  });
+}
+function ovNum(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
+function ovClamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
+function ovF2(v) { return Math.round(v * 100) / 100; }
+function ovEaseOut(p) { p = ovClamp(p, 0, 1); return 1 - Math.pow(1 - p, 3); }
+
+// Normalise the overlay-related inputs into one flat object (reused by still + live).
+function overlayInputs(inp) {
+  return {
+    noFilter: !!inp.noFilter,
+    showLogo: !!inp.showLogo,
+    logoPosition: inp.logoPosition || 'top-right',
+    logoStyle: inp.logoStyle || 'white',
+    logoScale: inp.logoScale,
+    lowerThird: !!inp.lowerThird,
+    ltTheme: inp.ltTheme || 'bar',
+    ltPosition: inp.ltPosition || 'left',
+    firstname: inp.firstname,
+    lastname: inp.lastname,
+    title: inp.title,
+    nameWeight: inp.nameWeight,
+    subtitleWeight: inp.subtitleWeight,
+  };
+}
+function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
+
+// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
+// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+function logoVariantId(style) {
+  return style === 'green' ? 'suse/logo/hor-neg-green'
+    : style === 'black' ? 'suse/logo/hor-pos-black'
+      : 'suse/logo/hor-neg-white';
+}
+// Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
+// compute/onInit; call WITHOUT await from onFrame — it just warms the cache.
+function resolveLogoUrl(style) {
+  var id = logoVariantId(style);
+  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
+  return host.assets.get(id)
+    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
+    .catch(function () { return (_logoCache[id] = null); });
+}
+function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
+
+// Resolve the user's PROFILE headshot to a URL once (async). Used as the auto default
+// for the lower-third chip when the headshot input is empty. null = none / unavailable.
+function resolveProfileHeadshot() {
+  if (_profileHeadshotUrl !== undefined) return Promise.resolve(_profileHeadshotUrl);
+  _profileHeadshotUrl = null;
+  if (!host.profile || !host.profile.get) return Promise.resolve(null);
+  return host.profile.get().then(function (p) {
+    if (p && p.headshot && p.headshot.id) {
+      return host.assets.get(p.headshot.id).then(function (r) { _profileHeadshotUrl = (r && r.url) || null; });
+    }
+  }).catch(function () { }).then(function () { return _profileHeadshotUrl; });
+}
+
+// Build the overlay SVG children. OW/OH = the output coordinate box (viewBox units).
+// o = normalised overlay inputs + { logoUrl, headshotUrl, mode:'still'|'live', elapsed }.
+function buildOverlaySvg(OW, OH, o) {
+  if (!overlayActive(o)) return '';
+  var live = o.mode === 'live';
+  var elapsed = live ? ovNum(o.elapsed, 1e9) : 1e9;
+  var out = '';
+
+  // ── SUSE logo ──────────────────────────────────────────────────────────────
+  if (o.showLogo && o.logoUrl) {
+    var pos = o.logoPosition || 'top-right';
+    var m = OW * 0.045;
+    var scale = ovClamp(ovNum(o.logoScale, 1), 0.25, 3);
+    var w = pos === 'full' ? ovClamp(OW * 0.72 * scale, 40, OW)
+      : ovClamp(OW * 0.2 * scale, 24, OW - m * 2);
+    var h = w / LOGO_ASPECT;
+    var x = (pos === 'top-left' || pos === 'bottom-left') ? m
+      : (pos === 'top-right' || pos === 'bottom-right') ? OW - m - w
+        : (OW - w) / 2;
+    var y = (pos === 'top-left' || pos === 'top-right' || pos === 'top') ? m
+      : (pos === 'bottom-left' || pos === 'bottom-right' || pos === 'bottom') ? OH - m - h
+        : (OH - h) / 2;
+    var lop = live ? ovEaseOut(elapsed / 460) : 1;
+    out += '<image href="' + ovEsc(o.logoUrl) + '" x="' + ovF2(x) + '" y="' + ovF2(y)
+      + '" width="' + ovF2(w) + '" height="' + ovF2(h) + '" preserveAspectRatio="xMidYMid meet"'
+      + (lop < 1 ? ' opacity="' + ovF2(lop) + '"' : '') + '/>';
+  }
+
+  // ── lower-third name card ────────────────────────────────────────────────────
+  if (o.lowerThird) {
+    var name = [String(o.firstname || '').trim(), String(o.lastname || '').trim()].filter(Boolean).join(' ') || 'Your name';
+    var title = String(o.title || '').trim();
+    var theme = o.ltTheme || 'bar';
+    var lp = o.ltPosition || 'left';
+    var hasShot = !!o.headshotUrl;
+
+    var p = live ? ovEaseOut(elapsed / 560) : 1;
+    var mg = OW * 0.045;
+    var padX = OH * 0.032, padY = OH * 0.028;
+    var nameSize = OH * 0.045, titleSize = OH * 0.028;
+    var lineH = nameSize + (title ? titleSize * 1.5 : 0);
+    var cardH = lineH + padY * 2;
+    var chip = hasShot ? cardH - padY * 0.9 : 0;
+    var gap = hasShot ? padX * 0.7 : 0;
+    var nameW = name.length * nameSize * 0.6;
+    var titleW = title.length * titleSize * 0.58;
+    var textW = Math.max(nameW, titleW, OW * 0.14);
+    var cardW = ovClamp(padX + (hasShot ? chip + gap : 0) + textW + padX, OW * 0.22, OW - mg * 2);
+
+    var cx = lp === 'center' ? (OW - cardW) / 2 : lp === 'right' ? OW - mg - cardW : mg;
+    var cy = OH - mg - cardH;
+    var dy = (1 - p) * (OH * 0.035);
+
+    var accent = '#30ba78';
+    var r = Math.min(cardH * 0.2, 22);
+    var g = '<g transform="translate(' + ovF2(cx) + ' ' + ovF2(cy + dy) + ')"'
+      + (p < 1 ? ' opacity="' + ovF2(p) + '"' : '') + '>';
+
+    if (theme === 'bar') {
+      g += ovRRect(0, 0, cardW, cardH, r, '#111111', 0.97);
+    } else if (theme === 'glass') {
+      g += ovRRect(0, 0, cardW, cardH, r, '#0b1512', 0.34);
+      g += '<rect x="0.75" y="0.75" width="' + ovF2(cardW - 1.5) + '" height="' + ovF2(cardH - 1.5)
+        + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="none" stroke="#ffffff" stroke-opacity="0.3" stroke-width="1.4"/>';
+    } // 'minimal' → no plate; text carries a soft outline for legibility
+
+    var textX = padX + (hasShot ? chip + gap : 0);
+    var blockTop = (cardH - lineH) / 2;
+    var nameY = blockTop + nameSize * 0.82;
+    var titleY = nameY + titleSize * 1.4;
+    var titleColor = theme === 'bar' ? '#a9e3c8' : '#e6f0ec';
+    var shadow = theme === 'minimal'
+      ? ' style="paint-order:stroke;stroke:#0b1512;stroke-opacity:0.55;stroke-width:' + ovF2(nameSize * 0.14) + 'px;stroke-linejoin:round"'
+      : '';
+    var titleShadow = theme === 'minimal'
+      ? ' style="paint-order:stroke;stroke:#0b1512;stroke-opacity:0.55;stroke-width:' + ovF2(titleSize * 0.16) + 'px;stroke-linejoin:round"'
+      : '';
+    var FONT = 'SUSE, system-ui, -apple-system, sans-serif';
+
+    if (hasShot) {
+      var cxs = padX + chip / 2, cys = cardH / 2, rad = chip / 2;
+      g += '<clipPath id="lollyShot"><circle cx="' + ovF2(cxs) + '" cy="' + ovF2(cys) + '" r="' + ovF2(rad) + '"/></clipPath>';
+      g += '<image href="' + ovEsc(o.headshotUrl) + '" x="' + ovF2(padX) + '" y="' + ovF2(cys - rad)
+        + '" width="' + ovF2(chip) + '" height="' + ovF2(chip) + '" preserveAspectRatio="xMidYMid slice" clip-path="url(#lollyShot)"/>';
+      g += '<circle cx="' + ovF2(cxs) + '" cy="' + ovF2(cys) + '" r="' + ovF2(rad) + '" fill="none" stroke="' + accent + '" stroke-width="' + ovF2(rad * 0.09) + '"/>';
+    }
+
+    g += '<text x="' + ovF2(textX) + '" y="' + ovF2(nameY) + '" font-family="' + FONT + '" font-size="' + ovF2(nameSize)
+      + '" font-weight="' + ovClamp(Math.round(ovNum(o.nameWeight, 700)), 100, 900) + '" fill="#ffffff"' + shadow + '>' + ovEsc(name) + '</text>';
+    if (title) {
+      g += '<text x="' + ovF2(textX) + '" y="' + ovF2(titleY) + '" font-family="' + FONT + '" font-size="' + ovF2(titleSize)
+        + '" font-weight="' + ovClamp(Math.round(ovNum(o.subtitleWeight, 500)), 100, 900) + '" fill="' + titleColor + '"' + titleShadow + '>' + ovEsc(title) + '</text>';
+    }
+    var ulY = (title ? titleY : nameY) + (title ? titleSize * 0.55 : nameSize * 0.4);
+    var ulW = Math.min(nameW, cardW - textX - padX) * (live ? p : 1);
+    g += '<rect x="' + ovF2(textX) + '" y="' + ovF2(ulY) + '" width="' + ovF2(Math.max(0, ulW)) + '" height="' + ovF2(Math.max(2, nameSize * 0.08)) + '" rx="' + ovF2(nameSize * 0.04) + '" fill="' + accent + '"/>';
+
+    g += '</g>';
+    out += g;
+  }
+
+  return out;
+}
+// A rounded rect (rx clamped) shared by the overlay themes.
+function ovRRect(x, y, w, h, r, fill, op) {
+  r = Math.min(r, w / 2, h / 2);
+  return '<rect x="' + ovF2(x) + '" y="' + ovF2(y) + '" width="' + ovF2(w) + '" height="' + ovF2(h)
+    + '" rx="' + ovF2(r) + '" ry="' + ovF2(r) + '" fill="' + fill + '"'
+    + (op != null && op < 1 ? ' fill-opacity="' + ovF2(op) + '"' : '') + '/>';
+}
+
+// ── Export frame clock (motion formats only) ─────────────────────────────────
+// A still export always renders the overlay at rest (mode:'still' → fully faded
+// in, no offset) — correct for png/svg/pdf/etc. But a gif/webm/mp4 export of a
+// STILL photo previously held that same resting pose for the whole clip: the
+// intro ease-in buildOverlaySvg already does for 'live' (camera) mode never
+// played, because nothing called it with mode:'live' + an advancing elapsed.
+// armOverlayClock wires that up: register __lollyFrameRender on the tool's
+// inert clock-anchor canvas (see docs on <canvas data-ov-clock> in template.html
+// — the same anchor-element convention as the slides tool, required because the
+// capture loop only drives a t through a <canvas> carrying that property), and
+// on each captured frame rebuild JUST the overlay markup (via the untouched
+// buildOverlaySvg) at that frame's elapsed ms, splicing it into a stable slot
+// (`<g id="lolly-ov-slot">`, wrapped once around every buildOverlaySvg() call
+// site in the tool's buildSvg()). The expensive filtered-image content is never
+// touched — only the overlay's own small SVG fragment is rebuilt per frame.
+// getOv(t) returns a full overlay-input object (mode:'live', elapsed: t*clipMs) —
+// callers build it from their own cached _lastOv (see armFilterOverlayExport).
+// W/H are the SAME viewBox-units box the tool's own buildOverlaySvg(W, H, …) call
+// used for the still render — a fixed VIEW constant for the square-canvas tools,
+// or the tool's own current width/height for the ones with dynamic W/H inputs.
+function armOverlayClock(root, W, H, getOv) {
+  var canvas = root && root.querySelector && root.querySelector('[data-ov-clock]');
+  var slot = root && root.querySelector && root.querySelector('#lolly-ov-slot');
+  if (!canvas || !slot) return null;
+  canvas.__lollyFrameRender = function (t) {
+    try {
+      var ov = getOv(t);
+      slot.innerHTML = ov ? buildOverlaySvg(W, H, ov) : '';
+    } catch (e) { /* leave the last good frame in place */ }
+  };
+  return canvas;
+}
+function disarmOverlayClock(canvas) {
+  if (!canvas) return;
+  try { delete canvas.__lollyFrameRender; } catch (e) { canvas.__lollyFrameRender = undefined; }
+}
+// Formats the clock should arm for — every other export (png/svg/pdf/jpg/webp/…)
+// captures the still, at-rest overlay exactly as before.
+var OV_MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
+// Serialise the overlay's export state (its box + the FULLY-RESOLVED overlay
+// params, logo/headshot URLs included) for the render patch. The template stamps
+// it onto the clock anchor as data-ov-params; armFilterOverlayExport reads it back
+// from the DOM. This is the isolation-safe channel (plans/86 section 18): the render hook
+// — which alone holds the resolved URLs — writes the state into its patch, which
+// reaches the DOM whether the hook ran in this realm or in a Worker, so the
+// in-realm export hook never depends on a module var a Worker-side hook wrote.
+// Empty string when the overlay is inactive, so the attribute costs nothing then.
+function overlayExportParams(W, H, ov) {
+  return (ov && overlayActive(ov)) ? JSON.stringify({ W: W, H: H, ov: ov }) : '';
+}
+// Shared beforeExport/afterExport glue: arms the clock for a motion export.
+// Two call forms:
+//   armFilterOverlayExport(ctx)                 — isolation-safe: recover W/H/ov
+//     from the clock anchor's data-ov-params (written via overlayExportParams).
+//   armFilterOverlayExport(ctx, W, H, lastOv)   — legacy: params from the tool's
+//     own module state (only correct when the render hook ran in THIS realm).
+// The DOM path is preferred; the legacy path stays until every filter migrates.
+var _ovClock = null;
+function armFilterOverlayExport(ctx, W, H, lastOv) {
+  if (W == null && lastOv == null) {
+    var el = ctx.node && ctx.node.querySelector && ctx.node.querySelector('[data-ov-clock]');
+    var raw = el && el.getAttribute && el.getAttribute('data-ov-params');
+    if (!raw) return;
+    var parsed; try { parsed = JSON.parse(raw); } catch (e) { return; }
+    W = parsed.W; H = parsed.H; lastOv = parsed.ov;
+  }
+  if (!lastOv || !overlayActive(lastOv) || !OV_MOTION_FORMATS[ctx.format]) return;
+  var clipMs = ((ctx.opts && ctx.opts.duration) || 5) * 1000;
+  _ovClock = armOverlayClock(ctx.node, W, H, function (t) {
+    return Object.assign({}, lastOv, { mode: 'live', elapsed: t * clipMs });
+  });
+}
+function disarmFilterOverlayExport() {
+  disarmOverlayClock(_ovClock);
+  _ovClock = null;
+}
+// === /lolly:shared overlay ===
+
+function workDims(W, H, maxEdge) {
+  W = clamp(Math.round(W), 1, 8000); H = clamp(Math.round(H), 1, 8000);
+  var longest = Math.max(W, H);
+  if (longest <= maxEdge) return { w: W, h: H };
+  var k = maxEdge / longest;
+  return { w: Math.max(1, Math.round(W * k)), h: Math.max(1, Math.round(H * k)) };
+}
+function drawCover(ctx, source, iw, ih, W, H) {
+  var s = Math.max(W / iw, H / ih);
+  var dw = iw * s, dh = ih * s;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(source, (W - dw) / 2, (H - dh) / 2, dw, dh);
+}
+function drawContain(ctx, source, iw, ih, W, H) {
+  var s = Math.min(W / iw, H / ih);
+  var dw = iw * s, dh = ih * s;
+  ctx.imageSmoothingEnabled = true;
+  ctx.drawImage(source, (W - dw) / 2, (H - dh) / 2, dw, dh);
+}
+
+// ── per-channel RGB offset (edge-clamped sampling) ──────────────────────────
+function applyChannelOffset(d, W, H, dxR, dyR, dxG, dyG, dxB, dyB) {
+  if (!dxR && !dyR && !dxG && !dyG && !dxB && !dyB) return d;
+  var out = new Uint8ClampedArray(d.length);
+  function sample(plane, x, y) {
+    if (x < 0) x = 0; else if (x >= W) x = W - 1;
+    if (y < 0) y = 0; else if (y >= H) y = H - 1;
+    return d[(y * W + x) * 4 + plane];
+  }
+  for (var y = 0; y < H; y++) {
+    for (var x = 0; x < W; x++) {
+      var i = (y * W + x) * 4;
+      out[i] = sample(0, x - dxR, y - dyR);
+      out[i + 1] = sample(1, x - dxG, y - dyG);
+      out[i + 2] = sample(2, x - dxB, y - dyB);
+      out[i + 3] = d[i + 3];
+    }
+  }
+  return out;
+}
+
+// ── pixel sort — contiguous runs above `threshold`, sorted by luminance ────
+function lumAt(d, i) { return 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2]; }
+function sortSpan(d, base, stride, start, end) {
+  var len = end - start;
+  if (len < 2) return;
+  var px = [];
+  for (var k = 0; k < len; k++) { var i = base + (start + k) * stride; px.push([d[i], d[i + 1], d[i + 2], d[i + 3]]); }
+  px.sort(function (a, b) { return (0.299 * a[0] + 0.587 * a[1] + 0.114 * a[2]) - (0.299 * b[0] + 0.587 * b[1] + 0.114 * b[2]); });
+  for (var k2 = 0; k2 < len; k2++) { var i2 = base + (start + k2) * stride; d[i2] = px[k2][0]; d[i2 + 1] = px[k2][1]; d[i2 + 2] = px[k2][2]; d[i2 + 3] = px[k2][3]; }
+}
+function pixelSort(d, W, H, thresholdPct, direction, bandLen) {
+  if (thresholdPct <= 0) return;
+  var thr = thresholdPct * 2.55;
+  var lines = direction === 'vertical' ? W : H;
+  var lineLen = direction === 'vertical' ? H : W;
+  var stride = direction === 'vertical' ? W * 4 : 4;
+  for (var li = 0; li < lines; li++) {
+    var base = direction === 'vertical' ? li * 4 : li * W * 4;
+    var x = 0;
+    while (x < lineLen) {
+      var i = base + x * stride;
+      if (lumAt(d, i) > thr) {
+        var start = x;
+        while (x < lineLen && lumAt(d, base + x * stride) > thr && (bandLen <= 0 || x - start < bandLen)) x++;
+        sortSpan(d, base, stride, start, x);
+      } else {
+        x++;
+      }
+    }
+  }
+}
+
+// ── block corruption — SEEDED and STABLE, no Math.random ────────────────────
+// Every decision (which block, and which of 3 corruption modes) comes from
+// this index+seed-fed sin() noise — the same shape as the halftone effect's
+// ditherNoise — so re-rendering the same inputs bakes byte-identical output.
+function seededNoise01(i) {
+  var s = Math.sin(i * 12.9898) * 43758.5453;
+  return s - Math.floor(s);
+}
+function invertBlock(d, W, x0, y0, x1, y1) {
+  for (var y = y0; y < y1; y++) for (var x = x0; x < x1; x++) { var i = (y * W + x) * 4; d[i] = 255 - d[i]; d[i + 1] = 255 - d[i + 1]; d[i + 2] = 255 - d[i + 2]; }
+}
+function shuffleChannelsBlock(d, W, x0, y0, x1, y1) {
+  for (var y = y0; y < y1; y++) for (var x = x0; x < x1; x++) { var i = (y * W + x) * 4; var r = d[i], g = d[i + 1], b = d[i + 2]; d[i] = g; d[i + 1] = b; d[i + 2] = r; }
+}
+function shiftRowsBlock(d, W, x0, y0, x1, y1, shift) {
+  var w = x1 - x0;
+  if (!shift || w < 1) return;
+  for (var y = y0; y < y1; y++) {
+    var row = [];
+    for (var x = x0; x < x1; x++) { var i = (y * W + x) * 4; row.push([d[i], d[i + 1], d[i + 2], d[i + 3]]); }
+    for (var x2 = x0; x2 < x1; x2++) {
+      var srcIdx = ((x2 - x0 - shift) % w + w) % w;
+      var i2 = (y * W + x2) * 4, px = row[srcIdx];
+      d[i2] = px[0]; d[i2 + 1] = px[1]; d[i2 + 2] = px[2]; d[i2 + 3] = px[3];
+    }
+  }
+}
+function applyBlockCorruption(d, W, H, blockSize, amountPct, seed) {
+  if (amountPct <= 0 || blockSize < 1) return;
+  var cols = Math.ceil(W / blockSize), rows = Math.ceil(H / blockSize);
+  var prob = clamp(amountPct, 0, 100) / 100;
+  for (var by = 0; by < rows; by++) {
+    for (var bx = 0; bx < cols; bx++) {
+      var bi = by * cols + bx;
+      var nv = seededNoise01(bi * 7.13 + seed * 0.917);
+      if (nv >= prob) continue;
+      var mode = Math.floor(seededNoise01(bi * 3.31 + seed * 1.71 + 50) * 3);
+      var x0 = bx * blockSize, y0 = by * blockSize, x1 = Math.min(W, x0 + blockSize), y1 = Math.min(H, y0 + blockSize);
+      if (mode === 0) invertBlock(d, W, x0, y0, x1, y1);
+      else if (mode === 1) shuffleChannelsBlock(d, W, x0, y0, x1, y1);
+      else shiftRowsBlock(d, W, x0, y0, x1, y1, Math.round((seededNoise01(bi * 5.5 + seed) - 0.5) * blockSize));
+    }
+  }
+}
+
+function paramsFrom(inputs, W, H) {
+  var offR = inputs.offsetR || {}, offG = inputs.offsetG || {}, offB = inputs.offsetB || {};
+  return {
+    W: W, H: H, fit: inputs.fit === 'contain' ? 'contain' : 'cover',
+    sortThreshold: clamp(n(inputs.sortThreshold, 0), 0, 100),
+    sortDirection: inputs.sortDirection === 'vertical' ? 'vertical' : 'horizontal',
+    sortBandLength: clamp(Math.round(n(inputs.sortBandLength, 0)), 0, 2000),
+    offR: { dx: clamp(Math.round(n(offR.dx, 0)), -100, 100), dy: clamp(Math.round(n(offR.dy, 0)), -100, 100) },
+    offG: { dx: clamp(Math.round(n(offG.dx, 0)), -100, 100), dy: clamp(Math.round(n(offG.dy, 0)), -100, 100) },
+    offB: { dx: clamp(Math.round(n(offB.dx, 0)), -100, 100), dy: clamp(Math.round(n(offB.dy, 0)), -100, 100) },
+    blockAmount: clamp(n(inputs.blockAmount, 0), 0, 100),
+    blockSize: clamp(Math.round(n(inputs.blockSize, 16)), 2, 128),
+    seed: clamp(Math.round(n(inputs.seed, 7)), 1, 999),
+  };
+}
+
+// The corruption core: offset → pixel-sort → block corruption → treatment flood,
+// on a COPY of the graded base pixels (base is never mutated, so a motion export
+// can re-run this per frame with a phase-shifted seed). Returns the new buffer.
+function corruptPixels(base, w, h, p, grade) {
+  var d = applyChannelOffset(base, w, h, p.offR.dx, p.offR.dy, p.offG.dx, p.offG.dy, p.offB.dx, p.offB.dy);
+  if (d === base) d = new Uint8ClampedArray(base); // no offset → clone so sort/block don't touch the base
+  pixelSort(d, w, h, p.sortThreshold, p.sortDirection, p.sortBandLength);
+  applyBlockCorruption(d, w, h, p.blockSize, p.blockAmount, p.seed);
+  if (grade && grade.treat && grade.treat.on) treatRasterInPlace(d, grade.treat);
+  return d;
+}
+
+// Deterministic per-frame glitch phase for a motion export of a STILL: step the
+// block seed (chaotic → jittery datamosh) and wobble the R/B channel offsets on a
+// sine so the chromatic split breathes. t∈[0,1); identical t always renders identically.
+function phaseGlitch(p, t) {
+  var tc = t < 0 ? 0 : t > 0.999999 ? 0.999999 : t;
+  var step = Math.floor(tc * GL_ANIM_STEPS);
+  var wob = Math.round(Math.sin(tc * Math.PI * 2) * 3);
+  return {
+    W: p.W, H: p.H, fit: p.fit,
+    sortThreshold: p.sortThreshold, sortDirection: p.sortDirection, sortBandLength: p.sortBandLength,
+    offR: { dx: p.offR.dx + wob, dy: p.offR.dy }, offG: p.offG, offB: { dx: p.offB.dx - wob, dy: p.offB.dy },
+    blockAmount: p.blockAmount, blockSize: p.blockSize, seed: ((p.seed - 1 + step) % 999) + 1,
+  };
+}
+
+function encodeGlitch(d, w, h) {
+  var cv = _animCanvas || (_animCanvas = document.createElement('canvas'));
+  cv.width = w; cv.height = h;
+  cv.getContext('2d').putImageData(new ImageData(d, w, h), 0, 0);
+  return cv.toDataURL('image/png');
+}
+
+// Build the overlay-input object shared by still + live.
+function overlayFor(inputs, mode, elapsed) {
+  var ovi = overlayInputs(inputs);
+  var headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || (mode === 'live' ? _profileHeadshotUrl : '') || '';
+  var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: mode });
+  if (mode === 'live') ov.elapsed = elapsed;
+  return ov;
+}
+
+// ── lifecycle ────────────────────────────────────────────────────────────────
+
+async function compute(model) {
+  var inputs = inputsFrom(model);
+  var W = dimW(inputs), H = dimH(inputs);
+  if (!canRaster()) return { svgContent: wrapImg(null, W, H, '', 'Preview renders in the browser') };
+
+  var ref = inputs.image;
+  var url = ref && typeof ref === 'object' ? ref.url : null;
+  var isUserPick = !!url;
+  if (!url) {
+    if (!_defaultUrl) {
+      try {
+        var def = (DEFAULT_IMAGE_ID.indexOf('://') !== -1)
+          ? (host.compose && host.compose.renderUrl ? await host.compose.renderUrl(DEFAULT_IMAGE_ID) : null)
+          : await host.assets.get(DEFAULT_IMAGE_ID);
+        _defaultUrl = def && def.url;
+      } catch (e) { if (host.log) host.log('warn', 'filter glitch: default image unavailable', { error: String(e) }); }
+    }
+    url = _defaultUrl;
+  }
+  if (!url) return { svgContent: wrapImg(null, W, H, '', 'Choose an image to glitch') };
+
+  var params = paramsFrom(inputs, W, H);
+  var grade = parseGrade(inputs);
+  var ovi = overlayInputs(inputs);
+  if (ovi.showLogo) await resolveLogoUrl(ovi.logoStyle);
+  var headUrl = (inputs.ltHeadshot && inputs.ltHeadshot.url) || '';
+  if (ovi.lowerThird && !headUrl) headUrl = (await resolveProfileHeadshot()) || '';
+  var ov = Object.assign({}, ovi, { logoUrl: cachedLogoUrl(ovi.logoStyle), headshotUrl: headUrl, mode: 'still' });
+  _lastOv = ov; _lastW = W; _lastH = H;
+  var overlaySvg = buildOverlaySvg(W, H, ov);
+  var rootExtra = ' data-img-key="' + esc(isUserPick ? url : '') + '"';
+
+  var memoKey = JSON.stringify({ url: url, p: params, g: { hue: inputs.hue, sat: inputs.saturation, light: inputs.lightness, con: inputs.contrast, tc: inputs.treatmentColor, bm: inputs.blendMode, ti: inputs.treatmentIntensity }, ov: ov, nf: !!ovi.noFilter });
+  if (memoKey === _memoKey) return _memoResult;
+
+  var svgContent;
+  try {
+    var img = await getImage(url);
+    var iw = img.naturalWidth || img.width, ih = img.naturalHeight || img.height;
+    if (!iw || !ih) throw new Error('unreadable image');
+    if (ovi.noFilter) {
+      // Raw source + overlay only (place a logo / lower-third over the untouched photo).
+      _animState = null;
+      svgContent = svgOpen(W, H, rootExtra)
+        + '<image data-glitch-base="1" href="' + esc(url) + '" x="0" y="0" width="' + W + '" height="' + H
+        + '" preserveAspectRatio="' + (params.fit === 'contain' ? 'xMidYMid meet' : 'xMidYMid slice') + '"/>'
+        + '<g id="lolly-ov-slot">' + overlaySvg + '</g></svg>';
+    } else {
+      var dims = workDims(W, H, STILL_MAX);
+      var cv = document.createElement('canvas');
+      cv.width = dims.w; cv.height = dims.h;
+      var ctx = cv.getContext('2d', { willReadFrequently: true });
+      if (!ctx) {
+        svgContent = wrapImg(null, W, H, '', 'Preview renders in the browser', overlaySvg);
+      } else {
+        if (params.fit === 'contain') drawContain(ctx, img, iw, ih, dims.w, dims.h);
+        else drawCover(ctx, img, iw, ih, dims.w, dims.h);
+        var imageData = ctx.getImageData(0, 0, dims.w, dims.h);
+        var base = imageData.data;
+        if (grade.on) gradeRasterInPlace(base, grade);   // grade the source, then corrupt
+        // Stash the graded, cover-framed base so a motion export can re-corrupt per frame.
+        _animState = { base: new Uint8ClampedArray(base), w: dims.w, h: dims.h, params: params, grade: grade, ov: ov, W: W, H: H };
+        var d = corruptPixels(base, dims.w, dims.h, params, grade);
+        ctx.putImageData(new ImageData(d, dims.w, dims.h), 0, 0);
+        svgContent = wrapImg(cv.toDataURL('image/png'), W, H, rootExtra, null, overlaySvg);
+      }
+    }
+  } catch (e) {
+    if (host.log) host.log('warn', 'filter glitch: render failed', { error: String(e) });
+    svgContent = wrapImg(null, W, H, '', 'Could not read this image', overlaySvg);
+  }
+
+  _memoKey = memoKey;
+  _memoResult = { svgContent: svgContent };
+  return _memoResult;
+}
+
+function onInit(ctx) { return compute(ctx.model); }
+function onInput(ctx) { return compute(ctx.model); }
+
+// Live camera (engine v1.4): run the SAME glitch pipeline per frame so the
+// corruption tracks motion. No URL load, no memo. null = keep the last frame.
+function onFrame(ctx) {
+  var frame = ctx.frame;
+  if (!frame || !frame.data || !frame.width || !frame.height) return null;
+  if (!canRaster() || typeof ImageData === 'undefined') return null;
+  var inputs = inputsFrom(ctx.model);
+  var W = dimW(inputs), H = dimH(inputs);
+  _lastW = W; _lastH = H;
+  var params = paramsFrom(inputs, W, H);
+  var grade = parseGrade(inputs);
+  var dims = workDims(W, H, LIVE_MAX);
+
+  var ovi = overlayInputs(inputs);
+  if (overlayActive(ovi)) { if (_liveOvStart == null) _liveOvStart = frame.t; } else _liveOvStart = null;
+  if (ovi.showLogo && _logoCache[logoVariantId(ovi.logoStyle)] === undefined) resolveLogoUrl(ovi.logoStyle);
+  if (ovi.lowerThird && _profileHeadshotUrl === undefined) resolveProfileHeadshot();
+  var ov = overlayFor(inputs, 'live', frame.t - (_liveOvStart == null ? frame.t : _liveOvStart));
+  _lastOv = ov;
+
+  var svgContent;
+  try {
+    var srcFrame = document.createElement('canvas');
+    srcFrame.width = frame.width; srcFrame.height = frame.height;
+    srcFrame.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
+    var cv = document.createElement('canvas');
+    cv.width = dims.w; cv.height = dims.h;
+    var ctx2 = cv.getContext('2d', { willReadFrequently: true });
+    if (!ctx2) return null;
+    if (params.fit === 'contain') drawContain(ctx2, srcFrame, frame.width, frame.height, dims.w, dims.h);
+    else drawCover(ctx2, srcFrame, frame.width, frame.height, dims.w, dims.h);
+    if (ovi.noFilter) {
+      var overlaySvgL = buildOverlaySvg(W, H, ov);
+      svgContent = svgOpen(W, H)
+        + '<image data-glitch-base="1" href="' + esc(cv.toDataURL('image/jpeg', 0.85)) + '" x="0" y="0" width="' + W + '" height="' + H + '" preserveAspectRatio="none"/>'
+        + '<g id="lolly-ov-slot">' + overlaySvgL + '</g></svg>';
+    } else {
+      var baseL = ctx2.getImageData(0, 0, dims.w, dims.h).data;
+      if (grade.on) gradeRasterInPlace(baseL, grade);
+      var dL = corruptPixels(baseL, dims.w, dims.h, params, grade);
+      ctx2.putImageData(new ImageData(dL, dims.w, dims.h), 0, 0);
+      svgContent = wrapImg(cv.toDataURL('image/png'), W, H, '', null, buildOverlaySvg(W, H, ov));
+    }
+  } catch (e) { return null; }
+
+  _animState = null; // a live source drives its own motion; no still shimmer
+  _memoKey = null;   // a live frame supersedes the still memo
+  return { svgContent: svgContent };
+}
+
+// ── Motion-export shimmer + overlay clock ────────────────────────────────────
+// A gif/webm/mp4 of a STILL glitch would otherwise be one frozen frame repeated.
+// Mount a [data-ov-clock] anchor (the same convention imperfections uses) and, per
+// captured frame, re-corrupt the stashed base at a clock-advanced seed and swap the
+// baked <image>'s href — deterministic in t, so an identical export is byte-identical.
+var _ovClockEl = null;
+function mountOvClockAnchor(node) {
+  if (!node || !node.ownerDocument || !node.appendChild) return null;
+  var el = node.querySelector && node.querySelector('[data-ov-clock]');
+  if (el) return el;
+  el = node.ownerDocument.createElement('canvas');
+  el.setAttribute('data-ov-clock', ''); el.setAttribute('aria-hidden', 'true');
+  el.width = 0; el.height = 0;
+  node.appendChild(el);
+  return (_ovClockEl = el);
+}
+function unmountOvClockAnchor() {
+  if (_ovClockEl && _ovClockEl.parentNode) _ovClockEl.parentNode.removeChild(_ovClockEl);
+  _ovClockEl = null;
+}
+var _glitchClock = null;
+function beforeExport(ctx) {
+  var motion = OV_MOTION_FORMATS[ctx.format];
+  var wantOverlay = _lastOv && overlayActive(_lastOv) && motion;
+  // Shimmer only a STILL glitch (onFrame clears the stash, so a live source has none).
+  var wantShimmer = motion && !!_animState;
+  if (!wantOverlay && !wantShimmer) return;
+  var anchor = mountOvClockAnchor(ctx.node);
+  if (!anchor) return;
+  var st = _animState, ov = _lastOv;
+  var slot = ctx.node.querySelector && ctx.node.querySelector('#lolly-ov-slot');
+  var image = ctx.node.querySelector && ctx.node.querySelector('image[data-glitch-base]');
+  anchor.__lollyFrameRender = function (t, clipSec) {
+    try {
+      if (wantShimmer && st && image) {
+        var pp = phaseGlitch(st.params, t);
+        var d = corruptPixels(st.base, st.w, st.h, pp, st.grade);
+        var src = encodeGlitch(d, st.w, st.h);
+        image.setAttribute('href', src);
+        image.setAttributeNS('http://www.w3.org/1999/xlink', 'href', src);
+      }
+      if (wantOverlay && slot && ov) {
+        var clipMs = (clipSec || (ctx.opts && ctx.opts.duration) || 5) * 1000;
+        slot.innerHTML = buildOverlaySvg(st ? st.W : _lastW, st ? st.H : _lastH,
+          Object.assign({}, ov, { mode: 'live', elapsed: t * clipMs }));
+      }
+    } catch (e) { /* leave the last good frame */ }
+  };
+  _glitchClock = anchor;
+}
+function afterExport() {
+  if (_glitchClock) { try { delete _glitchClock.__lollyFrameRender; } catch (e) { _glitchClock.__lollyFrameRender = undefined; } _glitchClock = null; }
+  unmountOvClockAnchor();
+}
+
+return {
+  compute:      typeof compute      !== 'undefined' ? compute      : null,
+  onInit:       typeof onInit        !== 'undefined' ? onInit        : null,
+  onInput:      typeof onInput       !== 'undefined' ? onInput       : null,
+  onFrame:      typeof onFrame       !== 'undefined' ? onFrame       : null,
+  beforeExport: typeof beforeExport  !== 'undefined' ? beforeExport  : null,
+  afterExport:  typeof afterExport   !== 'undefined' ? afterExport   : null
+};
+})();
+
 // ── effect module map (after the IIFEs, so every FX_* is bound) ──
 var EFFECT_MOD = {
   "halftone": FX_halftone,
@@ -6352,5 +8810,8 @@ var EFFECT_MOD = {
   "voronoi": FX_voronoi,
   "duotone": FX_duotone,
   "pixel-stretch": FX_pixelstretch,
-  "imperfections": FX_imperfections
+  "imperfections": FX_imperfections,
+  "dither": FX_dither,
+  "ascii": FX_ascii,
+  "glitch": FX_glitch
 };

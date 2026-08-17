@@ -1,7 +1,7 @@
 {
   "id": "filter",
   "name": "Filter",
-  "description": "One tool for photo effects: pick halftone, scanline, posterize or voronoi (vector) or duotone, pixel-stretch or print imperfections (raster). Brand overlays, live camera, and exports to as many formats as each effect supports.",
+  "description": "One tool for photo effects: pick halftone, scanline, posterize, voronoi, dither or ASCII art (vector) or duotone, pixel-stretch, imperfections or glitch (raster). Brand overlays, live camera, and exports to as many formats as each effect supports.",
   "a11yLabel": "{{effect}} filter of the chosen image",
   "version": "1.3.0",
   "engineVersion": "^1.0.0",
@@ -26,7 +26,7 @@
   ],
   "featured": {
     "order": 7,
-    "blurb": "Seven photo effects, vector or raster, in one tool"
+    "blurb": "Ten photo effects, vector or raster, in one tool"
   },
   "render": {
     "width": 1080,
@@ -46,7 +46,9 @@
       "apng",
       "webp-anim",
       "webm",
-      "mp4"
+      "mp4",
+      "txt",
+      "md"
     ],
     "actions": [
       "copy",
@@ -182,6 +184,59 @@
             "gif",
             "apng",
             "webp-anim",
+            "webm",
+            "mp4"
+          ]
+        },
+        {
+          "value": "dither",
+          "label": "Dither",
+          "badge": "vector",
+          "formats": [
+            "svg",
+            "pdf",
+            "pdf-cmyk",
+            "emf",
+            "png",
+            "webp",
+            "avif",
+            "gif",
+            "apng",
+            "webm",
+            "mp4"
+          ]
+        },
+        {
+          "value": "ascii",
+          "label": "ASCII art",
+          "badge": "vector",
+          "formats": [
+            "svg",
+            "pdf",
+            "pdf-cmyk",
+            "emf",
+            "png",
+            "webp",
+            "avif",
+            "gif",
+            "apng",
+            "webm",
+            "mp4",
+            "txt",
+            "md"
+          ]
+        },
+        {
+          "value": "glitch",
+          "label": "Glitch",
+          "badge": "raster",
+          "formats": [
+            "png",
+            "jpg",
+            "webp",
+            "svg",
+            "gif",
+            "apng",
             "webm",
             "mp4"
           ]
@@ -1229,6 +1284,367 @@
       }
     },
     {
+      "id": "di_palette",
+      "label": "Palette",
+      "urlKey": "dpal",
+      "type": "select",
+      "default": "mono",
+      "options": [
+        { "value": "mono", "label": "1-bit (black & white)" },
+        { "value": "handheld4", "label": "Handheld 4-tone" },
+        { "value": "retro16", "label": "16-colour retro" },
+        { "value": "retro54", "label": "54-colour retro console" },
+        { "value": "gray4", "label": "Grayscale (4)" },
+        { "value": "gray8", "label": "Grayscale (8)" },
+        { "value": "brand", "label": "Brand palette" }
+      ],
+      "help": "The fixed set of colours every pixel snaps to. Brand palette quantizes through your active brand's colour tokens.",
+      "showIf": {
+        "effect": "dither"
+      }
+    },
+    {
+      "id": "di_colorCount",
+      "label": "Colour count",
+      "urlKey": "dcc",
+      "type": "number",
+      "display": "slider",
+      "default": 8,
+      "min": 2,
+      "max": 16,
+      "step": 1,
+      "help": "How many brand swatches to quantize to.",
+      "showIf": {
+        "effect": "dither",
+        "di_palette": "brand"
+      }
+    },
+    {
+      "id": "di_algorithm",
+      "label": "Algorithm",
+      "urlKey": "dalg",
+      "type": "select",
+      "default": "floyd",
+      "options": [
+        { "value": "floyd", "label": "Diffused (Floyd–Steinberg)" },
+        { "value": "ordered", "label": "Patterned (ordered)" },
+        { "value": "noise", "label": "Grainy (noise)" }
+      ],
+      "help": "How each pixel's colour error is spread to its neighbours before the next match.",
+      "showIf": {
+        "effect": "dither"
+      }
+    },
+    {
+      "id": "di_scale",
+      "label": "Scale",
+      "urlKey": "dsc",
+      "type": "number",
+      "display": "slider",
+      "default": 6,
+      "min": 0.5,
+      "max": 40,
+      "step": 0.5,
+      "help": "Size of each virtual pixel. Smaller now keeps getting finer (a much larger cell budget), so the low end reads as crisp detail instead of plateauing; larger reads as a bolder, chunkier print.",
+      "showIf": {
+        "effect": "dither"
+      }
+    },
+    {
+      "id": "di_fit",
+      "label": "Image fit",
+      "urlKey": "dfit",
+      "type": "select",
+      "default": "cover",
+      "options": [
+        { "value": "contain", "label": "Contain (whole image)" },
+        { "value": "cover", "label": "Cover (fill, crop edges)" }
+      ],
+      "showIf": {
+        "effect": "dither"
+      }
+    },
+    {
+      "id": "as_ramp",
+      "label": "Character ramp",
+      "urlKey": "arp",
+      "type": "select",
+      "default": "classic",
+      "options": [
+        { "value": "classic", "label": "Classic (10 characters)" },
+        { "value": "blocks", "label": "Blocks" },
+        { "value": "minimal", "label": "Minimal" }
+      ],
+      "help": "The characters used from lightest to darkest.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "as_cellSize",
+      "label": "Cell size",
+      "urlKey": "acs",
+      "type": "number",
+      "display": "slider",
+      "default": 12,
+      "min": 6,
+      "max": 40,
+      "step": 1,
+      "help": "Size of each character cell. Smaller reads more of the photo's detail.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "as_colorMode",
+      "label": "Colour mode",
+      "urlKey": "acm",
+      "type": "select",
+      "default": "per-cell",
+      "options": [
+        { "value": "mono", "label": "Mono" },
+        { "value": "fg-bg", "label": "Foreground on background" },
+        { "value": "per-cell", "label": "Per-cell colour" }
+      ],
+      "help": "Mono draws every character in one ink; per-cell colours each character from the photo underneath.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "as_fgColor",
+      "label": "Character colour",
+      "urlKey": "afg",
+      "type": "color",
+      "default": "{color.semantic.text}",
+      "help": "Ink colour when Colour mode is Mono or Foreground on background.",
+      "showIf": {
+        "effect": "ascii",
+        "as_colorMode": ["mono", "fg-bg"]
+      }
+    },
+    {
+      "id": "as_bgColor",
+      "label": "Background",
+      "urlKey": "abg",
+      "type": "color",
+      "default": "",
+      "help": "Fill behind the characters. Leave empty for a transparent background.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "as_invert",
+      "label": "Invert",
+      "urlKey": "ainv",
+      "type": "boolean",
+      "default": false,
+      "help": "Swap the ramp - dense characters for light areas instead of dark.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "as_fontWeight",
+      "label": "Character weight",
+      "urlKey": "afw",
+      "type": "select",
+      "default": "400",
+      "options": [
+        { "value": "300", "label": "Light" },
+        { "value": "400", "label": "Regular" },
+        { "value": "500", "label": "Medium" },
+        { "value": "700", "label": "Bold" }
+      ],
+      "help": "Stroke weight of every character. Bolder fills the cell more; lighter opens it up.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "as_threshold",
+      "label": "Threshold",
+      "urlKey": "ath",
+      "type": "number",
+      "display": "slider",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Where the mid-tone falls in the light-to-character mapping. 50 is neutral; lower pushes more of the photo toward the dense end of the ramp, higher toward the light end.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "as_fit",
+      "label": "Image fit",
+      "urlKey": "afit",
+      "type": "select",
+      "default": "cover",
+      "options": [
+        { "value": "contain", "label": "Contain (whole image)" },
+        { "value": "cover", "label": "Cover (fill, crop edges)" }
+      ],
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "gl_sortThreshold",
+      "label": "Pixel sort threshold",
+      "section": "Pixel sort",
+      "urlKey": "gst",
+      "type": "number",
+      "display": "slider",
+      "default": 39,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Brightness above this line gets swept into a sorted streak. 0 turns pixel sort off.",
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
+      "id": "gl_sortDirection",
+      "label": "Sort direction",
+      "section": "Pixel sort",
+      "urlKey": "gsd",
+      "type": "select",
+      "default": "horizontal",
+      "options": [
+        { "value": "horizontal", "label": "Horizontal" },
+        { "value": "vertical", "label": "Vertical" }
+      ],
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
+      "id": "gl_sortBandLength",
+      "label": "Band length",
+      "section": "Pixel sort",
+      "urlKey": "gsb",
+      "type": "number",
+      "display": "slider",
+      "default": 260,
+      "min": 0,
+      "max": 800,
+      "step": 10,
+      "help": "Caps how long a sorted streak can run before it breaks. 0 = uncapped.",
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
+      "id": "gl_offsetR",
+      "label": "Red offset",
+      "section": "Channel offset",
+      "urlKey": "gor",
+      "help": "Shifts the red channel. Drag a label or type a value.",
+      "type": "vector",
+      "fields": [
+        { "id": "dx", "label": "X", "min": -60, "max": 60, "step": 1, "default": 5 },
+        { "id": "dy", "label": "Y", "min": -60, "max": 60, "step": 1, "default": -10 }
+      ],
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
+      "id": "gl_offsetG",
+      "label": "Green offset",
+      "section": "Channel offset",
+      "urlKey": "gog",
+      "help": "Shifts the green channel.",
+      "type": "vector",
+      "fields": [
+        { "id": "dx", "label": "X", "min": -60, "max": 60, "step": 1, "default": 7 },
+        { "id": "dy", "label": "Y", "min": -60, "max": 60, "step": 1, "default": 5 }
+      ],
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
+      "id": "gl_offsetB",
+      "label": "Blue offset",
+      "section": "Channel offset",
+      "urlKey": "gob",
+      "help": "Shifts the blue channel.",
+      "type": "vector",
+      "fields": [
+        { "id": "dx", "label": "X", "min": -60, "max": 60, "step": 1, "default": 10 },
+        { "id": "dy", "label": "Y", "min": -60, "max": 60, "step": 1, "default": 18 }
+      ],
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
+      "id": "gl_blockAmount",
+      "label": "Block corruption",
+      "section": "Block corruption",
+      "urlKey": "gba",
+      "type": "number",
+      "display": "slider",
+      "default": 16,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "How much of the image breaks into corrupted blocks. Seeded, so the same seed always corrupts the same blocks. 0 turns it off.",
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
+      "id": "gl_blockSize",
+      "label": "Block size",
+      "section": "Block corruption",
+      "urlKey": "gbs",
+      "type": "number",
+      "display": "slider",
+      "default": 44,
+      "min": 4,
+      "max": 64,
+      "step": 1,
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
+      "id": "gl_seed",
+      "label": "Seed",
+      "section": "Block corruption",
+      "urlKey": "gse",
+      "type": "number",
+      "display": "slider",
+      "default": 269,
+      "min": 1,
+      "max": 999,
+      "step": 1,
+      "help": "Reroll which blocks corrupt and how. Same seed = same result every time.",
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
+      "id": "gl_fit",
+      "label": "Image fit",
+      "urlKey": "gfit",
+      "type": "select",
+      "default": "cover",
+      "options": [
+        { "value": "contain", "label": "Contain (whole image)" },
+        { "value": "cover", "label": "Cover (fill, crop edges)" }
+      ],
+      "showIf": {
+        "effect": "glitch"
+      }
+    },
+    {
       "id": "contrast",
       "label": "Contrast",
       "section": "Colour",
@@ -1246,7 +1662,10 @@
           "voronoi",
           "duotone",
           "pixel-stretch",
-          "imperfections"
+          "imperfections",
+          "dither",
+          "ascii",
+          "glitch"
         ]
       }
     },
@@ -1646,7 +2065,8 @@
     "onInput": true,
     "onFrame": true,
     "beforeExport": true,
-    "afterExport": true
+    "afterExport": true,
+    "exportStill": true
   },
   "examples": [
     {
@@ -1679,6 +2099,27 @@
       "label": "Print imperfections",
       "values": {
         "effect": "imperfections"
+      }
+    },
+    {
+      "label": "Dither",
+      "values": {
+        "effect": "dither",
+        "di_palette": "handheld4"
+      }
+    },
+    {
+      "label": "ASCII art",
+      "values": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "label": "Glitch",
+      "values": {
+        "effect": "glitch",
+        "gl_sortThreshold": 55,
+        "gl_blockAmount": 30
       }
     }
   ]
