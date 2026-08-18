@@ -158,22 +158,80 @@ function _run(ctx, fn) {
 function onInit(ctx)  { return _run(ctx, 'onInit'); }
 function onInput(ctx) { return _run(ctx, 'onInput'); }
 function onFrame(ctx) { return _run(ctx, 'onFrame'); }
-// ── Base-raster caching for motion export ─────────────────────────────────────
-// A vector effect's base can be tens of thousands of dot/line nodes, and the shell
-// re-serialises the WHOLE base with dom-to-image on every captured video frame — its
-// static-chrome fast path is declined because the overlay slot mutates each frame. So a
-// 5s clip rasterises that giant DOM ~120-150 times. For a MOTION format we rasterise the
-// STATIC base to ONE <image> up front, so each frame serialises a tiny DOM (that image +
-// the small overlay). Restored in afterExport, so still / vector (svg/pdf/emf) export keeps
-// crisp vectors. FAIL-SAFE: any problem leaves the vector base in place — the export still
-// works, just at the old speed. Only vector effects benefit (raster effects already emit a
-// single <image> base); raster/pixel-stretch/duotone/imperfections are skipped.
+// ── Base-raster freeze for a heavy export ─────────────────────────────────────
+// A vector effect's base can be tens of thousands of dot/line/rect nodes (dither
+// emits one <rect> per virtual pixel — ~28k at the default scale, up to 120k), and
+// the shell's raster export rasterises the WHOLE tool-canvas DOM through
+// dom-to-image-more, which CLONES every element and inlines its computed style (two
+// getComputedStyle calls + a full property copy PER node). That per-node work is what
+// stalls: a 5s MOTION clip re-serialises the giant DOM ~120-150 times (its
+// static-chrome fast path is declined because the overlay slot mutates each frame),
+// and a single STILL raster (png/jpeg/webp/…) of a 28k-node base hangs for tens of
+// seconds — the shutter never reopens. So we rasterise the STATIC base to ONE <image>
+// up front: each motion frame then serialises a tiny DOM, and a still hands
+// dom-to-image that one image plus the small (live vector) overlay instead of the
+// whole grid. Restored in afterExport, so vector (svg/pdf/emf) export keeps crisp
+// vectors. FAIL-SAFE: any problem leaves the vector base in place — the export still
+// works, just at the old speed. Only vector effects benefit (raster effects already
+// emit a single <image> base); raster/pixel-stretch/duotone/imperfections are skipped.
 var _MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
+// Still raster formats whose export rasterises the node through dom-to-image / a
+// canvas (renderRaster/renderBitmap/renderTiff/renderBmp/renderIco). SVG/PDF/EMF and
+// the data formats are absent — they serialise vectors and must stay crisp.
+var _STILL_RASTER_FORMATS = { png: 1, jpg: 1, jpeg: 1, webp: 1, avif: 1, tiff: 1, 'cmyk-tiff': 1, bmp: 1, ico: 1 };
+// A still only pays for the freeze when the base is big enough to stall dom-to-image;
+// below this a small base keeps its exact current per-node vector rasterisation, so
+// every export that already works is byte-identical. The floor sits ABOVE ascii's hard
+// cap (its MAX_CELLS = 6000 <text> glyphs) so ASCII stills — the one vector base whose
+// glyphs resolve their font through dom-to-image's foreignObject — never freeze and so
+// never risk a fallback font; dither/halftone/scanline/posterize/voronoi cross it only
+// when genuinely huge (where the un-frozen path would have hung anyway).
+var _STILL_FREEZE_MIN_NODES = 8000;
 var _VECTOR_EFFECTS = { halftone: 1, scanline: 1, posterize: 1, voronoi: 1, dither: 1, ascii: 1 };
 var _baseRaster = null; // { svg, removed:[{node,next}], image } — for afterExport restore
 
-function _rasterizeBaseForMotion(ctx) {
-  if (!ctx || !_MOTION_FORMATS[ctx.format] || !_VECTOR_EFFECTS[_activeEffect]) return;
+// Longest-edge device pixels a still raster export will actually produce — mirrors the
+// web shell's rasterStyle (bridge/export.ts): an explicit width/height (px, or a
+// physical unit at `dpi`) maps the viewBox to that many pixels; with neither,
+// dom-to-image supersamples the canvas box (RASTER_DEFAULT_SCALE = 2). We rasterise the
+// frozen base at this size so a large PNG stays as crisp as the un-frozen path would
+// have been — downscaling a larger raster is fine; only upscaling would soften.
+function _pxDim(v) {
+  if (v == null || v === '') return 0;
+  if (typeof v === 'number') return v > 0 ? v : 0;
+  var m = /^(-?\d*\.?\d+)\s*(?:px)?$/.exec(String(v).trim());
+  return m ? Math.max(0, parseFloat(m[1])) : 0;
+}
+function _physPx(v, dpi) {
+  var m = /^(-?\d*\.?\d+)\s*(mm|cm|in|pt)$/.exec(String(v == null ? '' : v).trim());
+  if (!m) return 0;
+  var val = parseFloat(m[1]); dpi = dpi > 0 ? dpi : 300;
+  var inch = m[2] === 'mm' ? val / 25.4 : m[2] === 'cm' ? val / 2.54 : m[2] === 'pt' ? val / 72 : val;
+  return Math.max(0, inch * dpi);
+}
+function _stillExportEdge(W, H, opts, node) {
+  opts = opts || {};
+  var rw = _pxDim(opts.width) || _physPx(opts.width, opts.dpi);
+  var rh = _pxDim(opts.height) || _physPx(opts.height, opts.dpi);
+  if (rw || rh) {
+    var s = Math.max(rw ? rw / W : 0, rh ? rh / H : 0) || 1;
+    return Math.max(W, H) * s;
+  }
+  // No explicit size: the shell supersamples the NODE's CSS box (not the viewBox) by
+  // RASTER_DEFAULT_SCALE (2), so measure the node to hit exactly the resolution
+  // dom-to-image will target — otherwise a canvas wider than its viewBox would upscale
+  // the frozen base and soften it. Fall back to the viewBox if the node can't be measured.
+  var sup = opts.scale > 0 ? opts.scale : 2;
+  var cssMax = 0;
+  try { if (node && node.getBoundingClientRect) { var r = node.getBoundingClientRect(); cssMax = Math.max(r.width || 0, r.height || 0); } } catch (e) { /* detached / no layout */ }
+  return (cssMax || Math.max(W, H)) * sup;
+}
+
+function _freezeBaseForExport(ctx) {
+  if (!ctx || !_VECTOR_EFFECTS[_activeEffect]) return;
+  var motion = !!_MOTION_FORMATS[ctx.format];
+  var still = !motion && !!_STILL_RASTER_FORMATS[ctx.format];
+  if (!motion && !still) return;
   // STATIC-image optimisation ONLY: a live/animated source (camera or an animated asset)
   // must keep its live base — freezing it to one raster would lock the video to a single
   // frame. `_lastLiveFrame` is set whenever the last render came through onFrame.
@@ -182,6 +240,10 @@ function _rasterizeBaseForMotion(ctx) {
   var node = ctx.node; if (!node || !node.querySelector) return;
   var svg = node.querySelector('svg'); if (!svg) return;
   if (svg.querySelector('image[data-base-raster]')) return; // already swapped
+  // A still only freezes a base heavy enough to stall dom-to-image; a small one keeps
+  // its crisp per-node vector rasterisation unchanged. Motion always freezes (it pays
+  // the per-node cost once PER FRAME, so even a modest base is worth collapsing).
+  if (still && svg.getElementsByTagName('*').length < _STILL_FREEZE_MIN_NODES) return;
   var vb = (svg.getAttribute('viewBox') || '').split(/[\s,]+/).map(Number);
   var W = vb[2] || +svg.getAttribute('width') || VIEW;
   var H = vb[3] || +svg.getAttribute('height') || VIEW;
@@ -190,11 +252,16 @@ function _rasterizeBaseForMotion(ctx) {
   var cslot = clone.querySelector('#lolly-ov-slot');
   if (cslot && cslot.parentNode) cslot.parentNode.removeChild(cslot);
   var str = new XMLSerializer().serializeToString(clone);
+  // Motion caps the raster to a video-sized frame; a still matches the EXPORT resolution
+  // (never below 1× the viewBox, and bounded so a huge canvas can't blow up memory).
+  var maxWH = Math.max(W, H) || 1;
+  var scale = motion
+    ? Math.min(2, 2160 / maxWH)
+    : Math.max(1, Math.min(8192 / maxWH, _stillExportEdge(W, H, ctx.opts, node) / maxWH));
   return new Promise(function (resolve) {
     var im = new Image();
     im.onload = function () {
       try {
-        var scale = Math.min(2, 2160 / Math.max(W, H)); // crisp, but cap the canvas
         var cv = document.createElement('canvas');
         cv.width = Math.max(1, Math.round(W * scale));
         cv.height = Math.max(1, Math.round(H * scale));
@@ -246,9 +313,9 @@ function _restoreBaseRaster() {
 function beforeExport(ctx) {
   var m = EFFECT_MOD[_activeEffect];
   var moduleBefore = function () { return m && m.beforeExport ? m.beforeExport(ctx) : undefined; };
-  // Rasterise the base BEFORE the module arms its overlay clock (which re-finds the slot
-  // on the swapped DOM) and before the shell captures frames.
-  var pre = _rasterizeBaseForMotion(ctx);
+  // Freeze the base BEFORE the module arms its overlay clock (which re-finds the slot
+  // on the swapped DOM) and before the shell captures frames / rasterises the still.
+  var pre = _freezeBaseForExport(ctx);
   return (pre && typeof pre.then === 'function') ? pre.then(moduleBefore) : moduleBefore();
 }
 function afterExport(ctx)  {
@@ -7198,7 +7265,7 @@ function onFrame(ctx) {
 // Animation on a static source is DELIBERATELY SKIPPED for dither (Andy allowed
 // skipping when it's too expensive or not meaningful). Two reasons: (1) the
 // dispatcher freezes a vector effect's base to ONE raster for a motion export
-// (_rasterizeBaseForMotion), so a per-frame base change wouldn't survive anyway;
+// (_freezeBaseForExport), so a per-frame base change wouldn't survive anyway;
 // (2) re-diffusing the grid and re-serialising up to MAX_CELLS <rect>s every frame
 // is far too costly, and only the 'noise' sub-mode would shimmer meaningfully.
 // So beforeExport only arms the overlay's resting-pose export (glitch, a raster

@@ -2,7 +2,7 @@
   "id": "d3",
   "name": "D3 Chart Studio",
   "description": "Powerful data-driven charts with D3 \u2014 paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour \u2014 on-brand and vector-clean.",
-  "version": "1.17.0",
+  "version": "1.18.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -300,6 +300,357 @@
       "default": "Quarter,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18\nQ3,55,41,24\nQ4,63,52,33"
     },
     {
+      "id": "palette",
+      "urlKey": "pl",
+      "label": "Palette",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "ordered",
+      "options": [
+        {
+          "value": "ordered",
+          "label": "Brand \u2014 ordered"
+        },
+        {
+          "value": "suse",
+          "label": "Brand \u2014 categorical"
+        },
+        {
+          "value": "seed",
+          "label": "From a base colour"
+        },
+        {
+          "value": "pine",
+          "label": "Brand \u2014 sequential"
+        },
+        {
+          "value": "waterhole",
+          "label": "Brand \u2014 sequential (2nd hue)"
+        },
+        {
+          "value": "warm",
+          "label": "Warm (brand-tinted)"
+        },
+        {
+          "value": "cool",
+          "label": "Cool (brand-tinted)"
+        },
+        {
+          "value": "diverging",
+          "label": "Diverging (brand)"
+        },
+        {
+          "value": "mono",
+          "label": "Monochrome (brand)"
+        }
+      ],
+      "help": "Ordered follows your brand palette in its own order (the default for most brands); Categorical spaces the brand hues apart for maximum contrast; From a base colour extrapolates a full set from one seed. The rest are sequential and diverging ramps built from your brand."
+    },
+    {
+      "id": "paletteSeed",
+      "urlKey": "pz",
+      "label": "Base colour",
+      "section": "Colour & style",
+      "type": "color",
+      "default": "{color.semantic.primary}",
+      "help": "The colour the palette extrapolates from \u2014 a spread of distinct hues for categorical charts, and light-to-dark ramps for sequential ones. Change it to re-key every colour off one hue.",
+      "showIf": {
+        "palette": [
+          "seed"
+        ]
+      }
+    },
+    {
+      "id": "paletteBlend",
+      "urlKey": "pb",
+      "label": "Colour blend",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "smooth",
+      "options": [
+        {
+          "value": "smooth",
+          "label": "Smooth (perceptually even)"
+        },
+        {
+          "value": "vivid",
+          "label": "Vivid (keeps chroma)"
+        },
+        {
+          "value": "srgb",
+          "label": "sRGB (classic)"
+        }
+      ],
+      "help": "How the sequential and diverging ramps blend between colours. Smooth is perceptually even; Vivid travels round the hue circle so the midtones keep their chroma; sRGB is the plain blend a CSS gradient uses.",
+      "showIf": {
+        "palette": [
+          "pine",
+          "waterhole",
+          "warm",
+          "cool",
+          "diverging",
+          "mono",
+          "seed"
+        ]
+      }
+    },
+    {
+      "id": "colorBy",
+      "urlKey": "cb",
+      "label": "Colour by",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "series",
+      "options": [
+        {
+          "value": "series",
+          "label": "Series"
+        },
+        {
+          "value": "category",
+          "label": "Category"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal"
+        ]
+      }
+    },
+    {
+      "id": "barStyle",
+      "urlKey": "b3",
+      "label": "Bar look",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "flat",
+      "options": [
+        {
+          "value": "flat",
+          "label": "Flat"
+        },
+        {
+          "value": "iso3d",
+          "label": "3-D (extruded)"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal"
+        ]
+      }
+    },
+    {
+      "id": "pieStyle",
+      "urlKey": "p3",
+      "label": "Pie look",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "flat",
+      "options": [
+        {
+          "value": "flat",
+          "label": "Flat"
+        },
+        {
+          "value": "iso3d",
+          "label": "3-D (tilted)"
+        }
+      ],
+      "showIf": {
+        "chartType": [
+          "pie",
+          "donut"
+        ]
+      }
+    },
+    {
+      "id": "depth3d",
+      "urlKey": "dp",
+      "label": "3-D depth (px, 0 = auto)",
+      "section": "Colour & style",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 160,
+      "step": 1,
+      "help": "How far the 3-D bars or pie are extruded. 0 scales the depth to the chart.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut"
+        ]
+      }
+    },
+    {
+      "id": "shadow",
+      "urlKey": "sh",
+      "label": "Shadow / depth",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "soft",
+          "label": "Soft"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "strong",
+          "label": "Strong"
+        },
+        {
+          "value": "glow",
+          "label": "Glow (colour halo)"
+        }
+      ],
+      "help": "Lift marks off the background with a soft drop shadow \u2014 depth and better contrast between values \u2014 or a colour-matched glow for an on-screen dashboard look. SVG and PNG stay crisp; EMF/EPS keep a vector shadow; PDF rasterises the chart while a shadow is on.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut",
+          "line",
+          "area"
+        ]
+      }
+    },
+    {
+      "id": "differentiate",
+      "urlKey": "df",
+      "label": "Differentiate series by",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "auto",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto (patterns for monochrome brands)"
+        },
+        {
+          "value": "colour",
+          "label": "Colour only"
+        },
+        {
+          "value": "both",
+          "label": "Colour + pattern"
+        }
+      ],
+      "help": "Add stripes, hatching and dots on top of colour so series stay distinct even with few brand hues \u2014 and in greyscale print or for colour-blind readers. Auto turns patterns on when the brand has a limited palette.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut"
+        ]
+      }
+    },
+    {
+      "id": "colorOverrides",
+      "urlKey": "co",
+      "label": "Highlighted values",
+      "section": "Colour & style",
+      "type": "text",
+      "default": "",
+      "placeholder": "click a bar or slice to recolour",
+      "help": "Click a bar or slice on the canvas to recolour it from your brand swatches \u2014 highlight one or several related values to draw the eye. Advanced: a JSON map of label \u2192 colour.",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut",
+          "radial-bar",
+          "treemap",
+          "pack",
+          "funnel",
+          "waffle",
+          "lollipop",
+          "polar",
+          "waterfall"
+        ]
+      }
+    },
+    {
+      "id": "background",
+      "urlKey": "bg",
+      "label": "Background",
+      "section": "Colour & style",
+      "type": "color",
+      "default": "{color.semantic.surface}"
+    },
+    {
+      "id": "textColor",
+      "urlKey": "tc",
+      "label": "Text & axis colour",
+      "section": "Colour & style",
+      "type": "color",
+      "default": "",
+      "help": "Leave blank to contrast automatically with the background \u2014 so setting a dark background flips the titles, axes, labels, legend and gridlines to a light ink without you colouring each one. Set a colour to override."
+    },
+    {
+      "id": "strokeWidth",
+      "urlKey": "ow",
+      "label": "Mark outline width",
+      "section": "Colour & style",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 12,
+      "step": 1,
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut",
+          "radial-bar",
+          "treemap",
+          "pack",
+          "heatmap",
+          "scatter",
+          "histogram"
+        ]
+      }
+    },
+    {
+      "id": "strokeColor",
+      "urlKey": "oc",
+      "label": "Mark outline colour",
+      "section": "Colour & style",
+      "type": "color",
+      "default": "{color.semantic.surface}",
+      "showIf": {
+        "chartType": [
+          "bar",
+          "bar-horizontal",
+          "pie",
+          "donut",
+          "radial-bar",
+          "treemap",
+          "pack",
+          "heatmap",
+          "scatter",
+          "histogram"
+        ]
+      }
+    },
+    {
       "id": "hasHeader",
       "urlKey": "hh",
       "label": "First row is a header",
@@ -380,7 +731,7 @@
       "id": "frameColumn",
       "urlKey": "fc",
       "label": "Animate by column",
-      "section": "Columns",
+      "section": "Animation",
       "type": "text",
       "default": "",
       "placeholder": "e.g. Quarter, Year, Wave",
@@ -1443,292 +1794,6 @@
           "line",
           "area",
           "scatter"
-        ]
-      }
-    },
-    {
-      "id": "palette",
-      "urlKey": "pl",
-      "label": "Palette",
-      "section": "Colour & style",
-      "type": "select",
-      "default": "suse",
-      "options": [
-        {
-          "value": "suse",
-          "label": "Brand \u2014 categorical"
-        },
-        {
-          "value": "pine",
-          "label": "Brand \u2014 sequential"
-        },
-        {
-          "value": "waterhole",
-          "label": "Brand \u2014 sequential (2nd hue)"
-        },
-        {
-          "value": "warm",
-          "label": "Warm (brand-tinted)"
-        },
-        {
-          "value": "cool",
-          "label": "Cool (brand-tinted)"
-        },
-        {
-          "value": "diverging",
-          "label": "Diverging (brand)"
-        },
-        {
-          "value": "mono",
-          "label": "Monochrome (brand)"
-        }
-      ]
-    },
-    {
-      "id": "colorBy",
-      "urlKey": "cb",
-      "label": "Colour by",
-      "section": "Colour & style",
-      "type": "select",
-      "default": "series",
-      "options": [
-        {
-          "value": "series",
-          "label": "Series"
-        },
-        {
-          "value": "category",
-          "label": "Category"
-        }
-      ],
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal"
-        ]
-      }
-    },
-    {
-      "id": "barStyle",
-      "urlKey": "b3",
-      "label": "Bar look",
-      "section": "Colour & style",
-      "type": "select",
-      "default": "flat",
-      "options": [
-        {
-          "value": "flat",
-          "label": "Flat"
-        },
-        {
-          "value": "iso3d",
-          "label": "3-D (extruded)"
-        }
-      ],
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal"
-        ]
-      }
-    },
-    {
-      "id": "pieStyle",
-      "urlKey": "p3",
-      "label": "Pie look",
-      "section": "Colour & style",
-      "type": "select",
-      "default": "flat",
-      "options": [
-        {
-          "value": "flat",
-          "label": "Flat"
-        },
-        {
-          "value": "iso3d",
-          "label": "3-D (tilted)"
-        }
-      ],
-      "showIf": {
-        "chartType": [
-          "pie",
-          "donut"
-        ]
-      }
-    },
-    {
-      "id": "depth3d",
-      "urlKey": "dp",
-      "label": "3-D depth (px, 0 = auto)",
-      "section": "Colour & style",
-      "type": "number",
-      "display": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 160,
-      "step": 1,
-      "help": "How far the 3-D bars or pie are extruded. 0 scales the depth to the chart.",
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "pie",
-          "donut"
-        ]
-      }
-    },
-    {
-      "id": "shadow",
-      "urlKey": "sh",
-      "label": "Shadow / depth",
-      "section": "Colour & style",
-      "type": "select",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "None"
-        },
-        {
-          "value": "soft",
-          "label": "Soft"
-        },
-        {
-          "value": "medium",
-          "label": "Medium"
-        },
-        {
-          "value": "strong",
-          "label": "Strong"
-        },
-        {
-          "value": "glow",
-          "label": "Glow (colour halo)"
-        }
-      ],
-      "help": "Lift marks off the background with a soft drop shadow \u2014 depth and better contrast between values \u2014 or a colour-matched glow for an on-screen dashboard look. SVG and PNG stay crisp; EMF/EPS keep a vector shadow; PDF rasterises the chart while a shadow is on.",
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "pie",
-          "donut",
-          "line",
-          "area"
-        ]
-      }
-    },
-    {
-      "id": "differentiate",
-      "urlKey": "df",
-      "label": "Differentiate series by",
-      "section": "Colour & style",
-      "type": "select",
-      "default": "auto",
-      "options": [
-        {
-          "value": "auto",
-          "label": "Auto (patterns for monochrome brands)"
-        },
-        {
-          "value": "colour",
-          "label": "Colour only"
-        },
-        {
-          "value": "both",
-          "label": "Colour + pattern"
-        }
-      ],
-      "help": "Add stripes, hatching and dots on top of colour so series stay distinct even with few brand hues \u2014 and in greyscale print or for colour-blind readers. Auto turns patterns on when the brand has a limited palette.",
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "pie",
-          "donut"
-        ]
-      }
-    },
-    {
-      "id": "colorOverrides",
-      "urlKey": "co",
-      "label": "Highlighted values",
-      "section": "Colour & style",
-      "type": "text",
-      "default": "",
-      "placeholder": "click a bar or slice to recolour",
-      "help": "Click a bar or slice on the canvas to recolour it from your brand swatches \u2014 highlight one or several related values to draw the eye. Advanced: a JSON map of label \u2192 colour.",
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "pie",
-          "donut"
-        ]
-      }
-    },
-    {
-      "id": "background",
-      "urlKey": "bg",
-      "label": "Background",
-      "section": "Colour & style",
-      "type": "color",
-      "default": "{color.semantic.surface}"
-    },
-    {
-      "id": "textColor",
-      "urlKey": "tc",
-      "label": "Text & axis colour",
-      "section": "Colour & style",
-      "type": "color",
-      "default": "",
-      "help": "Leave blank to contrast automatically with the background \u2014 so setting a dark background flips the titles, axes, labels, legend and gridlines to a light ink without you colouring each one. Set a colour to override."
-    },
-    {
-      "id": "strokeWidth",
-      "urlKey": "ow",
-      "label": "Mark outline width",
-      "section": "Colour & style",
-      "type": "number",
-      "display": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 12,
-      "step": 1,
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "pie",
-          "donut",
-          "radial-bar",
-          "treemap",
-          "pack",
-          "heatmap",
-          "scatter",
-          "histogram"
-        ]
-      }
-    },
-    {
-      "id": "strokeColor",
-      "urlKey": "oc",
-      "label": "Mark outline colour",
-      "section": "Colour & style",
-      "type": "color",
-      "default": "{color.semantic.surface}",
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "pie",
-          "donut",
-          "radial-bar",
-          "treemap",
-          "pack",
-          "heatmap",
-          "scatter",
-          "histogram"
         ]
       }
     },

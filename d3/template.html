@@ -83,6 +83,10 @@
     diverging: ['#2453FF','#93A9FF','#EFEFEF','#FCB98F','#FE7C3F'],
     mono:      ['#D6E3DE','#93B7AA','#3E7D68','#1C4E40','#111111']
   };
+  /* Chart types that support click-to-recolour (a single label → one brand-swatch
+     override). Shared by render()'s tagMark gate AND setupRecolor's click gate so
+     the two never drift. Single-series categorical charts, like pie/donut. */
+  var RECOLOR_CHARTS = ['bar','bar-horizontal','pie','donut','radial-bar','treemap','pack','funnel','waffle','lollipop','polar','waterfall'];
 
   /* ── colour helpers (WCAG legibility guard, ported from chart-creator) ─────── */
   function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
@@ -265,9 +269,22 @@
     var cfg = state.cfg, data = state.data;
     cfg.bar3d = cfg.barStyle === 'iso3d';
     cfg.pie3d = cfg.pieStyle === 'iso3d';
+    /* ── palette source ───────────────────────────────────────────────────────
+       'ordered'  categorical — the brand's swatches in their authored order (the
+                  default; follows the palette the way the brand shows it).
+       'suse'     categorical — the brand's spectrum, spaced apart for contrast.
+       'seed'     categorical + ramps extrapolated from one base colour (the hook
+                  builds cfg.seedPalette off host.color).
+       the rest   sequential / diverging ramps. */
+    var pal = String(cfg.palette || 'ordered');
+    var SEED = (pal === 'seed' && cfg.seedPalette) ? cfg.seedPalette : null;
+    var CAT_ORDERED = (cfg.brandOrdered && cfg.brandOrdered.length) ? cfg.brandOrdered : null;
+    function isRampPalette(p) { return ['pine','waterhole','warm','cool','diverging','mono'].indexOf(p) >= 0; }
     /* Brand-native ramps when the hook derived them (variations + combinations of
-       the brand's own hues); the shipped hand-tuned set is the fallback. */
-    var RAMPS = (cfg.brandRamps && cfg.brandRamps.suse) ? cfg.brandRamps : SHIPPED_RAMPS;
+       the brand's own hues); a seed palette brings its own; the shipped hand-tuned
+       set is the last fallback. */
+    var RAMPS = (SEED && SEED.ramps && SEED.ramps.suse) ? SEED.ramps
+              : (cfg.brandRamps && cfg.brandRamps.suse) ? cfg.brandRamps : SHIPPED_RAMPS;
     /* Reference lines & bands across the value axis (targets/averages/thresholds). */
     var references = parseReferences(cfg.reference);
     /* Click-to-recolour overrides (label → hex) + pattern differentiation. */
@@ -305,24 +322,47 @@
        spectrum when the hook resolved one (cfg.brandPalette — see hooks.js);
        the shipped set is the fallback. */
     var slots = cfg.paletteSlots || [];   // manual Colour 1..6 (blank = brand palette)
+    /* Ramp interpolator honouring the Colour blend choice: Smooth = perceptual
+       CIELAB (passes through each anchor), Vivid = CIELCh (travels round the hue
+       circle so midtones keep their chroma), sRGB = the classic B-spline blend.
+       Any failure falls back to the always-safe sRGB basis. */
+    function makeRamp(anchors) {
+      var a = (anchors && anchors.length) ? anchors : (RAMPS.suse || SHIPPED_RAMPS.suse);
+      var blend = cfg.paletteBlend || 'smooth';
+      try {
+        if (blend === 'vivid')  return d3.piecewise(d3.interpolateHcl, a);
+        if (blend === 'smooth') return d3.piecewise(d3.interpolateLab, a);
+      } catch (e) { /* fall through to sRGB */ }
+      return d3.interpolateRgbBasis(a);
+    }
+    /* Anchors for a sequential/diverging read of the current palette. The
+       categorical palettes (ordered / suse / seed) borrow a brand sequential ramp. */
+    function rampAnchorsFor(p) {
+      if (SEED) return SEED.ramps[p] || SEED.ramps.suse || RAMPS.suse;
+      if (!isRampPalette(p)) return RAMPS.pine || RAMPS.suse;
+      return RAMPS[p] || RAMPS.suse;
+    }
     function catColorFn(n) {
+      var catList = null;
+      if (pal === 'ordered')   catList = CAT_ORDERED || CATEGORICAL;
+      else if (pal === 'seed') catList = (SEED && SEED.categorical && SEED.categorical.length) ? SEED.categorical
+                                       : ((cfg.brandPalette && cfg.brandPalette.length) ? cfg.brandPalette : CATEGORICAL);
+      else if (pal === 'suse') catList = (cfg.brandPalette && cfg.brandPalette.length) ? cfg.brandPalette : CATEGORICAL;
       var baseFn;
-      if (cfg.palette === 'suse') {
-        var cat = (cfg.brandPalette && cfg.brandPalette.length) ? cfg.brandPalette : CATEGORICAL;
-        baseFn = function (i) { return legible(cat[i % cat.length], guardBg); };
+      if (catList) {
+        baseFn = function (i) { return legible(catList[i % catList.length], guardBg); };
       } else {
-        var ramp = d3.interpolateRgbBasis(RAMPS[cfg.palette] || RAMPS.suse);
+        var ramp = makeRamp(rampAnchorsFor(pal));
         baseFn = function (i) { return legible(ramp(n <= 1 ? 0.72 : (0.12 + 0.76 * (i/(n-1)))), guardBg); };
       }
       return function (i) { return (slots[i] && isHex(slots[i])) ? legible(slots[i], guardBg) : baseFn(i); };
     }
     function seqColorFn(min, max) {
-      var anchors = (cfg.palette && cfg.palette !== 'suse') ? RAMPS[cfg.palette] : RAMPS.pine;
-      var ramp = d3.interpolateRgbBasis(anchors || RAMPS.pine);
+      var ramp = makeRamp(rampAnchorsFor(pal));
       /* A diverging ramp is only meaningful centred on zero — when the data spans
          zero, put the neutral middle at 0 with a symmetric domain so blue/orange
          straddle it. Otherwise fall back to the plain min→max sequential mapping. */
-      if (cfg.palette === 'diverging' && min < 0 && max > 0) {
+      if (pal === 'diverging' && min < 0 && max > 0) {
         var m = Math.max(-min, max);
         return function (v) { return ramp(clamp(0.5 + v / (2 * m), 0, 1)); };
       }
@@ -350,7 +390,7 @@
       g.append('path').attr('d', dStr).attr('fill', tex).attr('pointer-events', 'none');
     }
     /* Tag a mark so a click opens the brand-swatch recolour picker for its value. */
-    var recolorEnabled = ['bar', 'bar-horizontal', 'pie', 'donut'].indexOf(cfg.chartType) >= 0;
+    var recolorEnabled = RECOLOR_CHARTS.indexOf(cfg.chartType) >= 0;
     function tagMark(sel, label) { if (recolorEnabled && sel && label != null) sel.attr('data-recolor', String(label)); return sel; }
     /* Apply the chosen drop shadow / glow to a mark (glow tints to the mark's own colour). */
     var shadowDefs = null, shadowCache = {};
@@ -1598,8 +1638,8 @@
     /* faint track rings */
     if (cfg.showGrid) rScale.ticks(4).forEach(function (t){ if (t<=0) return; g.append('circle').attr('r', rScale(t)).attr('fill','none').attr('stroke', api.ink).attr('opacity', 0.1); });
     items.forEach(function (d, i) {
-      var col = legible(ccf(d.oi), api.guardBg);
-      var p = g.append('path').attr('d', arc(d)).attr('fill', col);
+      var col = api.override(d.label, legible(ccf(d.oi), api.guardBg));
+      var p = api.tagMark(g.append('path').attr('d', arc(d)).attr('fill', col), d.label);
       if (cfg.strokeWidth > 0) p.attr('stroke', cfg.strokeColor).attr('stroke-width', cfg.strokeWidth).attr('stroke-linejoin','round');
       var mid = xb(d.label) + xb.bandwidth()/2 - Math.PI/2;
       var rr = rScale(d.value) + 14;
@@ -1660,22 +1700,25 @@
     var maxV = d3.max(items, function (d){ return d.value; }) || 1;
     var seq = api.seqColorFn(0, maxV);
     var ccf = api.catColorFn(cats.length);
-    var useSeq = cfg.palette !== 'suse';
+    /* Only the true ramp palettes colour a cell by its value; the categorical
+       palettes (ordered / suse / seed) colour each cell by its own hue. */
+    var useSeq = ['pine','waterhole','warm','cool','diverging','mono'].indexOf(cfg.palette) >= 0;
     var g = api.root.append('g');
     var stroke = cfg.strokeWidth > 0 ? { s: cfg.strokeColor, w: cfg.strokeWidth } : { s: (cfg.transparent ? '#ffffff' : cfg.background), w: 2 };
 
     if (kind === 'treemap') {
       d3.treemap().size([b.w, b.h]).paddingInner(clamp(cfg.sliceGap || 3, 1, 12)).round(true)(rootNode);
       rootNode.leaves().forEach(function (leaf) {
-        var col = legible(useSeq ? seq(leaf.value) : ccf(leaf.data.oi), api.guardBg);
-        rect(g, b.x + leaf.x0, b.y + leaf.y0, leaf.x1 - leaf.x0, leaf.y1 - leaf.y0, col, clamp(cfg.cornerRadius,0,20), stroke);
+        var col = api.override(leaf.data.label, legible(useSeq ? seq(leaf.value) : ccf(leaf.data.oi), api.guardBg));
+        api.tagMark(rect(g, b.x + leaf.x0, b.y + leaf.y0, leaf.x1 - leaf.x0, leaf.y1 - leaf.y0, col, clamp(cfg.cornerRadius,0,20), stroke), leaf.data.label);
         labelCell(api, b.x + leaf.x0 + 8, b.y + leaf.y0 + 8, leaf.x1 - leaf.x0 - 12, leaf.y1 - leaf.y0 - 8, leaf.data.label, leaf.value, autoText(col));
       });
     } else {
       d3.pack().size([b.w, b.h]).padding(clamp(cfg.sliceGap || 3, 1, 14))(rootNode);
       rootNode.leaves().forEach(function (leaf) {
-        var col = legible(useSeq ? seq(leaf.value) : ccf(leaf.data.oi), api.guardBg);
+        var col = api.override(leaf.data.label, legible(useSeq ? seq(leaf.value) : ccf(leaf.data.oi), api.guardBg));
         var c = g.append('circle').attr('cx', b.x + leaf.x).attr('cy', b.y + leaf.y).attr('r', leaf.r).attr('fill', col);
+        api.tagMark(c, leaf.data.label);
         if (stroke) c.attr('stroke', stroke.s).attr('stroke-width', stroke.w);
         if (leaf.r > 22) {
           g.append('text').attr('x', b.x + leaf.x).attr('y', b.y + leaf.y + 2).attr('text-anchor', 'middle')
@@ -1787,9 +1830,9 @@
     var g = api.root.append('g'), r = clamp(inner.bandwidth() * 0.36, 4, 20);
     cats.forEach(function (c, ci) { series.forEach(function (s, si) {
       var v = +s.values[ci]; if (!isFinite(v)) return; var pv = val(v); if (!isFinite(pv)) return;
-      var x = band(c) + inner(s.name) + inner.bandwidth() / 2, col = legible(scf(si), api.guardBg);
-      g.append('line').attr('x1', x).attr('y1', base).attr('x2', x).attr('y2', pv).attr('stroke', col).attr('stroke-width', clamp(cfg.lineWidth, 2, 8));
-      g.append('circle').attr('cx', x).attr('cy', pv).attr('r', r).attr('fill', col);
+      var x = band(c) + inner(s.name) + inner.bandwidth() / 2, col = api.override(c, legible(scf(si), api.guardBg));
+      api.tagMark(g.append('line').attr('x1', x).attr('y1', base).attr('x2', x).attr('y2', pv).attr('stroke', col).attr('stroke-width', clamp(cfg.lineWidth, 2, 8)), c);
+      api.tagMark(g.append('circle').attr('cx', x).attr('cy', pv).attr('r', r).attr('fill', col), c);
       if (cfg.showValues) valueLabel(api, x, pv - r - 5 - cfg.valueOffset, api.fmt(v), 'middle', api.ink, 0.8);
     }); });
     drawAxisTitles(api, plot, false);
@@ -1896,7 +1939,7 @@
     var up = legible(api.catColorFn(1)(0), api.guardBg), down = legible('#BD3314', api.guardBg);
     var g = api.root.append('g'), rx = clamp(cfg.cornerRadius, 0, 10);
     steps.forEach(function (s, i) { var c = cats[i], y0 = y(Math.max(s.start, s.end)), y1 = y(Math.min(s.start, s.end));
-      rect(g, band(c), y0, band.bandwidth(), Math.max(1, y1 - y0), s.v >= 0 ? up : down, rx, null);
+      api.tagMark(rect(g, band(c), y0, band.bandwidth(), Math.max(1, y1 - y0), api.override(c, s.v >= 0 ? up : down), rx, null), c);
       if (i < steps.length - 1) g.append('line').attr('x1', band(c) + band.bandwidth()).attr('y1', y(s.end)).attr('x2', band(cats[i + 1])).attr('y2', y(s.end)).attr('stroke', api.ink).attr('opacity', 0.2);
       if (cfg.showValues) valueLabel(api, band(c) + band.bandwidth() / 2, y0 - 6 - cfg.valueOffset, (s.v >= 0 ? '+' : '') + api.fmt(s.v), 'middle', api.ink, 0.75);
     });
@@ -1952,7 +1995,7 @@
     if (cfg.showGrid) rScale.ticks(4).forEach(function (t) { if (t <= 0) return; g.append('circle').attr('r', rScale(t)).attr('fill', 'none').attr('stroke', api.ink).attr('opacity', 0.1); });
     items.forEach(function (d, i) {
       var arc = d3.arc().innerRadius(0).outerRadius(rScale(d.value)).startAngle(i * ang).endAngle((i + 1) * ang - 0.02).cornerRadius(clamp(cfg.cornerRadius, 0, 20));
-      g.append('path').attr('d', arc()).attr('fill', legible(ccf(d.oi), api.guardBg));
+      api.tagMark(g.append('path').attr('d', arc()).attr('fill', api.override(d.label, legible(ccf(d.oi), api.guardBg))), d.label);
       var mid = (i + 0.5) * ang, p = polarXY(mid, rScale(d.value) + 14);
       if (cfg.showValues) g.append('text').attr('x', p[0]).attr('y', p[1] + 4).attr('text-anchor', p[0] > 1 ? 'start' : p[0] < -1 ? 'end' : 'middle').attr('font-size', clamp(cfg.labelSize, 11, 20)).attr('font-weight', 600).attr('fill', api.ink).attr('opacity', 0.85).text(trunc(d.label, 10));
     });
@@ -1967,8 +2010,8 @@
     var b = api.box, maxV = d3.max(items, function (d) { return d.value; }) || 1, n = items.length, h = b.h / n, cx = b.x + b.w / 2, maxW = b.w * 0.9;
     var ccf = api.catColorFn(cats.length), g = api.root.append('g'), wOf = function (v) { return (v / maxV) * maxW; };
     items.forEach(function (d, i) {
-      var y0 = b.y + i * h, y1 = y0 + h * 0.86, wTop = wOf(d.value), wBot = wOf(i < n - 1 ? items[i + 1].value : d.value * 0.55), col = legible(ccf(d.oi), api.guardBg);
-      g.append('polygon').attr('points', [[cx - wTop / 2, y0], [cx + wTop / 2, y0], [cx + wBot / 2, y1], [cx - wBot / 2, y1]].map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ')).attr('fill', col);
+      var y0 = b.y + i * h, y1 = y0 + h * 0.86, wTop = wOf(d.value), wBot = wOf(i < n - 1 ? items[i + 1].value : d.value * 0.55), col = api.override(d.label, legible(ccf(d.oi), api.guardBg));
+      api.tagMark(g.append('polygon').attr('points', [[cx - wTop / 2, y0], [cx + wTop / 2, y0], [cx + wBot / 2, y1], [cx - wBot / 2, y1]].map(function (p) { return p[0].toFixed(1) + ',' + p[1].toFixed(1); }).join(' ')).attr('fill', col), d.label);
       g.append('text').attr('x', cx).attr('y', (y0 + y1) / 2 + 5).attr('text-anchor', 'middle').attr('font-size', clamp(cfg.labelSize, 12, 24)).attr('font-weight', 700).attr('fill', autoText(col)).text(trunc(d.label, 16) + (cfg.showValues ? '  ' + api.fmt(d.value) : ''));
     });
   }
@@ -1999,7 +2042,9 @@
     var seq = []; items.forEach(function (d, idx) { for (var k = 0; k < counts[idx]; k++) seq.push(d.oi); });
     for (var idx = 0; idx < N; idx++) { var oi = seq[idx];
       var rr = rows - 1 - Math.floor(idx / cols), cc = idx % cols;
-      var el = rect(g, ox + cc * cell, oy + rr * cell, sz, sz, oi == null ? api.ink : legible(ccf(oi), api.guardBg), clamp(cfg.cornerRadius * 0.3, 0, cell * 0.3), null);
+      var lbl = oi == null ? null : cats[oi];
+      var fill = oi == null ? api.ink : api.override(lbl, legible(ccf(oi), api.guardBg));
+      var el = api.tagMark(rect(g, ox + cc * cell, oy + rr * cell, sz, sz, fill, clamp(cfg.cornerRadius * 0.3, 0, cell * 0.3), null), lbl);
       if (oi == null) el.attr('opacity', 0.08);
     }
   }
@@ -2122,7 +2167,7 @@
      click listener is wired ONCE per svg (capture phase, so a mark click doesn't
      also trigger the shell's click-to-focus); its state is refreshed each paint. */
   function setupRecolor(svgEl, cfg, overrides) {
-    var enabled = ['bar', 'bar-horizontal', 'pie', 'donut'].indexOf(cfg.chartType) >= 0;
+    var enabled = RECOLOR_CHARTS.indexOf(cfg.chartType) >= 0;
     var annotEnabled = ['bar', 'bar-horizontal', 'line', 'area'].indexOf(cfg.chartType) >= 0;
     var swatches = (cfg.brandSwatches || []).filter(function (s) { return s && s.value && !/^#[0-9a-f]{6}00$/i.test(s.value); });
     svgEl.__d3Recolor = { enabled: enabled && swatches.length > 0, swatches: swatches, overrides: overrides,

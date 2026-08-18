@@ -377,7 +377,8 @@ function buildConfig(inp) {
     numberFormat:   String(inp.numberFormat || 'auto'),
     xTitle:         String(inp.xTitle || ''),
     yTitle:         String(inp.yTitle || ''),
-    palette:        String(inp.palette || 'suse'),
+    palette:        String(inp.palette || 'ordered'),
+    paletteBlend:   String(inp.paletteBlend || 'smooth'),  // smooth / vivid / srgb ramp interpolation
     colorBy:        String(inp.colorBy || 'series'),
     shadow:         String(inp.shadow || 'none'),          // none / soft / medium / strong / glow
     differentiate:  String(inp.differentiate || 'auto'),   // colour / pattern / both
@@ -564,12 +565,59 @@ async function resolveBrandColors() {
 
     return {
       spectrum: spectrum.length ? spectrum : null,
+      // The brand's swatches in their AUTHORED order (primary → secondary → brand
+      // hues → variations → neutrals) — what the 'ordered' palette (the default)
+      // and the recolour picker both follow, so a chart matches the palette the way
+      // the brand presents it rather than a re-spaced spectrum.
+      ordered: swatches.length ? swatches.map(function (s) { return s.value; }) : null,
       ramps, swatches,
       monochrome: spectrum.length < 4,
       primary: primaryHex, secondary: secondaryHex,
+      surface: surfaceHex, text: textHex,
     };
   } catch (e) {
     return null; // tokens/host unavailable (older shell) — shipped palette
+  }
+}
+
+// Extrapolate a WHOLE palette from ONE base colour (the 'seed' palette option): a
+// spread of distinct categorical hues anchored on the seed, plus light→dark
+// sequential ramps and a diverging ramp — the same shapes resolveBrandColors
+// builds for the brand, keyed off the user's chosen hue. All host.color calls are
+// synchronous; returns null on an older shell so the template keeps the brand
+// palette. Surface/text anchors come from the brand (so the ramps sit on the
+// brand's paper/ink), falling back to white / near-black.
+function seedPalette(seedHex) {
+  try {
+    const c = typeof host !== 'undefined' && host && host.color;
+    const seed = normHex(seedHex);
+    if (!c || !seed) return null;
+    const surface = (BRAND && BRAND.surface) || '#ffffff';
+    const text    = (BRAND && BRAND.text) || '#111111';
+    const mix = (a, b, t) => (c.mix ? (normHex(c.mix(a, b, t)) || a) : a);
+    // categorical: the seed, then distinct hues anchored on it (perceptually spread)
+    const cat = [], seen = new Set();
+    const push = (h) => { const x = normHex(h); if (x && !seen.has(x)) { seen.add(x); cat.push(x); } };
+    push(seed);
+    if (c.distinct) { for (const g of c.distinct(12, { anchorHex: seed })) { if (cat.length >= 12) break; push(g); } }
+    else if (c.schemes) { (c.schemes(seed, 'tetrad-4') || []).forEach((a) => push(a && a.hex)); }
+    // a second, contrasting hue for the alternate + diverging ramps
+    let second = cat[1] || seed;
+    if (c.schemes) { const comp = c.schemes(seed, 'complement'); if (comp && comp[0] && comp[0].hex) second = normHex(comp[0].hex) || second; }
+    const seq = (hue) => (c.ramp ? c.ramp([mix(hue, surface, 0.88), mix(hue, surface, 0.42), hue, mix(hue, text, 0.42), mix(hue, text, 0.72)], 5, { correctLightness: true }) : null);
+    const ramps = {
+      suse:      seq(seed),
+      pine:      seq(seed),
+      waterhole: seq(second),
+      warm:      seq(mix(seed, '#f47a34', 0.5)),
+      cool:      seq(mix(seed, '#2f6bff', 0.5)),
+      mono:      seq(seed),
+      diverging: c.ramp ? c.ramp([second, mix(second, surface, 0.5), mix(surface, text, 0.05), mix(seed, surface, 0.5), seed], 5, { correctLightness: false }) : null,
+    };
+    for (const k of Object.keys(ramps)) { const r = (ramps[k] || []).map(normHex).filter(Boolean); ramps[k] = r.length >= 3 ? r : null; }
+    return { categorical: cat.length ? cat : [seed], ramps: ramps.suse ? ramps : null };
+  } catch (e) {
+    return null;
   }
 }
 
@@ -619,10 +667,17 @@ const ANIMATABLE = ['bar', 'bar-horizontal', 'line', 'area', 'pie', 'donut', 'sc
 function compute(model) {
   const inp = Object.fromEntries(model.map((i) => [i.id, i.value]));
   const cfg = buildConfig(inp);
-  cfg.brandPalette  = BRAND && BRAND.spectrum;     // categorical (existing name)
+  cfg.brandPalette  = BRAND && BRAND.spectrum;     // categorical spectrum (existing name)
+  cfg.brandOrdered  = (BRAND && BRAND.ordered) || null;   // brand swatches in authored order → the 'ordered' palette (default)
   cfg.brandRamps    = BRAND && BRAND.ramps;        // sequential/diverging/mono ramps
   cfg.brandSwatches = (BRAND && BRAND.swatches) || null;  // click-to-recolour picker
   cfg.brandMono     = !!(BRAND && BRAND.monochrome);      // few hues → auto patterns
+  // 'seed' palette: extrapolate a whole palette from the chosen base colour. A
+  // colour input's token default arrives already resolved to hex; blank/unresolved
+  // falls back to the brand's primary so the option still does something on any brand.
+  if (cfg.palette === 'seed') {
+    cfg.seedPalette = seedPalette(isHex(inp.paletteSeed) ? inp.paletteSeed.trim() : ((BRAND && BRAND.primary) || null));
+  }
   const parseOpts = {
     delimiter: String(inp.delimiter || 'auto'),
     hasHeader: inp.hasHeader !== false && inp.hasHeader !== 'false',
