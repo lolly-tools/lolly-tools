@@ -263,6 +263,17 @@ function boxCss(b, grad) {
   var w = Math.max(1, Math.round(num(b.w, 1)));
   var h = Math.max(1, Math.round(num(b.h, 1)));
   var rot = num(b.rot, 0);
+  // Flip is a MIRROR, folded into the SAME transform as the rotation: a negative scale about
+  // the box centre (transform-origin:50% 50% in styles.css). Composed AFTER the rotate as
+  // `rotate() scale()` so the scale applies in the box's own frame (the artwork turns over in
+  // place, and a rotated box mirrors about its own axes). Because the whole transform lands in
+  // the box's inline style, the export walkers read it too — a 2-D affine, so the negative
+  // scale survives as a mirror (engine isAxisAlignedMat) — so PNG/SVG/PDF flip, not just the
+  // live canvas.
+  var fh = boolVal(b.flipH, false);
+  var fv = boolVal(b.flipV, false);
+  var tf = (rot ? 'rotate(' + (Math.round(rot * 10) / 10) + 'deg)' : '')
+    + ((fh || fv) ? (rot ? ' ' : '') + 'scale(' + (fh ? -1 : 1) + ',' + (fv ? -1 : 1) + ')' : '');
   var op = clamp(num(b.opacity, 100), 0, 100) / 100;
   // A path box's `bg` is the PATH's fill (see pathHtmlFor), so the div behind it
   // stays transparent — otherwise every pen shape would sit on an opaque rectangle
@@ -274,7 +285,7 @@ function boxCss(b, grad) {
   var blend = Object.prototype.hasOwnProperty.call(BLENDS, String(b.blend)) ? String(b.blend) : '';
   var css =
     'left:' + x + 'px;top:' + y + 'px;width:' + w + 'px;height:' + h + 'px;' +
-    (rot ? 'transform:rotate(' + (Math.round(rot * 10) / 10) + 'deg);' : '') +
+    (tf ? 'transform:' + tf + ';' : '') +
     (op !== 1 ? 'opacity:' + op + ';' : '') +
     (blend ? 'mix-blend-mode:' + blend + ';' : '') +
     'background:' + fill + ';' +
@@ -1775,6 +1786,10 @@ function pasteboardFor(boxes, ext) {
 function deckInexpressible(b, byId) {
   if (!b) return true;
   if (num(b.rot, 0) !== 0) return true;
+  // A flip is a negative scale in boxCss's transform; the flat deck element is axis-aligned
+  // and carries none, so a flipped box is skipped native and rasterised (mirror intact),
+  // exactly like a rotated one — never emitted as an UNFLIPPED rect/text/picture.
+  if (boolVal(b.flipH, false) || boolVal(b.flipV, false)) return true;
   if (clamp(num(b.opacity, 100), 0, 100) !== 100) return true; // boxCss emits opacity:<1 — the flat deck element carries no alpha (rasterise follow-up)
   if (b.grad != null && String(b.grad).trim() !== '') return true;
   if (num(b.blur, 0) > 0 || num(b.bgBlur, 0) > 0) return true;

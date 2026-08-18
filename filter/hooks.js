@@ -8758,12 +8758,43 @@ function unmountOvClockAnchor() {
   _ovClockEl = null;
 }
 var _glitchClock = null;
+var _frameCv = null;      // reused working canvas for the direct-canvas motion path
+var _frameCvNode = null;  // node __lollyFrameCanvas was attached to (cleanup fallback)
 function beforeExport(ctx) {
   var motion = OV_MOTION_FORMATS[ctx.format];
   var wantOverlay = _lastOv && overlayActive(_lastOv) && motion;
   // Shimmer only a STILL glitch (onFrame clears the stash, so a live source has none).
   var wantShimmer = motion && !!_animState;
   if (!wantOverlay && !wantShimmer) return;
+
+  // ── Fast path: shimmering STILL, NO overlay ────────────────────────────────
+  // The output is one full-frame <image preserveAspectRatio="none"> filling the
+  // canvas (the overlay slot is empty), so hand the shell the FINISHED frame as a
+  // <canvas> directly (node.__lollyFrameCanvas) instead of re-baking it to a ~1.7MB
+  // PNG and letting dom-to-image decode that nested-base64 SVG every frame (slow, and
+  // the source of an intermittent decode hang). SAME maths the ov-clock shimmer runs
+  // below - phaseGlitch(corruptPixels(...)) - so it is byte-faithful and deterministic
+  // in t, just without the PNG encode + SVG round-trip. The shell stretches this
+  // work-dims canvas to the export size exactly as the <image preserveAspectRatio=none>
+  // did, and putImageData preserves the base's alpha (contain-fit letterbox) for the
+  // transparent formats. Sync + self-guarded on the shell side: any throw falls back.
+  if (wantShimmer && !wantOverlay) {
+    var stq = _animState;
+    _frameCvNode = ctx.node;
+    ctx.node.__lollyFrameCanvas = function (t) {
+      var pp = phaseGlitch(stq.params, t);
+      var d = corruptPixels(stq.base, stq.w, stq.h, pp, stq.grade);
+      var cv = _frameCv || (_frameCv = document.createElement('canvas'));
+      cv.width = stq.w; cv.height = stq.h;
+      cv.getContext('2d').putImageData(new ImageData(d, stq.w, stq.h), 0, 0);
+      return cv;
+    };
+    return;
+  }
+
+  // ── Overlay active (± shimmer): SVG-DOM ov-clock path (unchanged) ───────────
+  // dom-to-image renders the mutating overlay group over the base each frame, so the
+  // frame is not a single canvas and can't take the direct-canvas fast path above.
   var anchor = mountOvClockAnchor(ctx.node);
   if (!anchor) return;
   var st = _animState, ov = _lastOv;
@@ -8787,8 +8818,12 @@ function beforeExport(ctx) {
   };
   _glitchClock = anchor;
 }
-function afterExport() {
+function afterExport(ctx) {
   if (_glitchClock) { try { delete _glitchClock.__lollyFrameRender; } catch (e) { _glitchClock.__lollyFrameRender = undefined; } _glitchClock = null; }
+  var node = (ctx && ctx.node) || _frameCvNode;
+  if (node) { try { delete node.__lollyFrameCanvas; } catch (e) { node.__lollyFrameCanvas = undefined; } }
+  _frameCvNode = null;
+  if (_frameCv) { _frameCv.width = _frameCv.height = 0; _frameCv = null; }
   unmountOvClockAnchor();
 }
 

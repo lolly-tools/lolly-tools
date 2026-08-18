@@ -1658,6 +1658,22 @@
           "label": "Speaker notes",
           "default": "",
           "help": "Presentation SPEAKER NOTES (plan 112 M5): free text stamped as data-frame-notes on a frame's page and shown only in the speaker view while that slide is active - never rendered on the slide the audience sees. Set from the right-click menu on a frame; showFor:[] keeps it out of the sidebar."
+        },
+        {
+          "id": "flipH",
+          "showFor": [],
+          "type": "boolean",
+          "label": "Flip horizontal",
+          "default": false,
+          "help": "Mirror this box horizontally. Folded into the box transform as a negative scale about its centre, so it mirrors the artwork on the canvas AND in every export (PNG/SVG/PDF), and composes with rotation. Set from the right-click menu or Shift+H; showFor:[] keeps it out of the sidebar. APPENDED after the presentation deck fields - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "flipV",
+          "showFor": [],
+          "type": "boolean",
+          "label": "Flip vertical",
+          "default": false,
+          "help": "Mirror this box vertically. Folded into the box transform as a negative scale about its centre, so it mirrors the artwork on the canvas AND in every export (PNG/SVG/PDF), and composes with rotation. Set from the right-click menu or Shift+V; showFor:[] keeps it out of the sidebar. APPENDED after flipH - the compact-blocks URL wire format is append-only."
         }
       ],
       "default": []
