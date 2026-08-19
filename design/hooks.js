@@ -1330,6 +1330,33 @@ function kfAttr(v) {
   return wire.join('*');
 }
 
+// Author-supplied CSS class tokens for one box (the `cls` field, plan 112 M4).
+//
+// Returns '' or a string with a LEADING SPACE, so the template can write
+// `class="lolly-box{{cls}}"` with no separator bookkeeping — the same shape the
+// attribute helpers above use.
+//
+// Sanitising is a parse-and-re-serialise, never a pass-through: lowercase, keep only
+// [a-z0-9_-] within a token, collapse whitespace, and drop anything that could not be a
+// class name (a token starting with a digit, or empty after cleaning). Tokens are also
+// refused by PREFIX — `lolly-`, `pr-`, `seq-`, `fc-` are the shell's own namespaces
+// (the box/frame classes, the presenter's state contract, the sequence clock's off-gate,
+// the free-canvas chrome), and a document that could mint `seq-off` on itself could make
+// a box vanish from the timeline. Authors get every other name.
+var CLASS_RESERVED_PREFIX = /^(lolly|pr|seq|fc)-/;
+function classTokens(v) {
+  if (v == null) return '';
+  var raw = String(v).toLowerCase().split(/\s+/);
+  var out = [];
+  for (var i = 0; i < raw.length; i++) {
+    var tok = raw[i].replace(/[^a-z0-9_-]/g, '');
+    if (!tok || /^[0-9-]/.test(tok)) continue;            // not a usable class name
+    if (CLASS_RESERVED_PREFIX.test(tok)) continue;        // the shell's own namespaces
+    if (out.indexOf(tok) < 0) out.push(tok);
+  }
+  return out.length ? ' ' + out.join(' ') : '';
+}
+
 // A box's time attributes, or '' for a box with no timing, no depth and no keyframes.
 // Pure; every value lands in an HTML attribute via {{{ }}}, so every emitted value is
 // either a clamped NUMBER or a whitelisted enum token — never raw user text. `kf` is the
@@ -1677,6 +1704,7 @@ function frameGroupsFor(boxes, ext) {
         flatIndex: j,
         id: (cb.id != null && cb.id !== '') ? cb.id : j,
         fit: ext.boxFit[j],
+        cls: ext.boxCls[j],
         boxStyle: ext.boxStyle[j] + 'left:' + lx + 'px;top:' + ly + 'px;',
         timeAttrs: ext.timeAttrs[j],
         buildAttr: buildAttr,
@@ -1746,6 +1774,7 @@ function pasteboardFor(boxes, ext) {
       flatIndex: j,
       id: (cb.id != null && cb.id !== '') ? cb.id : j,
       fit: ext.boxFit[j],
+      cls: ext.boxCls[j],
       boxStyle: ext.boxStyle[j],   // GLOBAL left/top from boxCss — no frame-local override
       timeAttrs: ext.timeAttrs[j],
       pathHtml: ext.pathHtml[j],
@@ -1949,6 +1978,11 @@ function compute(model) {
   // pass; "" is ignored). Off by default so grow-to-fit (the editor's box-grows-to-text
   // behaviour) stays the norm; a box turns this on to instead shrink the text to a fixed box.
   var boxFit = boxes.map(function (b) { return boolVal(b && b.fitText, false) ? '1' : ''; });
+  // Per-box CSS class names (plan 112 M4, the slides.com "per-block class" affordance):
+  // the author's own hook for Custom CSS, so a rule can say `.callout { … }` instead of
+  // addressing a ULID. Emitted as EXTRA class tokens on .lolly-box, so it styles the
+  // editor, every export and presentation alike — one document, one truth.
+  var boxCls = boxes.map(function (b) { return classTokens(b && b.cls); });
   // Time model (phase 1 — inert data; nothing reads these attributes yet, the
   // phase-2 panel does). timeAttrs is index-aligned with boxStyle/boxFit/etc.
   var timeAttrs = boxes.map(function (b) { return timeAttrsFor(b || {}); });
@@ -1960,6 +1994,7 @@ function compute(model) {
   var frameArrays = {
     boxStyle: boxStyle, textStyle: textStyle, textHtml: textHtml,
     mediaHtml: mediaHtml, pathHtml: pathHtml, boxFit: boxFit, timeAttrs: timeAttrs,
+    boxCls: boxCls,
   };
   var frameGroups = frameGroupsFor(boxes, frameArrays);
   // Pasteboard only when frames exist: without a frame the single {{else}} artboard
@@ -1978,6 +2013,7 @@ function compute(model) {
     mediaHtml: mediaHtml,
     pathHtml: pathHtml,
     boxFit: boxFit,
+    boxCls: boxCls,
     timeAttrs: timeAttrs,
     seqAttrs: seqAttrs,
     bgStyle: [transparent ? 'transparent' : safeColor(inp.background, '#ffffff')],

@@ -21,7 +21,7 @@
   {{#each frameGroups}}
   <div class="lolly-frame-page" data-pdf-page data-frame-id="{{frameId}}"{{{frameDurAttr}}}{{{frameStateAttr}}}{{{frameNotesAttr}}}{{{pageTimeAttrs}}} style="{{pageStyle}}">
     {{#each children}}
-    <div class="lolly-box" data-canvas-input="boxes:{{flatIndex}}" data-box-id="{{default id flatIndex}}" data-fit="{{fit}}" style="{{boxStyle}}"{{{timeAttrs}}}{{{buildAttr}}}{{{matchAttr}}}>
+    <div class="lolly-box{{cls}}" data-canvas-input="boxes:{{flatIndex}}" data-box-id="{{default id flatIndex}}" data-fit="{{fit}}" style="{{boxStyle}}"{{{timeAttrs}}}{{{buildAttr}}}{{{matchAttr}}}>
       {{{pathHtml}}}
       {{{mediaHtml}}}
       <div class="lolly-box-text" style="{{textStyle}}">{{{textHtml}}}</div>
@@ -36,7 +36,7 @@
         already carries global left/top). renderMultiPagePdf/exportPaged walk [data-pdf-page]
         only, so these are visible while editing yet absent from the exported pages. --}}
   {{#each pasteboard}}
-  <div class="lolly-box" data-canvas-input="boxes:{{flatIndex}}" data-box-id="{{default id flatIndex}}" data-fit="{{fit}}" style="{{boxStyle}}"{{{timeAttrs}}}>
+  <div class="lolly-box{{cls}}" data-canvas-input="boxes:{{flatIndex}}" data-box-id="{{default id flatIndex}}" data-fit="{{fit}}" style="{{boxStyle}}"{{{timeAttrs}}}>
     {{{pathHtml}}}
     {{{mediaHtml}}}
     <div class="lolly-box-text" style="{{textStyle}}">{{{textHtml}}}</div>
@@ -98,7 +98,7 @@
         the boxes. --}}
   <div class="lolly-conn-wrap">{{{connectorSvg}}}</div>
   {{#each boxes}}
-  <div class="lolly-box" data-canvas-input="boxes:{{@index}}" data-box-id="{{default id @index}}" data-fit="{{lookup ../boxFit @index}}" style="{{lookup ../boxStyle @index}}"{{{lookup ../timeAttrs @index}}}>
+  <div class="lolly-box{{lookup ../boxCls @index}}" data-canvas-input="boxes:{{@index}}" data-box-id="{{default id @index}}" data-fit="{{lookup ../boxFit @index}}" style="{{lookup ../boxStyle @index}}"{{{lookup ../timeAttrs @index}}}>
     {{{lookup ../pathHtml @index}}}
     {{{lookup ../mediaHtml @index}}}
     <div class="lolly-box-text" style="{{lookup ../textStyle @index}}">{{{lookup ../textHtml @index}}}</div>
