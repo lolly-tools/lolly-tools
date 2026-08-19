@@ -379,6 +379,9 @@ function buildConfig(inp) {
     yTitle:         String(inp.yTitle || ''),
     palette:        String(inp.palette || 'ordered'),
     paletteBlend:   String(inp.paletteBlend || 'smooth'),  // smooth / vivid / srgb ramp interpolation
+    paletteSeed:    isHex(inp.paletteSeed) ? inp.paletteSeed.trim() : '',        // base colour (seed palette + vivid 'from')
+    paletteBlendTo: isHex(inp.paletteBlendTo) ? inp.paletteBlendTo.trim() : '',  // vivid 'to' — the second colour
+    hueRoute:       inp.hueRoute === 'long' ? 'long' : 'short',                  // vivid hue travel: short / long way round
     colorBy:        String(inp.colorBy || 'series'),
     shadow:         String(inp.shadow || 'none'),          // none / soft / medium / strong / glow
     differentiate:  String(inp.differentiate || 'auto'),   // colour / pattern / both

@@ -30,14 +30,27 @@
 <script>
 (function () {
   /* Idempotent per-paint IIFE (the template re-runs on every render). An epoch
-     guard drops any stale async callback from a previous paint. See street-map. */
-  window.__d3Epoch = (window.__d3Epoch || 0) + 1;
-  var _ep = window.__d3Epoch;
-  function alive() { return window.__d3Epoch === _ep; }
+     guard drops any stale async callback from a previous paint. See street-map.
+     Multi-edit mounts MANY d3 instances inline in ONE document, so everything
+     resolves against THIS instance's own container (found via the running
+     <script>) and its per-instance state (epoch, rAF handle) lives on that ROOT
+     — never on `window`, which would collide across cards and, via duplicate
+     ids + a shared epoch, blank all but one. Only the d3 library itself and its
+     load promise stay global (loaded once, legitimately shared). */
+  var _cs = document.currentScript;
+  var ROOT = (_cs && _cs.parentNode) || document;
+  ROOT.__d3Epoch = (ROOT.__d3Epoch || 0) + 1;
+  var _ep = ROOT.__d3Epoch;
+  function alive() { return ROOT.__d3Epoch === _ep; }
 
-  var stateEl = document.getElementById('d3-state');
-  var svgEl = document.getElementById('d3-svg');
+  var stateEl = ROOT.querySelector('#d3-state');
+  var svgEl = ROOT.querySelector('#d3-svg');
   if (!stateEl || !svgEl) return;
+  /* Scoped once: the plot/bg live inside THIS svg, the clock beside it — d3.select
+     and getElementById would otherwise grab the first match across all cards. */
+  var plotEl = svgEl.querySelector('#d3-plot');
+  var bgEl = svgEl.querySelector('#d3-bg');
+  var clockEl = ROOT.querySelector('#d3-clock');
 
   var state;
   try { state = JSON.parse(stateEl.textContent || '{}'); } catch (e) { return; }
@@ -124,11 +137,11 @@
   function message(text) {
     var d3 = window.d3;
     if (!d3) return;
-    var svg = d3.select('#d3-svg');
+    var svg = d3.select(svgEl);
     var W = state.cfg.width, H = state.cfg.height;
     svg.attr('viewBox', '0 0 '+W+' '+H).attr('width', W).attr('height', H);
-    d3.select('#d3-bg').attr('width', W).attr('height', H);
-    var g = d3.select('#d3-plot'); g.selectAll('*').remove();
+    d3.select(bgEl).attr('width', W).attr('height', H);
+    var g = d3.select(plotEl); g.selectAll('*').remove();
     g.append('text').attr('x', W/2).attr('y', H/2).attr('text-anchor','middle')
       .attr('font-size', 26).attr('font-weight', 500)
       .attr('fill', state.cfg.textColor).attr('opacity', 0.6).text(text || 'No data');
@@ -148,11 +161,11 @@
      scrub control can drive ANY animated tool without knowing its internals. When no
      transport is present the tool just free-runs. */
   function startAnim(baseState, d3) {
-    if (window.__d3Raf) { cancelAnimationFrame(window.__d3Raf); window.__d3Raf = 0; }
+    if (ROOT.__d3Raf) { cancelAnimationFrame(ROOT.__d3Raf); ROOT.__d3Raf = 0; }
     var data = baseState.data, cfg = baseState.cfg, frames = data.frames, labels = data.frameLabels || [];
     if (!frames || frames.length < 2) {
       if (window.__lollyAnim) window.__lollyAnim.active = false;   // hide the transport
-      ['d3-clock', 'd3-svg'].forEach(function (id) { var el = document.getElementById(id); if (el) delete el.__lollyFrameRender; });  // a static chart must not be export-driven
+      [clockEl, svgEl].forEach(function (el) { if (el) delete el.__lollyFrameRender; });  // a static chart must not be export-driven
       window.__d3BuildSmil = null; window.__d3RestoreLive = null; window.__d3SmilActive = false;   // clear a stale SMIL builder so a static SVG export stays static
       return;
     }
@@ -194,7 +207,7 @@
       if (cfg.frameLabelShow !== false && labels.length) {
         var fSz = clamp(cfg.frameLabelSize || 36, 8, 160), fPos = cfg.frameLabelPos || 'tr';
         var left = (fPos === 'tl' || fPos === 'bl'), bottom = (fPos === 'bl' || fPos === 'br');
-        d3.select('#d3-plot').append('text').attr('x', left ? 18 : cfg.width - 18).attr('y', bottom ? cfg.height - 18 : fSz + 12)
+        d3.select(plotEl).append('text').attr('x', left ? 18 : cfg.width - 18).attr('y', bottom ? cfg.height - 18 : fSz + 12)
           .attr('text-anchor', left ? 'start' : 'end').attr('font-size', fSz).attr('font-weight', cfg.frameLabelWeight || 700)
           .attr('fill', isHex(cfg.frameLabelColor) ? cfg.frameLabelColor : ink).attr('opacity', 0.92).text(labels[f.tw < 0.5 ? f.i : f.j]);
       }
@@ -204,7 +217,7 @@
        phase, so the exported motion FOLLOWS the animation instead of one held frame. The
        hook rides both the hidden #d3-clock <canvas> (found via querySelectorAll) and
        #d3-svg (the node itself), covering whichever element the export captures. */
-    var clockEls = [document.getElementById('d3-clock'), document.getElementById('d3-svg')].filter(Boolean);
+    var clockEls = [clockEl, svgEl].filter(Boolean);
     clockEls.forEach(function (el) { el.__lollyFrameRender = function (t) { draw(clamp(+t || 0, 0, 0.999999)); }; });
     var frameDriven = function () { for (var i = 0; i < clockEls.length; i++) if (clockEls[i].__lollyFrameDriven) return true; return false; };
     /* Animated-SVG (SMIL) export: a sampled flipbook. Render draw(k/N) into N sibling
@@ -216,7 +229,7 @@
     var SVGNS = 'http://www.w3.org/2000/svg', loopSec = loopMs / 1000;
     window.__d3BuildSmil = function () {
       if (!frames || frames.length < 2) return false;
-      var plot = document.getElementById('d3-plot'); if (!plot) return false;
+      var plot = plotEl; if (!plot) return false;
       window.__d3SmilActive = true;
       var N = Math.max(nF * 2, Math.min(60, Math.round(loopSec * 12)));   // ~12 fps, capped
       var groups = [], k;
@@ -240,7 +253,7 @@
       });
       return true;
     };
-    window.__d3RestoreLive = function () { window.__d3SmilActive = false; try { draw((window.__lollyAnim && window.__lollyAnim.curT) || 0); } catch (e) { /* ignore */ } };
+    window.__d3RestoreLive = function () { window.__d3SmilActive = false; try { draw((A && A.curT) || 0); } catch (e) { /* ignore */ } };
     /* Publish/refresh the transport contract, carrying playing state + position over
        a re-paint so a pause or scrub survives an input tweak. */
     var prev = window.__lollyAnim || {};
@@ -249,7 +262,7 @@
     var clock = (prev.curT || 0) * loopMs, prevTs = null, lastDraw = -1e9, lastT = -1;
     function tick(ts) {
       if (!alive()) return;                                   // a newer paint owns the canvas now
-      if (frameDriven() || window.__d3SmilActive) { window.__d3Raf = requestAnimationFrame(tick); return; }   // export owns the frame — don't clobber it
+      if (frameDriven() || window.__d3SmilActive) { ROOT.__d3Raf = requestAnimationFrame(tick); return; }   // export owns the frame — don't clobber it
       if (prevTs == null) prevTs = ts;
       var dt = ts - prevTs; prevTs = ts;
       var t;
@@ -259,9 +272,9 @@
       var playing = A.scrubT == null && A.playing !== false;
       if ((playing && ts - lastDraw >= 32) || (!playing && Math.abs(t - lastT) > 0.0005) || lastT < 0) { draw(t); lastDraw = ts; lastT = t; }
       A.curT = t; A.active = true;
-      window.__d3Raf = requestAnimationFrame(tick);
+      ROOT.__d3Raf = requestAnimationFrame(tick);
     }
-    window.__d3Raf = requestAnimationFrame(tick);
+    ROOT.__d3Raf = requestAnimationFrame(tick);
   }
 
   /* ── render ────────────────────────────────────────────────────────────────── */
@@ -295,10 +308,10 @@
     var guardBg = cfg.transparent ? '#ffffff' : (isHex(cfg.background) ? cfg.background : '#ffffff');
     var ink = isHex(cfg.textColor) ? cfg.textColor : autoInk(guardBg);
 
-    var svg = d3.select('#d3-svg');
+    var svg = d3.select(svgEl);
     svg.attr('viewBox', '0 0 '+W+' '+H).attr('width', W).attr('height', H);
-    d3.select('#d3-bg').attr('width', W).attr('height', H).attr('fill', cfg.transparent ? 'none' : (isHex(cfg.background) ? cfg.background : '#ffffff'));
-    var root = d3.select('#d3-plot'); root.selectAll('*').remove();
+    d3.select(bgEl).attr('width', W).attr('height', H).attr('fill', cfg.transparent ? 'none' : (isHex(cfg.background) ? cfg.background : '#ffffff'));
+    var root = d3.select(plotEl); root.selectAll('*').remove();
 
     var cats = (data.categories || []).slice();
     var series = (data.series || []).map(function (s) { return { name: s.name, values: (s.values||[]).slice() }; });
@@ -322,15 +335,35 @@
        spectrum when the hook resolved one (cfg.brandPalette — see hooks.js);
        the shipped set is the fallback. */
     var slots = cfg.paletteSlots || [];   // manual Colour 1..6 (blank = brand palette)
-    /* Ramp interpolator honouring the Colour blend choice: Smooth = perceptual
-       CIELAB (passes through each anchor), Vivid = CIELCh (travels round the hue
-       circle so midtones keep their chroma), sRGB = the classic B-spline blend.
-       Any failure falls back to the always-safe sRGB basis. */
+    /* Ramp interpolator honouring the Colour blend choice. Smooth = perceptual
+       CIELAB (passes through each anchor); sRGB = the classic B-spline blend. Vivid
+       is a TWO-colour CIELCh journey — from a base colour to the Second colour, the
+       short way or the long way round the hue circle (like Colour Lab's blend ramp),
+       so the midtones keep their chroma. Any failure falls back to the sRGB basis. */
+    /* A Vivid (CIELCh) interpolation between two colours. Short takes the shortest
+       hue arc; Long takes the COMPLEMENTARY (longer) arc round the wheel — and a
+       FULL 360° loop when the two hues coincide, so "Long way round" always travels
+       (d3.interpolateHclLong only skips the shortest-path wrap, so it looks identical
+       to Short whenever the hues are <180° apart — which surprised on green→dark).
+       An achromatic endpoint (near-black/grey) borrows the other's hue so there is
+       still an arc to walk; chroma/lightness interpolate linearly. */
+    function vividInterp(from, to, longWay) {
+      var A = d3.hcl(from), B = d3.hcl(to);
+      var ha = isNaN(A.h) ? B.h : A.h, hb = isNaN(B.h) ? A.h : B.h;
+      if (isNaN(ha)) { ha = 0; hb = 0; }           // both achromatic — nothing to travel
+      var d = (((hb - ha) % 360) + 540) % 360 - 180;   // shortest signed delta, (-180, 180]
+      if (longWay) d = d > 0 ? d - 360 : d + 360;      // the long arc; d===0 → a full -360 loop
+      return function (t) { return d3.hcl(ha + d * t, A.c + (B.c - A.c) * t, A.l + (B.l - A.l) * t) + ''; };
+    }
     function makeRamp(anchors) {
       var a = (anchors && anchors.length) ? anchors : (RAMPS.suse || SHIPPED_RAMPS.suse);
       var blend = cfg.paletteBlend || 'smooth';
       try {
-        if (blend === 'vivid')  return d3.piecewise(d3.interpolateHcl, a);
+        if (blend === 'vivid') {
+          var from = isHex(VIVID_FROM) ? VIVID_FROM : a[0];
+          var to   = isHex(VIVID_TO) ? VIVID_TO : a[a.length - 1];
+          return vividInterp(from, to, cfg.hueRoute === 'long');
+        }
         if (blend === 'smooth') return d3.piecewise(d3.interpolateLab, a);
       } catch (e) { /* fall through to sRGB */ }
       return d3.interpolateRgbBasis(a);
@@ -342,10 +375,26 @@
       if (!isRampPalette(p)) return RAMPS.pine || RAMPS.suse;
       return RAMPS[p] || RAMPS.suse;
     }
+    /* Vivid's two endpoints. The 'from' is the palette's own base hue — the seed in
+       From-a-base-colour mode, else the most chromatic anchor of the current ramp
+       (its true hue, not a light/dark end). The 'to' is the Second colour input,
+       falling back to the ramp's far end when blank. makeRamp reads both above. */
+    function _mostChromatic(anchors) {
+      var best = anchors[0], bc = -1;
+      for (var i = 0; i < anchors.length; i++) { var ch = d3.hcl(anchors[i]).c; if (isFinite(ch) && ch > bc) { bc = ch; best = anchors[i]; } }
+      return best;
+    }
+    var _vividAnchors = rampAnchorsFor(pal);
+    var VIVID_FROM = (SEED && SEED.categorical && SEED.categorical[0]) ? SEED.categorical[0] : _mostChromatic(_vividAnchors);
+    var VIVID_TO   = isHex(cfg.paletteBlendTo) ? cfg.paletteBlendTo : _vividAnchors[_vividAnchors.length - 1];
     function catColorFn(n) {
       var catList = null;
       if (pal === 'ordered')   catList = CAT_ORDERED || CATEGORICAL;
-      else if (pal === 'seed') catList = (SEED && SEED.categorical && SEED.categorical.length) ? SEED.categorical
+      // Seed mode is a DISTINCT categorical set by default — but choosing Vivid turns
+      // it into a hue journey (base → Second colour, short/long way), so the series
+      // sample that ramp instead. (Ramp palettes already sample it: catList stays null.)
+      else if (pal === 'seed' && cfg.paletteBlend !== 'vivid')
+                               catList = (SEED && SEED.categorical && SEED.categorical.length) ? SEED.categorical
                                        : ((cfg.brandPalette && cfg.brandPalette.length) ? cfg.brandPalette : CATEGORICAL);
       else if (pal === 'suse') catList = (cfg.brandPalette && cfg.brandPalette.length) ? cfg.brandPalette : CATEGORICAL;
       var baseFn;
@@ -353,7 +402,14 @@
         baseFn = function (i) { return legible(catList[i % catList.length], guardBg); };
       } else {
         var ramp = makeRamp(rampAnchorsFor(pal));
-        baseFn = function (i) { return legible(ramp(n <= 1 ? 0.72 : (0.12 + 0.76 * (i/(n-1)))), guardBg); };
+        // Vivid is a two-colour journey → span the FULL ramp so the first series is the
+        // base colour and the LAST is the Second colour exactly, interpolating between.
+        // A sequential ramp insets to 0.12–0.88 to skip its pale / near-black ends.
+        var vivid = cfg.paletteBlend === 'vivid';
+        baseFn = function (i) {
+          var t = n <= 1 ? (vivid ? 0 : 0.72) : (vivid ? (i / (n - 1)) : (0.12 + 0.76 * (i / (n - 1))));
+          return legible(ramp(t), guardBg);
+        };
       }
       return function (i) { return (slots[i] && isHex(slots[i])) ? legible(slots[i], guardBg) : baseFn(i); };
     }

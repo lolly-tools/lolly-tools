@@ -116,8 +116,8 @@
     "width": 1280,
     "height": 800,
     "formats": [
-      "md",
       "png",
+      "md",
       "svg",
       "emf",
       "pdf",
@@ -383,6 +383,62 @@
       ],
       "help": "How the sequential and diverging ramps blend between colours. Smooth is perceptually even; Vivid travels round the hue circle so the midtones keep their chroma; sRGB is the plain blend a CSS gradient uses.",
       "showIf": {
+        "palette": [
+          "pine",
+          "waterhole",
+          "warm",
+          "cool",
+          "diverging",
+          "mono",
+          "seed"
+        ]
+      }
+    },
+    {
+      "id": "paletteBlendTo",
+      "urlKey": "p2",
+      "label": "Second colour",
+      "section": "Colour & style",
+      "type": "color",
+      "default": "{color.semantic.secondary}",
+      "help": "Vivid travels from the palette\u2019s base colour to this one, round the hue circle. In From-a-base-colour mode the Base colour is the start and this is the end.",
+      "showIf": {
+        "paletteBlend": [
+          "vivid"
+        ],
+        "palette": [
+          "pine",
+          "waterhole",
+          "warm",
+          "cool",
+          "diverging",
+          "mono",
+          "seed"
+        ]
+      }
+    },
+    {
+      "id": "hueRoute",
+      "urlKey": "hr",
+      "label": "Hue route",
+      "section": "Colour & style",
+      "type": "select",
+      "default": "short",
+      "options": [
+        {
+          "value": "short",
+          "label": "Short way"
+        },
+        {
+          "value": "long",
+          "label": "Long way round"
+        }
+      ],
+      "help": "Which way round the colour wheel Vivid travels between the two colours \u2014 the short arc or the long one.",
+      "showIf": {
+        "paletteBlend": [
+          "vivid"
+        ],
         "palette": [
           "pine",
           "waterhole",
