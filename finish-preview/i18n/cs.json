@@ -1,6 +1,6 @@
 {
-  "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "name": "Náhled dokončení",
+  "description": "Náhledni fólii, bodový lak UV, ražbu a soft-touch úpravy na svém návrhu - pak exportuj tiskárnou požadovanou spot desku. Náhled na obrazovce je jen prezentační; deska je skutečný výstup, který tvá tiskárna potřebuje.",
   "a11yLabel": "Návrh se simulovanou tiskovou úpravou, nebo tisková deska v zobrazení desky",
   "inputs.image.label": "Návrh",
   "inputs.image.help": "Vyberte svůj návrh nebo nahrajte vlastní. Zpracovává se ve vašem zařízení, pixely nikdy neopustí prohlížeč.",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "Zobrazení desky (pro tiskárnu)",
   "inputs.plateView.section": "Deska",
   "inputs.plateView.help": "Přepne na výstup: masku jako čistou černou na bílé se štítkem přetisku. Pošlete TOHLE do tiskárny, lesklý náhled je jen prezentace.",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "Fólie, bodový lak UV a ražba - s deskou, kterou tvá tiskárna potřebuje"
 }

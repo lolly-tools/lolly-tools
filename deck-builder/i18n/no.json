@@ -1,6 +1,6 @@
 {
   "name": "Presentasjonsbygger",
-  "description": "Bygg en presentasjon med direkte redigering på lerretet - rediger tekst, farger og bilder direkte på hvert lysbilde.",
+  "description": "Bygg en lysbildepresentasjon med en levende redigering på lerretet - rediger tekst, farger og bilder direkte på hvert lysbilde.",
   "a11yLabel": "Lysbildeserie med {{slideCount}} lysbilder",
   "inputs.size.label": "Presentasjonsstørrelse",
   "inputs.size.help": "Én størrelse for hele presentasjonen - PowerPoint gir alle lysbilder samme størrelse. Overstyr den i piksler i eksportlinjen.",

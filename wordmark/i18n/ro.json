@@ -1,6 +1,6 @@
 {
   "name": "Wordmark",
-  "description": "Scrie un cuvânt, obții un wordmark vectorial pure-path în fontul brandului tău - destinatarii nu au nevoie de fontul instalat.",
+  "description": "Scrie un cuvânt, obții un logo tip vector cu trasee pure, în fontul brandului tău - destinatarii nu au nevoie de fontul instalat.",
   "a11yLabel": "Wordmark cu textul {{default text \"Wordmark\"}}",
   "inputs.text.label": "Text",
   "inputs.font.label": "Font",

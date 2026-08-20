@@ -1,6 +1,6 @@
 {
   "name": "Belge Stüdyosu",
-  "description": "Kanvasta çok sayfalı bir belge yaz — sayfalara akıp PDF olarak dışa aktarılan zengin metin, başlıklar, tablolar ve eklenmiş Lolly render'ları.",
+  "description": "Tuval üzerinde çok sayfalı bir belge yazın - zengin metin, başlıklar, tablolar ve sayfalara akan, PDF olarak dışa aktarılan eklenmiş Lolly görüntüleri.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — çok sayfalı belge",
   "inputs.pageSize.label": "Sayfa boyutu",
   "inputs.pageSize.help": "Her sayfanın boyutunu ve dışa aktarılan PDF sayfa boyutunu belirler.",

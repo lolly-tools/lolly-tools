@@ -1,6 +1,6 @@
 {
-  "name": "Markdown Slides",
-  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
+  "name": "Slide Markdown",
+  "description": "Biến Markdown hoặc đặc tả JSON thành bộ PowerPoint gốc, chỉnh sửa được - văn bản thật, gạch đầu dòng, bảng và giao diện thương hiệu - chỉ trong vài giây. Đường tắt nhanh, thiên về văn bản để tạo bộ slide; dùng canvas Design khi bạn muốn tự tay bố trí slide hoặc tạo hiệu ứng động. Biểu đồ và sơ đồ lấy từ các công cụ Lolly khác của bạn. Xuất .pptx (chỉnh sửa được), cùng PDF và PNG.",
   "a11yLabel": "Bản trình chiếu có {{_slideCount}} trang chiếu",
   "inputs.size.label": "Kích thước bộ slide",
   "inputs.size.help": "Một kích thước cho toàn bộ bộ trình chiếu - PowerPoint áp dụng cùng kích thước cho mọi trang chiếu.",

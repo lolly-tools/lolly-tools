@@ -1,6 +1,6 @@
 {
   "name": "Schermopname",
-  "description": "Maak een screenshot of neem je hele scherm, een venster of browsertab op. Sleep op het canvas om bij te snijden - de export bevat precies de pixels die je hebt vastgelegd.",
+  "description": "Maak een screenshot of opname van je hele scherm, een venster of een browsertab. Sleep op het canvas om bij te snijden - de export blijft de exacte pixels die je hebt vastgelegd.",
   "a11yLabel": "Schermopname, klaar om te bijsnijden en te exporteren",
   "inputs.shot.label": "Schermafbeelding",
   "inputs.shot.help": "Kies een afbeelding om bij te snijden, of gebruik de knop Schermafbeelding boven het canvas als je browser schermopname ondersteunt.",

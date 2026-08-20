@@ -1,6 +1,6 @@
 {
   "name": "Estudio de gráficos D3",
-  "description": "Gráficos potentes basados en datos con D3: pega una tabla y se grafica sola. Barras, líneas, áreas, dispersión, circular, radar, mapa de árbol, mapa de calor y más, con estilo de marca y en vector nítido.",
+  "description": "Gráficos potentes basados en datos con D3 — pega una tabla y se grafica sola. Barras, líneas, áreas, dispersión, circular, radar, treemap, mapa de calor, barras y circulares en 3D y nubes de palabras. Las paletas derivan de los colores de tu marca, con rellenos de patrón y clic para recolorear - fieles a la marca y nítidos en vectorial.",
   "featured.blurb": "Pega una tabla y D3 la grafica, con estilo de marca y en vector nítido",
   "a11yLabel": "gráfico {{chartType}}{{#if heading}} — {{heading}}{{/if}}",
   "inputs.chartType.label": "Tipo de gráfico",

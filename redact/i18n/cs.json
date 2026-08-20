@@ -1,4 +1,4 @@
 {
-  "name": "Redact",
-  "description": "Black out sensitive content by rebuilding the file, then verify the output before it downloads, all on your device."
+  "name": "Redakce",
+  "description": "Začerni citlivý obsah přestavěním souboru, pak si výstup ověř ještě před stažením, vše na tvém zařízení."
 }

@@ -1,7 +1,7 @@
 {
   "name": "PDF multipágina",
-  "description": "Crea un PDF multipágina: portada, bloques de contenido fluido y contraportada.",
-  "featured.blurb": "PDF multipágina — portada, contenido, contraportada",
+  "description": "Crea un PDF de varias páginas - una portada, bloques de contenido fluido y una contraportada.",
+  "featured.blurb": "PDFs de varias páginas - portada, contenido, contraportada",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — documento PDF multipágina",
   "inputs.pageSize.label": "Tamaño de página",
   "inputs.pageSize.help": "Define el tamaño de todas las páginas y el tamaño de página del PDF exportado. Cada página del documento se renderiza exactamente a este tamaño.",

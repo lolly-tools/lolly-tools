@@ -1,6 +1,6 @@
 {
   "name": "Exportar recurso",
-  "description": "Renderiza cualquier recurso del catálogo — o un enlace de herramienta Lolly — en cualquier formato y tamaño.",
+  "description": "Renderiza cualquier recurso del catálogo - o un enlace de herramienta Lolly - a cualquier formato y tamaño.",
   "a11yLabel": "Recurso exportado",
   "inputs.src.label": "Recurso",
   "inputs.src.help": "El recurso que se va a renderizar: un id de catálogo (consulta `lolly assets`) o un enlace de herramienta lolly.tools pegado. Los recursos vectoriales se mantienen vectoriales en SVG/PDF; los recursos raster se incrustan como imágenes.",

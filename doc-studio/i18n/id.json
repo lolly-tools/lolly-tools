@@ -1,6 +1,6 @@
 {
   "name": "Studio Dokumen",
-  "description": "Tulis dokumen multi-halaman di kanvas — teks kaya, judul, tabel, dan hasil render Lolly yang disisipkan, yang mengalir ke halaman-halaman dan diekspor sebagai PDF.",
+  "description": "Tulis dokumen multihalaman di kanvas - teks kaya, judul, tabel dan render Lolly yang disisipkan mengalir ke halaman-halaman dan diekspor sebagai PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — dokumen multi-halaman",
   "inputs.pageSize.label": "Ukuran halaman",
   "inputs.pageSize.help": "Mengatur ukuran setiap halaman dan ukuran halaman PDF yang diekspor.",

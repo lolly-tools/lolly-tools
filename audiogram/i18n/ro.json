@@ -1,6 +1,6 @@
 {
   "name": "Audiogramă",
-  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
+  "description": "Transformă un clip vocal sau o piesă într-un videoclip cu brandul tău care se mișcă odată cu sunetul - bare, spectru, inel, creastă sau osciloscop, gata pentru social.",
   "a11yLabel": "Card audiogramă pentru {{default title \"an audio clip\"}} cu o formă de undă animată",
   "inputs.audio.label": "Audio",
   "inputs.audio.help": "Alege o piesă din biblioteca ta sau încarcă un clip. Se decodează pe dispozitivul tău pentru a desena forma de undă - sunetul nu părăsește niciodată browserul. Lasă gol pentru o formă de undă substitut. Ca să-l auzi în export, alege \"Sunetul acestui instrument\" ca pistă audio în opțiunile de descărcare.",

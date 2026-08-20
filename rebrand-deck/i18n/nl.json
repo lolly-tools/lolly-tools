@@ -1,6 +1,6 @@
 {
   "name": "Herbrand een deck",
-  "description": "Upload een PowerPoint-deck en zet de kleuren en lettertypen om naar je merk - opnieuw opgebouwd op je apparaat, niets geüpload.",
+  "description": "Upload een PowerPoint-presentatie en pas de kleuren en fonts aan je merk aan - herbouwd op je eigen apparaat, niets wordt geüpload.",
   "a11yLabel": "Deck-rebrander voor {{fileName}}",
   "inputs.source.label": "PowerPoint-bestand",
   "inputs.source.help": "Een .pptx-bestand. Het wordt op je apparaat gelezen en nooit geüpload.",

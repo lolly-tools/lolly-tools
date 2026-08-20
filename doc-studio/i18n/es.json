@@ -1,6 +1,6 @@
 {
   "name": "Estudio de Documentos",
-  "description": "Escribe un documento de varias páginas en el lienzo: texto enriquecido, títulos, tablas y renders de Lolly insertados que fluyen entre páginas y se exportan como PDF.",
+  "description": "Escribe un documento de varias páginas en el lienzo - texto enriquecido, encabezados, tablas y renders de Lolly insertados que fluyen entre páginas y se exportan como PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — documento de varias páginas",
   "inputs.pageSize.label": "Tamaño de página",
   "inputs.pageSize.help": "Define el tamaño de todas las páginas y el tamaño de página del PDF exportado.",

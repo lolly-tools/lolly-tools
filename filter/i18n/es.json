@@ -1,5 +1,5 @@
 {
   "name": "Filtro",
-  "description": "One tool for photo effects: pick halftone, scanline, posterize or voronoi (vector) or duotone, pixel-stretch or print imperfections (raster). Brand overlays, live camera, and exports to as many formats as each effect supports.",
-  "featured.blurb": "Seven photo effects, vector or raster, in one tool"
+  "description": "Una sola herramienta para efectos fotográficos: elige medio tono, líneas de escaneo, posterizado, voronoi, tramado o arte ASCII (vectorial) o duotono, estiramiento de píxeles, imperfecciones o glitch (ráster). Superposiciones de marca, cámara en vivo y exportación a tantos formatos como admita cada efecto.",
+  "featured.blurb": "Diez efectos fotográficos, vectoriales o ráster, en una sola herramienta"
 }

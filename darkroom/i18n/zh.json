@@ -1,5 +1,5 @@
 {
-  "name": "Darkroom",
-  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
-  "featured.blurb": "Grade photos with film looks, LUTs and your brand colours"
+  "name": "暗房",
+  "description": "专业级调色暗房:胶片风格、第三方 .cube LUT、品牌种生色彩处理和质感修饰 - 再将你的风格烘焙成任意编辑器都能用的 LUT。也可将 Photoshop 或 GIMP 文件按图层打开:逐层定位、混合与显隐,为合成图调色,导出平面图像或分层 PSD。",
+  "featured.blurb": "用胶片风格、LUT 和品牌色为照片调色"
 }

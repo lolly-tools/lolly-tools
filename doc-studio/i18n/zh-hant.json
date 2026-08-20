@@ -1,6 +1,6 @@
 {
   "name": "文件工作室",
-  "description": "在畫布上撰寫多頁文件——富文本、標題、表格,以及隨頁面流動並匯出為 PDF 的 Lolly 算繪內容。",
+  "description": "在畫布上撰寫多頁文件 - 富文字、標題、表格與插入的 Lolly 渲染成果，自動分頁並匯出為 PDF。",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — 多頁文件",
   "inputs.pageSize.label": "頁面尺寸",
   "inputs.pageSize.help": "設定每頁的尺寸,以及匯出 PDF 的頁面尺寸。",

@@ -1,6 +1,6 @@
 {
   "name": "Compactar PDF",
-  "description": "Reduza um PDF recompactando suas imagens — no seu dispositivo.",
+  "description": "Reduza um PDF recomprimindo suas imagens - no seu dispositivo.",
   "a11yLabel": "Compactador de PDF para {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Um arquivo PDF. Ele é lido no seu navegador e nunca sai do seu dispositivo.",

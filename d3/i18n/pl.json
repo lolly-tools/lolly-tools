@@ -1,6 +1,6 @@
 {
   "name": "D3 Chart Studio",
-  "description": "Zaawansowane wykresy oparte na danych, zasilane przez D3 — wklej tabelę, a wykres utworzy się sam. Słupkowe, liniowe, obszarowe, punktowe, kołowe, radarowe, mapy drzewa, mapy ciepła i więcej, w barwach marki i w czystej wektorowej jakości.",
+  "description": "Zaawansowane wykresy oparte na danych z D3 - wklej tabelę, a wykres powstanie sam. Słupki, linie, obszary, punkty, koło, radar, mapa drzewa, mapa cieplna, słupki i koła 3D oraz chmury słów. Palety pochodzą z kolorów Twojej marki, z wypełnieniami wzorami i przekolorowaniem jednym kliknięciem - zgodnie z marką i czysto wektorowo.",
   "a11yLabel": "Wykres {{chartType}}{{#if heading}} — {{heading}}{{/if}}",
   "featured.blurb": "Wklej tabelę — D3 utworzy wykres, w barwach marki i w czystej wektorowej jakości",
   "inputs.chartType.label": "Typ wykresu",

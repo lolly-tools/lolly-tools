@@ -1,6 +1,6 @@
 {
   "name": "Varlık Dışa Aktarma",
-  "description": "Herhangi bir katalog varlığını — ya da bir Lolly araç bağlantısını — istediğin format ve boyutta oluştur.",
+  "description": "Herhangi bir katalog varlığını - veya bir Lolly araç bağlantısını - istediğiniz biçime ve boyuta dönüştürün.",
   "a11yLabel": "Dışa aktarılan varlık",
   "inputs.src.label": "Varlık",
   "inputs.src.help": "Oluşturulacak varlık — bir katalog id'si (bkz. `lolly assets`) veya yapıştırılmış bir lolly.tools araç bağlantısı. Vektör varlıklar SVG/PDF boyunca vektör kalır; raster varlıklar görsel olarak gömülür.",

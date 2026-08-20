@@ -1,6 +1,6 @@
 {
   "name": "Dokumentstudio",
-  "description": "Skriv et flersidig dokument på lerretet — formatert tekst, overskrifter, tabeller og innsatte Lolly-renderinger som flyter over sidene og eksporteres som PDF.",
+  "description": "Skriv et flersides dokument på lerretet - rik tekst, overskrifter, tabeller og innsatte Lolly-gjengivelser som flyter over på sider og eksporteres som PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — flersidig dokument",
   "inputs.pageSize.label": "Sidestørrelse",
   "inputs.pageSize.help": "Angir størrelsen på hver side og sidestørrelsen på den eksporterte PDF-en.",

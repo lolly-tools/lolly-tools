@@ -1,6 +1,6 @@
 {
   "name": "转换图像",
-  "description": "将HEIC、TIFF或任何照片转换为WebP、JPEG或PNG - 在你的设备上完成。",
+  "description": "将 HEIC、TIFF 或任意照片转换为 WebP、JPEG 或 PNG - 在你的设备上完成。",
   "a11yLabel": "{{fileName}} 的图像转换",
   "inputs.source.label": "图片",
   "inputs.source.help": "一个 HEIC、HEIF、JPEG、PNG、WebP、AVIF 或 TIFF 图片。它在你的浏览器中读取,绝不会离开你的设备。",

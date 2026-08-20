@@ -1,6 +1,6 @@
 {
   "name": "Studio dokumentů",
-  "description": "Piš vícestránkový dokument na plátně — formátovaný text, nadpisy, tabulky a vložené Lolly rendery, které plynou mezi stránkami a exportují se jako PDF.",
+  "description": "Napiš vícestránkový dokument na plátně - formátovaný text, nadpisy, tabulky a vložené renderování z Lolly, které plyne na stránky a exportuje se jako PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — vícestránkový dokument",
   "inputs.pageSize.label": "Velikost stránky",
   "inputs.pageSize.help": "Nastaví velikost všech stránek a velikost stránky exportovaného PDF.",

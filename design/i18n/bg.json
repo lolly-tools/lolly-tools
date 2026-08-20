@@ -1,5 +1,5 @@
 {
-  "name": "Design",
+  "name": "Дизайн",
   "featured.blurb": "Свободни оформления върху отворено платно",
   "inputs.background.label": "Фон на платното",
   "inputs.boxes.label": "Кутии",
@@ -101,5 +101,5 @@
   "inputs.boxes.fields.imgpos.options.left bottom": "Долу вляво",
   "inputs.boxes.fields.imgpos.options.center bottom": "Долу",
   "inputs.boxes.fields.imgpos.options.right bottom": "Долу вдясно",
-  "description": "An open canvas for free arrangement — text, images, shapes and live renders from your other Lolly tools, all held to your brand."
+  "description": "Отворено платно за свободно подреждане - текст, изображения, форми и изображения на живо от другите ти инструменти на Lolly, всичко в рамките на твоя бранд."
 }

@@ -1,6 +1,6 @@
 {
   "name": "Studio Dokumen",
-  "description": "Tulis dokumen berbilang muka surat pada kanvas — teks kaya, tajuk, jadual dan renderan Lolly yang disisipkan mengalir merentasi muka surat dan dieksport sebagai PDF.",
+  "description": "Tulis dokumen berbilang halaman pada kanvas - teks kaya, tajuk, jadual dan render Lolly yang disisipkan mengalir merentasi halaman dan dieksport sebagai PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — dokumen berbilang muka surat",
   "inputs.pageSize.label": "Saiz muka surat",
   "inputs.pageSize.help": "Menetapkan saiz setiap muka surat dan saiz muka surat PDF yang dieksport.",

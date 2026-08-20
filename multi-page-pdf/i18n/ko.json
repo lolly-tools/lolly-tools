@@ -1,7 +1,7 @@
 {
   "name": "멀티 페이지 PDF",
-  "description": "표지, 흐르는 콘텐츠 블록, 뒤표지로 구성된 멀티 페이지 PDF를 만들어요.",
-  "featured.blurb": "멀티 페이지 PDF — 표지, 콘텐츠, 뒤표지",
+  "description": "여러 페이지 PDF를 만드세요 - 표지, 흐르는 콘텐츠 블록, 뒤표지까지.",
+  "featured.blurb": "여러 페이지 PDF - 표지, 콘텐츠, 뒤표지",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — 멀티 페이지 PDF 문서",
   "inputs.pageSize.label": "페이지 크기",
   "inputs.pageSize.help": "모든 페이지의 크기와 내보낼 PDF의 페이지 크기를 설정해요. 문서의 각 페이지는 정확히 이 크기로 렌더링돼요.",

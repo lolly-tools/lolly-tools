@@ -1,6 +1,6 @@
 {
   "name": "Przechwytywanie ekranu",
-  "description": "Zrób zrzut lub nagraj cały ekran, okno albo kartę przeglądarki. Przeciągnij na płótnie, aby przyciąć - eksport zachowuje dokładnie te piksele, które przechwyciłeś.",
+  "description": "Zrób zrzut lub nagraj cały ekran, okno lub kartę przeglądarki. Przeciągnij na płótnie, aby przyciąć - eksport zachowuje dokładnie przechwycone piksele.",
   "a11yLabel": "Przechwycony ekran, gotowy do przycięcia i eksportu",
   "inputs.shot.label": "Zrzut ekranu",
   "inputs.shot.help": "Wybierz obraz do przycięcia lub użyj przycisku Zrzut ekranu nad płótnem, jeśli przeglądarka obsługuje przechwytywanie ekranu.",

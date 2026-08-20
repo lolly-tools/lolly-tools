@@ -1,7 +1,7 @@
 {
   "name": "PDF multipagina",
-  "description": "Crea un PDF multipagina — copertina, blocchi di contenuto a scorrimento e una quarta di copertina.",
-  "featured.blurb": "PDF multipagina — copertina, contenuto, retro",
+  "description": "Crea un PDF multipagina - una copertina, blocchi di contenuto fluidi e una pagina finale.",
+  "featured.blurb": "PDF multipagina - copertina, contenuto, retro",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — documento PDF multipagina",
   "inputs.pageSize.label": "Formato pagina",
   "inputs.pageSize.help": "Imposta la dimensione di ogni pagina e la dimensione della pagina del PDF esportato. Ogni pagina del documento viene renderizzata esattamente a questa dimensione.",

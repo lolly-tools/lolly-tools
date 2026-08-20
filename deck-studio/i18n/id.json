@@ -1,6 +1,6 @@
 {
   "name": "Markdown Slides",
-  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
+  "description": "Ubah Markdown atau spesifikasi JSON menjadi dek PowerPoint asli yang bisa disunting - teks, poin, tabel dan tema brand yang sesungguhnya - dalam hitungan detik. Jalur berbasis teks tercepat menuju dek; gunakan kanvas Design saat Anda ingin menata slide secara manual atau menganimasikannya. Grafik dan diagram berasal dari alat Lolly lainnya. Ekspor .pptx (bisa disunting), plus PDF dan PNG.",
   "a11yLabel": "Dek presentasi dengan {{_slideCount}} slide",
   "inputs.size.label": "Ukuran presentasi",
   "inputs.size.help": "Satu ukuran untuk seluruh dek - PowerPoint memberi setiap slide ukuran yang sama.",

@@ -1,6 +1,6 @@
 {
   "name": "Tvůrce webových ikon",
-  "description": "Tvůrce faviconů a ikon aplikací — vícevelikostní .ico, plus PNG a SVG.",
+  "description": "Tvůrce faviconů a ikon aplikací - vícevelikostní .ico, plus PNG a SVG.",
   "a11yLabel": "Webová ikona s popiskem {{default text \"untitled\"}}",
   "inputs.text.label": "Popisek",
   "inputs.text.help": "V panelu prohlížeče se nejlépe čte asi 4 znaky. Popisek se automaticky přizpůsobí tak, aby vyplnil ikonu.",

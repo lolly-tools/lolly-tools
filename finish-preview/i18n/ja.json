@@ -1,6 +1,6 @@
 {
-  "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "name": "仕上げプレビュー",
+  "description": "箔押し、スポットUV、エンボス、ソフトタッチ仕上げをアートワーク上でプレビュー - 印刷対応のスポットプレートを書き出します。画面上のツヤはプレゼンテーション用であり、印刷所が必要とする実際の成果物はプレートです。",
   "a11yLabel": "印刷加工をシミュレートしたアートワーク、またはプレート表示の印刷用プレート",
   "inputs.image.label": "アートワーク",
   "inputs.image.help": "アートワークを選ぶか、自分の画像をアップロードします。処理は端末内で行われ、ピクセルがブラウザーの外に出ることはありません。",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "プレート表示(印刷用)",
   "inputs.plateView.section": "プレート",
   "inputs.plateView.help": "納品物に切り替え: 白地に純黒のマスクとオーバープリントのラベル。これを印刷所に送ってください。光るプレビューはプレゼンテーション専用です。",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "箔押し、スポットUV、エンボス - 印刷所が必要とするプレート付き"
 }

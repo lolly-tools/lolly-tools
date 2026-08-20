@@ -1,6 +1,6 @@
 {
-  "name": "Embed, Imprint & Track",
-  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
+  "name": "ایمبیڈ، امپرنٹ اور ٹریک",
+  "description": "اپنے پہلے سے بنائے گئے کسی بھی میڈیا پر اپنا نام دعویٰ کریں - تصویر، PDF، ویڈیو یا آڈیو۔ اپنے مصنف، کاپی رائٹ اور لائسنس کو Content Credentials کے طور پر اسٹیمپ کریں (ایک پائیدار ریسٹر Imprint بھی)، فائل کے اندر پہلے سے موجود کسی بھی کریڈینشل کو محفوظ رکھتے ہوئے - یہ سب آپ کے آلے پر، کہیں بھی اپ لوڈ کرنے سے پہلے۔",
   "a11yLabel": "اپنی تصویر میں کریڈینشلز ایمبیڈ کریں",
   "inputs.creator.label": "آرٹسٹ / مصنف",
   "inputs.creator.help": "آپ کا نام - تصویر کے مصنف/تخلیق کار کی حیثیت سے شامل کیا گیا (EXIF Artist، XMP dc:creator، اور Content Credential)۔",

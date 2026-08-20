@@ -1,6 +1,6 @@
 {
   "name": "Comprimi PDF",
-  "description": "Riduci le dimensioni di un PDF ricomprimendo le sue immagini — direttamente sul tuo dispositivo.",
+  "description": "Riduci un PDF ricomprimendo le sue immagini - sul tuo dispositivo.",
   "a11yLabel": "Compressore PDF per {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Un file PDF. Viene letto nel tuo browser e non lascia mai il tuo dispositivo.",

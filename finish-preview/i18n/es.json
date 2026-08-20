@@ -1,6 +1,6 @@
 {
   "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "description": "Previsualiza acabados de foil, UV localizado, relieve y soft-touch en tu diseño - luego exporta la plancha lista para imprenta. El brillo en pantalla es solo presentación; la plancha es el entregable real que necesita tu imprenta.",
   "a11yLabel": "Arte con un acabado de impresión simulado o la plancha lista para imprenta en la vista de plancha",
   "inputs.image.label": "Arte",
   "inputs.image.help": "Elige tu arte o sube el tuyo. Se procesa en tu dispositivo, los píxeles nunca salen del navegador.",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "Vista de plancha (para imprenta)",
   "inputs.plateView.section": "Plancha",
   "inputs.plateView.help": "Cambia al entregable: la máscara en negro puro sobre blanco con etiqueta de sobreimpresión. Envía ESTO a tu imprenta, la vista brillante es solo presentación.",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "Foil, UV localizado y relieve - con la plancha que necesita tu imprenta"
 }

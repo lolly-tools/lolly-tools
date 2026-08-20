@@ -1,6 +1,6 @@
 {
   "name": "Kompresuj PDF",
-  "description": "Zmniejsz plik PDF, kompresując ponownie jego obrazy — na Twoim urządzeniu.",
+  "description": "Zmniejsz plik PDF poprzez ponowną kompresję jego obrazów - na Twoim urządzeniu.",
   "a11yLabel": "Kompresor PDF dla {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Plik PDF. Jest odczytywany w Twojej przeglądarce i nigdy nie opuszcza Twojego urządzenia.",

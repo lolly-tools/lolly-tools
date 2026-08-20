@@ -1,6 +1,6 @@
 {
   "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "description": "Pratinjau foil, spot UV, emboss dan sentuhan lembut pada karya Anda - lalu ekspor plat spot siap cetak. Kilau di layar hanya untuk presentasi; plat adalah hasil sesungguhnya yang dibutuhkan percetakan Anda.",
   "a11yLabel": "Karya dengan finishing cetak tersimulasi, atau pelat siap cetak dalam tampilan pelat",
   "inputs.image.label": "Karya",
   "inputs.image.help": "Pilih karya Anda atau unggah milik sendiri. Diproses di perangkat Anda, piksel tidak pernah meninggalkan browser.",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "Tampilan pelat (siap cetak)",
   "inputs.plateView.section": "Pelat",
   "inputs.plateView.help": "Beralih ke hasil akhir: masker hitam murni di atas putih dengan label overprint. Kirim INI ke percetakan, pratinjau mengkilap hanyalah presentasi.",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "Foil, spot UV dan emboss - dengan plat yang dibutuhkan percetakan Anda"
 }

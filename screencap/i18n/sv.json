@@ -1,6 +1,6 @@
 {
   "name": "Skärmupptagning",
-  "description": "Ta en skärmdump eller spela in hela skärmen, ett fönster eller en webbläsarflik. Dra på duken för att beskära - exporten behåller exakt de pixlar du fångade.",
+  "description": "Ta skärmbild eller spela in hela skärmen, ett fönster eller en webbläsarflik. Dra på canvasen för att beskära - exporten blir exakt de pixlar du fångade.",
   "a11yLabel": "Skärmupptagning, redo att beskäras och exporteras",
   "inputs.shot.label": "Skärmdump",
   "inputs.shot.help": "Välj en bild att beskära, eller använd knappen Skärmdump ovanför duken där din webbläsare stöder skärmfångst.",

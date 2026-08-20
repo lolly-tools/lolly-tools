@@ -1,6 +1,6 @@
 {
   "name": "Studio Grafik D3",
-  "description": "Grafik berbasis data yang canggih dengan D3 — tempel tabel dan grafiknya terbentuk otomatis. Batang, garis, area, sebar, pai, radar, treemap, heatmap, dan banyak lagi, sesuai brand dan bersih secara vektor.",
+  "description": "Grafik berbasis data yang tangguh dengan D3 - tempel tabel dan grafik terbentuk sendiri. Bar, garis, area, sebar, pai, radar, treemap, heatmap, bar & pai 3D dan word cloud. Palet diturunkan dari warna brand Anda, dengan isian pola dan klik-untuk-ubah-warna - sesuai brand dan bersih secara vektor.",
   "featured.blurb": "Tempel tabel — D3 membuat grafiknya, sesuai brand dan bersih secara vektor",
   "a11yLabel": "Grafik {{chartType}}{{#if heading}} — {{heading}}{{/if}}",
   "inputs.chartType.label": "Jenis grafik",

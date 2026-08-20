@@ -1,6 +1,6 @@
 {
   "name": "Dokumentstudio",
-  "description": "Skriv ett flersidigt dokument på canvasen — formaterad text, rubriker, tabeller och infogade Lolly-renderingar som flyter mellan sidorna och exporteras som PDF.",
+  "description": "Skriv ett flersidigt dokument på canvasen - rik text, rubriker, tabeller och infogade Lolly-renderingar som flödar över sidor och exporteras som PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — flersidigt dokument",
   "inputs.pageSize.label": "Sidstorlek",
   "inputs.pageSize.help": "Bestämmer storleken på alla sidor och den exporterade PDF-sidans storlek.",

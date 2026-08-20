@@ -1,5 +1,5 @@
 {
-  "name": "Design",
+  "name": "ڈیزائن",
   "featured.blurb": "کھلے کینوس پر آزاد شکل کے لے آؤٹس",
   "inputs.background.label": "کینوس کا پس منظر",
   "inputs.boxes.label": "باکسز",
@@ -101,5 +101,5 @@
   "inputs.boxes.fields.imgpos.options.left bottom": "نیچے بائیں",
   "inputs.boxes.fields.imgpos.options.center bottom": "نیچے",
   "inputs.boxes.fields.imgpos.options.right bottom": "نیچے دائیں",
-  "description": "An open canvas for free arrangement — text, images, shapes and live renders from your other Lolly tools, all held to your brand."
+  "description": "آزاد ترتیب کے لیے ایک کھلا کینوس - متن، تصاویر، اشکال اور آپ کے دیگر Lolly ٹولز کے لائیو رینڈرز، سب آپ کے برانڈ کے مطابق۔"
 }

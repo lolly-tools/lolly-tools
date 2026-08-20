@@ -1,6 +1,6 @@
 {
   "name": "Constructor prezentări",
-  "description": "Creează o prezentare cu un editor live pe canvas - editează text, culori și imagini direct pe fiecare slide.",
+  "description": "Construiește o prezentare cu un editor live pe canvas - editează text, culori și imagini direct pe fiecare diapozitiv.",
   "a11yLabel": "Prezentare cu {{slideCount}} slide-uri",
   "inputs.size.label": "Dimensiune prezentare",
   "inputs.size.help": "O singură dimensiune pentru tot deck-ul - PowerPoint dă aceeași dimensiune fiecărui slide. Suprascrie-o în pixeli în bara de export.",

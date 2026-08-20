@@ -1,4 +1,4 @@
 {
-  "name": "Run Web Code",
-  "description": "Paste HTML, CSS, JS — or a JSX/TypeScript component — and watch it run in a private, offline sandbox. Perfect for previewing code from an AI assistant."
+  "name": "Kjør nettkode",
+  "description": "Lim inn HTML, CSS, JS - eller en JSX/TypeScript-komponent - og se den kjøre i en privat, frakoblet sandkasse. Perfekt for å forhåndsvise kode fra en KI-assistent."
 }

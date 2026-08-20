@@ -1,4 +1,4 @@
 {
-  "name": "Run Web Code",
-  "description": "Paste HTML, CSS, JS — or a JSX/TypeScript component — and watch it run in a private, offline sandbox. Perfect for previewing code from an AI assistant."
+  "name": "Запустити веб-код",
+  "description": "Вставте HTML, CSS, JS - або компонент JSX/TypeScript - і подивіться, як він працює в приватній офлайн-пісочниці. Ідеально для перегляду коду від ШІ-асистента."
 }

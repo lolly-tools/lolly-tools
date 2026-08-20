@@ -1,6 +1,6 @@
 {
   "name": "Embed, Imprint & Track",
-  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
+  "description": "Revendică-ți numele pe orice media pe care ai creat-o deja - imagine, PDF, video sau audio. Marchează autorul, drepturile de autor și licența ca Content Credentials (și un Imprint raster durabil), păstrând orice credențial deja prezent în fișier - totul pe dispozitivul tău, înainte să-l încarci undeva.",
   "a11yLabel": "Încorporează acreditări în imaginea ta",
   "inputs.creator.label": "Artist / autor",
   "inputs.creator.help": "Numele tău - inclus ca autor/creator al imaginii (EXIF Artist, XMP dc:creator și Content Credential).",

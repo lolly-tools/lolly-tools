@@ -1,6 +1,6 @@
 {
   "name": "デッキをリブランド",
-  "description": "PowerPointのデッキをアップロードすると、色とフォントをブランドに合わせます - デバイス上で再構築されるため、何もアップロードされません。",
+  "description": "PowerPointデッキをアップロードして色とフォントをブランドに合わせます - デバイス上で再構築、何もアップロードされません。",
   "a11yLabel": "{{fileName}} 用デッキリブランダー",
   "inputs.source.label": "PowerPointファイル",
   "inputs.source.help": ".pptx ファイルです。お使いの端末上で読み込まれ、アップロードされることはありません。",

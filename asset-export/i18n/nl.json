@@ -1,6 +1,6 @@
 {
   "name": "Asset-export",
-  "description": "Render elk asset uit de catalogus — of een Lolly-toollink — naar elk formaat en elke grootte.",
+  "description": "Render elk catalogusbestand - of een Lolly-toollink - naar elk formaat en elke afmeting.",
   "a11yLabel": "Geëxporteerd asset",
   "inputs.src.label": "Asset",
   "inputs.src.help": "Het asset dat gerenderd wordt — een catalogus-id (zie `lolly assets`) of een geplakte lolly.tools-toollink. Vectorassets blijven vector in SVG/PDF; rasterassets worden ingesloten als afbeelding.",

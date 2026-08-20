@@ -1,6 +1,6 @@
 {
-  "name": "Embed, Imprint & Track",
-  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
+  "name": "التضمين والختم والتتبع",
+  "description": "اطلب اسمك على أي وسائط سبق أن أنشأتها - صورة، PDF، فيديو أو صوت. اختم مؤلفك وحقوق النشر والترخيص كاعتمادات محتوى (Content Credentials) (مع ختم راستر دائم أيضاً)، مع الحفاظ على أي اعتماد موجود مسبقاً داخل الملف - كل ذلك على جهازك، قبل رفعه إلى أي مكان.",
   "a11yLabel": "ضمن بيانات الاعتماد في صورتك",
   "inputs.creator.label": "الفنان / المؤلف",
   "inputs.creator.help": "اسمك - يضمن كمؤلف/منشئ الصورة (EXIF Artist، XMP dc:creator، وContent Credential).",

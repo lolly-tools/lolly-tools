@@ -1,6 +1,6 @@
 {
-  "name": "Color Picker",
-  "description": "A handy color picker for the SUSE brand palette — click any swatch to copy it.",
+  "name": "パレットラボ",
+  "description": "1色のシード色からパレットを育てます - ハーモニーアクセント、知覚的なOKLabランプ、WCAG/APCA可読性バッジ、DTCGトークンとCSV書き出し付き。",
   "inputs.seed.label": "シードカラー",
   "inputs.seed.help": "パレット全体の起点となる色です - 既定ではブランドのプライマリカラーになります。",
   "inputs.harmony.label": "ハーモニー",

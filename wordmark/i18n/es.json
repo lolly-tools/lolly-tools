@@ -1,6 +1,6 @@
 {
   "name": "Logotipo",
-  "description": "Escribe una palabra y obtén un logotipo vectorial de rutas puras en tu fuente de marca - los destinatarios nunca necesitan tener la fuente instalada.",
+  "description": "Escribe una palabra y obtén un logotipo vectorial de trazado puro en la fuente de tu marca - los destinatarios nunca necesitan tener la fuente instalada.",
   "a11yLabel": "Logotipo que dice {{default text \"Wordmark\"}}",
   "inputs.text.label": "Texto",
   "inputs.font.label": "Tipografía",

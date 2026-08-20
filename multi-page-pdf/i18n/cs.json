@@ -1,7 +1,7 @@
 {
   "name": "Vícestránkové PDF",
-  "description": "Vytvoř vícestránkové PDF — titulní stranu, plynoucí bloky obsahu a zadní stranu.",
-  "featured.blurb": "Vícestránková PDF — titulní strana, obsah, zadní strana",
+  "description": "Sestav vícestránkové PDF - obálku, plynoucí obsahové bloky a zadní stránku.",
+  "featured.blurb": "Vícestránková PDF - obálka, obsah, zadní strana",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — vícestránkový PDF dokument",
   "inputs.pageSize.label": "Velikost stránky",
   "inputs.pageSize.help": "Nastaví velikost každé stránky a exportovaného PDF. Každá stránka dokumentu se vykreslí přesně v této velikosti.",

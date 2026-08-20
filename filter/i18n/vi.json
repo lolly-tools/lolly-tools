@@ -1,5 +1,5 @@
 {
   "name": "Bộ lọc",
-  "description": "One tool for photo effects: pick halftone, scanline, posterize or voronoi (vector) or duotone, pixel-stretch or print imperfections (raster). Brand overlays, live camera, and exports to as many formats as each effect supports.",
-  "featured.blurb": "Seven photo effects, vector or raster, in one tool"
+  "description": "Một công cụ cho hiệu ứng ảnh: chọn halftone, scanline, posterize, voronoi, dither hoặc ASCII art (vector) hoặc duotone, pixel-stretch, khiếm khuyết hoặc glitch (raster). Lớp phủ thương hiệu, camera trực tiếp, và xuất ra nhiều định dạng tùy theo từng hiệu ứng hỗ trợ.",
+  "featured.blurb": "Mười hiệu ứng ảnh, vector hoặc raster, trong một công cụ"
 }

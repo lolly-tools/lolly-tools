@@ -1,6 +1,6 @@
 {
   "name": "Doc Studio",
-  "description": "Scrivi un documento multipagina sulla tela — testo formattato, titoli, tabelle e rendering Lolly inseriti, che scorrono tra le pagine ed esportano in PDF.",
+  "description": "Scrivi un documento multipagina sul canvas - testo ricco, titoli, tabelle e render Lolly inseriti che scorrono sulle pagine ed esportano come PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — documento multipagina",
   "inputs.pageSize.label": "Formato pagina",
   "inputs.pageSize.help": "Imposta il formato di ogni pagina e il formato pagina del PDF esportato.",

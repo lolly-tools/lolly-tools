@@ -1,6 +1,6 @@
 {
   "name": "PDF Sıkıştır",
-  "description": "Görsellerini yeniden sıkıştırarak bir PDF'yi küçült — cihazında.",
+  "description": "Görsellerini yeniden sıkıştırarak bir PDF'yi küçültün - cihazınızda.",
   "a11yLabel": "{{fileName}} için PDF sıkıştırıcı",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Bir PDF dosyası. Tarayıcında okunur ve cihazından asla ayrılmaz.",

@@ -1,6 +1,6 @@
 {
   "name": "Esportazione risorsa",
-  "description": "Renderizza qualsiasi risorsa del catalogo — o un link a uno strumento Lolly — in qualsiasi formato e dimensione.",
+  "description": "Rendi qualsiasi asset del catalogo - o un link a uno strumento Lolly - in qualsiasi formato e dimensione.",
   "a11yLabel": "Risorsa esportata",
   "inputs.src.label": "Risorsa",
   "inputs.src.help": "La risorsa da renderizzare: un id del catalogo (vedi `lolly assets`) oppure un link a uno strumento lolly.tools incollato. Le risorse vettoriali restano vettoriali in SVG/PDF; le risorse raster vengono incorporate come immagini.",

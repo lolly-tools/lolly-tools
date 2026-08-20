@@ -1,6 +1,6 @@
 {
   "name": "ドキュメントスタジオ",
-  "description": "キャンバス上で複数ページの文書を作成します。リッチテキスト、見出し、表、そしてページに流し込まれる挿入済みのLollyレンダーを使い、PDFとして書き出せます。",
+  "description": "キャンバス上で複数ページのドキュメントを作成 - リッチテキスト、見出し、表、挿入したLollyのレンダーがページに流れ込み、PDFとして書き出されます。",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — 複数ページの文書",
   "inputs.pageSize.label": "ページサイズ",
   "inputs.pageSize.help": "各ページのサイズと、書き出すPDFのページサイズを設定します。",

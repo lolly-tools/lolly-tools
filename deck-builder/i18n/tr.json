@@ -1,6 +1,6 @@
 {
   "name": "Sunum Oluşturucu",
-  "description": "Canlı, tuval üzerinde düzenleyiciyle bir slayt sunumu oluştur - metni, renkleri ve görselleri doğrudan her slaytta düzenle.",
+  "description": "Canlı bir tuval üzeri düzenleyiciyle bir slayt destesi oluşturun - her slaytta metni, renkleri ve görselleri doğrudan düzenleyin.",
   "a11yLabel": "{{slideCount}} slaytlık slayt destesi",
   "inputs.size.label": "Sunum boyutu",
   "inputs.size.help": "Tüm sunum için tek boyut - PowerPoint her slayta aynı boyutu verir. Dışa aktarma çubuğunda piksel cinsinden geçersiz kılabilirsin.",

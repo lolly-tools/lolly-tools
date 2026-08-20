@@ -1,7 +1,7 @@
 {
   "name": "Çok Sayfalı PDF",
-  "description": "Kapak, akan içerik blokları ve bir arka sayfadan oluşan çok sayfalı bir PDF oluştur.",
-  "featured.blurb": "Çok sayfalı PDF'ler — kapak, içerik, arka sayfa",
+  "description": "Çok sayfalı bir PDF oluşturun - bir kapak, akan içerik blokları ve bir arka sayfa.",
+  "featured.blurb": "Çok sayfalı PDF'ler - kapak, içerik, arka sayfa",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — çok sayfalı PDF belgesi",
   "inputs.pageSize.label": "Sayfa boyutu",
   "inputs.pageSize.help": "Her sayfanın boyutunu ve dışa aktarılan PDF sayfa boyutunu belirler. Belgedeki her sayfa tam olarak bu boyutta oluşturulur.",

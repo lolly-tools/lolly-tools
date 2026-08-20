@@ -1,6 +1,6 @@
 {
   "name": "音频图",
-  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
+  "description": "将语音片段或歌曲变成随声音律动的品牌视频 - 柱状、频谱、圆环、山脊或示波图,适配社交平台。",
   "a11yLabel": "为 {{default title \"an audio clip\"}} 制作的带动态波形的音频图卡",
   "inputs.audio.label": "音频",
   "inputs.audio.help": "从素材库选择一首曲目，或上传一段片段。它会在你的设备上解码以绘制波形 - 音频不会离开浏览器。留空则显示占位波形。要在导出中听到声音，请在下载选项中将音轨选择为\"此工具的音频\"。",

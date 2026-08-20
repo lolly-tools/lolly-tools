@@ -1,6 +1,6 @@
 {
   "name": "PDFを圧縮",
-  "description": "画像を再圧縮してPDFを軽量化します。処理はすべてお使いの端末上で行われます。",
+  "description": "画像を再圧縮してPDFを軽量化 - デバイス上で処理します。",
   "a11yLabel": "{{fileName}} のPDF圧縮ツール",
   "inputs.source.label": "PDF",
   "inputs.source.help": "PDFファイルです。ブラウザ内で読み込まれ、お使いの端末の外に送信されることはありません。",

@@ -1,6 +1,6 @@
 {
   "name": "Skjermopptak",
-  "description": "Ta et skjermbilde eller ta opp hele skjermen, et vindu eller en nettleserfane. Dra på lerretet for å beskjære - eksporten beholder nøyaktig de pikslene du fanget.",
+  "description": "Ta skjermbilde av eller ta opp hele skjermen, et vindu eller en nettleserfane. Dra på lerretet for å beskjære - eksporten beholder nøyaktig de pikslene du fanget.",
   "a11yLabel": "Skjermopptak, klar til å beskjæres og eksporteres",
   "inputs.shot.label": "Skjermbilde",
   "inputs.shot.help": "Velg et bilde du vil beskjære, eller bruk Skjermbilde-knappen over lerretet der nettleseren din støtter skjermopptak.",

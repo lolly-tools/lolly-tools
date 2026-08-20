@@ -1,6 +1,6 @@
 {
   "name": "Wordmark",
-  "description": "I-type ang isang salita, makakuha ng purong-path vector wordmark sa iyong brand font - hindi kailangan ng mga tatanggap na naka-install ang font.",
+  "description": "Mag-type ng salita, kumuha ng purong pure-path vector wordmark sa font ng iyong brand - hindi na kailangan ng tatanggap na naka-install ang font.",
   "a11yLabel": "Wordmark na nagsasabing {{default text \"Wordmark\"}}",
   "inputs.text.label": "Teksto",
   "inputs.font.label": "Font",

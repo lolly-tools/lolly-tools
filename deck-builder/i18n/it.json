@@ -1,6 +1,6 @@
 {
   "name": "Creatore di deck",
-  "description": "Crea un deck di slide con un editor live sul canvas - modifica testo, colori e immagini direttamente su ogni slide.",
+  "description": "Crea una presentazione con un editor live sul canvas - modifica testo, colori e immagini direttamente su ogni slide.",
   "a11yLabel": "Presentazione con {{slideCount}} diapositive",
   "inputs.size.label": "Dimensione del deck",
   "inputs.size.help": "Una dimensione per l'intero deck - PowerPoint dà a ogni slide la stessa dimensione. Sovrascrivila in pixel nella barra di esportazione.",

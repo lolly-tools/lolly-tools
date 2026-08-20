@@ -1,6 +1,6 @@
 {
   "name": "Studio de Documents",
-  "description": "Écris un document multipage sur le canevas — texte enrichi, titres, tableaux et rendus Lolly insérés qui s'enchaînent sur les pages et s'exportent en PDF.",
+  "description": "Rédigez un document multi-pages sur le canevas - texte enrichi, titres, tableaux et rendus Lolly insérés qui s'écoulent sur les pages et s'exportent en PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — document multipage",
   "inputs.pageSize.label": "Format de page",
   "inputs.pageSize.help": "Définit le format de chaque page et le format de page du PDF exporté.",

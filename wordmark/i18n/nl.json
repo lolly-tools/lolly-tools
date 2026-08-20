@@ -1,6 +1,6 @@
 {
   "name": "Wordmark",
-  "description": "Typ een woord, krijg een pure-path vector-wordmark in je merklettertype - ontvangers hoeven het lettertype nooit te installeren.",
+  "description": "Typ een woord, krijg een puur pad-vector wordmark in je merkfont - ontvangers hebben het font nooit geïnstalleerd nodig.",
   "a11yLabel": "Wordmark met tekst {{default text \"Wordmark\"}}",
   "inputs.text.label": "Tekst",
   "inputs.font.label": "Lettertype",

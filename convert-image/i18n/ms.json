@@ -1,6 +1,6 @@
 {
   "name": "Tukar Imej",
-  "description": "Tukar HEIC, TIFF atau sebarang foto kepada WebP, JPEG atau PNG - di peranti anda.",
+  "description": "Ubah HEIC, TIFF atau mana-mana foto menjadi WebP, JPEG atau PNG - pada peranti anda.",
   "a11yLabel": "Penukaran imej untuk {{fileName}}",
   "inputs.source.label": "Imej",
   "inputs.source.help": "Imej HEIC, HEIF, JPEG, PNG, WebP, AVIF atau TIFF. Ia dibaca dalam pelayar anda dan tidak sekali-kali meninggalkan peranti anda.",

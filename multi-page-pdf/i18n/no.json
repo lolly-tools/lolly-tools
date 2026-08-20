@@ -1,7 +1,7 @@
 {
   "name": "Flersidig PDF",
-  "description": "Bygg en flersidig PDF — en forside, flytende innholdsblokker og en bakside.",
-  "featured.blurb": "Flersidige PDF-er — forside, innhold, bakside",
+  "description": "Bygg en flersides PDF - en forside, flytende innholdsblokker og en bakside.",
+  "featured.blurb": "Flersides PDF-er - forside, innhold, bakside",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — flersidig PDF-dokument",
   "inputs.pageSize.label": "Sidestørrelse",
   "inputs.pageSize.help": "Angir størrelsen på hver side og på den eksporterte PDF-en. Hver side i dokumentet rendres i nøyaktig denne størrelsen.",

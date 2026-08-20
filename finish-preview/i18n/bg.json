@@ -1,6 +1,6 @@
 {
-  "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "name": "Преглед на завършека",
+  "description": "Прегледай фолио, локален UV лак, релеф и мек допир върху творбата си - после изнеси плочата за печат, готова за печатницата. Блясъкът на екрана е само за представяне; плочата е истинската доставка, от която се нуждае твоята печатница.",
   "a11yLabel": "Графика със симулирано печатно облагородяване, или готовата за печат плака в изглед на плаката",
   "inputs.image.label": "Графика",
   "inputs.image.help": "Изберете графика или качете своя. Обработва се на устройството ви, пикселите никога не напускат браузъра.",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "Изглед на плаката (за печат)",
   "inputs.plateView.section": "Плака",
   "inputs.plateView.help": "Превключва към резултата: маската като чисто черно върху бяло с етикет за надпечатване. Изпратете ТОВА на печатницата, лъскавият преглед е само презентация.",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "Фолио, локален UV лак и релеф - с плочата, от която печатницата ти се нуждае"
 }

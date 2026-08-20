@@ -1,7 +1,7 @@
 {
   "name": "PDF Multi-Halaman",
-  "description": "Buat PDF multi-halaman — sampul, blok konten yang mengalir, dan halaman belakang.",
-  "featured.blurb": "PDF multi-halaman — sampul, konten, belakang",
+  "description": "Buat PDF multihalaman - sampul, blok konten yang mengalir, dan halaman belakang.",
+  "featured.blurb": "PDF multihalaman - sampul, konten, belakang",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — dokumen PDF multi-halaman",
   "inputs.pageSize.label": "Ukuran halaman",
   "inputs.pageSize.help": "Menetapkan ukuran setiap halaman dan ukuran halaman PDF yang diekspor. Setiap halaman dalam dokumen dirender persis pada ukuran ini.",

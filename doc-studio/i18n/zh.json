@@ -1,6 +1,6 @@
 {
   "name": "文档工作室",
-  "description": "在画布上撰写多页文档——富文本、标题、表格,以及随页面排列并导出为 PDF 的 Lolly 渲染内容。",
+  "description": "在画布上撰写多页文档 - 富文本、标题、表格和插入的 Lolly 渲染内容,自动分页并导出为 PDF。",
   "a11yLabel": "{{default docTitle \"未命名\"}} — 多页文档",
   "inputs.pageSize.label": "页面大小",
   "inputs.pageSize.help": "设置每一页的大小以及导出 PDF 的页面大小。",

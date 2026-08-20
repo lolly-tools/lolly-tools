@@ -1,6 +1,6 @@
 {
   "name": "Deck Builder",
-  "description": "Crée un diaporama avec un éditeur en direct sur le canevas - modifie le texte, les couleurs et les images directement sur chaque diapositive.",
+  "description": "Construisez un diaporama avec un éditeur en direct sur le canevas - modifiez texte, couleurs et images directement sur chaque diapositive.",
   "a11yLabel": "Diaporama de {{slideCount}} diapositives",
   "inputs.size.label": "Taille du diaporama",
   "inputs.size.help": "Une seule taille pour tout le diaporama - PowerPoint donne la même taille à chaque diapositive. Remplace-la en pixels dans la barre d'export.",

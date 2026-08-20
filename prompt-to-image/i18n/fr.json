@@ -1,6 +1,6 @@
 {
   "name": "Prompt vers image",
-  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
+  "description": "Composez une longue consigne en une seule image compacte et lisible pour un modèle multimodal - une image en entrée coûte souvent moins cher que les mêmes mots en jetons de texte.",
   "a11yLabel": "Prompt vers image - colle ou dépose du texte sur le canevas, et il est mis en page pour tenir dans une seule petite image",
   "inputs.text.label": "Texte",
   "inputs.text.help": "Colle ou dépose n'importe où sur le canevas pour remplir ceci.",

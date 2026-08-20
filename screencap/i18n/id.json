@@ -1,6 +1,6 @@
 {
   "name": "Tangkap Layar",
-  "description": "Ambil tangkapan layar atau rekam seluruh layar, jendela, atau tab browser Anda. Seret pada kanvas untuk memotong - hasil ekspor tetap sama persis dengan piksel yang Anda tangkap.",
+  "description": "Tangkap layar atau rekam seluruh layar Anda, sebuah jendela, atau tab peramban. Seret di kanvas untuk memotong - hasil ekspor tetap piksel persis yang Anda tangkap.",
   "a11yLabel": "Tangkapan layar, siap dipotong dan diekspor",
   "inputs.shot.label": "Tangkapan Layar",
   "inputs.shot.help": "Pilih gambar untuk dipotong, atau gunakan tombol Tangkapan Layar di atas kanvas jika browser Anda mendukung penangkapan layar.",

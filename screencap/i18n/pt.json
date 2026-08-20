@@ -1,6 +1,6 @@
 {
   "name": "Captura de Tela",
-  "description": "Tire uma captura de tela ou grave a tela inteira, uma janela ou uma aba do navegador. Arraste na tela para recortar - a exportação mantém exatamente os pixels capturados.",
+  "description": "Capture ou grave a tela toda, uma janela ou uma aba do navegador. Arraste no canvas para cortar - a exportação mantém exatamente os pixels capturados.",
   "a11yLabel": "Captura de tela, pronta para recortar e exportar",
   "inputs.shot.label": "Captura de tela",
   "inputs.shot.help": "Escolha uma imagem para cortar, ou use o botão Captura de tela acima da tela, caso seu navegador tenha suporte a captura de tela.",

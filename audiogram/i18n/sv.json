@@ -1,6 +1,6 @@
 {
   "name": "Audiogram",
-  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
+  "description": "Gör om ett röstklipp eller en låt till en varumärkesanpassad video som faktiskt rör sig med ljudet - staplar, spektrum, ring, ridgeline eller scope, redo för sociala medier.",
   "a11yLabel": "Audiogramkort för {{default title \"an audio clip\"}} med en animerad ljudvågform",
   "inputs.audio.label": "Ljud",
   "inputs.audio.help": "Välj ett spår från ditt bibliotek eller ladda upp ett klipp. Det avkodas på din enhet för att rita vågformen - ljudet lämnar aldrig webbläsaren. Lämna tomt för en platshållar-vågform. För att höra det i exporten, välj \"Det här verktygets ljud\" som Ljudspår i nedladdningsalternativen.",

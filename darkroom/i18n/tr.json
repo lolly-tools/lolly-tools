@@ -1,5 +1,5 @@
 {
-  "name": "Darkroom",
-  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
-  "featured.blurb": "Grade photos with film looks, LUTs and your brand colours"
+  "name": "Karanlık Oda",
+  "description": "Profesyonel bir fotoğraf işleme karanlık odası: film görünümleri, üçüncü taraf .cube LUT'ları, markadan türetilmiş renk işlemleri ve bitirme dokusu - ardından herhangi bir editörün kullanabileceği bir LUT olarak görünümünüzü kaydedin. Bir Photoshop veya GIMP dosyasını da katmanlar halinde açar: her birini konumlandırın, karıştırın ve gizleyin, bileşimi işleyin, düz görseller veya katmanlı bir PSD olarak dışa aktarın.",
+  "featured.blurb": "Fotoğrafları film görünümleri, LUT'lar ve marka renklerinizle işleyin"
 }

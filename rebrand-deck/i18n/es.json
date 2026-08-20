@@ -1,6 +1,6 @@
 {
   "name": "Cambiar marca de una presentación",
-  "description": "Sube un deck de PowerPoint y ajusta sus colores y fuentes a tu marca - reconstruido en tu dispositivo, no se sube nada.",
+  "description": "Sube una presentación de PowerPoint y ajusta sus colores y fuentes a tu marca - reconstruida en tu dispositivo, sin subir nada.",
   "a11yLabel": "Cambio de marca de la presentación para {{fileName}}",
   "inputs.source.label": "Archivo PowerPoint",
   "inputs.source.help": "Un archivo .pptx. Se lee en tu dispositivo y nunca se sube.",

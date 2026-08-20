@@ -1,6 +1,6 @@
 {
   "name": "इमेज कन्वर्ट करें",
-  "description": "HEIC, TIFF या किसी भी फ़ोटो को WebP, JPEG या PNG में बदलें - आपकी डिवाइस पर।",
+  "description": "HEIC, TIFF या किसी भी फ़ोटो को WebP, JPEG या PNG में बदलें - अपनी डिवाइस पर।",
   "a11yLabel": "{{fileName}} के लिए छवि रूपांतरण",
   "inputs.source.label": "इमेज",
   "inputs.source.help": "एक HEIC, HEIF, JPEG, PNG, WebP, AVIF या TIFF इमेज। यह आपके ब्राउज़र में पढ़ी जाती है और कभी आपकी डिवाइस से बाहर नहीं जाती।",

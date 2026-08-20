@@ -1,6 +1,6 @@
 {
   "name": "Nén PDF",
-  "description": "Giảm dung lượng PDF bằng cách nén lại hình ảnh bên trong — ngay trên thiết bị của bạn.",
+  "description": "Thu nhỏ PDF bằng cách nén lại hình ảnh trong đó - ngay trên thiết bị của bạn.",
   "a11yLabel": "Công cụ nén PDF cho {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Một tệp PDF. Tệp được đọc ngay trong trình duyệt của bạn và không bao giờ rời khỏi thiết bị.",

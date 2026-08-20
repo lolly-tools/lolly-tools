@@ -1,6 +1,6 @@
 {
   "name": "Rebrand de um Deck",
-  "description": "Carregue um deck do PowerPoint e ajuste suas cores e fontes à sua marca - reconstruído no seu dispositivo, nada é enviado.",
+  "description": "Envie uma apresentação PowerPoint e ajuste suas cores e fontes à sua marca - reconstruída no seu dispositivo, nada é enviado.",
   "a11yLabel": "Rebrander de deck para {{fileName}}",
   "inputs.source.label": "Arquivo do PowerPoint",
   "inputs.source.help": "Um arquivo .pptx. É lido no seu dispositivo e nunca é enviado.",

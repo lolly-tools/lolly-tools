@@ -1,6 +1,6 @@
 {
   "name": "Criador de ícones para web",
-  "description": "Criador de favicon e ícone de app — um .ico multi-tamanho, além de PNG e SVG.",
+  "description": "Criador de favicon e ícone de app - um .ico multitamanho, além de PNG e SVG.",
   "a11yLabel": "Ícone web rotulado como {{default text \"untitled\"}}",
   "inputs.text.label": "Rótulo",
   "inputs.text.help": "Até ~4 caracteres ficam melhores em uma aba do navegador. O rótulo se ajusta automaticamente para preencher o ícone.",

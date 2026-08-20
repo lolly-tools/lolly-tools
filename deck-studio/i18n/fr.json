@@ -1,6 +1,6 @@
 {
-  "name": "Markdown Slides",
-  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
+  "name": "Diaporama Markdown",
+  "description": "Transformez du Markdown ou une spécification JSON en un diaporama PowerPoint natif et modifiable - vrai texte, puces, tableaux et thème de marque - en quelques secondes. La voie rapide axée texte vers un diaporama ; utilisez le canevas Design pour disposer les diapositives à la main ou les animer. Les graphiques et diagrammes proviennent de vos autres outils Lolly. Exporte en .pptx (modifiable), plus PDF et PNG.",
   "a11yLabel": "Deck de présentation avec {{_slideCount}} diapositives",
   "inputs.size.label": "Taille du diaporama",
   "inputs.size.help": "Une seule taille pour tout le diaporama - PowerPoint donne la même taille à chaque diapositive.",

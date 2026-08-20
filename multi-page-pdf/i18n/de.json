@@ -1,8 +1,8 @@
 {
   "name": "Mehrseitiges PDF",
-  "description": "Erstellen Sie ein mehrseitiges PDF – Deckblatt, fließende Inhaltsblöcke und eine Rückseite.",
+  "description": "Erstellt ein mehrseitiges PDF - ein Deckblatt, fließende Inhaltsblöcke und eine Rückseite.",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — mehrseitiges PDF-Dokument",
-  "featured.blurb": "Mehrseitige PDFs – Deckblatt, Inhalt, Rückseite",
+  "featured.blurb": "Mehrseitige PDFs - Deckblatt, Inhalt, Rückseite",
   "inputs.pageSize.label": "Seitengröße",
   "inputs.pageSize.help": "Legt die Größe aller Seiten sowie die Seitengröße der exportierten PDF-Datei fest. Jede Seite im Dokument wird exakt in dieser Größe gerendert.",
   "inputs.pageSize.options.a4": "A4 Hochformat · 210 × 297 mm",

@@ -1,5 +1,5 @@
 {
-  "name": "Darkroom",
-  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
-  "featured.blurb": "Grade photos with film looks, LUTs and your brand colours"
+  "name": "Temná komora",
+  "description": "Profesionální temná komora pro úpravu fotek: filmové vzhledy, LUT třetích stran ve formátu .cube, barevné úpravy vycházející ze značky a dokončovací textura - pak si svůj vzhled zapeč jako LUT, který zvládne libovolný editor. Otevře i soubor z Photoshopu nebo GIMPu jako vrstvy: každou vrstvu posuň, prolni a skryj, uprav barvy kompozice a exportuj ploché obrázky nebo vrstvený PSD.",
+  "featured.blurb": "Uprav fotky filmovými vzhledy, LUT a barvami tvé značky"
 }

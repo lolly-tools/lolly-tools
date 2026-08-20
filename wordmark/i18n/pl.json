@@ -1,6 +1,6 @@
 {
   "name": "Znak słowny",
-  "description": "Wpisz słowo, otrzymaj czysto wektorowy logotyp w czcionce twojej marki - odbiorcy nigdy nie muszą mieć zainstalowanej czcionki.",
+  "description": "Wpisz słowo, otrzymaj czysto wektorowy znak słowny w czcionce Twojej marki - odbiorcy nigdy nie potrzebują tej czcionki zainstalowanej.",
   "a11yLabel": "Znak słowny z tekstem {{default text \"Wordmark\"}}",
   "inputs.text.label": "Tekst",
   "inputs.font.label": "Czcionka",

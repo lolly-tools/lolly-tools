@@ -1,6 +1,6 @@
 {
   "name": "워드마크",
-  "description": "단어를 입력하면 브랜드 폰트로 된 순수 패스 벡터 워드마크를 만들어요 - 받는 사람은 폰트를 설치할 필요가 없어요.",
+  "description": "단어를 입력하면 브랜드 폰트로 된 순수 패스 벡터 워드마크를 얻습니다 - 받는 사람이 폰트를 따로 설치할 필요가 없습니다.",
   "a11yLabel": "{{default text \"Wordmark\"}}라고 표시된 워드마크",
   "inputs.text.label": "텍스트",
   "inputs.font.label": "글꼴",

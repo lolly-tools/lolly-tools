@@ -1,6 +1,6 @@
 {
   "name": "Prompt na obrázek",
-  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
+  "description": "Vysázej dlouhý prompt do jednoho kompaktního, čitelného obrázku pro multimodální model - vstup obrázkem bývá levnější než stejná slova jako textové tokeny.",
   "a11yLabel": "Prompt na obrázek - vlož nebo přetáhni text na plátno a rozvrhne se tak, aby se vešel do jednoho malého obrázku",
   "inputs.text.label": "Text",
   "inputs.text.help": "Vlož nebo přetáhni kamkoli na plátno pro vyplnění.",

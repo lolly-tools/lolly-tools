@@ -1,8 +1,8 @@
 {
   "name": "PDF de várias páginas",
-  "description": "Crie um PDF de várias páginas — capa, blocos de conteúdo fluido e contracapa.",
+  "description": "Monte um PDF multipágina - uma capa, blocos de conteúdo fluido e uma contracapa.",
   "a11yLabel": "{{default coverTitle \"Sem título\"}} — documento PDF de várias páginas",
-  "featured.blurb": "PDFs de várias páginas — capa, conteúdo, contracapa",
+  "featured.blurb": "PDFs multipágina - capa, conteúdo, contracapa",
   "inputs.pageSize.label": "Tamanho da página",
   "inputs.pageSize.help": "Define o tamanho de todas as páginas e o tamanho de página do PDF exportado. Cada página do documento é renderizada exatamente nesse tamanho.",
   "inputs.pageSize.options.a4": "A4 retrato · 210 × 297 mm",

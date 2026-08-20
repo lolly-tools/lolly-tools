@@ -1,6 +1,6 @@
 {
   "name": "Mampatkan PDF",
-  "description": "Kecilkan saiz PDF dengan memampatkan semula imejnya — terus di peranti anda.",
+  "description": "Kecilkan PDF dengan memampatkan semula imejnya - pada peranti anda.",
   "a11yLabel": "Pemampat PDF untuk {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Fail PDF. Fail ini dibaca dalam pelayar anda dan tidak pernah meninggalkan peranti anda.",

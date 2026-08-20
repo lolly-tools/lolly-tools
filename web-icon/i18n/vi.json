@@ -1,6 +1,6 @@
 {
   "name": "Trình tạo biểu tượng web",
-  "description": "Trình tạo favicon và biểu tượng ứng dụng — tệp .ico đa kích thước, cùng với PNG và SVG.",
+  "description": "Công cụ tạo favicon và biểu tượng ứng dụng - file .ico nhiều kích thước, cùng PNG và SVG.",
   "a11yLabel": "Biểu tượng web được gắn nhãn {{default text \"untitled\"}}",
   "inputs.text.label": "Nhãn",
   "inputs.text.help": "Khoảng 4 ký tự trở xuống sẽ hiển thị rõ nhất trên tab trình duyệt. Nhãn sẽ tự động điều chỉnh kích thước để lấp đầy biểu tượng.",

@@ -1,5 +1,5 @@
 {
   "name": "濾鏡",
-  "description": "One tool for photo effects: pick halftone, scanline, posterize or voronoi (vector) or duotone, pixel-stretch or print imperfections (raster). Brand overlays, live camera, and exports to as many formats as each effect supports.",
-  "featured.blurb": "Seven photo effects, vector or raster, in one tool"
+  "description": "一站式相片效果工具：可選網點、掃描線、色調分離、Voronoi、抖色或 ASCII 藝術（向量），或雙色調、像素拉伸、瑕疵效果或故障效果（點陣）。支援品牌疊層、即時攝影機，並可匯出各效果所支援的多種格式。",
+  "featured.blurb": "十種相片效果，向量或點陣，一工具搞定"
 }

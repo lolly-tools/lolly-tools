@@ -1,6 +1,6 @@
 {
   "name": "字標",
-  "description": "輸入一個字,即可取得以品牌字體製作的純路徑向量字標 - 收件者不需安裝字體。",
+  "description": "輸入一個詞，即可取得以您品牌字型製作的純路徑向量文字標誌 - 收件者無需安裝該字型。",
   "a11yLabel": "字標顯示為 {{default text \"Wordmark\"}}",
   "inputs.text.label": "文字",
   "inputs.font.label": "字體",

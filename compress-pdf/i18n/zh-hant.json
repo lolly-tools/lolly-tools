@@ -1,6 +1,6 @@
 {
   "name": "壓縮 PDF",
-  "description": "在你的裝置上重新壓縮 PDF 內的圖片，藉此縮小檔案。",
+  "description": "透過重新壓縮圖片來縮小 PDF - 在您的裝置上完成。",
   "a11yLabel": "{{fileName}} 的 PDF 壓縮工具",
   "inputs.source.label": "PDF",
   "inputs.source.help": "PDF 檔案。系統會在你的瀏覽器中讀取，檔案不會離開你的裝置。",

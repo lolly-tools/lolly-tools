@@ -1,5 +1,5 @@
 {
   "name": "Darkroom",
-  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
-  "featured.blurb": "Grade photos with film looks, LUTs and your brand colours"
+  "description": "Eine professionelle Fotobearbeitungs-Dunkelkammer: Filmlooks, Drittanbieter-.cube-LUTs, markengeführte Farbbehandlungen und Veredelungstextur - dann brennen Sie Ihren Look als LUT, die jeder Editor nutzen kann. Öffnet auch eine Photoshop- oder GIMP-Datei als Ebenen: jede Ebene positionieren, überblenden und ausblenden, den Verbund graden und flache Bilder oder eine geschichtete PSD exportieren.",
+  "featured.blurb": "Fotos graden mit Filmlooks, LUTs und Ihren Markenfarben"
 }

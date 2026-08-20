@@ -1,6 +1,6 @@
 {
-  "name": "Embed, Imprint & Track",
-  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
+  "name": "埋め込み、刻印、追跡",
+  "description": "すでに制作したメディアに自分の名前を主張 - 画像、PDF、動画、音声。作者、著作権、ライセンスをContent Credentialsとして刻印(耐久性のあるラスターImprintも)し、ファイル内にすでにある資格情報は保持します - すべてどこかにアップロードする前にデバイス上で処理します。",
   "a11yLabel": "画像に資格情報を埋め込む",
   "inputs.creator.label": "アーティスト / 作者",
   "inputs.creator.help": "お名前 - 画像の作成者として埋め込まれます(EXIF Artist、XMP dc:creator、Content Credential)。",

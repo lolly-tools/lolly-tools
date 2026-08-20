@@ -1,4 +1,4 @@
 {
-  "name": "Redact",
-  "description": "Black out sensitive content by rebuilding the file, then verify the output before it downloads, all on your device."
+  "name": "Redigera bort",
+  "description": "Svärta över känsligt innehåll genom att bygga om filen, verifiera sedan resultatet innan det laddas ner, allt på din enhet."
 }

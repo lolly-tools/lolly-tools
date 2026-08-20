@@ -1,6 +1,6 @@
 {
   "name": "Screen Capture",
-  "description": "Mag-screenshot o mag-record ng buong screen mo, isang window, o isang browser tab. I-drag sa canvas para i-crop - mananatili sa export ang eksaktong mga pixel na na-capture mo.",
+  "description": "Kumuha ng screenshot o mag-record ng buong screen mo, isang window, o browser tab. I-drag sa canvas para mag-crop - mananatili sa export ang eksaktong pixel na nakuha mo.",
   "a11yLabel": "Screen capture, handa nang i-crop at i-export",
   "inputs.shot.label": "Screenshot",
   "inputs.shot.help": "Pumili ng larawan na i-crop, o gamitin ang Screenshot button sa itaas ng canvas kung sinusuportahan ng iyong browser ang screen capture.",

@@ -1,6 +1,6 @@
 {
   "name": "이미지 변환",
-  "description": "HEIC, TIFF, 어떤 사진이든 WebP, JPEG, PNG로 바꿔요 - 내 기기에서.",
+  "description": "HEIC, TIFF 또는 다른 사진을 WebP, JPEG 또는 PNG로 변환하세요 - 기기 내에서 처리됩니다.",
   "a11yLabel": "{{fileName}} 이미지 변환",
   "inputs.source.label": "이미지",
   "inputs.source.help": "HEIC, HEIF, JPEG, PNG, WebP, AVIF 또는 TIFF 이미지예요. 브라우저에서 읽히며 기기 밖으로 나가지 않아요.",

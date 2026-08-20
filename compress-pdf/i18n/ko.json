@@ -1,6 +1,6 @@
 {
   "name": "PDF 압축",
-  "description": "이미지를 다시 압축해 PDF 파일 크기를 줄여요 — 내 기기에서 바로 처리돼요.",
+  "description": "PDF 내 이미지를 재압축해 용량을 줄입니다 - 기기 내에서 처리됩니다.",
   "a11yLabel": "{{fileName}}용 PDF 압축기",
   "inputs.source.label": "PDF",
   "inputs.source.help": "PDF 파일이에요. 브라우저에서 읽히며 기기 밖으로 나가지 않아요.",

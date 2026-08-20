@@ -1,6 +1,6 @@
 {
   "name": "Chụp màn hình",
-  "description": "Chụp ảnh hoặc quay lại toàn bộ màn hình, một cửa sổ, hoặc một tab trình duyệt. Kéo trên canvas để cắt - bản xuất giữ đúng các pixel bạn đã chụp.",
+  "description": "Chụp ảnh màn hình hoặc quay lại toàn màn hình, một cửa sổ, hoặc một tab trình duyệt. Kéo trên canvas để cắt - bản xuất giữ đúng các pixel bạn đã chụp.",
   "a11yLabel": "Ảnh chụp màn hình, sẵn sàng để cắt và xuất",
   "inputs.shot.label": "Chụp màn hình",
   "inputs.shot.help": "Chọn một ảnh để cắt, hoặc dùng nút Chụp màn hình phía trên canvas nếu trình duyệt của bạn hỗ trợ chụp màn hình.",

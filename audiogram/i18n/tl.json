@@ -1,6 +1,6 @@
 {
   "name": "Audiogram",
-  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
+  "description": "Gawing branded video ang isang voice clip o kanta na talagang gumagalaw kasabay ng tunog - bars, spectrum, ring, ridgeline o scope, handa para sa social.",
   "a11yLabel": "Audiogram card para sa {{default title \"an audio clip\"}} na may animated na waveform",
   "inputs.audio.label": "Audio",
   "inputs.audio.help": "Pumili ng track mula sa iyong library o mag-upload ng clip. Dine-decode ito sa iyong device para iguhit ang waveform - hindi umaalis ang audio sa browser. Iwanang blangko para sa placeholder na waveform. Para marinig ito sa export, piliin ang \"Audio ng tool na ito\" bilang Audio track sa mga opsyon ng download.",

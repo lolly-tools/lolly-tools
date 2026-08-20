@@ -1,6 +1,6 @@
 {
   "name": "Kreator prezentacji",
-  "description": "Twórz prezentację za pomocą edytora live na płótnie - edytuj tekst, kolory i obrazy bezpośrednio na każdym slajdzie.",
+  "description": "Zbuduj prezentację z edytorem na żywo na płótnie - edytuj tekst, kolory i obrazy bezpośrednio na każdym slajdzie.",
   "a11yLabel": "Prezentacja z {{slideCount}} slajdami",
   "inputs.size.label": "Rozmiar prezentacji",
   "inputs.size.help": "Jeden rozmiar dla całej prezentacji - PowerPoint nadaje każdemu slajdowi ten sam rozmiar. Nadpisz go w pikselach na pasku eksportu.",

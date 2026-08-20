@@ -1,6 +1,6 @@
 {
-  "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "name": "معاينة التشطيب",
+  "description": "عاين تشطيبات الرقائق الذهبية وطلاء UV الموضعي والنقش والملمس الناعم على تصميمك - ثم صدّر لوحة النقاط الجاهزة للطباعة. اللمعان الظاهر على الشاشة للعرض فقط؛ اللوحة هي المنتج الحقيقي الذي تحتاجه مطبعتك.",
   "a11yLabel": "عمل فني بتشطيب طباعة محاكى، أو لوح الطباعة الجاهز في عرض اللوح",
   "inputs.image.label": "العمل الفني",
   "inputs.image.help": "اختر عملك الفني أو ارفع ملفك. تتم معالجته على جهازك، ولا تغادر البكسلات المتصفح أبدًا.",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "عرض اللوح (جاهز للمطبعة)",
   "inputs.plateView.section": "اللوح",
   "inputs.plateView.help": "ينتقل إلى ملف التسليم: القناع بأسود نقي على أبيض مع ملصق الطباعة الفوقية. أرسل هذا إلى مطبعتك، فالمعاينة اللامعة عرض فقط.",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "رقائق ذهبية وUV موضعي ونقش - مع اللوحة التي تحتاجها مطبعتك"
 }

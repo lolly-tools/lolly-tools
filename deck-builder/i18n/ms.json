@@ -1,6 +1,6 @@
 {
   "name": "Pembina Dek",
-  "description": "Bina dek slaid dengan penyunting langsung di atas kanvas - sunting teks, warna dan imej terus pada setiap slaid.",
+  "description": "Bina koleksi slaid dengan editor langsung di atas kanvas - sunting teks, warna dan imej terus pada setiap slaid.",
   "a11yLabel": "Dek slaid dengan {{slideCount}} slaid",
   "inputs.size.label": "Saiz dek",
   "inputs.size.help": "Satu saiz untuk keseluruhan dek - PowerPoint memberikan saiz yang sama untuk setiap slaid. Gantikannya dalam piksel pada bar eksport.",

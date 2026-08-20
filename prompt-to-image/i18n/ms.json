@@ -1,6 +1,6 @@
 {
   "name": "Prompt to Image",
-  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
+  "description": "Aturhuruf gesaan panjang menjadi satu imej padat dan mudah dibaca untuk model multimodal - input imej selalunya lebih murah daripada perkataan yang sama sebagai token teks.",
   "a11yLabel": "Prompt to Image - tampal atau lepaskan teks pada kanvas dan ia disusun untuk muat dalam satu imej kecil",
   "inputs.text.label": "Teks",
   "inputs.text.help": "Tampal atau lepaskan di mana-mana pada kanvas untuk mengisi ini.",

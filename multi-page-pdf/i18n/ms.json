@@ -1,7 +1,7 @@
 {
   "name": "PDF Berbilang Halaman",
-  "description": "Bina PDF berbilang halaman — muka depan, blok kandungan yang mengalir, dan muka belakang.",
-  "featured.blurb": "PDF berbilang halaman — muka depan, kandungan, muka belakang",
+  "description": "Bina PDF berbilang halaman - muka depan, blok kandungan yang mengalir, dan muka belakang.",
+  "featured.blurb": "PDF berbilang halaman - muka depan, kandungan, belakang",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — dokumen PDF berbilang halaman",
   "inputs.pageSize.label": "Saiz halaman",
   "inputs.pageSize.help": "Menetapkan saiz setiap halaman dan saiz halaman PDF yang dieksport. Setiap halaman dalam dokumen ini dipaparkan tepat pada saiz ini.",

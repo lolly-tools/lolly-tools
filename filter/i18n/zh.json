@@ -1,5 +1,5 @@
 {
   "name": "滤镜",
-  "description": "One tool for photo effects: pick halftone, scanline, posterize or voronoi (vector) or duotone, pixel-stretch or print imperfections (raster). Brand overlays, live camera, and exports to as many formats as each effect supports.",
-  "featured.blurb": "Seven photo effects, vector or raster, in one tool"
+  "description": "一款集合多种照片效果的工具:选择网点、扫描线、色调分离、Voronoi、抖动或 ASCII 艺术(矢量),或双色调、像素拉伸、瑕疵或故障效果(光栅)。支持品牌叠加、实时摄像头,并可导出为每种效果支持的多种格式。",
+  "featured.blurb": "十种照片效果,矢量或光栅,集于一工具"
 }

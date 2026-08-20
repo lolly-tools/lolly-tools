@@ -1,7 +1,7 @@
 {
   "name": "PDF med flera sidor",
-  "description": "Skapa en PDF med flera sidor — omslag, flytande innehållsblock och en baksida.",
-  "featured.blurb": "PDF med flera sidor — omslag, innehåll, baksida",
+  "description": "Bygg en flersidig PDF - ett omslag, flödande innehållsblock och en baksida.",
+  "featured.blurb": "Flersidiga PDF:er - omslag, innehåll, baksida",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — PDF-dokument med flera sidor",
   "inputs.pageSize.label": "Sidstorlek",
   "inputs.pageSize.help": "Sätter storleken för varje sida och den exporterade PDF-sidans storlek. Varje sida i dokumentet renderas i exakt denna storlek.",

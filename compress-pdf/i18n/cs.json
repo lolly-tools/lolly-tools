@@ -1,6 +1,6 @@
 {
   "name": "Komprese PDF",
-  "description": "Zmenši PDF rekompresí obrázků — přímo v zařízení.",
+  "description": "Zmenši PDF překomprimováním jeho obrázků - na tvém zařízení.",
   "a11yLabel": "Kompresor PDF pro {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Soubor PDF. Načte se v prohlížeči a nikdy neopustí tvé zařízení.",

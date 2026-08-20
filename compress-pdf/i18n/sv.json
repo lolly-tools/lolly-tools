@@ -1,6 +1,6 @@
 {
   "name": "Komprimera PDF",
-  "description": "Krymp en PDF genom att komprimera om bilderna – på din enhet.",
+  "description": "Krympa en PDF genom att komprimera om bilderna - på din enhet.",
   "a11yLabel": "PDF-komprimerare för {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "En PDF-fil. Den läses i din webbläsare och lämnar aldrig din enhet.",

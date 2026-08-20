@@ -1,6 +1,6 @@
 {
   "name": "Wordmark",
-  "description": "Ketik sebuah kata, dapatkan wordmark vektor pure-path dalam font brand Anda - penerima tidak pernah perlu menginstal font.",
+  "description": "Ketik sebuah kata, dapatkan wordmark vektor path murni dalam font brand Anda - penerima tidak perlu memasang font tersebut.",
   "a11yLabel": "Wordmark berbunyi {{default text \"Wordmark\"}}",
   "inputs.text.label": "Teks",
   "inputs.font.label": "Font",

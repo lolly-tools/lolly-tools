@@ -1,6 +1,6 @@
 {
   "name": "Deck Builder",
-  "description": "Bouw een deck met een live editor op het canvas - bewerk tekst, kleuren en afbeeldingen direct op elke dia.",
+  "description": "Bouw een presentatie met een live editor op het canvas - bewerk tekst, kleuren en afbeeldingen rechtstreeks op elke slide.",
   "a11yLabel": "Diapresentatie met {{slideCount}} dia's",
   "inputs.size.label": "Deckgrootte",
   "inputs.size.help": "Eén formaat voor de hele presentatie - PowerPoint geeft elke dia dezelfde grootte. Overschrijf dit in pixels in de exportbalk.",

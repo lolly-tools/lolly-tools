@@ -1,6 +1,6 @@
 {
   "name": "Afbeelding converteren",
-  "description": "Zet HEIC, TIFF of elke foto om naar WebP, JPEG of PNG - op je apparaat.",
+  "description": "Zet HEIC, TIFF of elke foto om naar WebP, JPEG of PNG - op je eigen apparaat.",
   "a11yLabel": "Afbeeldingsconversie voor {{fileName}}",
   "inputs.source.label": "Afbeelding",
   "inputs.source.help": "Een HEIC-, HEIF-, JPEG-, PNG-, WebP-, AVIF- of TIFF-afbeelding. Deze wordt in je browser gelezen en verlaat nooit je apparaat.",

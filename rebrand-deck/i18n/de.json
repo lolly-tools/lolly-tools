@@ -1,6 +1,6 @@
 {
   "name": "Ein Deck rebranden",
-  "description": "Laden Sie eine PowerPoint-Präsentation hoch und passen Sie deren Farben und Schriften an Ihre Marke an - neu erstellt auf Ihrem Gerät, nichts wird hochgeladen.",
+  "description": "Laden Sie eine PowerPoint-Präsentation hoch und richten Sie ihre Farben und Schriften an Ihrer Marke aus - neu aufgebaut auf Ihrem Gerät, nichts wird hochgeladen.",
   "a11yLabel": "Deck-Rebrander für {{fileName}}",
   "inputs.source.label": "PowerPoint-Datei",
   "inputs.source.help": "Eine .pptx-Datei. Sie wird auf Ihrem Gerät gelesen und nie hochgeladen.",

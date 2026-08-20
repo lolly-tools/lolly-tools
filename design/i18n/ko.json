@@ -1,5 +1,5 @@
 {
-  "name": "Design",
+  "name": "디자인",
   "featured.blurb": "열린 캔버스에서 자유롭게 만드는 레이아웃",
   "inputs.background.label": "캔버스 배경",
   "inputs.boxes.label": "박스",
@@ -101,5 +101,5 @@
   "inputs.boxes.fields.imgpos.options.left bottom": "왼쪽 아래",
   "inputs.boxes.fields.imgpos.options.center bottom": "아래",
   "inputs.boxes.fields.imgpos.options.right bottom": "오른쪽 아래",
-  "description": "An open canvas for free arrangement — text, images, shapes and live renders from your other Lolly tools, all held to your brand."
+  "description": "자유롭게 배치하는 열린 캔버스 - 텍스트, 이미지, 도형, 그리고 다른 Lolly 도구의 라이브 렌더까지, 모두 브랜드 기준을 따릅니다."
 }

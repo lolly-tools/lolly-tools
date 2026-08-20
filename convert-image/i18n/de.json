@@ -1,6 +1,6 @@
 {
   "name": "Bild konvertieren",
-  "description": "Wandeln Sie HEIC, TIFF oder jedes Foto in WebP, JPEG oder PNG um - auf Ihrem Gerät.",
+  "description": "Wandelt HEIC, TIFF oder jedes Foto in WebP, JPEG oder PNG um - auf Ihrem Gerät.",
   "a11yLabel": "Bildkonvertierung für {{fileName}}",
   "inputs.source.label": "Bild",
   "inputs.source.help": "Ein HEIC-, HEIF-, JPEG-, PNG-, WebP-, AVIF- oder TIFF-Bild. Es wird in Ihrem Browser gelesen und verlässt Ihr Gerät nie.",

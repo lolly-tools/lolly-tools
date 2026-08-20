@@ -1,6 +1,6 @@
 {
   "name": "Audiogram",
-  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
+  "description": "Maak van een spraakclip of nummer een branded video die echt meebeweegt met het geluid - balken, spectrum, ring, ridgeline of scope, klaar voor social.",
   "a11yLabel": "Audiogramkaart voor {{default title \"an audio clip\"}} met een geanimeerde golfvorm",
   "inputs.audio.label": "Audio",
   "inputs.audio.help": "Kies een track uit je bibliotheek of upload een clip. Deze wordt op je apparaat gedecodeerd om de golfvorm te tekenen - de audio verlaat de browser nooit. Laat leeg voor een tijdelijke golfvorm. Om het te horen in de export, kies \"Audio van deze tool\" als Audiotrack in de downloadopties.",

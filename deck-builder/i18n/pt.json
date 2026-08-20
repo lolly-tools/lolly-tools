@@ -1,6 +1,6 @@
 {
   "name": "Criador de Deck",
-  "description": "Crie um deck de slides com um editor ao vivo na tela - edite texto, cores e imagens diretamente em cada slide.",
+  "description": "Monte uma apresentação de slides com um editor ao vivo na tela - edite texto, cores e imagens diretamente em cada slide.",
   "a11yLabel": "Apresentação com {{slideCount}} slides",
   "inputs.size.label": "Tamanho do deck",
   "inputs.size.help": "Um tamanho para todo o deck - o PowerPoint dá o mesmo tamanho a todos os slides. Sobreponha em pixels na barra de exportação.",

@@ -1,6 +1,6 @@
 {
   "name": "Eksport Aset",
-  "description": "Render mana-mana aset katalog — atau pautan alat Lolly — kepada sebarang format dan saiz.",
+  "description": "Render mana-mana aset katalog - atau pautan alat Lolly - kepada sebarang format dan saiz.",
   "a11yLabel": "Aset yang dieksport",
   "inputs.src.label": "Aset",
   "inputs.src.help": "Aset untuk dirender — ID katalog (lihat `lolly assets`) atau pautan alat lolly.tools yang ditampal. Aset vektor kekal vektor melalui SVG/PDF; aset raster dibenamkan sebagai imej.",

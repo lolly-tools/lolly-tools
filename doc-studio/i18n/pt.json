@@ -1,6 +1,6 @@
 {
   "name": "Estúdio de Documentos",
-  "description": "Escreva um documento com várias páginas na tela — texto rico, títulos, tabelas e renderizações da Lolly inseridas que fluem pelas páginas e são exportadas como PDF.",
+  "description": "Escreva um documento multipágina no canvas - texto rico, títulos, tabelas e renderizações Lolly inseridas que fluem entre páginas e exportam como PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — documento multipágina",
   "inputs.pageSize.label": "Tamanho da página",
   "inputs.pageSize.help": "Define o tamanho de todas as páginas e o tamanho de página do PDF exportado.",

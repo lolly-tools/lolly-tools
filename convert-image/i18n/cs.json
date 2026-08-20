@@ -1,6 +1,6 @@
 {
   "name": "Převést obrázek",
-  "description": "Změň HEIC, TIFF nebo jakoukoli fotku na WebP, JPEG nebo PNG - přímo v zařízení.",
+  "description": "Proměň HEIC, TIFF nebo jakoukoli fotku ve WebP, JPEG nebo PNG - na tvém zařízení.",
   "a11yLabel": "Převod obrázku pro {{fileName}}",
   "inputs.source.label": "Obrázek",
   "inputs.source.help": "Obrázek HEIC, HEIF, JPEG, PNG, WebP, AVIF nebo TIFF. Čte se v tvém prohlížeči a nikdy neopustí tvé zařízení.",

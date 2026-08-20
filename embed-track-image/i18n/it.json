@@ -1,6 +1,6 @@
 {
-  "name": "Embed, Imprint & Track",
-  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
+  "name": "Incorpora, imprimi e traccia",
+  "description": "Rivendica il tuo nome su qualsiasi media che hai già creato - immagine, PDF, video o audio. Marca autore, copyright e licenza come Content Credentials (anche un Imprint raster durevole), preservando ogni credenziale già presente nel file - tutto sul tuo dispositivo, prima di caricarlo ovunque.",
   "a11yLabel": "Incorpora le credenziali nella tua immagine",
   "inputs.creator.label": "Artista / autore",
   "inputs.creator.help": "Il tuo nome - incorporato come autore/creatore dell'immagine (EXIF Artist, XMP dc:creator e la Content Credential).",

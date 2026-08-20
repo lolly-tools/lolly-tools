@@ -1,6 +1,6 @@
 {
   "name": "Studio de graphiques D3",
-  "description": "Des graphiques puissants pilotés par tes données avec D3 — colle un tableau et il se transforme en graphique. Barres, lignes, aires, nuages de points, camembert, radar, treemap, heatmap et bien plus, à l'image de ta marque et en vectoriel net.",
+  "description": "Des graphiques puissants pilotés par les données avec D3 - collez un tableau et il se met en graphique tout seul. Barres, lignes, aires, nuage de points, camembert, radar, treemap, carte de chaleur, barres et camemberts 3D et nuages de mots. Les palettes dérivent des couleurs de votre marque, avec remplissages à motifs et reco­loration en un clic - à l'image de la marque et net en vectoriel.",
   "featured.blurb": "Colle un tableau — D3 le transforme en graphique, à l'image de ta marque et en vectoriel net",
   "a11yLabel": "Graphique {{chartType}}{{#if heading}} — {{heading}}{{/if}}",
   "inputs.chartType.label": "Type de graphique",

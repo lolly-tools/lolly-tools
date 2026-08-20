@@ -1,6 +1,6 @@
 {
   "name": "Ombranda en presentation",
-  "description": "Ladda upp en PowerPoint-presentation och matcha dess färger och typsnitt mot ditt varumärke - återskapas på din enhet, inget laddas upp.",
+  "description": "Ladda upp en PowerPoint-presentation och matcha dess färger och typsnitt mot ditt varumärke - ombyggd på din enhet, inget laddas upp.",
   "a11yLabel": "Bildspelsombrandare för {{fileName}}",
   "inputs.source.label": "PowerPoint-fil",
   "inputs.source.help": "En .pptx-fil. Den läses på din enhet och laddas aldrig upp.",

@@ -1,6 +1,6 @@
 {
   "name": "자산 내보내기",
-  "description": "카탈로그의 모든 자산 또는 Lolly 도구 링크를 원하는 형식과 크기로 내보냅니다.",
+  "description": "카탈로그 자산 - 또는 Lolly 도구 링크 - 를 원하는 포맷과 크기로 렌더링합니다.",
   "a11yLabel": "내보낸 자산",
   "inputs.src.label": "자산",
   "inputs.src.help": "렌더링할 자산입니다 — 카탈로그 ID(`lolly assets` 참고) 또는 붙여넣은 lolly.tools 도구 링크입니다. 벡터 자산은 SVG/PDF에서도 벡터로 유지되며, 래스터 자산은 이미지로 삽입됩니다.",

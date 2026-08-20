@@ -1,6 +1,6 @@
 {
   "name": "Slovní značka",
-  "description": "Napiš slovo a získej vektorovou slovní značku z čistých cest v písmu své značky - příjemci nikdy nepotřebují mít písmo nainstalované.",
+  "description": "Napiš slovo a získej čistě vektorovou wordmarku ve fontu tvé značky - příjemci nikdy nepotřebují mít font nainstalovaný.",
   "a11yLabel": "Slovní značka s textem {{default text \"Wordmark\"}}",
   "inputs.text.label": "Text",
   "inputs.font.label": "Písmo",

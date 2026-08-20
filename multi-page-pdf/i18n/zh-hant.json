@@ -1,7 +1,7 @@
 {
   "name": "多頁 PDF",
-  "description": "建立多頁 PDF——封面、流動內容區塊和封底。",
-  "featured.blurb": "多頁 PDF——封面、內容、封底",
+  "description": "製作多頁 PDF - 含封面、內文區塊與封底。",
+  "featured.blurb": "多頁 PDF - 封面、內文、封底",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — 多頁 PDF 文件",
   "inputs.pageSize.label": "頁面大小",
   "inputs.pageSize.help": "設定每一頁的大小，以及匯出 PDF 的頁面大小。文件中的每一頁都會以此大小完整算圖。",

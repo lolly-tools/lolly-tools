@@ -1,6 +1,6 @@
 {
   "name": "Asset-Export",
-  "description": "Rendern Sie jedes Katalog-Asset — oder einen Lolly-Tool-Link — in jedes Format und jede Größe.",
+  "description": "Rendert jedes Katalog-Asset - oder einen Lolly-Tool-Link - in jedes Format und jede Größe.",
   "a11yLabel": "Exportiertes Asset",
   "inputs.src.label": "Asset",
   "inputs.src.help": "Das zu rendernde Asset — eine Katalog-ID (siehe `lolly assets`) oder ein eingefügter lolly.tools-Tool-Link. Vektor-Assets bleiben über SVG/PDF hinweg vektoriell; Raster-Assets werden als Bilder eingebettet.",

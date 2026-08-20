@@ -1,5 +1,5 @@
 {
-  "name": "Design",
+  "name": "Дизайн",
   "featured.blurb": "Довільні макети на відкритому канвасі",
   "inputs.background.label": "Фон канвасу",
   "inputs.boxes.label": "Блоки",
@@ -101,5 +101,5 @@
   "inputs.boxes.fields.imgpos.options.left bottom": "Знизу зліва",
   "inputs.boxes.fields.imgpos.options.center bottom": "Знизу",
   "inputs.boxes.fields.imgpos.options.right bottom": "Знизу справа",
-  "description": "An open canvas for free arrangement — text, images, shapes and live renders from your other Lolly tools, all held to your brand."
+  "description": "Відкрите полотно для вільного розташування - текст, зображення, фігури й живі рендери з інших ваших інструментів Lolly, усе відповідно до вашого бренду."
 }

@@ -1,6 +1,6 @@
 {
-  "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "name": "Bitiş Önizlemesi",
+  "description": "Sanat çalışmanızda folyo, spot UV, kabartma ve yumuşak dokunuş bitişlerini önizleyin - ardından baskıya hazır spot plakayı dışa aktarın. Ekrandaki parlaklık yalnızca sunum amaçlıdır; plaka, matbaanızın ihtiyaç duyduğu gerçek teslim edilebilir üründür.",
   "a11yLabel": "Simüle edilmiş bir baskı kaplamalı çalışma, veya kalıp görünümünde baskıya hazır kalıp",
   "inputs.image.label": "Çalışma",
   "inputs.image.help": "Çalışmanızı seçin veya kendi görselinizi yükleyin. Cihazınızda işlenir, pikseller tarayıcıdan asla çıkmaz.",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "Kalıp görünümü (baskıya hazır)",
   "inputs.plateView.section": "Kalıp",
   "inputs.plateView.help": "Teslim dosyasına geçer: maske beyaz üzerine saf siyah, üst baskı etiketiyle. BUNU matbaanıza gönderin, parlak önizleme yalnızca sunumdur.",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "Folyo, spot UV ve kabartma - matbaanızın ihtiyaç duyduğu plakayla"
 }

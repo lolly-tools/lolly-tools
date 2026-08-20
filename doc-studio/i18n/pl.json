@@ -1,6 +1,6 @@
 {
   "name": "Doc Studio",
-  "description": "Pisz wielostronicowy dokument na płótnie — tekst sformatowany, nagłówki, tabele i wstawione rendery Lolly, które rozkładają się na strony i eksportują jako PDF.",
+  "description": "Napisz wielostronicowy dokument na płótnie - tekst sformatowany, nagłówki, tabele i wstawione renderowania Lolly, które płyną między stronami i eksportują się jako PDF.",
   "a11yLabel": "{{default docTitle \"Bez tytułu\"}} — wielostronicowy dokument",
   "inputs.pageSize.label": "Rozmiar strony",
   "inputs.pageSize.help": "Ustawia rozmiar każdej strony i eksportowanego PDF.",

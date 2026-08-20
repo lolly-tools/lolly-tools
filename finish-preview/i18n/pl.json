@@ -1,6 +1,6 @@
 {
-  "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "name": "Podgląd wykończenia",
+  "description": "Podejrzyj foliowanie, punktowy lakier UV, wytłaczanie i wykończenie soft-touch na swojej grafice - a następnie wyeksportuj płytę spot gotową dla drukarni. Połysk na ekranie to tylko prezentacja; płyta jest prawdziwym plikiem, którego potrzebuje Twoja drukarnia.",
   "a11yLabel": "Grafika z symulowanym uszlachetnieniem druku, lub gotowa do druku matryca w widoku matrycy",
   "inputs.image.label": "Grafika",
   "inputs.image.help": "Wybierz grafikę lub prześlij własną. Jest przetwarzana na Twoim urządzeniu, piksele nigdy nie opuszczają przeglądarki.",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "Widok matrycy (do druku)",
   "inputs.plateView.section": "Matryca",
   "inputs.plateView.help": "Przełącza na plik produkcyjny: maskę jako czystą czerń na bieli z etykietą nadruku. Wyślij TO do drukarni, błyszczący podgląd to tylko prezentacja.",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "Folia, punktowy lakier UV i wytłaczanie - z płytą, której potrzebuje Twoja drukarnia"
 }

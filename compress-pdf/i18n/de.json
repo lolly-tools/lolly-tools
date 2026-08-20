@@ -1,6 +1,6 @@
 {
   "name": "PDF komprimieren",
-  "description": "Verkleinern Sie eine PDF-Datei, indem ihre Bilder neu komprimiert werden — direkt auf Ihrem Gerät.",
+  "description": "Verkleinert ein PDF durch Neukomprimierung seiner Bilder - auf Ihrem Gerät.",
   "a11yLabel": "PDF-Kompressor für {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Eine PDF-Datei. Sie wird in Ihrem Browser gelesen und verlässt Ihr Gerät nie.",

@@ -1,4 +1,4 @@
 {
-  "name": "Redact",
-  "description": "Black out sensitive content by rebuilding the file, then verify the output before it downloads, all on your device."
+  "name": "Ретуш",
+  "description": "Затуліть чутливий вміст, перебудувавши файл, потім перевірте результат перед завантаженням - усе на вашому пристрої."
 }

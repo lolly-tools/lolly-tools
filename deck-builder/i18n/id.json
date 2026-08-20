@@ -1,6 +1,6 @@
 {
   "name": "Pembuat Presentasi",
-  "description": "Buat slide deck dengan editor on-canvas langsung - edit teks, warna, dan gambar langsung di setiap slide.",
+  "description": "Buat dek slide dengan editor langsung di kanvas - sunting teks, warna dan gambar langsung di tiap slide.",
   "a11yLabel": "Deck slide dengan {{slideCount}} slide",
   "inputs.size.label": "Ukuran presentasi",
   "inputs.size.help": "Satu ukuran untuk seluruh dek - PowerPoint memberi setiap slide ukuran yang sama. Timpa dalam piksel di bilah ekspor.",

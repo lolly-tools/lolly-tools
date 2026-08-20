@@ -1,6 +1,6 @@
 {
   "name": "Wordmark",
-  "description": "Taip satu perkataan, dapatkan wordmark vektor laluan-tulen dalam fon jenama anda - penerima tidak perlu memasang fon itu.",
+  "description": "Taip satu perkataan, dapatkan tera kata vektor laluan-tulen dalam fon jenama anda - penerima tidak perlu memasang fon.",
   "a11yLabel": "Wordmark berbunyi {{default text \"Wordmark\"}}",
   "inputs.text.label": "Teks",
   "inputs.font.label": "Fon",

@@ -1,6 +1,6 @@
 {
   "name": "Pag-export ng Asset",
-  "description": "I-render ang anumang asset sa catalog — o link ng Lolly tool — sa anumang format at sukat.",
+  "description": "I-render ang anumang asset sa katalogo - o link ng Lolly tool - sa anumang format at sukat.",
   "a11yLabel": "Na-export na asset",
   "inputs.src.label": "Asset",
   "inputs.src.help": "Ang asset na i-render — isang catalog id (tingnan ang `lolly assets`) o isang na-paste na link ng lolly.tools tool. Nananatiling vector ang mga vector asset sa SVG/PDF; naka-embed bilang mga imahe ang mga raster asset.",

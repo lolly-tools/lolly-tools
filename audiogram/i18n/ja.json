@@ -1,6 +1,6 @@
 {
   "name": "オーディオグラム",
-  "description": "Turn a voice clip or song into a branded video that actually moves with the sound — bars, spectrum, ring, ridgeline or scope, ready for social.",
+  "description": "ボイスクリップや曲を、音にちゃんと合わせて動くブランド動画に変換 - バー、スペクトラム、リング、リッジライン、スコープ、SNS投稿にすぐ使えます。",
   "a11yLabel": "アニメーションする波形を使った、{{default title \"an audio clip\"}}のオーディオグラムカード",
   "inputs.audio.label": "オーディオ",
   "inputs.audio.help": "ライブラリからトラックを選択するか、クリップをアップロードしてください。波形を描くためにデバイス上でデコードされ、音声がブラウザの外に出ることはありません。空欄のままにするとプレースホルダーの波形になります。エクスポートで音声を聞くには、ダウンロードオプションのオーディオトラックで「このツールの音声」を選択してください。",

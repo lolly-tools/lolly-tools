@@ -1,6 +1,6 @@
 {
   "name": "文字标志",
-  "description": "输入一个词，即可获得用你的品牌字体制作的纯路径矢量文字标志 - 接收者无需安装该字体。",
+  "description": "输入一个词,即可获得使用你品牌字体的纯路径矢量文字标 - 收件人无需安装该字体。",
   "a11yLabel": "文字标志内容为{{default text \"Wordmark\"}}",
   "inputs.text.label": "文本",
   "inputs.font.label": "字体",

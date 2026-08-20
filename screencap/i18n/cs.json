@@ -1,6 +1,6 @@
 {
   "name": "Snímání obrazovky",
-  "description": "Pořiď screenshot nebo nahrávku celé obrazovky, okna nebo karty prohlížeče. Tažením na plátně ořízneš - export zůstane přesně v pixelech, které jsi zachytil.",
+  "description": "Vyfoť nebo nahraj celou obrazovku, okno nebo kartu prohlížeče. Tažením na plátně ořízni - export zůstane přesně na zachycených pixelech.",
   "a11yLabel": "Snímek obrazovky, připravený k oříznutí a exportu",
   "inputs.shot.label": "Screenshot",
   "inputs.shot.help": "Vyber obrázek k oříznutí, nebo použij tlačítko Screenshot nad plátnem, pokud tvůj prohlížeč podporuje snímání obrazovky.",

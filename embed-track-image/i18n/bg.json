@@ -1,6 +1,6 @@
 {
-  "name": "Embed, Imprint & Track",
-  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
+  "name": "Вгради, запечатай и проследи",
+  "description": "Заяви правата си над всяка медия, която вече си създал - изображение, PDF, видео или аудио. Постави автор, авторско право и лиценз като Content Credentials (и траен растерен Imprint), запазвайки всеки идентификационен данни, вече вградени във файла - всичко на твоето устройство, преди да го качиш някъде.",
   "a11yLabel": "Вгради удостоверения в изображението си",
   "inputs.creator.label": "Артист / автор",
   "inputs.creator.help": "Твоето име - вградено като автор/създател на изображението (EXIF Artist, XMP dc:creator и Content Credential).",

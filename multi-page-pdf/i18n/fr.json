@@ -1,7 +1,7 @@
 {
   "name": "PDF multi-pages",
-  "description": "Crée un PDF multi-pages : couverture, blocs de contenu fluide et page de dos.",
-  "featured.blurb": "PDF multi-pages — couverture, contenu, dos",
+  "description": "Construisez un PDF multi-pages - une couverture, des blocs de contenu qui s'écoulent, et une quatrième de couverture.",
+  "featured.blurb": "PDF multi-pages - couverture, contenu, dos",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — document PDF multi-pages",
   "inputs.pageSize.label": "Format de page",
   "inputs.pageSize.help": "Définit la taille de chaque page et le format du PDF exporté. Chaque page du document s'affiche exactement à cette taille.",

@@ -1,6 +1,6 @@
 {
-  "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "name": "Попередній перегляд оздоблення",
+  "description": "Перегляньте фольгування, вибірковий УФ-лак, тиснення й м'яке покриття на своєму макеті - потім експортуйте друкарську пластину, готову до виробництва. Екранний блиск лише для презентації; пластина - справжній результат, потрібний вашій друкарні.",
   "a11yLabel": "Графіка із симульованим друкарським оздобленням, або готова до друку форма в перегляді форми",
   "inputs.image.label": "Графіка",
   "inputs.image.help": "Оберіть графіку або завантажте власну. Вона обробляється на вашому пристрої, пікселі ніколи не залишають браузер.",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "Перегляд форми (до друку)",
   "inputs.plateView.section": "Форма",
   "inputs.plateView.help": "Перемикає на результат: маску чистим чорним на білому з позначкою надруку. Надішліть ЦЕ до друкарні, блискучий перегляд лише презентація.",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "Фольгування, вибірковий УФ-лак і тиснення - з пластиною, потрібною друкарні"
 }

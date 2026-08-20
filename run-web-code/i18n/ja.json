@@ -1,4 +1,4 @@
 {
-  "name": "Run Web Code",
-  "description": "Paste HTML, CSS, JS — or a JSX/TypeScript component — and watch it run in a private, offline sandbox. Perfect for previewing code from an AI assistant."
+  "name": "Webコードを実行",
+  "description": "HTML、CSS、JS、またはJSX/TypeScriptコンポーネントを貼り付けて、プライベートなオフラインサンドボックスで実行を確認。AIアシスタントからのコードのプレビューに最適です。"
 }

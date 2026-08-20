@@ -1,8 +1,8 @@
 {
   "name": "PDF nhiều trang",
-  "description": "Tạo PDF nhiều trang — gồm trang bìa, các khối nội dung tự động chảy và trang bìa sau.",
+  "description": "Tạo PDF nhiều trang - trang bìa, khối nội dung tự chảy, và trang cuối.",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — tài liệu PDF nhiều trang",
-  "featured.blurb": "PDF nhiều trang — bìa, nội dung, bìa sau",
+  "featured.blurb": "PDF nhiều trang - bìa, nội dung, trang cuối",
   "inputs.pageSize.label": "Kích thước trang",
   "inputs.pageSize.help": "Đặt kích thước cho mọi trang và kích thước trang PDF khi xuất. Mỗi trang trong tài liệu được dựng đúng theo kích thước này.",
   "inputs.pageSize.options.a4": "A4 dọc · 210 × 297 mm",

@@ -1,6 +1,6 @@
 {
   "name": "資源匯出",
-  "description": "將目錄中任何資源——或 Lolly 工具連結——匯出為任何格式和尺寸。",
+  "description": "將任何目錄素材 - 或 Lolly 工具連結 - 轉換為任何格式與尺寸。",
   "a11yLabel": "匯出的資源",
   "inputs.src.label": "資源",
   "inputs.src.help": "要匯出的資源——可以是目錄 ID（參見 `lolly assets`）或貼上的 lolly.tools 工具連結。向量資源在 SVG/PDF 中會保持向量格式；點陣資源則以圖片形式嵌入。",

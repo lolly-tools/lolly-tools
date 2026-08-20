@@ -1,5 +1,5 @@
 {
-  "name": "Darkroom",
-  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
-  "featured.blurb": "Grade photos with film looks, LUTs and your brand colours"
+  "name": "ダークルーム",
+  "description": "プロ仕様の写真グレーディング用ダークルーム: フィルム風、サードパーティの.cube LUT、ブランドシードのカラートリートメント、仕上げのテクスチャ - 完成した色調はどのエディタでも使えるLUTとして書き出せます。Photoshop、GIMPファイルをレイヤーとして開くことも可能: 各レイヤーを配置、ブレンド、非表示にして合成をグレーディングし、フラット画像またはレイヤー付きPSDとして書き出します。",
+  "featured.blurb": "フィルム風、LUT、ブランドカラーで写真をグレーディング"
 }

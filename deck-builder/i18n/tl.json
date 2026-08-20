@@ -1,6 +1,6 @@
 {
   "name": "Deck Builder",
-  "description": "Gumawa ng slide deck gamit ang live na on-canvas editor - i-edit ang text, colours, at images nang direkta sa bawat slide.",
+  "description": "Bumuo ng slide deck gamit ang live on-canvas editor - i-edit ang text, kulay at larawan nang direkta sa bawat slide.",
   "a11yLabel": "Slide deck na may {{slideCount}} na slide",
   "inputs.size.label": "Sukat ng deck",
   "inputs.size.help": "Iisang sukat para sa buong deck - pareho ang sukat ng bawat slide sa PowerPoint. I-override ito sa pixels sa export bar.",

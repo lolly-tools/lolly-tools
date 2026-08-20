@@ -1,7 +1,7 @@
 {
   "name": "PDF multi-pagină",
-  "description": "Creează un PDF cu mai multe pagini — o copertă, blocuri de conținut care curg și o pagină finală.",
-  "featured.blurb": "PDF-uri cu mai multe pagini — copertă, conținut, final",
+  "description": "Construiește un PDF cu mai multe pagini - o copertă, blocuri de conținut fluide și o pagină de final.",
+  "featured.blurb": "PDF-uri cu mai multe pagini - copertă, conținut, final",
   "a11yLabel": "{{default coverTitle \"Fără titlu\"}} — document PDF cu mai multe pagini",
   "inputs.pageSize.label": "Dimensiune pagină",
   "inputs.pageSize.help": "Stabilește dimensiunea fiecărei pagini și dimensiunea paginii PDF exportate. Fiecare pagină din document se randează la exact această dimensiune.",

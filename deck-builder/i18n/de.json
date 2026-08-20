@@ -1,6 +1,6 @@
 {
   "name": "Deck Builder",
-  "description": "Erstellen Sie eine Präsentation mit einem Live-Editor auf dem Canvas - bearbeiten Sie Text, Farben und Bilder direkt auf jeder Folie.",
+  "description": "Erstellt eine Foliensammlung mit einem Live-Editor direkt auf der Fläche - Text, Farben und Bilder direkt auf jeder Folie bearbeiten.",
   "a11yLabel": "Präsentation mit {{slideCount}} Folien",
   "inputs.size.label": "Deck-Größe",
   "inputs.size.help": "Eine Größe für das gesamte Deck - PowerPoint gibt jeder Folie die gleiche Größe. Überschreiben Sie sie in Pixel in der Exportleiste.",

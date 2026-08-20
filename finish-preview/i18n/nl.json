@@ -1,6 +1,6 @@
 {
   "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "description": "Bekijk een preview van folie, spot-UV, reliëf en soft-touch afwerkingen op je artwork - exporteer daarna de drukklare spotplaat. De glans op het scherm is alleen voor presentatie; de plaat is de echte deliverable die je drukkerij nodig heeft.",
   "a11yLabel": "Artwork met een gesimuleerde drukafwerking, of de drukklare plaat in plaatweergave",
   "inputs.image.label": "Artwork",
   "inputs.image.help": "Kies je artwork of upload je eigen. Het wordt op je apparaat verwerkt, de pixels verlaten nooit de browser.",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "Plaatweergave (drukklaar)",
   "inputs.plateView.section": "Plaat",
   "inputs.plateView.help": "Schakel naar het eindproduct: het masker als puur zwart op wit met overdruk-label. Stuur DIT naar je drukker, het glanzende voorbeeld is alleen presentatie.",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "Folie, spot-UV en reliëf - met de plaat die je drukkerij nodig heeft"
 }

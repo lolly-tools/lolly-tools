@@ -1,6 +1,6 @@
 {
   "name": "Tagagawa ng Web Icon",
-  "description": "Gumagawa ng favicon at app icon — multi-size na .ico, plus PNG at SVG.",
+  "description": "Gumawa ng favicon at app-icon - multi-size na .ico, kasama ang PNG at SVG.",
   "a11yLabel": "Web icon na may label na {{default text \"untitled\"}}",
   "inputs.text.label": "Label",
   "inputs.text.help": "Pinakamaganda kung hanggang ~4 characters lang para mabasa sa browser tab. Awtomatikong nag-aadjust ang laki ng label para mapuno ang icon.",

@@ -1,6 +1,6 @@
 {
   "name": "Export de ressource",
-  "description": "Exporte n'importe quelle ressource du catalogue — ou un lien d'outil Lolly — dans n'importe quel format et taille.",
+  "description": "Rendez n'importe quel élément du catalogue - ou un lien d'outil Lolly - vers n'importe quel format et taille.",
   "a11yLabel": "Ressource exportée",
   "inputs.src.label": "Ressource",
   "inputs.src.help": "La ressource à exporter — un identifiant de catalogue (voir `lolly assets`) ou un lien d'outil lolly.tools collé. Les ressources vectorielles restent vectorielles en SVG/PDF ; les ressources matricielles sont intégrées comme images.",

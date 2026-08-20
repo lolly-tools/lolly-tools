@@ -1,6 +1,6 @@
 {
-  "name": "Embed, Imprint & Track",
-  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
+  "name": "Göm, Damgala ve İzle",
+  "description": "Zaten oluşturduğunuz herhangi bir medyada - görsel, PDF, video veya ses - adınızı hak edin. Yazarınızı, telif hakkınızı ve lisansınızı İçerik Kimlik Bilgileri olarak damgalayın (kalıcı bir raster Damga da dahil), dosyanın içindeki mevcut kimlik bilgilerini koruyarak - hepsi cihazınızda, herhangi bir yere yüklemeden önce.",
   "a11yLabel": "Kimlik bilgilerini görseline göm",
   "inputs.creator.label": "Sanatçı / yazar",
   "inputs.creator.help": "Adın - görselin yazarı/oluşturucusu olarak gömülür (EXIF Artist, XMP dc:creator ve Content Credential).",

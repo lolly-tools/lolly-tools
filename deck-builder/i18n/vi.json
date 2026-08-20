@@ -1,6 +1,6 @@
 {
   "name": "Deck Builder",
-  "description": "Tạo bộ slide với trình chỉnh sửa trực tiếp trên canvas - chỉnh văn bản, màu sắc và hình ảnh ngay trên từng slide.",
+  "description": "Tạo bộ slide với trình chỉnh sửa trực tiếp trên canvas - chỉnh văn bản, màu sắc và hình ảnh trực tiếp trên từng slide.",
   "a11yLabel": "Bộ trình chiếu có {{slideCount}} trang chiếu",
   "inputs.size.label": "Kích thước bộ slide",
   "inputs.size.help": "Một kích thước cho toàn bộ bộ trình chiếu - PowerPoint áp dụng cùng kích thước cho mọi trang chiếu. Ghi đè bằng pixel trong thanh xuất.",

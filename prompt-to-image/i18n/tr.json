@@ -1,6 +1,6 @@
 {
   "name": "Prompt'tan Görsele",
-  "description": "Typeset a long prompt into one compact, legible image for a multimodal model — image input is often cheaper than the same words as text tokens.",
+  "description": "Uzun bir istemi çok modelli bir model için kompakt, okunaklı tek bir görsele dizin - görsel girdi genellikle aynı sözcüklerin metin token'ı olarak kullanılmasından daha ucuzdur.",
   "a11yLabel": "Prompt'tan Görsele - metni tuvale yapıştır ya da bırak, küçük bir görsele sığacak şekilde yerleştirilir.",
   "inputs.text.label": "Metin",
   "inputs.text.help": "Bunu doldurmak için tuval üzerinde herhangi bir yere yapıştır veya bırak.",

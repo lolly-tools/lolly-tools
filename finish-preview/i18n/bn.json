@@ -1,6 +1,6 @@
 {
-  "name": "Finish Preview",
-  "description": "Preview foil, spot UV, emboss and soft-touch finishes on your artwork — then export the printer-ready spot plate. The on-screen sheen is presentation only; the plate is the real deliverable your print house needs.",
+  "name": "ফিনিশ প্রিভিউ",
+  "description": "আপনার আর্টওয়ার্কে ফয়েল, স্পট UV, এমবস ও সফট-টাচ ফিনিশ প্রিভিউ করুন - তারপর প্রিন্টার-রেডি স্পট প্লেট এক্সপোর্ট করুন। অন-স্ক্রিন শাইন শুধু উপস্থাপনার জন্য; প্লেটই আপনার প্রিন্ট হাউসের প্রয়োজনীয় প্রকৃত ডেলিভারেবল।",
   "a11yLabel": "সিমুলেটেড প্রিন্ট ফিনিশসহ আর্টওয়ার্ক, বা প্লেট ভিউতে প্রিন্ট-প্রস্তুত প্লেট",
   "inputs.image.label": "আর্টওয়ার্ক",
   "inputs.image.help": "আপনার আর্টওয়ার্ক বেছে নিন বা নিজেরটি আপলোড করুন। এটি আপনার ডিভাইসে প্রসেস হয়, পিক্সেল কখনো ব্রাউজার ছাড়ে না।",
@@ -49,5 +49,5 @@
   "inputs.plateView.label": "প্লেট ভিউ (প্রিন্ট-প্রস্তুত)",
   "inputs.plateView.section": "প্লেট",
   "inputs.plateView.help": "ডেলিভারেবলে যান: সাদার ওপর নিখাদ কালোতে মাস্ক, ওভারপ্রিন্ট লেবেলসহ। এটিই প্রিন্ট হাউসে পাঠান, চকচকে প্রিভিউ শুধুই উপস্থাপনা।",
-  "featured.blurb": "Foil, spot UV and emboss — with the plate your printer needs"
+  "featured.blurb": "ফয়েল, স্পট UV ও এমবস - আপনার প্রিন্টারের প্রয়োজনীয় প্লেট সহ"
 }

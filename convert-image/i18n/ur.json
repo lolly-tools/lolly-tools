@@ -1,6 +1,6 @@
 {
   "name": "تصویر تبدیل کریں",
-  "description": "HEIC، TIFF یا کسی بھی تصویر کو WebP، JPEG یا PNG میں تبدیل کریں - آپ کے ڈیوائس پر۔",
+  "description": "HEIC, TIFF یا کسی بھی تصویر کو WebP، JPEG یا PNG میں بدلیں - آپ کے آلے پر۔",
   "a11yLabel": "{{fileName}} کے لیے تصویر کی تبدیلی",
   "inputs.source.label": "تصویر",
   "inputs.source.help": "ایک HEIC، HEIF، JPEG، PNG، WebP، AVIF یا TIFF تصویر۔ یہ آپ کے براؤزر میں پڑھی جاتی ہے اور کبھی آپ کے ڈیوائس سے باہر نہیں جاتی۔",

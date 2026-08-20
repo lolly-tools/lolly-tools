@@ -1,6 +1,6 @@
 {
   "name": "簡報建立工具",
-  "description": "使用即時畫布編輯器建立投影片集 - 直接在每張投影片上編輯文字、色彩與圖片。",
+  "description": "以即時畫布編輯器製作投影片 - 直接在每張投影片上編輯文字、色彩與圖片。",
   "a11yLabel": "含 {{slideCount}} 張投影片的簡報",
   "inputs.size.label": "簡報大小",
   "inputs.size.help": "整份簡報只有一種大小 - PowerPoint 讓每張投影片大小相同。可在匯出列以像素覆寫。",

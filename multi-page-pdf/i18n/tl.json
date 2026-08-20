@@ -1,7 +1,7 @@
 {
   "name": "Multi-Page PDF",
-  "description": "Gumawa ng multi-page PDF — cover, mga content block na dumadaloy, at back page.",
-  "featured.blurb": "Multi-page PDF — cover, content, back page",
+  "description": "Bumuo ng multi-page na PDF - cover, dumadaloy na content blocks, at back page.",
+  "featured.blurb": "Multi-page na PDF - cover, content, back",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — multi-page PDF na dokumento",
   "inputs.pageSize.label": "Sukat ng page",
   "inputs.pageSize.help": "Nagtatakda ng sukat ng bawat page at ng sukat ng page ng na-export na PDF. Ine-render ang bawat page sa dokumento sa eksaktong sukat na ito.",

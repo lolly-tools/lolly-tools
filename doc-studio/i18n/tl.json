@@ -1,6 +1,6 @@
 {
   "name": "Doc Studio",
-  "description": "Gumawa ng multi-page na dokumento sa canvas — may rich text, headings, tables, at naka-insert na Lolly renders na dumadaloy sa mga page at ine-export bilang PDF.",
+  "description": "Sumulat ng multi-page na dokumento sa canvas - rich text, headings, tables at mga isinamang Lolly render na dumadaloy sa mga pahina at nag-e-export bilang PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — multi-page na dokumento",
   "inputs.pageSize.label": "Sukat ng pahina",
   "inputs.pageSize.help": "Nagtatakda ng sukat ng bawat pahina at ng sukat ng pahina ng na-export na PDF.",

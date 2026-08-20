@@ -1,7 +1,7 @@
 {
   "name": "PDF met meerdere pagina's",
-  "description": "Maak een PDF met meerdere pagina's — een cover, doorlopende inhoudsblokken en een achterpagina.",
-  "featured.blurb": "PDF's met meerdere pagina's — cover, inhoud, achterpagina",
+  "description": "Bouw een meerpagina-PDF - een omslag, doorlopende inhoudsblokken en een achterpagina.",
+  "featured.blurb": "Meerpagina-PDF's - omslag, inhoud, achterkant",
   "a11yLabel": "{{default coverTitle \"Naamloos\"}} — pdf-document met meerdere pagina's",
   "inputs.pageSize.label": "Paginaformaat",
   "inputs.pageSize.help": "Bepaalt het formaat van elke pagina en de paginagrootte van de geëxporteerde pdf. Elke pagina in het document wordt op precies dit formaat weergegeven.",

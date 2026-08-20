@@ -1,5 +1,5 @@
 {
   "name": "Assistente di testo",
-  "description": "Formatta, decodifica, applica hash e anonimizza testo — JSON, JWT e altro.",
+  "description": "Formatta, decodifica, esegui hash e de-identifica testo - JSON, JWT e altro.",
   "a11yLabel": "Assistente di testo — area di lavoro sul dispositivo per JSON / YAML / Helm / JWT / Base64 / hash / anonimizzazione"
 }

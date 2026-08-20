@@ -1,6 +1,6 @@
 {
   "name": "Konvertera bild",
-  "description": "Gör om HEIC, TIFF eller valfritt foto till WebP, JPEG eller PNG - på din enhet.",
+  "description": "Gör om HEIC, TIFF eller vilket foto som helst till WebP, JPEG eller PNG - på din enhet.",
   "a11yLabel": "Bildkonvertering för {{fileName}}",
   "inputs.source.label": "Bild",
   "inputs.source.help": "En HEIC-, HEIF-, JPEG-, PNG-, WebP-, AVIF- eller TIFF-bild. Den läses i din webbläsare och lämnar aldrig din enhet.",

@@ -1,6 +1,6 @@
 {
   "name": "Documentstudio",
-  "description": "Schrijf een document met meerdere pagina's op het canvas — opgemaakte tekst, koppen, tabellen en ingevoegde Lolly-renders die van pagina naar pagina doorlopen en als PDF worden geëxporteerd.",
+  "description": "Schrijf een meerpaginadocument op het canvas - opgemaakte tekst, koppen, tabellen en ingevoegde Lolly-renders die doorlopen over pagina's en als PDF exporteren.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — document met meerdere pagina's",
   "inputs.pageSize.label": "Paginaformaat",
   "inputs.pageSize.help": "Bepaalt het formaat van elke pagina en van de geëxporteerde PDF.",

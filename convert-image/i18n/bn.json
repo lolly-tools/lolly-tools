@@ -1,6 +1,6 @@
 {
   "name": "ছবি কনভার্ট করুন",
-  "description": "HEIC, TIFF বা যেকোনো ছবিকে WebP, JPEG বা PNG-তে রূপান্তর করুন - আপনার ডিভাইসেই।",
+  "description": "HEIC, TIFF বা যেকোনো ছবিকে WebP, JPEG বা PNG-তে পরিণত করুন - আপনার ডিভাইসেই।",
   "a11yLabel": "{{fileName}}-এর জন্য ইমেজ কনভার্সন",
   "inputs.source.label": "ছবি",
   "inputs.source.help": "একটি HEIC, HEIF, JPEG, PNG, WebP, AVIF বা TIFF ছবি। এটি আপনার ব্রাউজারে পড়া হয় এবং কখনও আপনার ডিভাইস ছেড়ে যায় না।",

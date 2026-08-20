@@ -1,8 +1,8 @@
 {
   "name": "Wielostronicowy PDF",
-  "description": "Twórz wielostronicowy PDF — okładkę, płynące bloki treści i stronę tylną.",
+  "description": "Zbuduj wielostronicowy PDF - okładkę, płynące bloki treści i tylną stronę.",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — dokument PDF wielostronicowy",
-  "featured.blurb": "Wielostronicowe PDF-y — okładka, treść, tył",
+  "featured.blurb": "Wielostronicowe PDF-y - okładka, treść, tył",
   "inputs.pageSize.label": "Rozmiar strony",
   "inputs.pageSize.help": "Ustawia rozmiar każdej strony oraz rozmiar strony eksportowanego PDF-a. Każda strona dokumentu renderuje się w tym dokładnym rozmiarze.",
   "inputs.pageSize.options.a4": "A4 pionowo · 210 × 297 mm",

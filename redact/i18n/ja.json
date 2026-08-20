@@ -1,4 +1,4 @@
 {
-  "name": "Redact",
-  "description": "Black out sensitive content by rebuilding the file, then verify the output before it downloads, all on your device."
+  "name": "墨消し",
+  "description": "ファイルを再構築して機密内容を黒塗り、ダウンロード前に出力を検証 - すべてデバイス上で処理します。"
 }

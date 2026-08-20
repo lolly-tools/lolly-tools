@@ -1,6 +1,6 @@
 {
   "name": "문서 스튜디오",
-  "description": "캔버스에서 여러 페이지짜리 문서를 작성해요 — 서식 있는 텍스트, 제목, 표, 그리고 페이지에 흘러 들어가는 Lolly 렌더까지 담아 PDF로 내보낼 수 있어요.",
+  "description": "캔버스에서 여러 페이지 문서를 작성하세요 - 서식 있는 텍스트, 제목, 표, 삽입된 Lolly 렌더가 페이지에 걸쳐 흐르며 PDF로 내보내집니다.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — 여러 페이지 문서",
   "inputs.pageSize.label": "페이지 크기",
   "inputs.pageSize.help": "모든 페이지의 크기와 내보낸 PDF 페이지 크기를 설정해요.",

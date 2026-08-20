@@ -1,6 +1,6 @@
 {
   "name": "Dokumentstudio",
-  "description": "Schreiben Sie ein mehrseitiges Dokument auf der Leinwand – formatierten Text, Überschriften, Tabellen und eingefügte Lolly-Renderings, die über die Seiten fließen und sich als PDF exportieren lassen.",
+  "description": "Schreibt ein mehrseitiges Dokument auf der Fläche - Rich Text, Überschriften, Tabellen und eingefügte Lolly-Renderings, die auf Seiten fließen und als PDF exportiert werden.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} – mehrseitiges Dokument",
   "inputs.pageSize.label": "Seitengröße",
   "inputs.pageSize.help": "Legt die Größe aller Seiten sowie die Seitengröße der exportierten PDF-Datei fest.",

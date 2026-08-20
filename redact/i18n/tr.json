@@ -1,4 +1,4 @@
 {
-  "name": "Redact",
-  "description": "Black out sensitive content by rebuilding the file, then verify the output before it downloads, all on your device."
+  "name": "Sansürle",
+  "description": "Dosyayı yeniden oluşturarak hassas içeriği karartın, ardından indirilmeden önce çıktıyı doğrulayın, hepsi cihazınızda."
 }

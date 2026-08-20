@@ -1,6 +1,6 @@
 {
   "name": "I-compress ang PDF",
-  "description": "Paliitin ang PDF sa pamamagitan ng pag-compress ulit ng mga larawan dito — sa mismong device mo.",
+  "description": "Paliitin ang isang PDF sa pamamagitan ng muling pag-compress ng mga larawan nito - sa iyong device.",
   "a11yLabel": "PDF compressor para sa {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Isang PDF file. Binabasa ito sa browser mo at hindi ito umaalis sa device mo.",

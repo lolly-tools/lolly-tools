@@ -1,6 +1,6 @@
 {
   "name": "Chuyển đổi ảnh",
-  "description": "Chuyển HEIC, TIFF hoặc bất kỳ ảnh nào sang WebP, JPEG hoặc PNG - ngay trên thiết bị của bạn.",
+  "description": "Biến HEIC, TIFF hoặc bất kỳ ảnh nào thành WebP, JPEG hoặc PNG - ngay trên thiết bị của bạn.",
   "a11yLabel": "Chuyển đổi ảnh cho {{fileName}}",
   "inputs.source.label": "Hình ảnh",
   "inputs.source.help": "Ảnh HEIC, HEIF, JPEG, PNG, WebP, AVIF hoặc TIFF. Được đọc trong trình duyệt của bạn, không bao giờ rời khỏi thiết bị.",

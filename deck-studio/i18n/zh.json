@@ -1,6 +1,6 @@
 {
-  "name": "Markdown Slides",
-  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
+  "name": "Markdown 幻灯片",
+  "description": "将 Markdown 或 JSON 规范转换为原生可编辑的 PowerPoint 演示文稿 - 真实文本、项目符号、表格和品牌主题 - 几秒完成。这是以文字为先的快速路径;若想手动排布幻灯片或添加动画,请使用 Design 画布。图表和示意图可来自你的其他 Lolly 工具。导出 .pptx(可编辑)、PDF 和 PNG。",
   "a11yLabel": "包含 {{_slideCount}} 张幻灯片的演示文稿",
   "inputs.size.label": "演示文稿尺寸",
   "inputs.size.help": "整个演示文稿使用同一尺寸 - PowerPoint 为每张幻灯片设定相同尺寸。",

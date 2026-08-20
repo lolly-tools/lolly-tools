@@ -1,6 +1,6 @@
 {
   "name": "Export de active",
-  "description": "Randează orice activ din catalog — sau un link către un instrument Lolly — în orice format și dimensiune.",
+  "description": "Randează orice element din catalog - sau un link de instrument Lolly - în orice format și dimensiune.",
   "a11yLabel": "Activ exportat",
   "inputs.src.label": "Activ",
   "inputs.src.help": "Activul de randat — un ID din catalog (vezi `lolly assets`) sau un link către un instrument lolly.tools lipit. Activele vectoriale rămân vectoriale în SVG/PDF; activele raster sunt încorporate ca imagini.",

@@ -1,6 +1,6 @@
 {
   "name": "Konwertuj obraz",
-  "description": "Zamień HEIC, TIFF lub dowolne zdjęcie na WebP, JPEG lub PNG - na swoim urządzeniu.",
+  "description": "Zamień HEIC, TIFF lub dowolne zdjęcie na WebP, JPEG lub PNG - na Twoim urządzeniu.",
   "a11yLabel": "Konwersja obrazu dla {{fileName}}",
   "inputs.source.label": "Obraz",
   "inputs.source.help": "Obraz HEIC, HEIF, JPEG, PNG, WebP, AVIF lub TIFF. Jest odczytywany w przeglądarce i nigdy nie opuszcza twojego urządzenia.",

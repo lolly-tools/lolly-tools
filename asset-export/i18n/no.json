@@ -1,6 +1,6 @@
 {
   "name": "Eksporter ressurs",
-  "description": "Render en hvilken som helst ressurs fra katalogen — eller en Lolly-verktøylenke — til et vilkårlig format og størrelse.",
+  "description": "Render en hvilken som helst katalogressurs - eller en Lolly-verktøylenke - ut til et hvilket som helst format og størrelse.",
   "a11yLabel": "Eksportert ressurs",
   "inputs.src.label": "Ressurs",
   "inputs.src.help": "Ressursen som skal renderes — en katalog-ID (se `lolly assets`) eller en limt inn lolly.tools-verktøylenke. Vektorressurser forblir vektorbaserte gjennom SVG/PDF; rasterressurser bygges inn som bilder.",

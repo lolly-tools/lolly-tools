@@ -1,6 +1,6 @@
 {
   "name": "Export zdroje",
-  "description": "Vykreslí libovolný zdroj z katalogu — nebo odkaz na nástroj Lolly — do libovolného formátu a velikosti.",
+  "description": "Vykresli libovolné aktivum z katalogu - nebo odkaz na nástroj Lolly - do libovolného formátu a velikosti.",
   "a11yLabel": "Exportovaný zdroj",
   "inputs.src.label": "Zdroj",
   "inputs.src.help": "Zdroj, který se má vykreslit — ID z katalogu (viz `lolly assets`) nebo vložený odkaz na nástroj lolly.tools. Vektorové zdroje zůstávají vektorové ve formátech SVG a PDF, rastrové zdroje se vloží jako obrázky.",

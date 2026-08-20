@@ -1,6 +1,6 @@
 {
-  "name": "Markdown Slides",
-  "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck — real text, bullets, tables and brand theme — in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
+  "name": "마크다운 슬라이드",
+  "description": "Markdown이나 JSON 스펙을 네이티브 편집 가능한 PowerPoint 덱으로 변환하세요 - 실제 텍스트, 글머리 기호, 표와 브랜드 테마까지 - 몇 초 만에. 텍스트 위주로 빠르게 만드는 방법이며, 슬라이드를 직접 배치하거나 애니메이션을 넣고 싶다면 Design 캔버스를 이용하세요. 차트와 다이어그램은 다른 Lolly 도구에서 가져옵니다. .pptx(편집 가능), PDF, PNG로 내보냅니다.",
   "a11yLabel": "슬라이드 {{_slideCount}}개로 된 프레젠테이션 덱",
   "inputs.size.label": "덱 크기",
   "inputs.size.help": "전체 덱에 하나의 크기예요 - PowerPoint는 모든 슬라이드에 같은 크기를 적용해요.",

@@ -1,6 +1,6 @@
 {
   "name": "Studio Tài liệu",
-  "description": "Viết tài liệu nhiều trang trên canvas — văn bản định dạng, tiêu đề, bảng và các bản dựng Lolly được chèn vào, chảy qua các trang và xuất thành PDF.",
+  "description": "Viết tài liệu nhiều trang trên canvas - văn bản định dạng, tiêu đề, bảng và bản dựng Lolly chèn vào, tự động chảy sang trang mới và xuất thành PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} — tài liệu nhiều trang",
   "inputs.pageSize.label": "Kích thước trang",
   "inputs.pageSize.help": "Đặt kích thước cho mọi trang và kích thước trang PDF khi xuất.",

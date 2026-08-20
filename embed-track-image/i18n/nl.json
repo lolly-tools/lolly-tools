@@ -1,6 +1,6 @@
 {
-  "name": "Embed, Imprint & Track",
-  "description": "Claim your name on any media you've already made — image, PDF, video or audio. Stamp your author, copyright and licence as Content Credentials (a durable raster Imprint too), preserving any credential already inside the file — all on your device, before you upload it anywhere.",
+  "name": "Insluiten, Imprint & Volgen",
+  "description": "Claim je naam op elke media die je al gemaakt hebt - afbeelding, PDF, video of audio. Stempel je auteur, copyright en licentie als Content Credentials (ook een duurzame raster-Imprint), met behoud van elke credential die al in het bestand zit - allemaal op je eigen apparaat, voordat je het ergens uploadt.",
   "a11yLabel": "Credentials insluiten in je afbeelding",
   "inputs.creator.label": "Artiest / auteur",
   "inputs.creator.help": "Je naam - ingebed als de auteur/maker van de afbeelding (EXIF Artist, XMP dc:creator, en de Content Credential).",

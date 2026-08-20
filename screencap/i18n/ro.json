@@ -1,6 +1,6 @@
 {
   "name": "Captură de ecran",
-  "description": "Fă un screenshot sau înregistrează întregul ecran, o fereastră sau un tab de browser. Trage pe canvas pentru a decupa - exportul păstrează exact pixelii pe care i-ai capturat.",
+  "description": "Captează sau înregistrează întregul ecran, o fereastră sau o filă de browser. Trage pe canvas pentru a decupa - exportul rămâne exact pixelii pe care i-ai capturat.",
   "a11yLabel": "Captură de ecran, gata de decupat și exportat",
   "inputs.shot.label": "Screenshot",
   "inputs.shot.help": "Alege o imagine de decupat sau folosește butonul Screenshot de deasupra canvasului, acolo unde browserul tău suportă capturarea ecranului.",

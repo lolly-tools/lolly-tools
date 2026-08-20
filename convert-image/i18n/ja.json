@@ -1,6 +1,6 @@
 {
   "name": "画像を変換",
-  "description": "HEIC、TIFF、その他の写真をWebP、JPEG、PNGに変換します - お使いの端末上で処理されます。",
+  "description": "HEIC、TIFF、その他の写真をWebP、JPEG、PNGに変換 - デバイス上で処理します。",
   "a11yLabel": "{{fileName}} の画像変換",
   "inputs.source.label": "画像",
   "inputs.source.help": "HEIC、HEIF、JPEG、PNG、WebP、AVIF、TIFF画像です。ブラウザ内で読み込まれ、デバイスの外に出ることはありません。",

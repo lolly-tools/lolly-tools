@@ -1,6 +1,6 @@
 {
   "name": "Görseli Dönüştür",
-  "description": "HEIC, TIFF veya herhangi bir fotoğrafı cihazında WebP, JPEG veya PNG'ye dönüştür.",
+  "description": "HEIC, TIFF veya herhangi bir fotoğrafı WebP, JPEG veya PNG'ye dönüştürün - cihazınızda.",
   "a11yLabel": "{{fileName}} için görsel dönüştürme",
   "inputs.source.label": "Görsel",
   "inputs.source.help": "Bir HEIC, HEIF, JPEG, PNG, WebP, AVIF veya TIFF görüntüsü. Tarayıcında okunur ve cihazından asla çıkmaz.",

@@ -1,6 +1,6 @@
 {
   "name": "Wordmark",
-  "description": "Bir kelime yaz, marka fontunda saf yol vektör bir yazı logosu elde et - alıcıların fontu yüklü olması hiç gerekmez.",
+  "description": "Bir sözcük yazın, marka yazı tipinizde saf yol tabanlı bir vektör logotype alın - alıcıların yazı tipini yüklü bulundurmasına hiç gerek kalmaz.",
   "a11yLabel": "{{default text \"Wordmark\"}} yazan Wordmark",
   "inputs.text.label": "Metin",
   "inputs.font.label": "Yazı tipi",

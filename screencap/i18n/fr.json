@@ -1,6 +1,6 @@
 {
   "name": "Capture d'écran",
-  "description": "Capture ou enregistre tout ton écran, une fenêtre ou un onglet de navigateur. Glisse sur le canevas pour recadrer - l'export conserve exactement les pixels capturés.",
+  "description": "Capturez en image ou en vidéo tout votre écran, une fenêtre ou un onglet de navigateur. Faites glisser sur le canevas pour rogner - l'export conserve exactement les pixels capturés.",
   "a11yLabel": "Capture d'écran, prête à recadrer et exporter",
   "inputs.shot.label": "Capture d'écran",
   "inputs.shot.help": "Choisis une image à recadrer, ou utilise le bouton Capture d'écran au-dessus du canevas là où ton navigateur prend en charge la capture d'écran.",

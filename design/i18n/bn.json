@@ -1,5 +1,5 @@
 {
-  "name": "Design",
+  "name": "ডিজাইন",
   "featured.blurb": "খোলা ক্যানভাসে ফ্রি-ফর্ম লেআউট",
   "inputs.background.label": "ক্যানভাস ব্যাকগ্রাউন্ড",
   "inputs.boxes.label": "বক্স",
@@ -101,5 +101,5 @@
   "inputs.boxes.fields.imgpos.options.left bottom": "নিচে বামে",
   "inputs.boxes.fields.imgpos.options.center bottom": "নিচে",
   "inputs.boxes.fields.imgpos.options.right bottom": "নিচে ডানে",
-  "description": "An open canvas for free arrangement — text, images, shapes and live renders from your other Lolly tools, all held to your brand."
+  "description": "মুক্ত বিন্যাসের জন্য একটি খোলা ক্যানভাস - টেক্সট, ছবি, শেপ এবং আপনার অন্যান্য Lolly টুল থেকে লাইভ রেন্ডার, সবই আপনার ব্র্যান্ড অনুযায়ী।"
 }

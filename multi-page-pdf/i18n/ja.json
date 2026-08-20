@@ -1,7 +1,7 @@
 {
   "name": "複数ページ PDF",
-  "description": "表紙、流し込み式のコンテンツブロック、裏表紙からなる複数ページの PDF を作成します。",
-  "featured.blurb": "複数ページ PDF — 表紙・コンテンツ・裏表紙",
+  "description": "複数ページのPDFを作成 - 表紙、流し込みのコンテンツブロック、裏表紙。",
+  "featured.blurb": "複数ページのPDF - 表紙、本文、裏表紙",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} — 複数ページ PDF ドキュメント",
   "inputs.pageSize.label": "ページサイズ",
   "inputs.pageSize.help": "各ページのサイズおよび書き出す PDF のページサイズを設定します。文書内のすべてのページがこのサイズどおりに描画されます。",

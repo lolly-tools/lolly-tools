@@ -1,6 +1,6 @@
 {
   "name": "Tvůrce prezentací",
-  "description": "Vytvoř prezentaci pomocí živého editoru přímo na plátně - uprav text, barvy a obrázky přímo na každém snímku.",
+  "description": "Sestav prezentaci s živým editorem přímo na plátně - uprav text, barvy a obrázky přímo na každém snímku.",
   "a11yLabel": "Prezentace s {{slideCount}} snímky",
   "inputs.size.label": "Velikost prezentace",
   "inputs.size.help": "Jedna velikost pro celou prezentaci - PowerPoint dává každému snímku stejnou velikost. Přepiš ji v pixelech v exportní liště.",

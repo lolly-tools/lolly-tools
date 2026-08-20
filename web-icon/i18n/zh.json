@@ -1,6 +1,6 @@
 {
   "name": "网页图标生成器",
-  "description": "favicon 与应用图标生成器——多尺寸 .ico,附带 PNG 和 SVG。",
+  "description": "网站图标与应用图标制作工具 - 生成多尺寸 .ico,以及 PNG 和 SVG。",
   "a11yLabel": "标签为 {{default text \"untitled\"}} 的网页图标",
   "inputs.text.label": "标签",
   "inputs.text.help": "最多约 4 个字符在浏览器标签页中显示效果最佳。标签会自动缩放以填满图标。",

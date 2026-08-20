@@ -1,6 +1,6 @@
 {
   "name": "Eksport zasobu",
-  "description": "Wyrenderuj każdy zasób z katalogu — lub link do narzędzia Lolly — w każdym formacie i rozmiarze.",
+  "description": "Renderuj dowolny zasób z katalogu - lub link do narzędzia Lolly - w dowolnym formacie i rozmiarze.",
   "a11yLabel": "Wyeksportowany zasób",
   "inputs.src.label": "Zasób",
   "inputs.src.help": "Zasób do wyrenderowania — identyfikator z katalogu (zobacz `lolly assets`) lub wklejony link do narzędzia lolly.tools. Zasoby wektorowe pozostają wektorowe w SVG/PDF; zasoby rastrowe są osadzane jako obrazy.",

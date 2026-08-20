@@ -1,6 +1,6 @@
 {
   "name": "Creador de iconos web",
-  "description": "Creador de favicons e iconos de app: un .ico multitamaño, más PNG y SVG.",
+  "description": "Creador de favicon e icono de app - un .ico multitamaño, más PNG y SVG.",
   "a11yLabel": "Icono web etiquetado como {{default text \"untitled\"}}",
   "inputs.text.label": "Etiqueta",
   "inputs.text.help": "Hasta ~4 caracteres se leen mejor en una pestaña del navegador. La etiqueta se ajusta automáticamente para llenar el icono.",

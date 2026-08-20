@@ -1,5 +1,5 @@
 {
-  "name": "Darkroom",
-  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
-  "featured.blurb": "Grade photos with film looks, LUTs and your brand colours"
+  "name": "Camera oscura",
+  "description": "Una camera oscura professionale per il grading fotografico: look pellicola, LUT .cube di terze parti, trattamenti colore ispirati al brand e texture di finitura - poi cuoci il tuo look come LUT utilizzabile in qualsiasi editor. Apre anche un file Photoshop o GIMP come livelli: posiziona, fondi e nascondi ciascuno, applica il grading al composito ed esporta immagini piatte o un PSD a livelli.",
+  "featured.blurb": "Grading fotografico con look pellicola, LUT e i colori del tuo brand"
 }

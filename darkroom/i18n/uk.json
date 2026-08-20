@@ -1,5 +1,5 @@
 {
-  "name": "Darkroom",
-  "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture — then bake your look as a LUT any editor can use.",
-  "featured.blurb": "Grade photos with film looks, LUTs and your brand colours"
+  "name": "Темна кімната",
+  "description": "Професійна темна кімната для кольорокорекції фото: плівкові стилі, сторонні LUT-файли .cube, кольорові обробки на основі бренду й фінішна текстура - потім запечіть свій стиль як LUT, який відкриє будь-який редактор. Також відкриває файли Photoshop чи GIMP як шари: розташовуйте, змішуйте й приховуйте кожен, коригуйте композит і експортуйте плоскі зображення або шаруватий PSD.",
+  "featured.blurb": "Коригуйте фото плівковими стилями, LUT і кольорами вашого бренду"
 }

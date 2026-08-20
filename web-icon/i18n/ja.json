@@ -1,6 +1,6 @@
 {
   "name": "ウェブアイコンメーカー",
-  "description": "ファビコンとアプリアイコンを作成 — マルチサイズの.icoに加え、PNGとSVGも生成します。",
+  "description": "ファビコン&アプリアイコンメーカー - マルチサイズの.ico、加えてPNGとSVG。",
   "a11yLabel": "{{default text \"untitled\"}}というラベルのウェブアイコン",
   "inputs.text.label": "ラベル",
   "inputs.text.help": "ブラウザタブでは4文字程度までが最も見やすくなります。ラベルはアイコンいっぱいに自動でサイズ調整されます。",

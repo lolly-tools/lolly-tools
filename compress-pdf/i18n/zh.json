@@ -1,6 +1,6 @@
 {
   "name": "压缩 PDF",
-  "description": "在本地设备上重新压缩 PDF 中的图片，缩小文件体积。",
+  "description": "通过重新压缩图片来缩小 PDF - 在你的设备上完成。",
   "a11yLabel": "{{fileName}} 的 PDF 压缩器",
   "inputs.source.label": "PDF",
   "inputs.source.help": "PDF 文件。文件在浏览器中读取，不会离开你的设备。",

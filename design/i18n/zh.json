@@ -101,5 +101,5 @@
   "inputs.boxes.fields.imgpos.options.left bottom": "左下",
   "inputs.boxes.fields.imgpos.options.center bottom": "下",
   "inputs.boxes.fields.imgpos.options.right bottom": "右下",
-  "description": "An open canvas for free arrangement — text, images, shapes and live renders from your other Lolly tools, all held to your brand."
+  "description": "用于自由排布的开放画布 - 文字、图片、形状以及来自你其他 Lolly 工具的实时渲染内容,一切都符合你的品牌规范。"
 }

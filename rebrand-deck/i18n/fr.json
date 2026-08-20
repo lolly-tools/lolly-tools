@@ -1,6 +1,6 @@
 {
   "name": "Rebrander un deck",
-  "description": "Importe un deck PowerPoint et aligne ses couleurs et polices sur ta marque - reconstruit sur ton appareil, rien n'est envoyé.",
+  "description": "Chargez un diaporama PowerPoint et calez ses couleurs et polices sur votre marque - reconstruit sur votre appareil, rien n'est envoyé en ligne.",
   "a11yLabel": "Rebrandeur de diaporama pour {{fileName}}",
   "inputs.source.label": "Fichier PowerPoint",
   "inputs.source.help": "Un fichier .pptx. Il est lu sur ton appareil et jamais envoyé.",

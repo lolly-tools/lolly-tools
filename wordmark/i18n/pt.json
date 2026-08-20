@@ -1,6 +1,6 @@
 {
   "name": "Wordmark",
-  "description": "Digite uma palavra e obtenha um wordmark vetorial em path puro na fonte da sua marca - quem recebe nunca precisa ter a fonte instalada.",
+  "description": "Digite uma palavra, obtenha uma marca-palavra vetorial em caminhos puros na fonte da sua marca - os destinatários nunca precisam ter a fonte instalada.",
   "a11yLabel": "Wordmark exibindo {{default text \"Wordmark\"}}",
   "inputs.text.label": "Texto",
   "inputs.font.label": "Fonte",

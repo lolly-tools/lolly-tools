@@ -1,6 +1,6 @@
 {
   "name": "Kompres PDF",
-  "description": "Perkecil PDF dengan mengompres ulang gambar di dalamnya — di perangkat Anda.",
+  "description": "Perkecil PDF dengan mengompresi ulang gambarnya - di perangkat Anda.",
   "a11yLabel": "Kompresor PDF untuk {{fileName}}",
   "inputs.source.label": "PDF",
   "inputs.source.help": "Berkas PDF. Dibaca di browser Anda dan tidak pernah meninggalkan perangkat Anda.",
