@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Моно лого",
   "inputs.deck.fields.logo.options.off": "Без лого",
   "inputs.deck.fields.notes.label": "Бележки за говорителя",
-  "inputs.deck.fields.notes.placeholder": "Бележки на водещия - отиват в панела за бележки на PowerPoint, никога не се показват на слайда."
+  "inputs.deck.fields.notes.placeholder": "Бележки на водещия - отиват в панела за бележки на PowerPoint, никога не се показват на слайда.",
+  "inputs.footerText.label": "Текст в долния колонтитул",
+  "inputs.footerText.help": "Малък ред в долната част на всеки слайд (авторски права, поверителност), между логото и номера на слайда.",
+  "inputs.footerText.placeholder": "© 2026 Вашата компания · Поверително",
+  "inputs.mode.label": "Режим",
+  "inputs.mode.help": "„Начален шаблон“ заменя слайдовете ви с по един примерен слайд за всяко оформление - изтеглете го като преизползваем брандиран .pptx шаблон.",
+  "inputs.mode.options.deck": "Моите слайдове",
+  "inputs.mode.options.template": "Начален шаблон",
+  "inputs.deck.fields.layout.options.big-number": "Голямо число",
+  "inputs.deck.fields.layout.options.main-point": "Основна идея",
+  "inputs.deck.fields.layout.options.one-column": "Една колона"
 }

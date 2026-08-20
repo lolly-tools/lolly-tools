@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "मोनो लोगो",
   "inputs.deck.fields.logo.options.off": "कोई लोगो नहीं",
   "inputs.deck.fields.notes.label": "स्पीकर नोट्स",
-  "inputs.deck.fields.notes.placeholder": "प्रेजेंटर नोट्स - PowerPoint के नोट्स पैनल में जाते हैं, स्लाइड पर कभी नहीं दिखाए जाते।"
+  "inputs.deck.fields.notes.placeholder": "प्रेजेंटर नोट्स - PowerPoint के नोट्स पैनल में जाते हैं, स्लाइड पर कभी नहीं दिखाए जाते।",
+  "inputs.footerText.label": "फ़ुटर टेक्स्ट",
+  "inputs.footerText.help": "हर स्लाइड के नीचे, लोगो और स्लाइड नंबर के बीच एक छोटी फ़ुटर पंक्ति (कॉपीराइट, गोपनीयता)।",
+  "inputs.footerText.placeholder": "© 2026 आपकी कंपनी · गोपनीय",
+  "inputs.mode.label": "मोड",
+  "inputs.mode.help": "\"स्टार्टर टेम्पलेट\" आपकी स्लाइडों की जगह हर लेआउट की एक नमूना स्लाइड रखता है - इसे दोबारा इस्तेमाल होने वाले ब्रांडेड .pptx टेम्पलेट के रूप में डाउनलोड करें।",
+  "inputs.mode.options.deck": "मेरी स्लाइडें",
+  "inputs.mode.options.template": "स्टार्टर टेम्पलेट",
+  "inputs.deck.fields.layout.options.big-number": "बड़ी संख्या",
+  "inputs.deck.fields.layout.options.main-point": "मुख्य बात",
+  "inputs.deck.fields.layout.options.one-column": "एक कॉलम"
 }

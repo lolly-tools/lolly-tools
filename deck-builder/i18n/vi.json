@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Tự do",
   "inputs.deck.fields.boxes.label": "Hộp tự do",
   "inputs.deck.fields.boxes.help": "Nội dung canvas tự do - một mảng JSON các hộp đã định vị, chỉnh sửa trực tiếp trên trang chiếu. Toạ độ tính bằng pixel trên canvas gốc 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Chữ chân trang",
+  "inputs.footerText.help": "Một dòng chân trang nhỏ (bản quyền, bảo mật) ở cuối mỗi trang chiếu, giữa logo và số trang chiếu.",
+  "inputs.footerText.placeholder": "© 2026 Công ty của bạn · Bảo mật",
+  "inputs.deck.fields.layout.options.bignum": "Con số lớn",
+  "inputs.deck.fields.layout.options.mainpoint": "Ý chính"
 }

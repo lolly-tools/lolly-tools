@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Logo mono",
   "inputs.deck.fields.logo.options.off": "Tiada logo",
   "inputs.deck.fields.notes.label": "Nota pembentang",
-  "inputs.deck.fields.notes.placeholder": "Nota pembentang - dihantar ke panel nota PowerPoint, tidak pernah dipaparkan pada slaid."
+  "inputs.deck.fields.notes.placeholder": "Nota pembentang - dihantar ke panel nota PowerPoint, tidak pernah dipaparkan pada slaid.",
+  "inputs.footerText.label": "Teks pengaki",
+  "inputs.footerText.help": "Satu baris pengaki kecil (hak cipta, kerahsiaan) di bahagian bawah setiap slaid, antara logo dan nombor slaid.",
+  "inputs.footerText.placeholder": "© 2026 Syarikat Anda · Sulit",
+  "inputs.mode.label": "Mod",
+  "inputs.mode.help": "\"Templat permulaan\" menggantikan slaid anda dengan satu slaid contoh bagi setiap susun atur - muat turun sebagai templat .pptx berjenama yang boleh diguna semula.",
+  "inputs.mode.options.deck": "Slaid saya",
+  "inputs.mode.options.template": "Templat permulaan",
+  "inputs.deck.fields.layout.options.big-number": "Nombor besar",
+  "inputs.deck.fields.layout.options.main-point": "Perkara utama",
+  "inputs.deck.fields.layout.options.one-column": "Satu lajur"
 }

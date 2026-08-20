@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "自由排版",
   "inputs.deck.fields.boxes.label": "自由排版框",
   "inputs.deck.fields.boxes.help": "自由版式画布的内容 - 一个由定位框组成的 JSON 数组，直接在幻灯片上编辑。坐标是 1920 × 1920 原生画布上的像素值。",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "页脚文字",
+  "inputs.footerText.help": "每张幻灯片底部的一行小页脚(版权、保密声明),位于徽标与幻灯片编号之间。",
+  "inputs.footerText.placeholder": "© 2026 贵公司 · 保密",
+  "inputs.deck.fields.layout.options.bignum": "大数字",
+  "inputs.deck.fields.layout.options.mainpoint": "要点"
 }

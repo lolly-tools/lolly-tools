@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "شعار أحادي",
   "inputs.deck.fields.logo.options.off": "بلا شعار",
   "inputs.deck.fields.notes.label": "ملاحظات المتحدث",
-  "inputs.deck.fields.notes.placeholder": "ملاحظات المقدم - تنتقل إلى لوحة ملاحظات PowerPoint، ولا تظهر أبدا على الشريحة."
+  "inputs.deck.fields.notes.placeholder": "ملاحظات المقدم - تنتقل إلى لوحة ملاحظات PowerPoint، ولا تظهر أبدا على الشريحة.",
+  "inputs.footerText.label": "نص التذييل",
+  "inputs.footerText.help": "سطر تذييل صغير (حقوق النشر، السرية) أسفل كل شريحة، بين الشعار ورقم الشريحة.",
+  "inputs.footerText.placeholder": "© 2026 شركتك · سرّي",
+  "inputs.mode.label": "الوضع",
+  "inputs.mode.help": "\"قالب البداية\" يستبدل شرائحك بشريحة نموذجية لكل تخطيط - نزّله كقالب .pptx قابل لإعادة الاستخدام بعلامتك.",
+  "inputs.mode.options.deck": "شرائحي",
+  "inputs.mode.options.template": "قالب البداية",
+  "inputs.deck.fields.layout.options.big-number": "رقم كبير",
+  "inputs.deck.fields.layout.options.main-point": "فكرة رئيسية",
+  "inputs.deck.fields.layout.options.one-column": "عمود واحد"
 }

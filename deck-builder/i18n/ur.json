@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "فری فارم",
   "inputs.deck.fields.boxes.label": "فری فارم باکسز",
   "inputs.deck.fields.boxes.help": "فری فارم کینوس کا مواد - پوزیشن شدہ باکسز کی ایک JSON array، جسے براہ راست سلائیڈ پر ایڈٹ کیا جاتا ہے۔ کوآرڈینیٹس 1920 × 1920 اصل کینوس پر پکسلز میں ہیں۔",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "فوٹر متن",
+  "inputs.footerText.help": "ہر سلائیڈ کے نیچے، لوگو اور سلائیڈ نمبر کے درمیان ایک چھوٹی فوٹر لائن (کاپی رائٹ، رازداری)۔",
+  "inputs.footerText.placeholder": "© 2026 آپ کی کمپنی · خفیہ",
+  "inputs.deck.fields.layout.options.bignum": "بڑا عدد",
+  "inputs.deck.fields.layout.options.mainpoint": "مرکزی نکتہ"
 }

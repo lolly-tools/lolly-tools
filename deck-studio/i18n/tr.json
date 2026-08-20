@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Mono logo",
   "inputs.deck.fields.logo.options.off": "Logo yok",
   "inputs.deck.fields.notes.label": "Sunucu notları",
-  "inputs.deck.fields.notes.placeholder": "Sunum notları - PowerPoint'in notlar bölmesine aktarılır, slaytta asla gösterilmez."
+  "inputs.deck.fields.notes.placeholder": "Sunum notları - PowerPoint'in notlar bölmesine aktarılır, slaytta asla gösterilmez.",
+  "inputs.footerText.label": "Alt bilgi metni",
+  "inputs.footerText.help": "Her slaydın altında, logo ile slayt numarası arasında küçük bir alt bilgi satırı (telif hakkı, gizlilik).",
+  "inputs.footerText.placeholder": "© 2026 Şirketiniz · Gizli",
+  "inputs.mode.label": "Mod",
+  "inputs.mode.help": "\"Başlangıç şablonu\" slaytlarınızı her düzen için birer örnek slaytla değiştirir - yeniden kullanılabilir markalı .pptx şablonu olarak indirin.",
+  "inputs.mode.options.deck": "Slaytlarım",
+  "inputs.mode.options.template": "Başlangıç şablonu",
+  "inputs.deck.fields.layout.options.big-number": "Büyük sayı",
+  "inputs.deck.fields.layout.options.main-point": "Ana fikir",
+  "inputs.deck.fields.layout.options.one-column": "Tek sütun"
 }

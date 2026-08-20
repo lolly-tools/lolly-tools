@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Swobodny",
   "inputs.deck.fields.boxes.label": "Swobodne pola",
   "inputs.deck.fields.boxes.help": "Zawartość swobodnego płótna - tablica JSON rozmieszczonych pól, edytowana bezpośrednio na slajdzie. Współrzędne to piksele na natywnym płótnie 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Tekst stopki",
+  "inputs.footerText.help": "Mała linia stopki (prawa autorskie, poufność) na dole każdego slajdu, między logo a numerem slajdu.",
+  "inputs.footerText.placeholder": "© 2026 Twoja firma · Poufne",
+  "inputs.deck.fields.layout.options.bignum": "Duża liczba",
+  "inputs.deck.fields.layout.options.mainpoint": "Główna myśl"
 }

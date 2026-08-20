@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Fri form",
   "inputs.deck.fields.boxes.label": "Friformbokser",
   "inputs.deck.fields.boxes.help": "Innholdet i det frie lerretet - en JSON-matrise med posisjonerte bokser, redigert direkte på lysbildet. Koordinater er piksler på det opprinnelige 1920 × 1920-lerretet.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Bunntekst",
+  "inputs.footerText.help": "En liten bunntekstlinje (opphavsrett, konfidensialitet) nederst på hvert lysbilde, mellom logoen og lysbildenummeret.",
+  "inputs.footerText.placeholder": "© 2026 Ditt firma · Konfidensielt",
+  "inputs.deck.fields.layout.options.bignum": "Stort tall",
+  "inputs.deck.fields.layout.options.mainpoint": "Hovedpoeng"
 }

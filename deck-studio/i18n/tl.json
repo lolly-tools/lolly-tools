@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Mono logo",
   "inputs.deck.fields.logo.options.off": "Walang logo",
   "inputs.deck.fields.notes.label": "Mga tala ng speaker",
-  "inputs.deck.fields.notes.placeholder": "Mga tala ng presenter - napupunta sa notes pane ng PowerPoint, hindi kailanman ipinapakita sa slide."
+  "inputs.deck.fields.notes.placeholder": "Mga tala ng presenter - napupunta sa notes pane ng PowerPoint, hindi kailanman ipinapakita sa slide.",
+  "inputs.footerText.label": "Teksto ng footer",
+  "inputs.footerText.help": "Isang maliit na linya ng footer (copyright, pagiging kumpidensyal) sa ibaba ng bawat slide, sa pagitan ng logo at numero ng slide.",
+  "inputs.footerText.placeholder": "© 2026 Ang Iyong Kompanya · Kumpidensyal",
+  "inputs.mode.label": "Mode",
+  "inputs.mode.help": "Pinapalitan ng \"Panimulang template\" ang iyong mga slide ng tig-isang halimbawang slide bawat layout - i-download ito bilang magagamit-muling branded na .pptx template.",
+  "inputs.mode.options.deck": "Aking mga slide",
+  "inputs.mode.options.template": "Panimulang template",
+  "inputs.deck.fields.layout.options.big-number": "Malaking numero",
+  "inputs.deck.fields.layout.options.main-point": "Pangunahing punto",
+  "inputs.deck.fields.layout.options.one-column": "Isang column"
 }

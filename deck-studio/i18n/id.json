@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Logo mono",
   "inputs.deck.fields.logo.options.off": "Tanpa logo",
   "inputs.deck.fields.notes.label": "Catatan pembicara",
-  "inputs.deck.fields.notes.placeholder": "Catatan presenter - masuk ke panel catatan PowerPoint, tidak pernah ditampilkan di slide."
+  "inputs.deck.fields.notes.placeholder": "Catatan presenter - masuk ke panel catatan PowerPoint, tidak pernah ditampilkan di slide.",
+  "inputs.footerText.label": "Teks footer",
+  "inputs.footerText.help": "Satu baris footer kecil (hak cipta, kerahasiaan) di bagian bawah setiap slide, di antara logo dan nomor slide.",
+  "inputs.footerText.placeholder": "© 2026 Perusahaan Anda · Rahasia",
+  "inputs.mode.label": "Mode",
+  "inputs.mode.help": "\"Templat awal\" mengganti slide Anda dengan satu slide contoh per tata letak - unduh sebagai templat .pptx bermerek yang dapat dipakai ulang.",
+  "inputs.mode.options.deck": "Slide saya",
+  "inputs.mode.options.template": "Templat awal",
+  "inputs.deck.fields.layout.options.big-number": "Angka besar",
+  "inputs.deck.fields.layout.options.main-point": "Poin utama",
+  "inputs.deck.fields.layout.options.one-column": "Satu kolom"
 }

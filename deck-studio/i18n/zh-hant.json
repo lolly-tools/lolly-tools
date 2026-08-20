@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "單色標誌",
   "inputs.deck.fields.logo.options.off": "無標誌",
   "inputs.deck.fields.notes.label": "講者備忘稿",
-  "inputs.deck.fields.notes.placeholder": "簡報者備忘稿 - 會匯入 PowerPoint 的備忘稿窗格,絕不會顯示在投影片上。"
+  "inputs.deck.fields.notes.placeholder": "簡報者備忘稿 - 會匯入 PowerPoint 的備忘稿窗格,絕不會顯示在投影片上。",
+  "inputs.footerText.label": "頁尾文字",
+  "inputs.footerText.help": "每張投影片底部的一行小頁尾(版權、機密聲明),位於標誌與投影片編號之間。",
+  "inputs.footerText.placeholder": "© 2026 貴公司 · 機密",
+  "inputs.mode.label": "模式",
+  "inputs.mode.help": "「入門範本」會將你的投影片換成每種版面配置各一張的範例投影片 - 下載成可重複使用的品牌 .pptx 範本。",
+  "inputs.mode.options.deck": "我的投影片",
+  "inputs.mode.options.template": "入門範本",
+  "inputs.deck.fields.layout.options.big-number": "大數字",
+  "inputs.deck.fields.layout.options.main-point": "重點",
+  "inputs.deck.fields.layout.options.one-column": "單欄"
 }

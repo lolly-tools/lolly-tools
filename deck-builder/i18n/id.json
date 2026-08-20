@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Bebas",
   "inputs.deck.fields.boxes.label": "Kotak bebas",
   "inputs.deck.fields.boxes.help": "Konten kanvas freeform - array JSON berisi kotak berposisi, diedit langsung di slide. Koordinat dalam piksel pada kanvas native 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Teks footer",
+  "inputs.footerText.help": "Satu baris footer kecil (hak cipta, kerahasiaan) di bagian bawah setiap slide, di antara logo dan nomor slide.",
+  "inputs.footerText.placeholder": "© 2026 Perusahaan Anda · Rahasia",
+  "inputs.deck.fields.layout.options.bignum": "Angka besar",
+  "inputs.deck.fields.layout.options.mainpoint": "Poin utama"
 }

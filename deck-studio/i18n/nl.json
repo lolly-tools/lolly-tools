@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Mono-logo",
   "inputs.deck.fields.logo.options.off": "Geen logo",
   "inputs.deck.fields.notes.label": "Sprekersnotities",
-  "inputs.deck.fields.notes.placeholder": "Presentatienotities - komen terecht in het notitiepaneel van PowerPoint, nooit zichtbaar op de slide."
+  "inputs.deck.fields.notes.placeholder": "Presentatienotities - komen terecht in het notitiepaneel van PowerPoint, nooit zichtbaar op de slide.",
+  "inputs.footerText.label": "Voettekst",
+  "inputs.footerText.help": "Een kleine voettekstregel (copyright, vertrouwelijkheid) onderaan elke dia, tussen het logo en het dianummer.",
+  "inputs.footerText.placeholder": "© 2026 Jouw bedrijf · Vertrouwelijk",
+  "inputs.mode.label": "Modus",
+  "inputs.mode.help": "\"Startsjabloon\" vervangt je dia's door één voorbeelddia per lay-out - download het als herbruikbaar .pptx-merksjabloon.",
+  "inputs.mode.options.deck": "Mijn dia's",
+  "inputs.mode.options.template": "Startsjabloon",
+  "inputs.deck.fields.layout.options.big-number": "Groot getal",
+  "inputs.deck.fields.layout.options.main-point": "Kernboodschap",
+  "inputs.deck.fields.layout.options.one-column": "Eén kolom"
 }

@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "モノクロロゴ",
   "inputs.deck.fields.logo.options.off": "ロゴなし",
   "inputs.deck.fields.notes.label": "スピーカーノート",
-  "inputs.deck.fields.notes.placeholder": "プレゼンターノート - PowerPointのノートペインに渡され、スライドには表示されません。"
+  "inputs.deck.fields.notes.placeholder": "プレゼンターノート - PowerPointのノートペインに渡され、スライドには表示されません。",
+  "inputs.footerText.label": "フッターテキスト",
+  "inputs.footerText.help": "各スライドの下部、ロゴとスライド番号の間に入る小さなフッター行(著作権、機密表示)。",
+  "inputs.footerText.placeholder": "© 2026 あなたの会社 · 社外秘",
+  "inputs.mode.label": "モード",
+  "inputs.mode.help": "「スターターテンプレート」はスライドを各レイアウトのサンプル1枚ずつに置き換えます。再利用できるブランド付き .pptx テンプレートとしてダウンロードできます。",
+  "inputs.mode.options.deck": "自分のスライド",
+  "inputs.mode.options.template": "スターターテンプレート",
+  "inputs.deck.fields.layout.options.big-number": "大きな数字",
+  "inputs.deck.fields.layout.options.main-point": "メインポイント",
+  "inputs.deck.fields.layout.options.one-column": "1段組"
 }

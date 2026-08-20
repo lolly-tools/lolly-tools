@@ -3,7 +3,7 @@
   "name": "Markdown Slides",
   "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck - real text, bullets, tables and brand theme - in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Presentation deck with {{_slideCount}} slides",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.56.0",
   "status": "community",
   "category": "designer",
@@ -54,6 +54,25 @@
       "help": "Place the active brand's logo on each slide - automatically the light or dark version to suit the slide's background. Override per slide in the builder."
     },
     {
+      "id": "footerText",
+      "label": "Footer text",
+      "type": "text",
+      "default": "",
+      "placeholder": "© 2026 Your Company · Confidential",
+      "help": "A small footer line (copyright, confidentiality) at the bottom of every slide, between the logo and the slide number."
+    },
+    {
+      "id": "mode",
+      "label": "Mode",
+      "type": "select",
+      "default": "deck",
+      "help": "\"Starter template\" replaces your slides with one sample slide per layout - download it as a reusable branded .pptx template.",
+      "options": [
+        { "value": "deck", "label": "My slides" },
+        { "value": "template", "label": "Starter template" }
+      ]
+    },
+    {
       "id": "spec",
       "label": "Paste a deck - Markdown or JSON",
       "type": "longtext",
@@ -87,11 +106,14 @@
             { "value": "table", "label": "Table", "repeatable": true },
             { "value": "visual", "label": "Big visual", "repeatable": true },
             { "value": "full-image", "label": "Full-bleed image", "repeatable": true },
-            { "value": "quote", "label": "Quote", "repeatable": true }
+            { "value": "quote", "label": "Quote", "repeatable": true },
+            { "value": "big-number", "label": "Big number", "repeatable": true },
+            { "value": "main-point", "label": "Main point", "repeatable": true },
+            { "value": "one-column", "label": "One column", "repeatable": true }
           ]
         },
         { "id": "heading", "label": "Title", "type": "text", "default": "", "placeholder": "Slide title" },
-        { "id": "subtitle", "label": "Subtitle", "type": "text", "default": "", "placeholder": "Optional subtitle", "showFor": ["title", "section", "content", "two-col", "split", "quote"] },
+        { "id": "subtitle", "label": "Subtitle", "type": "text", "default": "", "placeholder": "Optional subtitle", "showFor": ["title", "section", "content", "two-col", "split", "quote", "big-number", "one-column"] },
         {
           "id": "body",
           "label": "Body",
@@ -99,8 +121,8 @@
           "default": "",
           "rows": 5,
           "placeholder": "One line per bullet. Indent with two spaces for a sub-bullet. **bold**, *italic*, __underline__.",
-          "showFor": ["content", "two-col", "split", "quote"],
-          "multilineFor": ["content", "two-col", "split", "quote"]
+          "showFor": ["content", "two-col", "split", "quote", "one-column"],
+          "multilineFor": ["content", "two-col", "split", "quote", "one-column"]
         },
         {
           "id": "visual",
@@ -141,7 +163,7 @@
           "default": "",
           "rows": 3,
           "placeholder": "Presenter notes - travel into PowerPoint's notes pane, never shown on the slide.",
-          "multilineFor": ["title", "section", "content", "two-col", "split", "table", "visual", "full-image", "quote"]
+          "multilineFor": ["title", "section", "content", "two-col", "split", "table", "visual", "full-image", "quote", "big-number", "main-point", "one-column"]
         }
       ],
       "default": [

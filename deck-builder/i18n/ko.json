@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "자유 형식",
   "inputs.deck.fields.boxes.label": "자유 배치 상자",
   "inputs.deck.fields.boxes.help": "자유형 캔버스 콘텐츠예요 - 슬라이드에서 직접 편집하는, 위치가 지정된 상자들의 JSON 배열이에요. 좌표는 1920 × 1920 네이티브 캔버스의 픽셀 단위예요.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "바닥글 텍스트",
+  "inputs.footerText.help": "각 슬라이드 하단, 로고와 슬라이드 번호 사이에 들어가는 작은 바닥글 한 줄(저작권, 기밀 표시).",
+  "inputs.footerText.placeholder": "© 2026 귀사 · 대외비",
+  "inputs.deck.fields.layout.options.bignum": "큰 숫자",
+  "inputs.deck.fields.layout.options.mainpoint": "핵심 메시지"
 }

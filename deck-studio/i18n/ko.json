@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "모노 로고",
   "inputs.deck.fields.logo.options.off": "로고 없음",
   "inputs.deck.fields.notes.label": "발표자 노트",
-  "inputs.deck.fields.notes.placeholder": "발표자 노트 - PowerPoint의 노트 창으로 전달되며, 슬라이드에는 표시되지 않아요."
+  "inputs.deck.fields.notes.placeholder": "발표자 노트 - PowerPoint의 노트 창으로 전달되며, 슬라이드에는 표시되지 않아요.",
+  "inputs.footerText.label": "바닥글 텍스트",
+  "inputs.footerText.help": "각 슬라이드 하단, 로고와 슬라이드 번호 사이에 들어가는 작은 바닥글 한 줄(저작권, 기밀 표시).",
+  "inputs.footerText.placeholder": "© 2026 귀사 · 대외비",
+  "inputs.mode.label": "모드",
+  "inputs.mode.help": "\"스타터 템플릿\"은 슬라이드를 레이아웃별 샘플 슬라이드 하나씩으로 바꿉니다. 재사용 가능한 브랜드 .pptx 템플릿으로 다운로드하세요.",
+  "inputs.mode.options.deck": "내 슬라이드",
+  "inputs.mode.options.template": "스타터 템플릿",
+  "inputs.deck.fields.layout.options.big-number": "큰 숫자",
+  "inputs.deck.fields.layout.options.main-point": "핵심 메시지",
+  "inputs.deck.fields.layout.options.one-column": "1단"
 }

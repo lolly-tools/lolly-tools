@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Моно-логотип",
   "inputs.deck.fields.logo.options.off": "Без логотипа",
   "inputs.deck.fields.notes.label": "Нотатки доповідача",
-  "inputs.deck.fields.notes.placeholder": "Нотатки доповідача - потрапляють у панель нотаток PowerPoint, ніколи не показуються на слайді."
+  "inputs.deck.fields.notes.placeholder": "Нотатки доповідача - потрапляють у панель нотаток PowerPoint, ніколи не показуються на слайді.",
+  "inputs.footerText.label": "Текст нижнього колонтитула",
+  "inputs.footerText.help": "Малий рядок унизу кожного слайда (авторські права, конфіденційність), між логотипом і номером слайда.",
+  "inputs.footerText.placeholder": "© 2026 Ваша компанія · Конфіденційно",
+  "inputs.mode.label": "Режим",
+  "inputs.mode.help": "«Стартовий шаблон» замінює ваші слайди одним прикладом для кожного макета - завантажте його як багаторазовий брендований шаблон .pptx.",
+  "inputs.mode.options.deck": "Мої слайди",
+  "inputs.mode.options.template": "Стартовий шаблон",
+  "inputs.deck.fields.layout.options.big-number": "Велике число",
+  "inputs.deck.fields.layout.options.main-point": "Головна думка",
+  "inputs.deck.fields.layout.options.one-column": "Одна колонка"
 }

@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Logotipo mono",
   "inputs.deck.fields.logo.options.off": "Sem logotipo",
   "inputs.deck.fields.notes.label": "Notas do apresentador",
-  "inputs.deck.fields.notes.placeholder": "Notas do apresentador - vão para o painel de notas do PowerPoint, nunca exibidas no slide."
+  "inputs.deck.fields.notes.placeholder": "Notas do apresentador - vão para o painel de notas do PowerPoint, nunca exibidas no slide.",
+  "inputs.footerText.label": "Texto de rodapé",
+  "inputs.footerText.help": "Uma pequena linha de rodapé (copyright, confidencialidade) na parte inferior de cada slide, entre o logo e o número do slide.",
+  "inputs.footerText.placeholder": "© 2026 A sua empresa · Confidencial",
+  "inputs.mode.label": "Modo",
+  "inputs.mode.help": "\"Modelo inicial\" substitui os seus slides por um slide de exemplo por layout - descarregue-o como modelo .pptx de marca reutilizável.",
+  "inputs.mode.options.deck": "Os meus slides",
+  "inputs.mode.options.template": "Modelo inicial",
+  "inputs.deck.fields.layout.options.big-number": "Número grande",
+  "inputs.deck.fields.layout.options.main-point": "Ponto principal",
+  "inputs.deck.fields.layout.options.one-column": "Uma coluna"
 }

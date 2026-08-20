@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Mono logo",
   "inputs.deck.fields.logo.options.off": "Žádné logo",
   "inputs.deck.fields.notes.label": "Řečnické poznámky",
-  "inputs.deck.fields.notes.placeholder": "Poznámky pro prezentujícího - putují do panelu poznámek v PowerPointu, nikdy se nezobrazí na snímku."
+  "inputs.deck.fields.notes.placeholder": "Poznámky pro prezentujícího - putují do panelu poznámek v PowerPointu, nikdy se nezobrazí na snímku.",
+  "inputs.footerText.label": "Text zápatí",
+  "inputs.footerText.help": "Malý řádek zápatí (copyright, důvěrnost) dole na každém snímku, mezi logem a číslem snímku.",
+  "inputs.footerText.placeholder": "© 2026 Vaše společnost · Důvěrné",
+  "inputs.mode.label": "Režim",
+  "inputs.mode.help": "„Výchozí šablona“ nahradí vaše snímky jedním ukázkovým snímkem pro každé rozvržení - stáhněte si ji jako opakovaně použitelnou značkovou šablonu .pptx.",
+  "inputs.mode.options.deck": "Moje snímky",
+  "inputs.mode.options.template": "Výchozí šablona",
+  "inputs.deck.fields.layout.options.big-number": "Velké číslo",
+  "inputs.deck.fields.layout.options.main-point": "Hlavní myšlenka",
+  "inputs.deck.fields.layout.options.one-column": "Jeden sloupec"
 }

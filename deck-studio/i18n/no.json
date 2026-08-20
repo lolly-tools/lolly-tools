@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Mono-logo",
   "inputs.deck.fields.logo.options.off": "Ingen logo",
   "inputs.deck.fields.notes.label": "Talenotater",
-  "inputs.deck.fields.notes.placeholder": "Presentasjonsnotater - havner i PowerPoints notatfelt, og vises aldri på lysbildet."
+  "inputs.deck.fields.notes.placeholder": "Presentasjonsnotater - havner i PowerPoints notatfelt, og vises aldri på lysbildet.",
+  "inputs.footerText.label": "Bunntekst",
+  "inputs.footerText.help": "En liten bunntekstlinje (opphavsrett, konfidensialitet) nederst på hvert lysbilde, mellom logoen og lysbildenummeret.",
+  "inputs.footerText.placeholder": "© 2026 Ditt firma · Konfidensielt",
+  "inputs.mode.label": "Modus",
+  "inputs.mode.help": "«Startmal» erstatter lysbildene dine med ett eksempellysbilde per oppsett - last den ned som en gjenbrukbar .pptx-merkevaremal.",
+  "inputs.mode.options.deck": "Mine lysbilder",
+  "inputs.mode.options.template": "Startmal",
+  "inputs.deck.fields.layout.options.big-number": "Stort tall",
+  "inputs.deck.fields.layout.options.main-point": "Hovedpoeng",
+  "inputs.deck.fields.layout.options.one-column": "Én kolonne"
 }

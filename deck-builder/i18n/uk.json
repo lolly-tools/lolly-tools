@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Довільна",
   "inputs.deck.fields.boxes.label": "Довільні блоки",
   "inputs.deck.fields.boxes.help": "Вміст довільного полотна - масив JSON із розташованими блоками, який редагується прямо на слайді. Координати вказано в пікселях на нативному полотні 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Текст нижнього колонтитула",
+  "inputs.footerText.help": "Малий рядок унизу кожного слайда (авторські права, конфіденційність), між логотипом і номером слайда.",
+  "inputs.footerText.placeholder": "© 2026 Ваша компанія · Конфіденційно",
+  "inputs.deck.fields.layout.options.bignum": "Велике число",
+  "inputs.deck.fields.layout.options.mainpoint": "Головна думка"
 }

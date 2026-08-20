@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Mono-logotyp",
   "inputs.deck.fields.logo.options.off": "Ingen logotyp",
   "inputs.deck.fields.notes.label": "Talaranteckningar",
-  "inputs.deck.fields.notes.placeholder": "Presentationsanteckningar - hamnar i PowerPoints anteckningsfält, visas aldrig på bilden."
+  "inputs.deck.fields.notes.placeholder": "Presentationsanteckningar - hamnar i PowerPoints anteckningsfält, visas aldrig på bilden.",
+  "inputs.footerText.label": "Sidfotstext",
+  "inputs.footerText.help": "En liten sidfotsrad (upphovsrätt, konfidentialitet) längst ner på varje bild, mellan logotypen och bildnumret.",
+  "inputs.footerText.placeholder": "© 2026 Ditt företag · Konfidentiellt",
+  "inputs.mode.label": "Läge",
+  "inputs.mode.help": "”Startmall” ersätter dina bilder med en exempelbild per layout - ladda ner den som en återanvändbar .pptx-varumärkesmall.",
+  "inputs.mode.options.deck": "Mina bilder",
+  "inputs.mode.options.template": "Startmall",
+  "inputs.deck.fields.layout.options.big-number": "Stort tal",
+  "inputs.deck.fields.layout.options.main-point": "Huvudbudskap",
+  "inputs.deck.fields.layout.options.one-column": "En kolumn"
 }

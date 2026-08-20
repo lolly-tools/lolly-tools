@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "फ़्रीफ़ॉर्म",
   "inputs.deck.fields.boxes.label": "फ़्रीफ़ॉर्म बॉक्स",
   "inputs.deck.fields.boxes.help": "फ़्रीफ़ॉर्म कैनवस की सामग्री - पोज़िशन किए गए बॉक्स का एक JSON array, जिसे स्लाइड पर सीधे संपादित किया जाता है। निर्देशांक 1920 × 1920 नेटिव कैनवस पर पिक्सेल में हैं।",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "फ़ुटर टेक्स्ट",
+  "inputs.footerText.help": "हर स्लाइड के नीचे, लोगो और स्लाइड नंबर के बीच एक छोटी फ़ुटर पंक्ति (कॉपीराइट, गोपनीयता)।",
+  "inputs.footerText.placeholder": "© 2026 आपकी कंपनी · गोपनीय",
+  "inputs.deck.fields.layout.options.bignum": "बड़ी संख्या",
+  "inputs.deck.fields.layout.options.mainpoint": "मुख्य बात"
 }

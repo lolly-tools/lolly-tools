@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Malayang anyo",
   "inputs.deck.fields.boxes.label": "Malayang mga kahon",
   "inputs.deck.fields.boxes.help": "Ang mga laman ng freeform canvas - isang JSON array ng mga naka-position na box, direktang ine-edit sa slide. Ang coordinates ay pixels sa 1920 × 1920 native canvas.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Teksto ng footer",
+  "inputs.footerText.help": "Isang maliit na linya ng footer (copyright, pagiging kumpidensyal) sa ibaba ng bawat slide, sa pagitan ng logo at numero ng slide.",
+  "inputs.footerText.placeholder": "© 2026 Ang Iyong Kompanya · Kumpidensyal",
+  "inputs.deck.fields.layout.options.bignum": "Malaking numero",
+  "inputs.deck.fields.layout.options.mainpoint": "Pangunahing punto"
 }

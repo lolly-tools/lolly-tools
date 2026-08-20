@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Logo mono",
   "inputs.deck.fields.logo.options.off": "Fără logo",
   "inputs.deck.fields.notes.label": "Note pentru vorbitor",
-  "inputs.deck.fields.notes.placeholder": "Notițe pentru prezentator - ajung în panoul de notițe din PowerPoint, nu apar niciodată pe diapozitiv."
+  "inputs.deck.fields.notes.placeholder": "Notițe pentru prezentator - ajung în panoul de notițe din PowerPoint, nu apar niciodată pe diapozitiv.",
+  "inputs.footerText.label": "Text de subsol",
+  "inputs.footerText.help": "Un mic rând de subsol (copyright, confidențialitate) în partea de jos a fiecărui slide, între logo și numărul slide-ului.",
+  "inputs.footerText.placeholder": "© 2026 Compania ta · Confidențial",
+  "inputs.mode.label": "Mod",
+  "inputs.mode.help": "„Șablonul de pornire” înlocuiește slide-urile tale cu câte un slide exemplu pentru fiecare aranjament - descarcă-l ca șablon .pptx de brand reutilizabil.",
+  "inputs.mode.options.deck": "Slide-urile mele",
+  "inputs.mode.options.template": "Șablon de pornire",
+  "inputs.deck.fields.layout.options.big-number": "Număr mare",
+  "inputs.deck.fields.layout.options.main-point": "Ideea principală",
+  "inputs.deck.fields.layout.options.one-column": "O coloană"
 }

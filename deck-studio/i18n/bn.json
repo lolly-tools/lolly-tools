@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "মনো লোগো",
   "inputs.deck.fields.logo.options.off": "কোনো লোগো নেই",
   "inputs.deck.fields.notes.label": "স্পিকার নোট",
-  "inputs.deck.fields.notes.placeholder": "প্রেজেন্টার নোট - PowerPoint-এর নোটস প্যানে যায়, স্লাইডে কখনো দেখা যায় না।"
+  "inputs.deck.fields.notes.placeholder": "প্রেজেন্টার নোট - PowerPoint-এর নোটস প্যানে যায়, স্লাইডে কখনো দেখা যায় না।",
+  "inputs.footerText.label": "ফুটার লেখা",
+  "inputs.footerText.help": "প্রতিটি স্লাইডের নিচে লোগো ও স্লাইড নম্বরের মাঝে একটি ছোট ফুটার লাইন (কপিরাইট, গোপনীয়তা)।",
+  "inputs.footerText.placeholder": "© 2026 আপনার কোম্পানি · গোপনীয়",
+  "inputs.mode.label": "মোড",
+  "inputs.mode.help": "\"স্টার্টার টেমপ্লেট\" আপনার স্লাইডগুলিকে প্রতিটি লেআউটের একটি নমুনা স্লাইড দিয়ে প্রতিস্থাপন করে - পুনর্ব্যবহারযোগ্য ব্র্যান্ডেড .pptx টেমপ্লেট হিসেবে ডাউনলোড করুন।",
+  "inputs.mode.options.deck": "আমার স্লাইড",
+  "inputs.mode.options.template": "স্টার্টার টেমপ্লেট",
+  "inputs.deck.fields.layout.options.big-number": "বড় সংখ্যা",
+  "inputs.deck.fields.layout.options.main-point": "মূল বক্তব্য",
+  "inputs.deck.fields.layout.options.one-column": "এক কলাম"
 }

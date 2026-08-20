@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Logo mono",
   "inputs.deck.fields.logo.options.off": "Aucun logo",
   "inputs.deck.fields.notes.label": "Notes du présentateur",
-  "inputs.deck.fields.notes.placeholder": "Notes du présentateur - passent dans le volet de notes de PowerPoint, jamais affichées sur la diapositive."
+  "inputs.deck.fields.notes.placeholder": "Notes du présentateur - passent dans le volet de notes de PowerPoint, jamais affichées sur la diapositive.",
+  "inputs.footerText.label": "Texte de pied de page",
+  "inputs.footerText.help": "Une petite ligne de pied de page (copyright, confidentialité) en bas de chaque diapositive, entre le logo et le numéro de diapositive.",
+  "inputs.footerText.placeholder": "© 2026 Votre entreprise · Confidentiel",
+  "inputs.mode.label": "Mode",
+  "inputs.mode.help": "« Modèle de départ » remplace vos diapositives par une diapositive d'exemple par mise en page - téléchargez-le comme modèle .pptx de marque réutilisable.",
+  "inputs.mode.options.deck": "Mes diapositives",
+  "inputs.mode.options.template": "Modèle de départ",
+  "inputs.deck.fields.layout.options.big-number": "Grand nombre",
+  "inputs.deck.fields.layout.options.main-point": "Idée clé",
+  "inputs.deck.fields.layout.options.one-column": "Une colonne"
 }

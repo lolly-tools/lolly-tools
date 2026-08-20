@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Fri form",
   "inputs.deck.fields.boxes.label": "Friformsrutor",
   "inputs.deck.fields.boxes.help": "Innehållet i friformsytan - en JSON-array med positionerade rutor som redigeras direkt på bilden. Koordinaterna är pixlar på den ursprungliga 1920 × 1920-arbetsytan.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Sidfotstext",
+  "inputs.footerText.help": "En liten sidfotsrad (upphovsrätt, konfidentialitet) längst ner på varje bild, mellan logotypen och bildnumret.",
+  "inputs.footerText.placeholder": "© 2026 Ditt företag · Konfidentiellt",
+  "inputs.deck.fields.layout.options.bignum": "Stort tal",
+  "inputs.deck.fields.layout.options.mainpoint": "Huvudbudskap"
 }

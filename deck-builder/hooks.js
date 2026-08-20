@@ -53,6 +53,8 @@ var OPACITY_SEC = 0.13;
 // Layout value → the slot sub-fields it renders, in order.
 var SLOTS_FOR = {
   title:  [],
+  bignum: [],
+  mainpoint: [],
   full:   ['media1'],
   hero:   ['media1'],
   split:  ['media1', 'media2'],
@@ -120,6 +122,11 @@ function safeColor(v, fallback) {
 }
 // === /lolly:shared safeColor ===
 function str(v) { return (typeof v === 'string') ? v : (v == null ? '' : String(v)); }
+// JSON safe to drop verbatim into <script type="application/json">: kill the only
+// tag-closing sequence ("</script") by escaping '<', plus the JS line terminators.
+function safeJson(obj) {
+  return JSON.stringify(obj).replace(/</g, '\\u003c').replace(/\u2028/g, '\\u2028').replace(/\u2029/g, '\\u2029');
+}
 function f4(x) { return Math.round(x * 10000) / 10000; }
 // HTML-escape any text reaching the template (logic-less Handlebars won't escape
 // {{{ }}}, so the hook owns the escaping).
@@ -500,12 +507,18 @@ function isHexish(s) { return typeof s === 'string' && /^#?[0-9a-fA-F]{3,8}$/.te
 function normHex(s) { s = str(s).trim(); return /^[0-9a-fA-F]{3,8}$/.test(s) ? '#' + s : s; }
 var THEME_FALLBACK = {
   primary: '#30ba78', onPrimary: '#ffffff', surface: '#ffffff', text: '#172029',
-  secondary: '#2453ff', muted: '#6b7280', edge: '#e5e7eb'
+  secondary: '#2453ff', muted: '#6b7280', edge: '#e5e7eb',
+  // extended template palette (see readBrandTheme; these are the token-less defaults)
+  ink: '#172029', green: '#2453ff', mint: '#a7bafd', blue: '#30ba78', orange: '#7e878e',
+  card: '#efefef', pine2: '#1a3f47', paleA: '#f4f7ff', paleB: '#d4ddfe'
 };
 async function readBrandTheme() {
   var T = {
     primary: THEME_FALLBACK.primary, onPrimary: THEME_FALLBACK.onPrimary, surface: THEME_FALLBACK.surface,
-    text: THEME_FALLBACK.text, secondary: THEME_FALLBACK.secondary, muted: THEME_FALLBACK.muted, edge: THEME_FALLBACK.edge
+    text: THEME_FALLBACK.text, secondary: THEME_FALLBACK.secondary, muted: THEME_FALLBACK.muted, edge: THEME_FALLBACK.edge,
+    ink: THEME_FALLBACK.ink, green: THEME_FALLBACK.green, mint: THEME_FALLBACK.mint, blue: THEME_FALLBACK.blue,
+    orange: THEME_FALLBACK.orange, card: THEME_FALLBACK.card, pine2: THEME_FALLBACK.pine2,
+    paleA: THEME_FALLBACK.paleA, paleB: THEME_FALLBACK.paleB
   };
   try {
     if (typeof host === 'undefined' || !host || !host.tokens || !host.tokens.colors) return T;
@@ -518,8 +531,34 @@ async function readBrandTheme() {
       'color.semantic.on-primary': 'onPrimary', 'color.semantic.muted': 'muted', 'color.semantic.edge': 'edge'
     };
     for (var p in map) if (isHexish(byPath[p])) T[map[p]] = normHex(byPath[p]);
+    // Extended template palette (segmented brand bar, hero backgrounds, card wells).
+    // Named brand hues verbatim when the pack exposes them; otherwise derived tints
+    // from the pack's own colours so nothing off-brand leaks in.
+    function pick(paths) { for (var k = 0; k < paths.length; k++) if (isHexish(byPath[paths[k]])) return normHex(byPath[paths[k]]); return ''; }
+    T.ink = T.text; T.green = T.secondary;
+    var mint = pick(['color.brand.mint']), blue = pick(['color.brand.waterhole']), orange = pick(['color.brand.persimmon']);
+    T.mint = mint || mixHex(T.green, '#ffffff', 0.6);
+    T.blue = blue || T.primary;
+    T.orange = orange || mixHex(T.green, T.ink, 0.45);
+    T.card = pick(['color.brand.fog']) || '#efefef';
+    T.pine2 = pick(['color.ramp.pine.2']) || mixHex(T.ink, T.green, 0.28);
+    T.paleA = pick(['color.ramp.pine.8']) || mixHex(T.green, '#ffffff', 0.92);
+    T.paleB = pick(['color.ramp.jungle.7']) || mixHex(T.green, '#ffffff', 0.72);
+    // The brand face — used by the exported layout gallery's text styles + theme fonts.
+    if (host.tokens.resolve) {
+      var f = await host.tokens.resolve('{font.brand}');
+      if (typeof f === 'string' && f && f.indexOf('{') !== 0) T.font = f;
+    }
   } catch (e) { /* keep fallbacks */ }
   return T;
+}
+// Mix two hexes (t 0..1 toward b) - derives tints for packs without named hues.
+function mixHex(a, b, t) {
+  var pa = hexToRgb(a), pb = hexToRgb(b);
+  if (!pa || !pb) return a;
+  function ch(i) { return Math.round(pa[i] + (pb[i] - pa[i]) * t); }
+  function h2(v) { v = Math.max(0, Math.min(255, v)).toString(16); return v.length < 2 ? '0' + v : v; }
+  return '#' + h2(ch(0)) + h2(ch(1)) + h2(ch(2));
 }
 
 // ── named schemes: {bg, ink, accent} derived from the resolved brand tokens ────
@@ -779,10 +818,156 @@ function furniture(bg, row, theme, logos, pageNumbers, brandLogo, index, scheme)
     var v = pickLogo(logos, bgIsDark(bg), useMono);
     if (v && v.url) {
       var aspect = (v.aspect && isFinite(v.aspect) && v.aspect > 0) ? v.aspect : 3.4;
-      out.logo = { url: v.url, w: f4(4 * aspect) + 'cqh', h: '4cqh' };
+      // 4.4cqh: the SUSE brand template's logo height (4.4% of the slide).
+      out.logo = { url: v.url, w: f4(4.4 * aspect) + 'cqh', h: '4.4cqh' };
     }
   }
   return out;
+}
+
+// ── the branded layout gallery (data-pptx-layouts → engine PptxLayout[]) ──────
+// The .pptx export attaches 10 Google-canonical archetypes × light/dark = 20 branded
+// layouts, so the exported file doubles as a working template: recipients build new
+// slides from PowerPoint's "New Slide" gallery with the logo/footer riding along.
+// Geometry follows the SUSE brand template (margins 3.4%, title strip 3.4–14.6%,
+// body to 84.7%, logo bottom-left 2.4%/92% at 4.4% tall, number bottom-right).
+// Authored in a fixed 1280×720 `ref` space — the export bridge rescales it into the
+// real page box, so any deck size/aspect keeps the fractions.
+var GALLERY = ['TITLE', 'SECTION_HEADER', 'TITLE_AND_BODY', 'TITLE_AND_TWO_COLUMNS', 'TITLE_ONLY', 'ONE_COLUMN_TEXT', 'MAIN_POINT', 'SECTION_TITLE_AND_DESCRIPTION', 'CAPTION_ONLY', 'BIG_NUMBER'];
+var LAYOUT_TO_ARCH = {
+  title: 'TITLE', full: 'CAPTION_ONLY', hero: 'CAPTION_ONLY', split: 'TITLE_AND_TWO_COLUMNS',
+  stack: 'TITLE_AND_BODY', golden: 'TITLE_AND_TWO_COLUMNS', cols3: 'TITLE_AND_BODY', grid4: 'TITLE_AND_BODY',
+  bignum: 'BIG_NUMBER', mainpoint: 'MAIN_POINT', freeform: 'TITLE_ONLY'
+};
+function galleryIndexFor(layout, darkBg) {
+  var i = GALLERY.indexOf(LAYOUT_TO_ARCH[layout] || 'TITLE_AND_BODY');
+  return (i < 0 ? 2 : i) * 2 + (darkBg ? 1 : 0);
+}
+// Furniture + decoration constants shared with the slide chrome (fractions of W/H),
+// measured off the SUSE brand template. BAR = the segmented footer bar; STRIPES =
+// the hero designs' decorative cluster; NUM_STRIPES = BIG_NUMBER's sparser rows.
+var BAR_SEGS = [[0.4992, 0.1799, 'mint'], [0.6791, 0.0725, 'blue'], [0.7516, 0.0365, 'orange'], [0.7881, 0.2119, 'green']];
+var STRIPES = [
+  [0.8137, 0.4694, 0.1863, 'mint'], [0.8475, 0.5198, 0.1188, 'blue'], [0.7782, 0.5746, 0.128, 'mint'],
+  [0.9663, 0.5198, 0.0337, 'orange'], [0.8137, 0.6337, 0.0924, 'ink'], [0.9061, 0.6337, 0.0939, 'blue'],
+  [0.9352, 0.5746, 0.0659, 'mint'], [0.9336, 0.4146, 0.0664, 'ink'], [0.9336, 0.6928, 0.0664, 'ink'],
+];
+var NUM_STRIPES = [
+  [0.7881, 0.385, 0.2119, 'green'], [0.8475, 0.435, 0.1188, 'blue'], [0.9663, 0.435, 0.0337, 'orange'],
+  [0.82, 0.49, 0.18, 'mint'],
+];
+function galleryLayout(name, dark, T, logos, W, H, footerText, pageNumbers, brandLogo) {
+  function px(f) { return Math.round(W * f); }
+  function py(f) { return Math.round(H * f); }
+  var HERO = { TITLE: 1, SECTION_HEADER: 1, MAIN_POINT: 1, CAPTION_ONLY: 1, BIG_NUMBER: 1 };
+  var hero = !!HERO[name];
+  var pineGrad = { grad: { stops: [{ pos: 0, color: T.ink }, { pos: 1, color: T.pine2 }], angle: 180 } };
+  var bg, ink, titleInk;
+  if (name === 'TITLE') {
+    bg = { grad: { stops: [{ pos: 0, color: T.ink }, { pos: 1, color: T.pine2 }], angle: 90 } };
+    ink = '#ffffff'; titleInk = T.green;
+  } else if (name === 'SECTION_HEADER') {
+    bg = dark ? pineGrad : T.green;
+    ink = dark ? '#ffffff' : T.ink; titleInk = ink;
+  } else if (name === 'MAIN_POINT') {
+    bg = dark ? pineGrad : { grad: { stops: [{ pos: 0, color: T.paleA }, { pos: 1, color: T.paleB }], angle: 180 } };
+    ink = dark ? '#ffffff' : T.ink; titleInk = ink;
+  } else if (name === 'CAPTION_ONLY') {
+    bg = T.ink; ink = '#ffffff'; titleInk = '#ffffff';
+  } else {
+    bg = dark ? T.ink : T.surface;
+    ink = dark ? '#ffffff' : T.ink; titleInk = ink;
+  }
+  var els = [], phs = [];
+  var barDark = typeof bg !== 'string' || bgIsDark(bg);
+  function stripes(list, side) {
+    for (var i = 0; i < list.length; i++) {
+      var st = list[i];
+      var x = side < 0 ? 1 - st[0] - st[2] : st[0];
+      var hue = st[3] === 'ink' && barDark ? 'green' : st[3];
+      els.push({ t: 'rect', x: px(x), y: py(st[1]), w: px(st[2]), h: py(0.0206), fill: T[hue] });
+    }
+  }
+  if (!hero) {
+    for (var b = 0; b < BAR_SEGS.length; b++) {
+      var seg = BAR_SEGS[b];
+      els.push({ t: 'rect', x: px(seg[0]), y: py(0.9325), w: px(seg[1]) + 1, h: py(0.0206), fill: T[seg[2]] });
+    }
+    if (footerText) els.push({ t: 'text', x: px(0.16), y: py(0.9325), w: px(0.25), h: py(0.028), anchor: 't', paras: [{ runs: [{ text: footerText, sizePt: 8, color: ink, font: T.font }] }] });
+  }
+  if (brandLogo && logos) {
+    var v = pickLogo(logos, barDark, false);
+    if (v && v.url) {
+      var aspect = (v.aspect && isFinite(v.aspect) && v.aspect > 0) ? v.aspect : 3.4;
+      if (hero) {
+        var hh = py(0.088);
+        els.push({ t: 'image', x: px(0.053), y: py(0.075), w: Math.round(hh * aspect), h: hh, src: v.url, fit: 'contain' });
+      } else {
+        var lh = py(0.044);
+        els.push({ t: 'image', x: px(0.024), y: py(0.92), w: Math.round(lh * aspect), h: lh, src: v.url, fit: 'contain' });
+      }
+    }
+  }
+  function ph(type, idx, xf, yf, wf, hf, style, prompt, anchor) {
+    var pp = { type: type, x: px(xf), y: py(yf), w: px(wf), h: py(hf), style: style };
+    if (idx != null) pp.idx = idx;
+    if (prompt) pp.prompt = prompt;
+    if (anchor) pp.anchor = anchor;
+    phs.push(pp);
+  }
+  if (pageNumbers && name !== 'TITLE') ph('sldNum', 12, hero ? 0.9208 : 0.4232, 0.917, 0.06, 0.0516, { sizePt: 8, color: ink, align: 'ctr', font: T.font });
+  var M = 0.0341;
+  var titleStyle = { font: T.font, sizePt: 28, color: titleInk, align: 'l' };
+  var bodyStyle = { font: T.font, sizePt: 18, color: ink, bullet: true };
+  if (name === 'TITLE') {
+    ph('ctrTitle', null, M, 0.22, 0.723, 0.399, { font: T.font, sizePt: 52, color: T.green }, 'Presentation title', 'b');
+    ph('subTitle', 1, M, 0.646, 0.932, 0.154, { font: T.font, sizePt: 20, color: '#ffffff' }, 'Subtitle');
+  } else if (name === 'SECTION_HEADER' || name === 'MAIN_POINT') {
+    if (name === 'SECTION_HEADER') stripes(STRIPES, 1);
+    ph('title', null, 0.0533, 0.2537, 0.62, 0.6, { font: T.font, sizePt: 44, color: titleInk }, name === 'MAIN_POINT' ? 'One big statement' : 'Section header', 'ctr');
+  } else if (name === 'TITLE_AND_BODY') {
+    ph('title', null, M, 0.0342, 0.9318, 0.1113, titleStyle, 'Title', 'b');
+    ph('body', 1, M, 0.1455, 0.9318, 0.7011, bodyStyle, 'Add your points');
+  } else if (name === 'TITLE_AND_TWO_COLUMNS') {
+    ph('title', null, M, 0.0342, 0.9318, 0.1113, titleStyle, 'Title', 'b');
+    var rad = Math.round(py(0.6591) * 0.105);
+    var cards = [[0.0358, 0.4571], [0.5071, 0.4571]];
+    for (var c = 0; c < 2; c++) {
+      els.push({ t: 'rect', x: px(cards[c][0]), y: py(0.2279), w: px(cards[c][1]), h: py(0.6591), fill: dark ? T.pine2 : T.card, radius: rad });
+      ph('body', c + 1, cards[c][0] + 0.018, 0.2598, cards[c][1] - 0.036, 0.5974, bodyStyle, c ? 'Right column' : 'Left column');
+    }
+  } else if (name === 'TITLE_ONLY') {
+    ph('title', null, M, 0.0342, 0.9318, 0.1113, titleStyle, 'Title', 'b');
+  } else if (name === 'ONE_COLUMN_TEXT') {
+    ph('title', null, M, 0.0342, 0.9318, 0.1113, titleStyle, 'Title', 'b');
+    ph('body', 1, 0.22, 0.1455, 0.56, 0.7011, { font: T.font, sizePt: 18, color: ink }, 'A narrow, readable measure');
+  } else if (name === 'SECTION_TITLE_AND_DESCRIPTION') {
+    els.push({ t: 'rect', x: 0, y: 0, w: px(0.3314), h: H, fill: T.ink });
+    ph('title', null, M, 0.0342, 0.267, 0.3144, { font: T.font, sizePt: 28, color: '#ffffff' }, 'Section title', 'b');
+    ph('body', 1, M, 0.3768, 0.2792, 0.4632, { font: T.font, sizePt: 15, color: '#ffffff' }, 'Description');
+  } else if (name === 'CAPTION_ONLY') {
+    ph('title', null, M, 0.8, 0.9318, 0.14, { font: T.font, sizePt: 26, color: '#ffffff' }, 'Caption');
+  } else if (name === 'BIG_NUMBER') {
+    stripes(NUM_STRIPES, 1); stripes(NUM_STRIPES, -1);
+    ph('title', null, 0.225, 0.255, 0.563, 0.382, { font: T.font, sizePt: 84, color: dark ? '#ffffff' : T.green, align: 'ctr' }, 'xx%', 'ctr');
+    ph('body', 1, 0.225, 0.618, 0.563, 0.131, { font: T.font, sizePt: 18, color: ink, align: 'ctr' }, 'What the number means');
+  }
+  return { name: dark ? name + '_DARK' : name, bg: bg, elements: els, placeholders: phs };
+}
+function buildPptxLayouts(T, logos, footerText, pageNumbers, brandLogo) {
+  var W = 1280, H = 720;
+  var out = [];
+  for (var i = 0; i < GALLERY.length; i++) {
+    out.push(galleryLayout(GALLERY[i], false, T, logos, W, H, footerText, pageNumbers, brandLogo));
+    out.push(galleryLayout(GALLERY[i], true, T, logos, W, H, footerText, pageNumbers, brandLogo));
+  }
+  return {
+    ref: { w: W, h: H },
+    // Mirrors the SUSE template's scheme shape: dk1 ink, accent1 green, accent3 blue,
+    // accent4 orange, accent6 mint, lt2 the card grey.
+    theme: { name: 'Brand', colors: { dk1: T.ink, lt1: T.surface, dk2: T.pine2, lt2: T.card, accent1: T.green, accent2: T.ink, accent3: T.blue, accent4: T.orange, accent5: T.blue, accent6: T.mint, hlink: T.green }, fonts: T.font ? { major: T.font, minor: T.font } : undefined },
+    layouts: out,
+  };
 }
 
 function compute(model, theme, logos) {
@@ -798,6 +983,7 @@ function compute(model, theme, logos) {
   var deckTheme = normScheme(inputs.theme, 'auto');
   var pageNumbers = inputs.pageNumbers !== false;   // default on
   var brandLogo = inputs.brandLogo !== false;       // default on
+  var footerText = str(inputs.footerText);
   var deckFit = inputs.fitText !== false;           // default ON — long text shrinks to fit its slide
   var T = theme || THEME_FALLBACK;
 
@@ -855,7 +1041,13 @@ function compute(model, theme, logos) {
       notes: str(row.notes),
       logo: f.logo,
       showPageNo: f.showPageNo,
-      pageNo: f.pageNo
+      pageNo: f.pageNo,
+      footerText: footerText,
+      // The segmented brand bar rides every content-ish slide; the hero-like layouts
+      // (title, big number, main point, full bleed) stay clean, like the template.
+      showBar: !(layout === 'title' || layout === 'bignum' || layout === 'mainpoint' || layout === 'full'),
+      // Which branded gallery layout this slide binds to in the .pptx (light/dark by bg).
+      pptxLayout: galleryIndexFor(layout, bgIsDark(bg))
     };
 
     if (isFreeform) {
@@ -910,7 +1102,12 @@ function compute(model, theme, logos) {
     // collide with any input id (the CSS box is the `customCss` input), so both land in
     // template extras rather than overwriting an input.
     styleVars: buildStyleVars(inputs),
-    userCss: buildUserCss(inputs.customCss)
+    userCss: buildUserCss(inputs.customCss),
+    // The brand-bar hues as custom properties for the furniture CSS.
+    barVars: '--sl-mint:' + T.mint + ';--sl-blue:' + T.blue + ';--sl-orange:' + T.orange + ';--sl-green:' + T.green + ';',
+    // The branded layout gallery + brand theme the .pptx export attaches (see
+    // buildPptxLayouts). Key chosen NOT to collide with any input id.
+    pptxLayouts: safeJson(buildPptxLayouts(T, logos, footerText, pageNumbers, brandLogo))
   };
 }
 

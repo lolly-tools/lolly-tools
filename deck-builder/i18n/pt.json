@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Forma livre",
   "inputs.deck.fields.boxes.label": "Caixas de forma livre",
   "inputs.deck.fields.boxes.help": "O conteúdo do canvas livre - um array JSON de caixas posicionadas, editado diretamente no slide. As coordenadas são pixels no canvas nativo de 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Texto de rodapé",
+  "inputs.footerText.help": "Uma pequena linha de rodapé (copyright, confidencialidade) na parte inferior de cada slide, entre o logo e o número do slide.",
+  "inputs.footerText.placeholder": "© 2026 A sua empresa · Confidencial",
+  "inputs.deck.fields.layout.options.bignum": "Número grande",
+  "inputs.deck.fields.layout.options.mainpoint": "Ponto principal"
 }

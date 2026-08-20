@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Serbest form",
   "inputs.deck.fields.boxes.label": "Serbest form kutuları",
   "inputs.deck.fields.boxes.help": "Serbest biçim tuval içeriği - slayt üzerinde doğrudan düzenlenen, konumlandırılmış kutulardan oluşan bir JSON dizisi. Koordinatlar 1920 × 1920 doğal tuval üzerinde piksel cinsindendir.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Alt bilgi metni",
+  "inputs.footerText.help": "Her slaydın altında, logo ile slayt numarası arasında küçük bir alt bilgi satırı (telif hakkı, gizlilik).",
+  "inputs.footerText.placeholder": "© 2026 Şirketiniz · Gizli",
+  "inputs.deck.fields.layout.options.bignum": "Büyük sayı",
+  "inputs.deck.fields.layout.options.mainpoint": "Ana fikir"
 }

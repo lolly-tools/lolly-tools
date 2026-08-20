@@ -3,7 +3,7 @@
   "name": "Deck Builder",
   "description": "Build a slide deck with a live on-canvas editor - edit text, colours and images directly on each slide.",
   "a11yLabel": "Slide deck with {{slideCount}} slides",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.3.0",
   "status": "community",
   "category": "designer",
@@ -209,6 +209,15 @@
       "default": true,
       "section": "Brand",
       "help": "Place your brand logo in the bottom-left of every slide, picking the light or dark variant to suit each background."
+    },
+    {
+      "id": "footerText",
+      "label": "Footer text",
+      "type": "text",
+      "default": "",
+      "section": "Brand",
+      "placeholder": "© 2026 Your Company · Confidential",
+      "help": "A small footer line (copyright, confidentiality) centred at the bottom of every slide, between the logo and the slide number."
     },
     {
       "id": "fitText",
@@ -1101,6 +1110,16 @@
             {
               "value": "grid4",
               "label": "Four grid (4)",
+              "repeatable": true
+            },
+            {
+              "value": "bignum",
+              "label": "Big number",
+              "repeatable": true
+            },
+            {
+              "value": "mainpoint",
+              "label": "Main point",
               "repeatable": true
             }
           ]

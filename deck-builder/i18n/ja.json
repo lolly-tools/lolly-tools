@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "フリーフォーム",
   "inputs.deck.fields.boxes.label": "フリーフォームボックス",
   "inputs.deck.fields.boxes.help": "フリーフォームキャンバスの内容です - 配置されたボックスのJSON配列で、スライド上で直接編集します。座標は1920 × 1920のネイティブキャンバス上のピクセルです。",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "フッターテキスト",
+  "inputs.footerText.help": "各スライドの下部、ロゴとスライド番号の間に入る小さなフッター行(著作権、機密表示)。",
+  "inputs.footerText.placeholder": "© 2026 あなたの会社 · 社外秘",
+  "inputs.deck.fields.layout.options.bignum": "大きな数字",
+  "inputs.deck.fields.layout.options.mainpoint": "メインポイント"
 }

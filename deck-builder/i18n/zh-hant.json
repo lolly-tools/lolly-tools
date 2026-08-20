@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "自由版面",
   "inputs.deck.fields.boxes.label": "自由版面方塊",
   "inputs.deck.fields.boxes.help": "自由版面畫布的內容 - 一組已定位方塊的 JSON 陣列，直接在投影片上編輯。座標是 1920 × 1920 原生畫布上的像素。",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "頁尾文字",
+  "inputs.footerText.help": "每張投影片底部的一行小頁尾(版權、機密聲明),位於標誌與投影片編號之間。",
+  "inputs.footerText.placeholder": "© 2026 貴公司 · 機密",
+  "inputs.deck.fields.layout.options.bignum": "大數字",
+  "inputs.deck.fields.layout.options.mainpoint": "重點"
 }

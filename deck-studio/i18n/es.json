@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Logo mono",
   "inputs.deck.fields.logo.options.off": "Sin logo",
   "inputs.deck.fields.notes.label": "Notas del orador",
-  "inputs.deck.fields.notes.placeholder": "Notas del presentador - van al panel de notas de PowerPoint, nunca se muestran en la diapositiva."
+  "inputs.deck.fields.notes.placeholder": "Notas del presentador - van al panel de notas de PowerPoint, nunca se muestran en la diapositiva.",
+  "inputs.footerText.label": "Texto de pie de página",
+  "inputs.footerText.help": "Una pequeña línea de pie (copyright, confidencialidad) en la parte inferior de cada diapositiva, entre el logotipo y el número de diapositiva.",
+  "inputs.footerText.placeholder": "© 2026 Tu empresa · Confidencial",
+  "inputs.mode.label": "Modo",
+  "inputs.mode.help": "«Plantilla inicial» sustituye tus diapositivas por una diapositiva de ejemplo por cada diseño - descárgala como plantilla .pptx de marca reutilizable.",
+  "inputs.mode.options.deck": "Mis diapositivas",
+  "inputs.mode.options.template": "Plantilla inicial",
+  "inputs.deck.fields.layout.options.big-number": "Número grande",
+  "inputs.deck.fields.layout.options.main-point": "Idea principal",
+  "inputs.deck.fields.layout.options.one-column": "Una columna"
 }

@@ -52,6 +52,7 @@
   width: 1.1em;
   margin-left: -1.1em;
   opacity: 0.9;
+  color: var(--ds-bulc, currentColor);
 }
 .ds-bullet { padding-left: 1.1em; }
 
@@ -66,6 +67,8 @@
   margin-left: -1.6em;
   opacity: 0.85;
   font-variant-numeric: tabular-nums;
+  color: var(--ds-bulc, currentColor);
+  font-weight: 600;
 }
 
 .ds-el img { width: 100%; height: 100%; object-fit: contain; display: block; }

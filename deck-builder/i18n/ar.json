@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "حر الشكل",
   "inputs.deck.fields.boxes.label": "صناديق حرة الشكل",
   "inputs.deck.fields.boxes.help": "محتويات اللوحة الحرة - مصفوفة JSON من المربعات المحددة الموضع، تعدل مباشرة على الشريحة. الإحداثيات بالبكسل على المساحة الأصلية 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "نص التذييل",
+  "inputs.footerText.help": "سطر تذييل صغير (حقوق النشر، السرية) أسفل كل شريحة، بين الشعار ورقم الشريحة.",
+  "inputs.footerText.placeholder": "© 2026 شركتك · سرّي",
+  "inputs.deck.fields.layout.options.bignum": "رقم كبير",
+  "inputs.deck.fields.layout.options.mainpoint": "فكرة رئيسية"
 }

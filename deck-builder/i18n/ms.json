@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Bentuk bebas",
   "inputs.deck.fields.boxes.label": "Kotak bentuk bebas",
   "inputs.deck.fields.boxes.help": "Kandungan kanvas bebas bentuk - satu array JSON bagi kotak yang diposisikan, disunting terus pada slaid. Koordinat adalah piksel pada kanvas asli 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Teks pengaki",
+  "inputs.footerText.help": "Satu baris pengaki kecil (hak cipta, kerahsiaan) di bahagian bawah setiap slaid, antara logo dan nombor slaid.",
+  "inputs.footerText.placeholder": "© 2026 Syarikat Anda · Sulit",
+  "inputs.deck.fields.layout.options.bignum": "Nombor besar",
+  "inputs.deck.fields.layout.options.mainpoint": "Perkara utama"
 }

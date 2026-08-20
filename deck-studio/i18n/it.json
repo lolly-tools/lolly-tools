@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Logo mono",
   "inputs.deck.fields.logo.options.off": "Nessun logo",
   "inputs.deck.fields.notes.label": "Note del relatore",
-  "inputs.deck.fields.notes.placeholder": "Note del relatore - confluiscono nel riquadro note di PowerPoint, mai mostrate sulla slide."
+  "inputs.deck.fields.notes.placeholder": "Note del relatore - confluiscono nel riquadro note di PowerPoint, mai mostrate sulla slide.",
+  "inputs.footerText.label": "Testo del piè di pagina",
+  "inputs.footerText.help": "Una piccola riga a piè di pagina (copyright, riservatezza) in fondo a ogni diapositiva, tra il logo e il numero di diapositiva.",
+  "inputs.footerText.placeholder": "© 2026 La tua azienda · Riservato",
+  "inputs.mode.label": "Modalità",
+  "inputs.mode.help": "\"Modello di partenza\" sostituisce le tue diapositive con una diapositiva di esempio per ogni layout - scaricalo come modello .pptx brandizzato riutilizzabile.",
+  "inputs.mode.options.deck": "Le mie diapositive",
+  "inputs.mode.options.template": "Modello di partenza",
+  "inputs.deck.fields.layout.options.big-number": "Numero grande",
+  "inputs.deck.fields.layout.options.main-point": "Punto chiave",
+  "inputs.deck.fields.layout.options.one-column": "Una colonna"
 }

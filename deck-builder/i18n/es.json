@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Forma libre",
   "inputs.deck.fields.boxes.label": "Cajas de forma libre",
   "inputs.deck.fields.boxes.help": "El contenido del lienzo libre - un array JSON de cajas posicionadas, editado directamente en la diapositiva. Las coordenadas son píxeles en el lienzo nativo de 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Texto de pie de página",
+  "inputs.footerText.help": "Una pequeña línea de pie (copyright, confidencialidad) en la parte inferior de cada diapositiva, entre el logotipo y el número de diapositiva.",
+  "inputs.footerText.placeholder": "© 2026 Tu empresa · Confidencial",
+  "inputs.deck.fields.layout.options.bignum": "Número grande",
+  "inputs.deck.fields.layout.options.mainpoint": "Idea principal"
 }

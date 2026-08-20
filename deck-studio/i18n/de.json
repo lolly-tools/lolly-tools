@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Mono-Logo",
   "inputs.deck.fields.logo.options.off": "Kein Logo",
   "inputs.deck.fields.notes.label": "Referentennotizen",
-  "inputs.deck.fields.notes.placeholder": "Referentennotizen - werden in PowerPoints Notizbereich übernommen, nie auf der Folie angezeigt."
+  "inputs.deck.fields.notes.placeholder": "Referentennotizen - werden in PowerPoints Notizbereich übernommen, nie auf der Folie angezeigt.",
+  "inputs.footerText.label": "Fußzeilentext",
+  "inputs.footerText.help": "Eine kleine Fußzeile (Copyright, Vertraulichkeit) am unteren Rand jeder Folie, zwischen Logo und Foliennummer.",
+  "inputs.footerText.placeholder": "© 2026 Ihr Unternehmen · Vertraulich",
+  "inputs.mode.label": "Modus",
+  "inputs.mode.help": "„Startvorlage“ ersetzt Ihre Folien durch je eine Beispielfolie pro Layout - als wiederverwendbare .pptx-Markenvorlage herunterladen.",
+  "inputs.mode.options.deck": "Meine Folien",
+  "inputs.mode.options.template": "Startvorlage",
+  "inputs.deck.fields.layout.options.big-number": "Große Zahl",
+  "inputs.deck.fields.layout.options.main-point": "Kernaussage",
+  "inputs.deck.fields.layout.options.one-column": "Eine Spalte"
 }

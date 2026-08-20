@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "مونو لوگو",
   "inputs.deck.fields.logo.options.off": "کوئی لوگو نہیں",
   "inputs.deck.fields.notes.label": "اسپیکر نوٹس",
-  "inputs.deck.fields.notes.placeholder": "پریزنٹر نوٹس - PowerPoint کے نوٹس پین میں منتقل ہوتے ہیں، کبھی سلائیڈ پر نہیں دکھائے جاتے۔"
+  "inputs.deck.fields.notes.placeholder": "پریزنٹر نوٹس - PowerPoint کے نوٹس پین میں منتقل ہوتے ہیں، کبھی سلائیڈ پر نہیں دکھائے جاتے۔",
+  "inputs.footerText.label": "فوٹر متن",
+  "inputs.footerText.help": "ہر سلائیڈ کے نیچے، لوگو اور سلائیڈ نمبر کے درمیان ایک چھوٹی فوٹر لائن (کاپی رائٹ، رازداری)۔",
+  "inputs.footerText.placeholder": "© 2026 آپ کی کمپنی · خفیہ",
+  "inputs.mode.label": "موڈ",
+  "inputs.mode.help": "\"ابتدائی ٹیمپلیٹ\" آپ کی سلائیڈوں کی جگہ ہر لے آؤٹ کی ایک نمونہ سلائیڈ رکھتا ہے - اسے دوبارہ قابلِ استعمال برانڈڈ .pptx ٹیمپلیٹ کے طور پر ڈاؤن لوڈ کریں۔",
+  "inputs.mode.options.deck": "میری سلائیڈیں",
+  "inputs.mode.options.template": "ابتدائی ٹیمپلیٹ",
+  "inputs.deck.fields.layout.options.big-number": "بڑا عدد",
+  "inputs.deck.fields.layout.options.main-point": "مرکزی نکتہ",
+  "inputs.deck.fields.layout.options.one-column": "ایک کالم"
 }

@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Freiform",
   "inputs.deck.fields.boxes.label": "Freiform-Boxen",
   "inputs.deck.fields.boxes.help": "Der Inhalt der Freiform-Zeichenfläche - ein JSON-Array positionierter Boxen, direkt auf der Folie bearbeitet. Koordinaten sind Pixel auf der nativen 1920 × 1920-Zeichenfläche.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Fußzeilentext",
+  "inputs.footerText.help": "Eine kleine Fußzeile (Copyright, Vertraulichkeit) am unteren Rand jeder Folie, zwischen Logo und Foliennummer.",
+  "inputs.footerText.placeholder": "© 2026 Ihr Unternehmen · Vertraulich",
+  "inputs.deck.fields.layout.options.bignum": "Große Zahl",
+  "inputs.deck.fields.layout.options.mainpoint": "Kernaussage"
 }

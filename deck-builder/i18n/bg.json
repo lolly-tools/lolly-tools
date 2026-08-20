@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Свободна форма",
   "inputs.deck.fields.boxes.label": "Кутии със свободна форма",
   "inputs.deck.fields.boxes.help": "Съдържанието на свободното платно - JSON масив от позиционирани кутии, редактирани директно върху слайда. Координатите са пиксели върху нативното платно 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Текст в долния колонтитул",
+  "inputs.footerText.help": "Малък ред в долната част на всеки слайд (авторски права, поверителност), между логото и номера на слайда.",
+  "inputs.footerText.placeholder": "© 2026 Вашата компания · Поверително",
+  "inputs.deck.fields.layout.options.bignum": "Голямо число",
+  "inputs.deck.fields.layout.options.mainpoint": "Основна идея"
 }

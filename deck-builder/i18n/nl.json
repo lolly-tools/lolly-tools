@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Vrijvorm",
   "inputs.deck.fields.boxes.label": "Vrijvormvakken",
   "inputs.deck.fields.boxes.help": "De inhoud van het vrije-vorm-canvas - een JSON-array van gepositioneerde vakken, rechtstreeks bewerkt op de dia. Coördinaten zijn pixels op het native canvas van 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Voettekst",
+  "inputs.footerText.help": "Een kleine voettekstregel (copyright, vertrouwelijkheid) onderaan elke dia, tussen het logo en het dianummer.",
+  "inputs.footerText.placeholder": "© 2026 Jouw bedrijf · Vertrouwelijk",
+  "inputs.deck.fields.layout.options.bignum": "Groot getal",
+  "inputs.deck.fields.layout.options.mainpoint": "Kernboodschap"
 }

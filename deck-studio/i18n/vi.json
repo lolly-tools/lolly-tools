@@ -47,5 +47,15 @@
   "inputs.deck.fields.logo.options.mono": "Logo mono",
   "inputs.deck.fields.logo.options.off": "Không có logo",
   "inputs.deck.fields.notes.label": "Ghi chú diễn giả",
-  "inputs.deck.fields.notes.placeholder": "Ghi chú người trình bày - chuyển vào khung ghi chú của PowerPoint, không bao giờ hiển thị trên trang chiếu."
+  "inputs.deck.fields.notes.placeholder": "Ghi chú người trình bày - chuyển vào khung ghi chú của PowerPoint, không bao giờ hiển thị trên trang chiếu.",
+  "inputs.footerText.label": "Chữ chân trang",
+  "inputs.footerText.help": "Một dòng chân trang nhỏ (bản quyền, bảo mật) ở cuối mỗi trang chiếu, giữa logo và số trang chiếu.",
+  "inputs.footerText.placeholder": "© 2026 Công ty của bạn · Bảo mật",
+  "inputs.mode.label": "Chế độ",
+  "inputs.mode.help": "\"Mẫu khởi đầu\" thay các trang chiếu của bạn bằng một trang chiếu mẫu cho mỗi bố cục - tải về làm mẫu .pptx thương hiệu dùng lại được.",
+  "inputs.mode.options.deck": "Trang chiếu của tôi",
+  "inputs.mode.options.template": "Mẫu khởi đầu",
+  "inputs.deck.fields.layout.options.big-number": "Con số lớn",
+  "inputs.deck.fields.layout.options.main-point": "Ý chính",
+  "inputs.deck.fields.layout.options.one-column": "Một cột"
 }

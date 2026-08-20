@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Forme libre",
   "inputs.deck.fields.boxes.label": "Zones de forme libre",
   "inputs.deck.fields.boxes.help": "Le contenu du canevas libre - un tableau JSON de zones positionnées, modifié directement sur la diapositive. Les coordonnées sont des pixels sur le canevas natif de 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Texte de pied de page",
+  "inputs.footerText.help": "Une petite ligne de pied de page (copyright, confidentialité) en bas de chaque diapositive, entre le logo et le numéro de diapositive.",
+  "inputs.footerText.placeholder": "© 2026 Votre entreprise · Confidentiel",
+  "inputs.deck.fields.layout.options.bignum": "Grand nombre",
+  "inputs.deck.fields.layout.options.mainpoint": "Idée clé"
 }

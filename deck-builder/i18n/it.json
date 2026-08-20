@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Forma libera",
   "inputs.deck.fields.boxes.label": "Caselle a forma libera",
   "inputs.deck.fields.boxes.help": "Il contenuto del canvas libero - un array JSON di caselle posizionate, modificato direttamente sulla diapositiva. Le coordinate sono pixel sul canvas nativo 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Testo del piè di pagina",
+  "inputs.footerText.help": "Una piccola riga a piè di pagina (copyright, riservatezza) in fondo a ogni diapositiva, tra il logo e il numero di diapositiva.",
+  "inputs.footerText.placeholder": "© 2026 La tua azienda · Riservato",
+  "inputs.deck.fields.layout.options.bignum": "Numero grande",
+  "inputs.deck.fields.layout.options.mainpoint": "Punto chiave"
 }

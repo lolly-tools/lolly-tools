@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Formă liberă",
   "inputs.deck.fields.boxes.label": "Casete cu formă liberă",
   "inputs.deck.fields.boxes.help": "Conținutul canvasului liber - un array JSON de casete poziționate, editat direct pe slide. Coordonatele sunt pixeli pe canvasul nativ de 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Text de subsol",
+  "inputs.footerText.help": "Un mic rând de subsol (copyright, confidențialitate) în partea de jos a fiecărui slide, între logo și numărul slide-ului.",
+  "inputs.footerText.placeholder": "© 2026 Compania ta · Confidențial",
+  "inputs.deck.fields.layout.options.bignum": "Număr mare",
+  "inputs.deck.fields.layout.options.mainpoint": "Ideea principală"
 }

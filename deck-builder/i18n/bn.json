@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "ফ্রিফর্ম",
   "inputs.deck.fields.boxes.label": "ফ্রিফর্ম বক্স",
   "inputs.deck.fields.boxes.help": "ফ্রিফর্ম ক্যানভাসের বিষয়বস্তু - পজিশন করা বক্সের একটি JSON অ্যারে, স্লাইডে সরাসরি এডিট করা হয়। কো-অর্ডিনেট 1920 × 1920 নেটিভ ক্যানভাসে পিক্সেলে।",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "ফুটার লেখা",
+  "inputs.footerText.help": "প্রতিটি স্লাইডের নিচে লোগো ও স্লাইড নম্বরের মাঝে একটি ছোট ফুটার লাইন (কপিরাইট, গোপনীয়তা)।",
+  "inputs.footerText.placeholder": "© 2026 আপনার কোম্পানি · গোপনীয়",
+  "inputs.deck.fields.layout.options.bignum": "বড় সংখ্যা",
+  "inputs.deck.fields.layout.options.mainpoint": "মূল বক্তব্য"
 }

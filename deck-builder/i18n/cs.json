@@ -290,5 +290,10 @@
   "inputs.deck.fields.mode.options.freeform": "Volná forma",
   "inputs.deck.fields.boxes.label": "Volné rámečky",
   "inputs.deck.fields.boxes.help": "Obsah volného plátna - pole JSON s umístěnými boxy, upravovanými přímo na snímku. Souřadnice jsou pixely na nativním plátně 1920 × 1920.",
-  "inputs.deck.fields.boxes.placeholder": "[]"
+  "inputs.deck.fields.boxes.placeholder": "[]",
+  "inputs.footerText.label": "Text zápatí",
+  "inputs.footerText.help": "Malý řádek zápatí (copyright, důvěrnost) dole na každém snímku, mezi logem a číslem snímku.",
+  "inputs.footerText.placeholder": "© 2026 Vaše společnost · Důvěrné",
+  "inputs.deck.fields.layout.options.bignum": "Velké číslo",
+  "inputs.deck.fields.layout.options.mainpoint": "Hlavní myšlenka"
 }
