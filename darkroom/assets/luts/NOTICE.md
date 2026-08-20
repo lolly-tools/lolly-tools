@@ -1,9 +1,29 @@
 # Bitmap Studio — preset LUTs
 
-These `.cube` files are **open, public-domain LUTs** you can apply in Bitmap
-Studio and download for use in any editor. No attribution is legally required.
+These `.cube` files are **open LUTs** you can apply in Bitmap Studio and download
+for use in any editor. Most are public-domain (CC0) and need no attribution; one
+is contributed under **CC BY 4.0** and does ask for credit — see *Attributed
+contributions* below.
 
-## Provenance
+## Attributed contributions (CC BY 4.0)
+
+| Shipped file | Name | Creator | Licence |
+|---|---|---|---|
+| `suse7-slog3-heavy.cube` | SUSE7 S-Log3 (Heavy) | **Peter Chamalian**, Director of Photography & Editor, **SUSE** | [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/) |
+
+A cinema colour grade authored in DaVinci Resolve (September 2025) for **Sony
+S-Log3** footage (65³ Adobe/IRIDAS `.cube`). © 2025 SUSE; created by Peter
+Chamalian and released for reuse under CC BY 4.0. **Attribution is required** — credit *"SUSE · Peter
+Chamalian"*. When this look is applied to a video in Lolly, the credit is written
+into the output's C2PA `color_adjustments` action (creator, organisation and
+licence), so it travels with the file. Applying it to non-log (Rec.709) footage
+will look wrong: it expects S-Log3 input.
+
+## Public-domain film emulation (CC0)
+
+The remaining presets are open, public-domain LUTs. No attribution is required.
+
+### Provenance
 
 Derived from **[sguyader/FilmSim](https://github.com/sguyader/FilmSim)** (commit
 `1453b2b55c48d99a889b1e455f91f6898ba2db41`), authored by Sébastien Guyader and

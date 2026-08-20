@@ -38,6 +38,18 @@
  * canvas), but its delivery rides host.export.file, which the CLI bridge
  * deliberately stubs out — so baking is a web/Tauri affordance and a headless
  * bake logs a clear warning instead of failing silently.
+ *
+ * The pipeline LUT is also PUBLISHED continuously as the `videoLook` extra — a
+ * small JSON envelope carrying the preview's own 33³ table as .cube text, plus
+ * an `on` flag saying whether the pipeline is anything but an identity — so a
+ * shell can hand this exact grade to something the tool never sees, notably
+ * applying the look to a video clip frame by frame. It serialises the table the
+ * still is graded through rather than baking a second one, so publishing costs
+ * the write and not the bake; the bakeSize control stays what it says it is, the
+ * grid of the .cube DOWNLOAD. Nothing about the extra is canvas-bound, so it is
+ * emitted before the raster guard alongside the download bake, and it is
+ * key-guarded on the colour identity so a texture or framing tweak never pays
+ * for a re-serialise.
  */
 
 /* global onInit, onInput, onFrame, host */
@@ -52,10 +64,11 @@ var LUT_N = 33;       // grid size of the internal pipeline LUT (also the bake d
 // ceiling shipping .cube files use; .3dl grids top out at 64+1 in the wild.
 var CUBE_MAX_N = 129;
 var TDL_MAX_N = 65;
-// The shipped open (CC0) preset LUTs — see assets/luts/NOTICE.md. Keys are the
-// served .cube basenames; this doubles as the whitelist for the untrusted
+// The shipped open preset LUTs — see assets/luts/NOTICE.md. The film-emulation
+// looks are CC0; suse7-slog3-heavy is CC BY 4.0 (© SUSE, by Peter Chamalian). Keys
+// are the served .cube basenames; this doubles as the whitelist for the untrusted
 // lutPreset select value (never interpolate an unvalidated id into the URL).
-var PRESET_LUTS = { 'slide-standard': 1, 'slide-vivid': 1, 'chrome-muted': 1, 'mono-fine': 1 };
+var PRESET_LUTS = { 'slide-standard': 1, 'slide-vivid': 1, 'chrome-muted': 1, 'mono-fine': 1, 'suse7-slog3-heavy': 1 };
 var PRESET_LUT_BASE = '/tools/darkroom/assets/luts/';
 
 var _memoKey = null;
@@ -78,6 +91,7 @@ var _presetLutCache = { id: null, lut: null, error: null }; // parsed preset .cu
 var _presetInflight = { id: null, promise: null };          // in-flight preset fetch (shared)
 var _presetDlBusy = false;                                  // re-entrancy guard for preset download
 var _deepState = null;                                      // last still render's resolved inputs (for exportStill)
+var _videoLookKey = null;                                   // colour identity of the last published `videoLook` extra
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -958,14 +972,17 @@ function applyPipelineLut(imageData, lut) {
 
 function f6(v) { return (Math.round(clamp(v, 0, 1) * 1e6) / 1e6).toFixed(6); }
 
-// Serialise the current colour pipeline as an Adobe/IRIDAS .cube.
-function bakeCubeText(P, stops, userLut, N) {
-  var lut = buildPipelineLut(P, stops, userLut, N);
+// Serialise an ALREADY-BUILT pipeline LUT as Adobe/IRIDAS .cube text.
+// Split out of bakeCubeText because the `videoLook` extra publishes the render's
+// own cached 33³ lattice rather than baking a second one — the two must agree
+// down to the last digit, so they share this writer instead of each formatting
+// rows their own way.
+function cubeTextFromLut(lut, P) {
   var lines = [
     '# Baked by Lolly Bitmap Studio',
     '# Colour pipeline: develop + film look (' + P.preset + ') + LUT + brand treatment (' + P.treatment + ')',
     'TITLE "Lolly Bitmap Studio look"',
-    'LUT_3D_SIZE ' + N,
+    'LUT_3D_SIZE ' + lut.size,
     'DOMAIN_MIN 0.0 0.0 0.0',
     'DOMAIN_MAX 1.0 1.0 1.0',
   ];
@@ -974,6 +991,11 @@ function bakeCubeText(P, stops, userLut, N) {
     lines.push(f6(d[i]) + ' ' + f6(d[i + 1]) + ' ' + f6(d[i + 2]));
   }
   return lines.join('\n') + '\n';
+}
+
+// Bake the current colour pipeline at grid N and serialise it as a .cube.
+function bakeCubeText(P, stops, userLut, N) {
+  return cubeTextFromLut(buildPipelineLut(P, stops, userLut, N), P);
 }
 
 // Deliver the baked .cube via the transform path (host.export.file — never
@@ -1205,54 +1227,76 @@ function applyTexture(out, P) {
     }
   }
 
-  // Grain + vignette in one ImageData pass. Grain is value noise on a lattice
-  // (grainSize px cells, bilinear), luminance-weighted like real stock.
+  // Grain + vignette in one ImageData pass (shared with the float export path).
   if (P.grain > 0 || P.vignette > 0) {
     try {
       var gi = ctx.getImageData(0, 0, W, H);
-      var gd = gi.data;
-      var cx2 = W / 2, cy2 = H / 2;
-      var maxR2 = cx2 * cx2 + cy2 * cy2;
-      var cell = P.grainSize;
-      var gw = Math.ceil(W / cell) + 2, gh = Math.ceil(H / cell) + 2;
-      var lattice = null;
-      if (P.grain > 0) {
-        lattice = new Float32Array(gw * gh);
-        var rng = mulberry32(P.seed * 2654435761 >>> 0 || 1);
-        for (var li = 0; li < lattice.length; li++) lattice[li] = rng() * 2 - 1;
-      }
-      var gAmt = P.grain * 34;
-      var vAmt = P.vignette;
-      for (var y2 = 0; y2 < H; y2++) {
-        var gy = y2 / cell, gy0 = gy | 0, gfy = gy - gy0;
-        for (var x3 = 0; x3 < W; x3++) {
-          var i5 = (y2 * W + x3) * 4;
-          var r5 = gd[i5], g5 = gd[i5 + 1], b5 = gd[i5 + 2];
-          if (lattice) {
-            var gx = x3 / cell, gx0 = gx | 0, gfx = gx - gx0;
-            var l00 = lattice[gy0 * gw + gx0], l10 = lattice[gy0 * gw + gx0 + 1];
-            var l01 = lattice[(gy0 + 1) * gw + gx0], l11 = lattice[(gy0 + 1) * gw + gx0 + 1];
-            var nv = (l00 * (1 - gfx) + l10 * gfx) * (1 - gfy) + (l01 * (1 - gfx) + l11 * gfx) * gfy;
-            var lum2 = (LUM_R * r5 + LUM_G * g5 + LUM_B * b5) / 255;
-            var gw2 = 4 * lum2 * (1 - lum2); // midtone-weighted (peaks at 0.5)
-            var add = nv * gAmt * (0.35 + 0.65 * gw2);
-            r5 += add; g5 += add; b5 += add;
-          }
-          if (vAmt > 0) {
-            var dx2 = x3 - cx2, dy2 = y2 - cy2;
-            var vr = (dx2 * dx2 + dy2 * dy2) / maxR2;
-            var vk = 1 - vAmt * smoothstep(0.28, 1.05, vr) * 0.82;
-            r5 *= vk; g5 *= vk; b5 *= vk;
-          }
-          gd[i5] = r5; gd[i5 + 1] = g5; gd[i5 + 2] = b5;
-        }
-      }
+      grainVignettePass(gi.data, W, H, P);
       ctx.putImageData(gi, 0, 0);
     } catch (e) { /* tainted — skip */ }
   }
 
   // Dust & scratches (shared with the float export path).
   if (P.dust > 0) drawDust(ctx, W, H, P);
+}
+
+// Grain + vignette over an RGBA buffer, in place. Grain is value noise on a
+// lattice of grainSize-px cells, bilinearly sampled and luminance-weighted so it
+// peaks in the midtones and fades out of the blacks and highlights the way real
+// stock does; the vignette is a smoothstep on squared radius from the centre, so
+// it stays a soft falloff rather than a visible ring.
+//
+// Both texture paths call this: the still over ImageData.data, whose clamped
+// writes hold the result to 0..255, and the deep export over its Float32 buffer,
+// where the same arithmetic is left unclamped until the encode boundary. One
+// function rather than two transcriptions, because a noise field written twice
+// drifts into two different textures for the same seed and nothing in the
+// picture says which one is right.
+//
+// Named, rather than inlined where it is used, for the same reason once removed:
+// engine/src/grade.ts carries a port of this pass so a shell can grade a video
+// with it (tools cannot import the engine), and tests/grade-drift.test.ts lifts
+// THIS function out of the hook source and compares it against that port byte
+// for byte. An inline block has no name to lift, so the guard would have nothing
+// to pin.
+function grainVignettePass(gd, W, H, P) {
+  if (!(P.grain > 0 || P.vignette > 0)) return;
+  var cx2 = W / 2, cy2 = H / 2;
+  var maxR2 = cx2 * cx2 + cy2 * cy2;
+  var cell = P.grainSize;
+  var gw = Math.ceil(W / cell) + 2, gh = Math.ceil(H / cell) + 2;
+  var lattice = null;
+  if (P.grain > 0) {
+    lattice = new Float32Array(gw * gh);
+    var rng = mulberry32(P.seed * 2654435761 >>> 0 || 1);
+    for (var li = 0; li < lattice.length; li++) lattice[li] = rng() * 2 - 1;
+  }
+  var gAmt = P.grain * 34;
+  var vAmt = P.vignette;
+  for (var y2 = 0; y2 < H; y2++) {
+    var gy = y2 / cell, gy0 = gy | 0, gfy = gy - gy0;
+    for (var x3 = 0; x3 < W; x3++) {
+      var i5 = (y2 * W + x3) * 4;
+      var r5 = gd[i5], g5 = gd[i5 + 1], b5 = gd[i5 + 2];
+      if (lattice) {
+        var gx = x3 / cell, gx0 = gx | 0, gfx = gx - gx0;
+        var l00 = lattice[gy0 * gw + gx0], l10 = lattice[gy0 * gw + gx0 + 1];
+        var l01 = lattice[(gy0 + 1) * gw + gx0], l11 = lattice[(gy0 + 1) * gw + gx0 + 1];
+        var nv = (l00 * (1 - gfx) + l10 * gfx) * (1 - gfy) + (l01 * (1 - gfx) + l11 * gfx) * gfy;
+        var lum2 = (LUM_R * r5 + LUM_G * g5 + LUM_B * b5) / 255;
+        var gw2 = 4 * lum2 * (1 - lum2); // midtone-weighted (peaks at 0.5)
+        var add = nv * gAmt * (0.35 + 0.65 * gw2);
+        r5 += add; g5 += add; b5 += add;
+      }
+      if (vAmt > 0) {
+        var dx2 = x3 - cx2, dy2 = y2 - cy2;
+        var vr = (dx2 * dx2 + dy2 * dy2) / maxR2;
+        var vk = 1 - vAmt * smoothstep(0.28, 1.05, vr) * 0.82;
+        r5 *= vk; g5 *= vk; b5 *= vk;
+      }
+      gd[i5] = r5; gd[i5 + 1] = g5; gd[i5 + 2] = b5;
+    }
+  }
 }
 
 // Seeded specks, fibres, and vertical hairline scratches drawn as vector strokes
@@ -1452,38 +1496,10 @@ function composeTextureFloat(buf, W, H, P) {
       }
     }
   }
-  // Grain + vignette (one pass, same lattice + weighting as the canvas path)
-  if (P.grain > 0 || P.vignette > 0) {
-    var cx2 = W / 2, cy2 = H / 2, maxR2 = cx2 * cx2 + cy2 * cy2, cell = P.grainSize;
-    var gw = Math.ceil(W / cell) + 2, gh = Math.ceil(H / cell) + 2, lattice = null;
-    if (P.grain > 0) {
-      lattice = new Float32Array(gw * gh);
-      var rng = mulberry32(P.seed * 2654435761 >>> 0 || 1);
-      for (var li = 0; li < lattice.length; li++) lattice[li] = rng() * 2 - 1;
-    }
-    var gAmt = P.grain * 34, vAmt = P.vignette;
-    for (var yy = 0; yy < H; yy++) {
-      var gy = yy / cell, gy0 = gy | 0, gfy = gy - gy0;
-      for (var xx = 0; xx < W; xx++) {
-        var i5 = (yy * W + xx) * 4, r5 = buf[i5], g5 = buf[i5 + 1], b5 = buf[i5 + 2];
-        if (lattice) {
-          var gx = xx / cell, gx0 = gx | 0, gfx = gx - gx0;
-          var l00 = lattice[gy0 * gw + gx0], l10 = lattice[gy0 * gw + gx0 + 1];
-          var l01 = lattice[(gy0 + 1) * gw + gx0], l11 = lattice[(gy0 + 1) * gw + gx0 + 1];
-          var nv = (l00 * (1 - gfx) + l10 * gfx) * (1 - gfy) + (l01 * (1 - gfx) + l11 * gfx) * gfy;
-          var lum2 = (LUM_R * r5 + LUM_G * g5 + LUM_B * b5) / 255;
-          var gwt = 4 * lum2 * (1 - lum2), add = nv * gAmt * (0.35 + 0.65 * gwt);
-          r5 += add; g5 += add; b5 += add;
-        }
-        if (vAmt > 0) {
-          var dx2 = xx - cx2, dy2 = yy - cy2, vr = (dx2 * dx2 + dy2 * dy2) / maxR2;
-          var vk = 1 - vAmt * smoothstep(0.28, 1.05, vr) * 0.82;
-          r5 *= vk; g5 *= vk; b5 *= vk;
-        }
-        buf[i5] = r5; buf[i5 + 1] = g5; buf[i5 + 2] = b5;
-      }
-    }
-  }
+  // Grain + vignette: the canvas still's own pass, over the float buffer. It was
+  // a second copy of the lattice maths until the drift guard needed a name to
+  // lift; the Float32 buffer changes nothing but where the writes are clamped.
+  grainVignettePass(buf, W, H, P);
   // Dust: draw on a transparent canvas with the exact vector code, composite back.
   if (P.dust > 0) {
     var dc = document.createElement('canvas'); dc.width = W; dc.height = H;
@@ -1653,8 +1669,55 @@ async function compute(model) {
     await deliverPresetDownload(P.lutPreset);
   }
 
+  // The `videoLook` extra: the render's own colour pipeline, published rather
+  // than downloaded. A shell reads it to apply THIS grade to something the tool
+  // itself never touches — the catalog's "Apply to video" runs the cube over a
+  // clip frame by frame — so the look travels as data instead of being
+  // re-derived from the inputs by a second implementation that would drift. It
+  // sits here, before the raster guard, for the bake's reason exactly: the maths
+  // is canvas-free, so the CLI and any headless shell publish the look too.
+  //
+  // It is the PREVIEW's lattice, taken from getPipelineLut — the same 33³ table
+  // the still is about to be graded through, cached under the same colour key —
+  // so what a shell replays over a clip is byte-for-byte what the user approved
+  // on the canvas, and the marginal cost of publishing is the serialisation, not
+  // a second bake. bakeSize is deliberately NOT part of this: that control is the
+  // DOWNLOAD grid, for whatever an NLE wants to be handed, and paying 150 ms and
+  // a 7 MB string on every slider tick to publish a 65³ video look nobody asked
+  // for is a preview-latency bill for a download preference.
+  //
+  // Guarded on the colour identity because serialising 107,811 formatted rows is
+  // still work, and most input traffic (grain, vignette, framing, the histogram
+  // toggle) does not change the look at all. When the key is unchanged the local
+  // stays `undefined`, which the engine's mergePatch skips outright, so the extra
+  // already published stands untouched rather than being recomputed or cleared.
+  // Every return below this point carries the local out, so a look change
+  // followed by a failed image load cannot strand the extra at the old look (the
+  // key has already advanced — the retry would otherwise skip the bake).
+  //
+  // `on` says whether the pipeline actually does anything. A neutral darkroom
+  // still bakes a perfectly good identity cube, and a shell cannot tell that
+  // apart from a real grade by looking at the text — it would re-encode a clip
+  // through a table that changes nothing and stamp a colour-grade credential on
+  // the result. So the answer travels with the look.
+  var videoLook;
+  var vlKey = colorKey(P, stops);
+  if (vlKey !== _videoLookKey) {
+    try {
+      videoLook = JSON.stringify({
+        v: 1,
+        on: colorActive(P, lutRes.lut) ? 1 : 0,
+        cube: cubeTextFromLut(getPipelineLut(P, lutRes.lut), P),
+        key: vlKey,
+      });
+      _videoLookKey = vlKey;
+    } catch (e) {
+      if (host.log) host.log('warn', 'darkroom: video look bake failed', { error: String(e) });
+    }
+  }
+
   if (!canRaster()) {
-    return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+    return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '', videoLook: videoLook };
   }
 
   // Resolve the source: a non-empty layer stack composites into the document
@@ -1686,25 +1749,25 @@ async function compute(model) {
   try {
     if (rows.length) {
       source = await composeLayerStack(rows, P.W, P.H);
-      if (!source) return { outSrc: null, note: 'None of the layers could be read as images', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+      if (!source) return { outSrc: null, note: 'None of the layers could be read as images', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '', videoLook: videoLook };
       iw = source.width; ih = source.height;
     } else if (url) {
       var img = await getImage(url);
       iw = img.naturalWidth || img.width; ih = img.naturalHeight || img.height;
-      if (!iw || !ih) return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+      if (!iw || !ih) return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '', videoLook: videoLook };
       source = img; source.__srcId = url;
     } else {
       source = makeDemoScene();
-      if (!source) return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+      if (!source) return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '', videoLook: videoLook };
       iw = source.width; ih = source.height; source.__srcId = 'demo';
     }
   } catch (e) {
     if (host.log) host.log('warn', 'darkroom: image load failed', { error: String(e) });
-    return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+    return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '', videoLook: videoLook };
   }
 
   var out = renderFrame(source, iw, ih, dims, P, stops, lutRes.lut);
-  if (!out) return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+  if (!out) return { outSrc: null, note: 'Preview renders in the browser', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '', videoLook: videoLook };
 
   var outSrc;
   // Lossless PNG, not JPEG: the preview is the export SOURCE on the ordinary
@@ -1713,7 +1776,7 @@ async function compute(model) {
   try { outSrc = out.toDataURL('image/png'); }
   catch (e) {
     if (host.log) host.log('warn', 'darkroom: canvas read failed (tainted image?)', { error: String(e) });
-    return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '' };
+    return { outSrc: null, note: 'Could not read this image', bakeLut: false, downloadPresetLut: false, lutNote: lutNote, lutLabel: lutLabel, histSvg: '', videoLook: videoLook };
   }
 
   // Stash everything the deep export needs to re-render at full resolution in
@@ -1745,6 +1808,7 @@ async function compute(model) {
     outSrc: outSrc, prevSrc: prev, note: null,
     histSvg: histSvg, lutNote: lutNote, lutLabel: lutLabel,
     bakeLut: false, downloadPresetLut: false, split: P.splitPreview, beforeSrc: beforeSrc,
+    videoLook: videoLook,
   };
   return _memoResult;
 }

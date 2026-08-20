@@ -3,7 +3,7 @@
   "name": "Darkroom",
   "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture - then bake your look as a LUT any editor can use. Opens a Photoshop or GIMP file as layers too: position, blend and hide each one, grade the composite, and export flat images or a layered PSD.",
   "a11yLabel": "Graded photo preview - {{default preset \"custom\"}} look",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "engineVersion": "^1.12.0",
   "status": "community",
   "category": "designer",
@@ -273,7 +273,7 @@
         { "value": "preset", "label": "Open preset LUT" },
         { "value": "custom", "label": "Upload your own" }
       ],
-      "help": "Preset LUTs are open, public-domain looks you can apply and also download. Choose Upload for your own commercial or personal LUTs - those stay on your device and never travel in a share link, so a preset is what makes a look shareable in a URL."
+      "help": "Preset LUTs are open looks you can apply and also download (CC0, or CC BY where a creator is credited). Choose Upload for your own commercial or personal LUTs - those stay on your device and never travel in a share link, so a preset is what makes a look shareable in a URL."
     },
     {
       "id": "lutPreset",
@@ -285,10 +285,11 @@
         { "value": "slide-standard", "label": "Standard slide" },
         { "value": "slide-vivid",    "label": "Vivid slide" },
         { "value": "chrome-muted",   "label": "Muted chrome" },
-        { "value": "mono-fine",      "label": "Fine mono (B&W)" }
+        { "value": "mono-fine",        "label": "Fine mono (B&W)" },
+        { "value": "suse7-slog3-heavy", "label": "SUSE7 S-Log3 (Heavy)" }
       ],
       "showIf": { "lutSource": ["preset"] },
-      "help": "Open, public-domain film-emulation LUTs (CC0, no attribution needed). Applied on your device with tetrahedral interpolation, and downloadable below for any editor."
+      "help": "Open, on-device LUTs. The film-emulation looks are CC0 (no attribution needed); SUSE7 S-Log3 (Heavy) is a cinema grade for Sony S-Log3 footage, © SUSE by Peter Chamalian, under CC BY 4.0 (credit SUSE · Peter Chamalian). Applied with tetrahedral interpolation, and downloadable below for any editor."
     },
     {
       "id": "lutFile",
