@@ -55,6 +55,10 @@
   font-size: 13px; line-height: 1.7;
   white-space: pre;
   overflow: hidden;
+  /* Fallback only: the script expands tabs to spaces before render (see TAB_SIZE),
+     so no tab normally reaches here. Keep this value == TAB_SIZE for any that slips
+     through. `tab-size` is NOT honoured inside the raster export's <foreignObject> on
+     some browsers, which is why indentation is expanded to spaces, not left to it. */
   tab-size: 2;
 }
 
@@ -105,8 +109,39 @@
 (function () {
   var DEFAULT_CODE = "const greet = (name) => {\\n  console.log(`Hello, ${name}!`);\\n  return name;\\n};\\n\\ngreet('World');";
 
+  // Indentation tab stop. Kept in lockstep with `tab-size` in the stylesheet above:
+  // both must be the same number so an expanded snippet reads identically to a raw one.
+  var TAB_SIZE = 2;
+
+  // Expand tabs to spaces against fixed tab stops BEFORE anything renders. A raw TAB is
+  // the one whitespace character whose rendered width depends on `tab-size` being
+  // honoured, and that does NOT survive every export path. The raster (PNG/JPEG) export
+  // serialises the canvas into an SVG <foreignObject>, and some browser versions drop
+  // `tab-size` there: leading tabs collapse to zero width while internal spaces are
+  // kept, so indentation vanishes from the saved image even though the on-screen preview
+  // is perfect (the exact bug a gofmt'd, tab-indented snippet hit). Expanding here makes
+  // indentation pure spaces, which render the same on screen and in every export, on
+  // every browser. Column-aware, so a tab used for alignment lands on the same stop it
+  // would on screen.
+  function expandTabs(src, size) {
+    var out = '', col = 0;
+    for (var i = 0; i < src.length; i++) {
+      var c = src[i];
+      if (c === '\t') {
+        var n = size - (col % size);
+        for (var s = 0; s < n; s++) out += ' ';
+        col += n;
+      } else if (c === '\n') {
+        out += c; col = 0;
+      } else {
+        out += c; col++;
+      }
+    }
+    return out;
+  }
+
   var root = document.getElementById('cc-root');
-  var code = root.dataset.code || DEFAULT_CODE;
+  var code = expandTabs(root.dataset.code || DEFAULT_CODE, TAB_SIZE);
   var language = root.dataset.language || 'javascript';
   var theme = root.dataset.theme || 'suse-dark';
   var lineNums = root.dataset.lineNumbers !== 'false';
