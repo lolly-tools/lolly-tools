@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "تشغيل 3 مرات",
   "inputs.loop.options.once": "تشغيل مرة واحدة",
   "inputs.scenes.label": "المشاهد",
-  "inputs.scenes.help": "كل مشهد هو جزء واحد من التسلسل — يظهر بحركة فوق المشهد السابق، مع حركة Lottie خاصة به تتكرر فوقه. المشهد الأخير هو البطاقة الختامية الثابتة.",
+  "inputs.scenes.help": "كل مشهد هو جزء واحد من التسلسل - يظهر بحركة فوق المشهد السابق، مع حركة Lottie خاصة به تتكرر فوقه. المشهد الأخير هو البطاقة الختامية الثابتة.",
   "inputs.scenes.addMenu.label": "إضافة مشهد",
   "inputs.scenes.fields.anim.label": "الحركة",
   "inputs.scenes.fields.bgColor.label": "الخلفية",

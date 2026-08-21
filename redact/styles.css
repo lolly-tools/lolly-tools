@@ -1,5 +1,5 @@
 /* Colours follow the app's core theme switcher (light / dark / suse). Every hue
-   is sourced from the app design tokens on <html data-theme> (tokens.css) — they
+   is sourced from the app design tokens on <html data-theme> (tokens.css) - they
    inherit into the scoped tool canvas, so the tool restyles itself the instant
    the theme changes. Fallbacks (light theme) keep the sheet valid in shells that
    don't ship the tokens. The `--rd-*` aliases hold bare HSL triples so use-sites
@@ -23,7 +23,7 @@
   /* A whole colour, not an HSL triple: --brand-warn is the loaded brand's own
      warm tone (brand-vars.ts sets it as a hex on :root) and there is no triple
      form of it. Used for the partly-covered treatment, which is a warning the
-     user can act on, NOT a failure — failures are the only red in this tool. */
+     user can act on, NOT a failure - failures are the only red in this tool. */
   --rd-attn:    var(--brand-warn, #b45309);
 
   position: relative;
@@ -40,7 +40,7 @@
   background: hsl(var(--rd-bg));
 }
 
-/* ── Empty state — IS the click-to-pick drop zone ── */
+/* ── Empty state - IS the click-to-pick drop zone ── */
 .rd-empty {
   max-width: 460px;
   margin: auto;
@@ -98,7 +98,7 @@
   min-width: 0;
 }
 
-/* Degraded states (unsupported file, PDF engine missing) — a centred card, not
+/* Degraded states (unsupported file, PDF engine missing) - a centred card, not
    the dock layout. */
 .rd-msg {
   margin: auto;
@@ -233,7 +233,7 @@
 }
 .rd-replace:hover { border-color: hsl(var(--rd-brand)); color: hsl(var(--rd-brand)); }
 
-/* ── Advisory toasts — the shell's quiet-notice idiom (translucent blurred pill,
+/* ── Advisory toasts - the shell's quiet-notice idiom (translucent blurred pill,
    hairline border, see .toast in parts/tool-chrome.css), not a card bolted to
    the top of the drawing surface.
 
@@ -422,14 +422,14 @@
 /* A single-frame source (a photo, a screenshot, an SVG) gets the same bounding
    the page stack gets. Without a height cap a 3024x4032 phone photo laid out a
    frame taller than the stage, the tool reported that height to the shell, and
-   fitCanvas scaled the WHOLE tool — rail labels, the 22px delete dots, the
-   download button — to about half size. The script keeps this property in step
+   fitCanvas scaled the WHOLE tool - rail labels, the 22px delete dots, the
+   download button - to about half size. The script keeps this property in step
    with the stage, so the preview is as large as the stage can actually show. */
 .rd-frame:not(.rd-pageframe) > .rd-img {
   max-height: var(--rd-frameview, 520px);
   width: auto;
 }
-/* PDF pages and SVG sources render as INLINE svg, not <img> — that is the only
+/* PDF pages and SVG sources render as INLINE svg, not <img> - that is the only
    way anything can read a node's painted bounds. The root carries width/height
    attributes at the file's natural size, so max-width plus height:auto scales
    it down exactly the way an <img> would, and the client-to-frame mapping the
@@ -449,7 +449,7 @@ svg.rd-img * {
 }
 /* The mark. --rd-ink is set on the stage by the template script from the value
    the HOOK resolved (the loaded brand's dark tone, or the neutral near-black
-   when no brand is loaded) — the same value the export burns, so the preview
+   when no brand is loaded) - the same value the export burns, so the preview
    cannot drift from the file. It is never read from the app's --brand-*
    properties directly, which would be a second source of truth.
 
@@ -462,7 +462,7 @@ svg.rd-img * {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* Deliberately NOT overflow:hidden — the remove dot is positioned outside this
+  /* Deliberately NOT overflow:hidden - the remove dot is positioned outside this
      box on purpose, and clipping it would take the tool's own documented removal
      path away. The stamp cannot overflow instead: it is only drawn on a bar with
      room for it, by the same fit rule the export uses. */
@@ -480,13 +480,13 @@ svg.rd-img * {
   user-select: none;
 }
 /* The draft is a preview of the SHAPE, so it is deliberately not the final
-   opacity — nothing is committed yet. */
+   opacity - nothing is committed yet. */
 .rd-bar.rd-draft {
   background: color-mix(in srgb, var(--rd-ink, #14161a) 72%, transparent);
   outline: 1px solid hsl(var(--rd-brand) / 0.9);
 }
 /* Partly-covered element: an item a bar reaches but does not finish, so it
-   stays readable. Not red — red in this tool means a check actually failed and
+   stays readable. Not red - red in this tool means a check actually failed and
    nothing downloaded; this is a mark the user can still fix, and it is drawn on
    the brand's own warm tone with a FULL hairline plus a hatch fill (never a
    one-sided border, and never a dashed outline, which this app reserves for
@@ -509,7 +509,7 @@ svg.rd-img * {
   height: 100%;
   pointer-events: none;
 }
-/* Removing a bar is a routine edit, so it is NOT red — red in this tool means a
+/* Removing a bar is a routine edit, so it is NOT red - red in this tool means a
    check actually failed (the download button's .is-error state). The dot is a
    neutral chip on the theme card colour, sized as a real tap target, and it is
    permanently visible on any device with no hover, where the old hover-only dot
@@ -565,7 +565,7 @@ svg.rd-img * {
    FIT TO WIDTH, SCROLL VERTICALLY. One page fills the column at a size you can
    actually read, and the stack scrolls inside this box.
 
-   The alternative — letting the canvas grow to the summed height of every page —
+   The alternative - letting the canvas grow to the summed height of every page -
    hands the shell a 760-by-many-thousand canvas, and fitCanvas scales the whole
    thing down to fit the stage: a ten-page document becomes one strip of
    illegible grey, which is exactly the report this replaces. Redact's canvas is
@@ -574,7 +574,7 @@ svg.rd-img * {
 
    overscroll-behavior keeps a flick at the end of the document from scrolling
    the app behind it. The height is a custom property because the script sets it
-   from the stage the shell will actually show — this value is only the ceiling
+   from the stage the shell will actually show - this value is only the ceiling
    for a roomy stage, and it is NOT declared on this element, or the inherited
    one could never win. */
 .rd-scroll {
@@ -604,7 +604,7 @@ svg.rd-img * {
 /* A page frame is PAPER. The page SVG is transparent by design (engine
    pdf-svg leaves the plate to the caller) and the rebuilt PDF composites onto
    opaque white, so without a plate here a dark or brand theme showed black glyph
-   paths on near-black through the frame's alpha checkerboard — the document you
+   paths on near-black through the frame's alpha checkerboard - the document you
    are trying to redact, unreadable, and disagreeing with the file it exports.
    The checkerboard still earns its keep on a raster or SVG source, where alpha
    is the file's own. */
@@ -761,7 +761,7 @@ svg.rd-img * {
   max-width: 60%;
 }
 
-/* "What will not be removed" — the bullet list, now hosted in its own toast
+/* "What will not be removed" - the bullet list, now hosted in its own toast
    card (the native <details> disclosure was retired with the status strip). */
 .rd-limits {
   list-style: none;

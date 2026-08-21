@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Satu baris footer kecil (hak cipta, kerahasiaan) di bagian bawah setiap slide, di antara logo dan nomor slide.",
   "inputs.footerText.placeholder": "© 2026 Perusahaan Anda · Rahasia",
   "inputs.deck.fields.layout.options.bignum": "Angka besar",
-  "inputs.deck.fields.layout.options.mainpoint": "Poin utama"
+  "inputs.deck.fields.layout.options.mainpoint": "Poin utama",
+  "inputs.deck.fields.text1.label": "Teks slot 1",
+  "inputs.deck.fields.text1.help": "Mengisi slot dengan kartu teks bila tidak ada gambar atau alat. Jika keduanya diisi, media yang menang.",
+  "inputs.deck.fields.text2.label": "Teks slot 2",
+  "inputs.deck.fields.text2.help": "Mengisi slot dengan kartu teks bila tidak ada gambar atau alat. Jika keduanya diisi, media yang menang.",
+  "inputs.deck.fields.text3.label": "Teks slot 3",
+  "inputs.deck.fields.text3.help": "Mengisi slot dengan kartu teks bila tidak ada gambar atau alat. Jika keduanya diisi, media yang menang.",
+  "inputs.deck.fields.text4.label": "Teks slot 4",
+  "inputs.deck.fields.text4.help": "Mengisi slot dengan kartu teks bila tidak ada gambar atau alat. Jika keduanya diisi, media yang menang."
 }

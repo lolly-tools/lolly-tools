@@ -1,16 +1,16 @@
 {{{finishSvg}}}
-{{!-- PRODUCT RULE — preview vs plate: the shiny finish simulation above is
+{{!-- PRODUCT RULE - preview vs plate: the shiny finish simulation above is
       PRESENTATION ONLY and must never be baked into artwork sent to print.
       The real deliverable for a print house is the finish plate: flip the
-      "Plate view (printer-ready)" input and the canvas becomes the plate —
-      pure black mask shapes on white plus an overprint label line — which is
+      "Plate view (printer-ready)" input and the canvas becomes the plate -
+      pure black mask shapes on white plus an overprint label line - which is
       what the user exports (SVG/PDF/PNG) for their printer. The plate branch
       in hooks.js is deliberately filter-free (a pre-baked black-on-white
       raster inside the SVG) so it survives every export path unchanged. --}}
-{{!-- EXPORT FIDELITY — why render.formats is what it is (measured 2026-07-31):
+{{!-- EXPORT FIDELITY - why render.formats is what it is (measured 2026-07-31):
       IN: svg (the whole thing: <image> artwork + <mask> + gradients + filters),
       every raster format (png/jpg/webp/avif/tiff/cmyk-tiff and the animated
-      gif/apng/webp-anim/webm/mp4 — the browser paints the filters natively at
+      gif/apng/webp-anim/webm/mp4 - the browser paints the filters natively at
       the raster chokepoint), and pdf/pdf-cmyk.
       OUT: emf, eps, eps-cmyk, dxf. Those four share the SVG→IR walk in
       shells/web/src/bridge/svg-ir.ts, which SKIPs <filter> and <mask> (line 31),
@@ -20,11 +20,11 @@
       feTurbulence/feDisplacementMap/feComponentTransfer). engine/src/dxf.ts:138
       additionally drops every image prim outright. The sibling tool
       filter-imperfections measured 575–851 bytes of flat rectangles for those
-      formats against a 1.39 MB SVG — the artwork, the mask and the finish all
+      formats against a 1.39 MB SVG - the artwork, the mask and the finish all
       gone. A file that looks plausible and is empty is worse than a refusal.
       CAVEAT to tell users, not a blocker: PDF cannot express an SVG filter, so
       export.ts's drawSvgVectorsInRegion rasterises any SVG containing a
-      filter/gradient/pattern into ONE image at ~150 dpi (capped 2000 px) — the
+      filter/gradient/pattern into ONE image at ~150 dpi (capped 2000 px) - the
       PREVIEW pdf is therefore a raster page, and pdf-cmyk leaves that image
       XObject in DeviceRGB (renderCmykPdf skips image XObjects by design), so
       only the marks are true DeviceCMYK. The PLATE view has no filter or
@@ -32,7 +32,7 @@
       as-is; for a true CMYK plate deliverable, cmyk-tiff converts every pixel. --}}
 {{!-- Single-root <svg> is preserved: hooks.js emits ONE root <svg> (the finish scene),
       and the auto-fit anchor (data-img-key / data-img-w / data-img-h) is stamped ON that
-      root, not on a sibling — so the CLI's rootSvgOf vector path is unaffected. The
+      root, not on a sibling - so the CLI's rootSvgOf vector path is unaffected. The
       trailing <script> is exempt from its drawable-child count. --}}
 <script>
 /* Auto-fit the canvas to a newly chosen image (native pixel dimensions). hooks.js stamps
@@ -57,7 +57,7 @@
   if (canvas.__finishFitKey === key) return;  // image unchanged since mount / last snap → respect manual resize
   if (!key) { canvas.__finishFitKey = ''; return; } // image cleared → adopt empty baseline, no resize
   var uEl = document.querySelector('[data-action="export-unit"]');
-  if (uEl && uEl.value && uEl.value !== 'px') return; // a deliberate mm/in page — don't override it
+  if (uEl && uEl.value && uEl.value !== 'px') return; // a deliberate mm/in page - don't override it
   var wEl = document.querySelector('[data-action="export-width"]');
   var hEl = document.querySelector('[data-action="export-height"]');
   if (!wEl || !hEl) return;

@@ -2,7 +2,7 @@
   "id": "poster",
   "name": "Poster",
   "category": "Poster",
-  "description": "One 16:9 frame — a big headline and a supporting line, in your brand colours.",
+  "description": "One 16:9 frame - a big headline and a supporting line, in your brand colours.",
   "values": {
     "boxes": [
       {

@@ -3,7 +3,7 @@
   "description": "Strakke vector-stratenplannen van elke stad. Werkt offline.",
   "a11yLabel": "Stratenplan gecentreerd op {{city}}",
   "inputs.city.label": "Stad",
-  "inputs.city.help": "Voeg offline meer steden toe met scripts/build-street-clips.ts — geen API nodig tijdens het renderen.",
+  "inputs.city.help": "Voeg offline meer steden toe met scripts/build-street-clips.ts - geen API nodig tijdens het renderen.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Athene",
   "inputs.city.options.bangkok": "Bangkok",

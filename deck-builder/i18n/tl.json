@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Isang maliit na linya ng footer (copyright, pagiging kumpidensyal) sa ibaba ng bawat slide, sa pagitan ng logo at numero ng slide.",
   "inputs.footerText.placeholder": "© 2026 Ang Iyong Kompanya · Kumpidensyal",
   "inputs.deck.fields.layout.options.bignum": "Malaking numero",
-  "inputs.deck.fields.layout.options.mainpoint": "Pangunahing punto"
+  "inputs.deck.fields.layout.options.mainpoint": "Pangunahing punto",
+  "inputs.deck.fields.text1.label": "Teksto ng slot 1",
+  "inputs.deck.fields.text1.help": "Pinupuno ang slot ng text card kapag walang nakatakdang larawan o tool. Kung pareho, mananaig ang media.",
+  "inputs.deck.fields.text2.label": "Teksto ng slot 2",
+  "inputs.deck.fields.text2.help": "Pinupuno ang slot ng text card kapag walang nakatakdang larawan o tool. Kung pareho, mananaig ang media.",
+  "inputs.deck.fields.text3.label": "Teksto ng slot 3",
+  "inputs.deck.fields.text3.help": "Pinupuno ang slot ng text card kapag walang nakatakdang larawan o tool. Kung pareho, mananaig ang media.",
+  "inputs.deck.fields.text4.label": "Teksto ng slot 4",
+  "inputs.deck.fields.text4.help": "Pinupuno ang slot ng text card kapag walang nakatakdang larawan o tool. Kung pareho, mananaig ang media."
 }

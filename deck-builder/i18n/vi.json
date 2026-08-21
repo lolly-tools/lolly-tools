@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Một dòng chân trang nhỏ (bản quyền, bảo mật) ở cuối mỗi trang chiếu, giữa logo và số trang chiếu.",
   "inputs.footerText.placeholder": "© 2026 Công ty của bạn · Bảo mật",
   "inputs.deck.fields.layout.options.bignum": "Con số lớn",
-  "inputs.deck.fields.layout.options.mainpoint": "Ý chính"
+  "inputs.deck.fields.layout.options.mainpoint": "Ý chính",
+  "inputs.deck.fields.text1.label": "Chữ cho ô 1",
+  "inputs.deck.fields.text1.help": "Điền ô bằng thẻ chữ khi chưa đặt hình ảnh hoặc công cụ. Nếu có cả hai, phương tiện được ưu tiên.",
+  "inputs.deck.fields.text2.label": "Chữ cho ô 2",
+  "inputs.deck.fields.text2.help": "Điền ô bằng thẻ chữ khi chưa đặt hình ảnh hoặc công cụ. Nếu có cả hai, phương tiện được ưu tiên.",
+  "inputs.deck.fields.text3.label": "Chữ cho ô 3",
+  "inputs.deck.fields.text3.help": "Điền ô bằng thẻ chữ khi chưa đặt hình ảnh hoặc công cụ. Nếu có cả hai, phương tiện được ưu tiên.",
+  "inputs.deck.fields.text4.label": "Chữ cho ô 4",
+  "inputs.deck.fields.text4.help": "Điền ô bằng thẻ chữ khi chưa đặt hình ảnh hoặc công cụ. Nếu có cả hai, phương tiện được ưu tiên."
 }

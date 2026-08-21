@@ -46,7 +46,7 @@
   cursor: grabbing;
 }
 
-/* Shuffle buttons — hover-revealed like the dots, excluded from exports. */
+/* Shuffle buttons - hover-revealed like the dots, excluded from exports. */
 .mg-actions {
   position: absolute;
   top: 10px;
@@ -85,7 +85,7 @@
   height: 16px;
 }
 
-/* No hover on touch — keep the handles gently visible. */
+/* No hover on touch - keep the handles gently visible. */
 @media (pointer: coarse) {
   .mg-dot {
     opacity: 0.85;

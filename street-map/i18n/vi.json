@@ -3,7 +3,7 @@
   "description": "Bản đồ vector các ô phố gọn gàng của bất kỳ thành phố nào. Hoạt động ngoại tuyến.",
   "a11yLabel": "Bản đồ đường phố lấy {{city}} làm trung tâm",
   "inputs.city.label": "Thành phố",
-  "inputs.city.help": "Thêm thành phố mới khi ngoại tuyến bằng scripts/build-street-clips.ts — không cần gọi API lúc kết xuất.",
+  "inputs.city.help": "Thêm thành phố mới khi ngoại tuyến bằng scripts/build-street-clips.ts - không cần gọi API lúc kết xuất.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Athens",
   "inputs.city.options.bangkok": "Băng Cốc",

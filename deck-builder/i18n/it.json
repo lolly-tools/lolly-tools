@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Una piccola riga a piè di pagina (copyright, riservatezza) in fondo a ogni diapositiva, tra il logo e il numero di diapositiva.",
   "inputs.footerText.placeholder": "© 2026 La tua azienda · Riservato",
   "inputs.deck.fields.layout.options.bignum": "Numero grande",
-  "inputs.deck.fields.layout.options.mainpoint": "Punto chiave"
+  "inputs.deck.fields.layout.options.mainpoint": "Punto chiave",
+  "inputs.deck.fields.text1.label": "Testo dello slot 1",
+  "inputs.deck.fields.text1.help": "Riempie lo slot con una scheda di testo quando non è impostata un'immagine o uno strumento. Se ci sono entrambi, vince il media.",
+  "inputs.deck.fields.text2.label": "Testo dello slot 2",
+  "inputs.deck.fields.text2.help": "Riempie lo slot con una scheda di testo quando non è impostata un'immagine o uno strumento. Se ci sono entrambi, vince il media.",
+  "inputs.deck.fields.text3.label": "Testo dello slot 3",
+  "inputs.deck.fields.text3.help": "Riempie lo slot con una scheda di testo quando non è impostata un'immagine o uno strumento. Se ci sono entrambi, vince il media.",
+  "inputs.deck.fields.text4.label": "Testo dello slot 4",
+  "inputs.deck.fields.text4.help": "Riempie lo slot con una scheda di testo quando non è impostata un'immagine o uno strumento. Se ci sono entrambi, vince il media."
 }

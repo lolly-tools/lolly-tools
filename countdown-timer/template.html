@@ -60,7 +60,7 @@
 }
 /* When the "click to pause" hint fades on idle, glide the time down to the true
    centre of the ring (recovering the space the hint left); it slides back up when
-   the hint returns. Running-state only — paused keeps its label + controls put. */
+   the hint returns. Running-state only - paused keeps its label + controls put. */
 .ct-root.ct-idle[data-state="running"] .ct-time { transform: translateY(11px); }
 
 .ct-hint {
@@ -71,7 +71,7 @@
   font-weight: 500;
   transition: opacity 0.45s ease;
 }
-/* Idle (no mouse/keyboard for 3s): fade the hint too — driven from .ct-root so it
+/* Idle (no mouse/keyboard for 3s): fade the hint too - driven from .ct-root so it
    applies to whichever hint is currently rendered in the overlay. The paused state
    keeps its "paused" label (and Reset/Resume) visible. */
 .ct-root.ct-idle:not([data-state="paused"]) .ct-hint { opacity: 0; }
@@ -306,7 +306,7 @@
   // For an immersive timer, fade the corner "Tools" link away when the pointer and
   // keyboard have been idle for 3s; any activity brings it back. The listeners live
   // on window and self-remove once the button leaves the DOM (tool navigation), so
-  // nothing leaks — this template script re-run is guarded by a flag on the button.
+  // nothing leaks - this template script re-run is guarded by a flag on the button.
   (function () {
     var back = document.querySelector('.tools-home.home-full') || document.querySelector('.tools-home');
     if (!back || back.__ctIdle) return;

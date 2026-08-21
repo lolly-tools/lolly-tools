@@ -1,8 +1,8 @@
 /* Colours follow the app's core theme switcher (light / dark / suse). Every hue
-   is sourced from the app design tokens on <html data-theme> (tokens.css) — they
+   is sourced from the app design tokens on <html data-theme> (tokens.css) - they
    inherit into the scoped tool canvas, so the tool restyles itself the instant
    the theme changes. Fallbacks (light theme) keep the sheet valid in shells that
-   don't ship the tokens (CLI/headless — no visible canvas anyway). The `--ex-*`
+   don't ship the tokens (CLI/headless - no visible canvas anyway). The `--ex-*`
    aliases hold bare HSL triples so use-sites can alpha-composite: hsl(var(--x) / .1). */
 .exif {
   --ex-bg:      var(--background, 0 0% 98%);
@@ -62,7 +62,7 @@
   color: hsl(var(--ex-brand)) !important;
 }
 
-/* Secondary CTA in the empty state — the keyboard-reachable way to open the
+/* Secondary CTA in the empty state - the keyboard-reachable way to open the
    native picker (drag-and-drop and click-anywhere are wired by the shell). */
 .exif-pick {
   margin: 6px 0 14px;
@@ -100,7 +100,7 @@
   margin-bottom: 14px;
 }
 
-/* Swap the loaded file for another — opens the picker (shell-wired). */
+/* Swap the loaded file for another - opens the picker (shell-wired). */
 .exif-replace {
   flex: none;
   padding: 4px 10px;
@@ -216,7 +216,7 @@
 /* Mix the destructive red toward the theme foreground so the warning label stays
    legible in dark/suse, where --destructive is a fill hue (too dark for text). */
 .exif-finding.warn .exif-finding-label { color: color-mix(in oklab, hsl(var(--ex-warn)), hsl(var(--ex-fg)) 30%); }
-/* The actual embedded value — hidden until "Show details" is toggled on. */
+/* The actual embedded value - hidden until "Show details" is toggled on. */
 .exif-finding-detail {
   display: none;
   font-family: var(--font-mono, "SUSE Mono", monospace);

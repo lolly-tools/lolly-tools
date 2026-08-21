@@ -11,7 +11,7 @@
     overflow-y: auto;
     overflow-x: hidden;
     background: transparent;
-    /* No top padding — the first page sits flush at the canvas top, like every other
+    /* No top padding - the first page sits flush at the canvas top, like every other
        tool. Pages are separated by each page's own margin-bottom; a small bottom gap
        keeps the last page's shadow / scroll end from clipping. */
     padding: 0 0 var(--gap);
@@ -19,7 +19,7 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* One page box — locked to the export page size so the browser lays content
+  /* One page box - locked to the export page size so the browser lays content
      into discrete pages and each [data-pdf-page] exports as one true PDF page. */
   .mpdf-page {
     box-sizing: border-box;
@@ -56,11 +56,11 @@
     min-height: 0;
   }
   /* The logo sits in a DEFINITE box (fixed width AND height) and is fitted inside
-     with object-fit:contain — so a wide (horizontal) lockup grows to the width edge
+     with object-fit:contain - so a wide (horizontal) lockup grows to the width edge
      while a tall (stacked) lockup grows to the height edge, both aspect-preserved.
      The box must be definite (not width:auto/height:auto): an <img> pointing at an
      SVG sizes its box from the SVG's own width/height attributes, which vary per
-     asset (some omit them entirely) — that made the box non-deterministic and let
+     asset (some omit them entirely) - that made the box non-deterministic and let
      some marks run past the page. A fixed box removes that: the PDF walker reads
      the same box via getBoundingClientRect and meet-fits identically, so preview
      and export match exactly. object-position keeps the mark left-aligned. */
@@ -158,7 +158,7 @@
   .mpdf-back-about { margin: 0 0 var(--margin-y); max-width: 100%; }
   .mpdf-back-about-heading { font-size: var(--caption-size); text-transform: uppercase; letter-spacing: .08em; color: var(--back-muted); margin: 0 0 .45em; }
   .mpdf-back-about-text { font-size: var(--caption-size); line-height: 1.5; color: var(--back-ink); opacity: .92; }
-  /* Definite box + object-fit:contain, same reasoning as .mpdf-cover-logo — keeps
+  /* Definite box + object-fit:contain, same reasoning as .mpdf-cover-logo - keeps
      SVG logos deterministic so the export matches the preview and can't overflow. */
   .mpdf-back-logo { width: min(calc(50% * var(--back-logo-scale)), 100%); height: calc(var(--cover-sub-size) * 1.8 * var(--back-logo-scale)); object-fit: contain; object-position: left center; display: block; }
   .mpdf-back-rule { height: 4px; width: 100%; background: var(--accent); margin-top: calc(var(--margin-y) * .6); }
@@ -191,7 +191,7 @@
     width: .38em; height: .38em; border-radius: 50%; background: var(--accent);
   }
   /* Numbered lists. The number is a real .md-index node baked by the markdown helper
-     (not a CSS counter / native <ol> marker — the vector PDF walker drops both), so
+     (not a CSS counter / native <ol> marker - the vector PDF walker drops both), so
      positioning it absolutely gives a hanging indent that also exports correctly. */
   .mpdf-cell-body ol, .mpdf-cover-text ol, .mpdf-back-text ol, .mpdf-back-about-text ol { margin: .3em 0; padding-left: 1.6em; list-style: none; }
   .mpdf-cell-body .md-index, .mpdf-cover-text .md-index, .mpdf-back-text .md-index, .mpdf-back-about-text .md-index {

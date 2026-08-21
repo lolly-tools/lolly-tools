@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// `booth-studio` tool hooks — pure, DOM-free.
+// `booth-studio` tool hooks - pure, DOM-free.
 // Fold the input model into one config object and hand it to the template as the
 // `_state` extra (underscore prefix keeps annotateTemplate from touching it, so it
 // stays valid JSON inside <script type="application/json">). The template's WebGL
@@ -8,7 +8,7 @@
 // The panel roles the renderer knows how to dress. These ids are a permanent
 // contract: they match both the `asset` input ids in tool.json and the role keys
 // in the template's DESIGNS table. Role-based (rather than panel1..N) is what lets
-// artwork survive a design switch — a back wall stays a back wall.
+// artwork survive a design switch - a back wall stays a back wall.
 var ROLES = ['backWall', 'leftWing', 'rightWing', 'header', 'counter', 'tower', 'screen', 'floor'];
 
 function safeJson(obj) {
@@ -23,7 +23,7 @@ function num(v, fallback) {
 }
 
 // An `asset` input's value arrives already resolved by the runtime
-// (resolveAssetRefs) as a full AssetRef object — so read `.url` off it. Anything
+// (resolveAssetRefs) as a full AssetRef object - so read `.url` off it. Anything
 // else (unset, or a bare id the runtime could not resolve) means "empty panel",
 // which the renderer draws as a labelled placeholder rather than failing.
 function panelFrom(v, fit) {
@@ -51,7 +51,7 @@ var BLENDS = [
 
 // The background slot. Unlike a panel this may be a VIDEO (or a Lolly tool link,
 // which the runtime has already resolved to an image via compose.renderUrl), so
-// carry the asset's type through — the renderer needs it to decide between an
+// carry the asset's type through - the renderer needs it to decide between an
 // <img> and a <video>. A `lottie` ref's url is animation JSON that no canvas can
 // draw, so fall back to its poster frame if the host minted one.
 function bgFrom(v) {
@@ -85,7 +85,7 @@ function compute(model) {
     padding: Math.max(0, Math.min(25, num(inp.padding, 6))),
 
     scene: inp.scene || 'expo',
-    // Fallbacks only — the manifest defaults normally win. Kept in step with them.
+    // Fallbacks only - the manifest defaults normally win. Kept in step with them.
     background: inp.background || '#0d1014',
     bgColor2: inp.bgColor2 || '#242c3a',
     gradientBg: inp.gradientBg !== false,

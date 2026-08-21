@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Gras",
   "inputs.weight.options.600": "Semi-gras",
   "inputs.tracking.label": "Espacement des lettres",
-  "inputs.tracking.help": "Les valeurs négatives resserrent les lettres entre elles — essentiel pour faire tenir 3 à 4 capitales monospace dans une tuile de 16 px. Mono est large, alors pousse bien dans les valeurs négatives.",
+  "inputs.tracking.help": "Les valeurs négatives resserrent les lettres entre elles - essentiel pour faire tenir 3 à 4 capitales monospace dans une tuile de 16 px. Mono est large, alors pousse bien dans les valeurs négatives.",
   "inputs.labelScale.label": "Taille du libellé",
   "inputs.labelScale.help": "Ajuste la taille du libellé auto-adaptée vers le haut ou le bas (en pourcentage).",
   "inputs.showGrid.label": "Aperçu 16 px",
-  "inputs.showGrid.help": "Affiche l'icône à ses tailles réelles de favicon 16 et 32 px sur le canevas pour juger de sa lisibilité. Une aide à l'édition uniquement — jamais incluse dans les exports."
+  "inputs.showGrid.help": "Affiche l'icône à ses tailles réelles de favicon 16 et 32 px sur le canevas pour juger de sa lisibilité. Une aide à l'édition uniquement - jamais incluse dans les exports."
 }

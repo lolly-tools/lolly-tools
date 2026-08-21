@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Tebal",
   "inputs.weight.options.600": "Semi tebal",
   "inputs.tracking.label": "Jarak huruf",
-  "inputs.tracking.help": "Nilai negatif merapatkan huruf — penting untuk memuat 3–4 huruf kapital monospace ke dalam ubin 16 px. Mono itu lebar, jadi dorong jauh ke nilai negatif.",
+  "inputs.tracking.help": "Nilai negatif merapatkan huruf - penting untuk memuat 3–4 huruf kapital monospace ke dalam ubin 16 px. Mono itu lebar, jadi dorong jauh ke nilai negatif.",
   "inputs.labelScale.label": "Ukuran label",
   "inputs.labelScale.help": "Sesuaikan ukuran label yang otomatis pas, naik atau turun (persen).",
   "inputs.showGrid.label": "Pratinjau 16 px",
-  "inputs.showGrid.help": "Tampilkan ikon pada ukuran favicon sebenarnya 16 dan 32 px di kanvas agar Anda bisa menilai keterbacaannya. Hanya bantuan editor — tidak pernah disertakan dalam ekspor."
+  "inputs.showGrid.help": "Tampilkan ikon pada ukuran favicon sebenarnya 16 dan 32 px di kanvas agar Anda bisa menilai keterbacaannya. Hanya bantuan editor - tidak pernah disertakan dalam ekspor."
 }

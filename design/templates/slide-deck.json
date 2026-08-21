@@ -2,7 +2,7 @@
   "id": "slide-deck",
   "name": "Slide deck",
   "category": "Slides",
-  "description": "Three frames as slides — title, content, closing. Export as PowerPoint or PDF.",
+  "description": "Three frames as slides - title, content, closing. Export as PowerPoint or PDF.",
   "values": {
     "boxes": [
       {

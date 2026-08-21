@@ -3,7 +3,7 @@
   "description": "Herhangi bir şehrin temiz vektörel sokak bloğu haritaları. Çevrimdışı çalışır.",
   "a11yLabel": "{{city}} merkezli sokak haritası",
   "inputs.city.label": "Şehir",
-  "inputs.city.help": "Çevrimdışı olarak scripts/build-street-clips.ts ile daha fazla şehir ekle — oluşturma sırasında API kullanılmaz.",
+  "inputs.city.help": "Çevrimdışı olarak scripts/build-street-clips.ts ile daha fazla şehir ekle - oluşturma sırasında API kullanılmaz.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Atina",
   "inputs.city.options.bangkok": "Bangkok",

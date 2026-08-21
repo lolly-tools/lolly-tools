@@ -1,4 +1,4 @@
-/* Colours follow the app's core theme switcher (light / dark / suse) — sourced
+/* Colours follow the app's core theme switcher (light / dark / suse) - sourced
    from the app design tokens on <html data-theme> (tokens.css), which inherit
    into the scoped tool canvas, so the tool restyles the instant the theme
    changes. Fallbacks (light theme) keep the sheet valid where the tokens aren't

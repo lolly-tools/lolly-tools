@@ -295,5 +295,13 @@
   "inputs.footerText.help": "En liten sidfotsrad (upphovsrätt, konfidentialitet) längst ner på varje bild, mellan logotypen och bildnumret.",
   "inputs.footerText.placeholder": "© 2026 Ditt företag · Konfidentiellt",
   "inputs.deck.fields.layout.options.bignum": "Stort tal",
-  "inputs.deck.fields.layout.options.mainpoint": "Huvudbudskap"
+  "inputs.deck.fields.layout.options.mainpoint": "Huvudbudskap",
+  "inputs.deck.fields.text1.label": "Text för ruta 1",
+  "inputs.deck.fields.text1.help": "Fyller rutan med ett textkort när ingen bild eller inget verktyg är valt. Om båda är satta vinner mediet.",
+  "inputs.deck.fields.text2.label": "Text för ruta 2",
+  "inputs.deck.fields.text2.help": "Fyller rutan med ett textkort när ingen bild eller inget verktyg är valt. Om båda är satta vinner mediet.",
+  "inputs.deck.fields.text3.label": "Text för ruta 3",
+  "inputs.deck.fields.text3.help": "Fyller rutan med ett textkort när ingen bild eller inget verktyg är valt. Om båda är satta vinner mediet.",
+  "inputs.deck.fields.text4.label": "Text för ruta 4",
+  "inputs.deck.fields.text4.help": "Fyller rutan med ett textkort när ingen bild eller inget verktyg är valt. Om båda är satta vinner mediet."
 }

@@ -49,7 +49,7 @@
                cover yet. A person cannot click through it (the button is right
                under the stage and the surface settles in one frame), but the
                CLI and MCP browser tiers click as soon as the button enables,
-               and without this they burned bars exactly as supplied — the
+               and without this they burned bars exactly as supplied - the
                clipped-glyph leak snap-to-cover exists to close. -->
           <div class="rd-stage" data-bars="{{barsJson}}" data-presets="{{presetsJson}}" data-geom="{{geomJson}}" data-mark="{{markJson}}"{{#if pagesPending}} data-pages-pending="1"{{/if}}{{#if exportWait}} data-export-wait="1"{{/if}}>
 
@@ -90,7 +90,7 @@
               {{#if hasManyPages}}
                 <!-- Quiet page cue for the scrolling stack: which page you are on,
                      and two buttons that step the scroller. The buttons are not
-                     decoration — a page frame sets touch-action:none so a drag on
+                     decoration - a page frame sets touch-action:none so a drag on
                      it draws a bar, which leaves touch users with no way to reach
                      page 7 by finger. -->
                 <div class="rd-rail-group rd-pagenav" data-page-nav>
@@ -119,7 +119,7 @@
                      warning and vector deletion would all be impossible. The
                      markup in this raw slot is the user's own file, opened on
                      their own device, and it has already been through
-                     prepareInlineSvg in hooks.js — script and foreignObject
+                     prepareInlineSvg in hooks.js - script and foreignObject
                      subtrees deleted, on* handlers and javascript: hrefs dropped,
                      every <style> rule rescoped under the root so a stray
                      `.cls-1 { fill: #fff }` cannot repaint the app. -->
@@ -138,8 +138,8 @@
             {{#if isPdfKind}}
               {{#if hasPdfPages}}
                 <!-- FIT TO WIDTH, SCROLL VERTICALLY. One page fills the available
-                     width and the stack scrolls inside this box. The alternative —
-                     letting the canvas grow to the full height of every page —
+                     width and the stack scrolls inside this box. The alternative -
+                     letting the canvas grow to the full height of every page -
                      hands the shell a 760x9000 canvas, which it dutifully scales
                      to fit the stage: a whole document rendered as one strip too
                      small to read the words you are trying to redact. This canvas
@@ -380,7 +380,7 @@
     /* History-free writes, for the re-measure pass only: a correction nobody
        asked for must not sit on the undo stack (and must not then fight the
        user, who undoes it only for the next paint to redo it). Older shells
-       without the channel fall back to the ordinary commit — a stray history
+       without the channel fall back to the ordinary commit - a stray history
        entry is a far smaller problem than an unmeasured bar. */
     var quietFn = (canvasRoot && canvasRoot.__lollyCommitQuiet) || commitFn;
 
@@ -389,7 +389,7 @@
     /* ── Fill the stage. The tool is a full-height flex column (top dock,
        viewport, bottom dock); the job here is only to PIN the live canvas to the
        stage's own height so the shell renders it at scale 1 and the viewport's
-       flex:1 claims every remaining pixel. Only the interactive #tool-canvas —
+       flex:1 claims every remaining pixel. Only the interactive #tool-canvas -
        the off-screen batch renderer sizes itself.
 
        The old model grew the canvas to the tool's natural height and then sized a
@@ -427,8 +427,8 @@
       };
       syncHeight();
       /* Re-fit when the STAGE changes size (window resize, sidebar toggle). The
-         canvas is pinned to the stage height, so observing the stage — not the
-         tool — is what avoids a growth feedback loop. */
+         canvas is pinned to the stage height, so observing the stage - not the
+         tool - is what avoids a growth feedback loop. */
       var outer0 = canvasRoot.parentElement;
       var stageEl0 = outer0 && outer0.parentElement;
       if (typeof ResizeObserver !== 'undefined' && stageEl0) {
@@ -471,10 +471,10 @@
       }
       /* A transient advisory slides in on the next frame so the CSS TRANSITION
          plays it (a transition, not a keyframe, so prefers-reduced-motion can
-         neutralise it — the app's own .toast made the same choice). A kept
+         neutralise it - the app's own .toast made the same choice). A kept
          reference card is recreated on every repaint, so it appears at once
          rather than re-animating each time a bar is drawn, and it never
-         auto-dismisses — it stays until the person closes it. */
+         auto-dismisses - it stays until the person closes it. */
       if (keep) {
         toast.classList.add('is-visible');
       } else if (typeof requestAnimationFrame === 'function') {
@@ -490,7 +490,7 @@
 
     /* The hook raises its advisories by rendering a toast into the markup; the
        partial-coverage warning is computed HERE, from the live DOM, so it needs
-       to raise one too. Same element, same classes, same dismissal — one toast
+       to raise one too. Same element, same classes, same dismissal - one toast
        mechanism, not two. */
     function pushToast(text, key) {
       var box = wrap.querySelector('.rd-toasts');
@@ -513,7 +513,7 @@
 
     /* Wire every toast the markup rendered: the transient advisory (auto-clears)
        and the persistent reference cards (rd-toast-keep, stay until dismissed).
-       A card already dismissed for THIS file — the done-list is keyed by file —
+       A card already dismissed for THIS file - the done-list is keyed by file -
        is removed rather than re-shown, so a repaint does not bring back what the
        person closed. Runs per repaint because innerHTML recreates the box. */
     (function wireToasts() {
@@ -564,7 +564,7 @@
     })();
 
     /* ── Findings reveal: the checkbox holds its open/closed state in the DOM
-       only, and every commit repaints via innerHTML — so without this the list
+       only, and every commit repaints via innerHTML - so without this the list
        slammed shut each time a bar was drawn. State rides the persistent canvas
        container, like the rail's mode/preset. The id is also re-keyed per canvas
        so N mounted copies (multi-edit) don't all point their label at the first
@@ -600,7 +600,7 @@
     if (typeof geom.inflate !== 'number') geom.inflate = 2;
     if (typeof geom.radius !== 'number') geom.radius = 0;
 
-    /* How the mark looks — resolved in the hook (brand ink, corner radius, stamp
+    /* How the mark looks - resolved in the hook (brand ink, corner radius, stamp
        text) and shipped here whole, so the preview paints the same shape and the
        same colour the export burns. The stylesheet reads the ink through a
        custom property this script SETS from the same value, rather than reading
@@ -622,11 +622,11 @@
        because the measuring has to happen where the DOM is, and a sandboxed
        hook cannot be called mid-gesture. tests/redact.test.ts extracts THIS
        block, evaluates it, and compares every function against the hook's copy
-       case by case — so the two cannot drift silently. Keep it pure: no DOM, no
+       case by case - so the two cannot drift silently. Keep it pure: no DOM, no
        closure over anything above. */
     var RDGeom = (function () {
       /* Shares any area at all, shared edges included. The disjointness test the
-         exact rectangle subtraction needs, and nothing else — see the hook. */
+         exact rectangle subtraction needs, and nothing else - see the hook. */
       function rectTouches(a, b) {
         return !(a.x + a.w < b.x || b.x + b.w < a.x || a.y + a.h < b.y || b.y + b.h < a.y);
       }
@@ -667,7 +667,7 @@
         if (x1 <= x0 || y1 <= y0) return { x: bar.x, y: bar.y, w: bar.w, h: bar.h };
         return { x: x0, y: y0, w: x1 - x0, h: y1 - y0 };
       }
-      /* A node this big is the PAGE, not a thing on it — a scanned page's one
+      /* A node this big is the PAGE, not a thing on it - a scanned page's one
          image XObject, an artboard rect, a full-bleed background. Union a bar
          with it and the mark becomes the whole page; delete it in vector mode
          and the artwork loses its backdrop. Excluded from the node set, so a bar
@@ -681,7 +681,7 @@
       }
       /* ONE pass: grow to the union of the nodes the user's own rectangle is
          over, and stop. Running this to a fixed point over the GROWN box is a
-         flood fill on body text — the bar reaches a word, grows, now overlaps
+         flood fill on body text - the bar reaches a word, grows, now overlaps
          its neighbour and the line above, and swallows the paragraph. A union
          contains every box it was built from, so a targeted node is still fully
          covered; nothing the grown box newly reaches can enlarge it further.
@@ -760,7 +760,7 @@
          sits exactly on a corner of the requested rect, and containment follows
          by construction. A corner whose sides clamped to the frame is painted
          square, because the clamp drags that centre inward. This is why the
-         preview can claim to be the same shape as the export — it runs the same
+         preview can claim to be the same shape as the export - it runs the same
          maths, and tests/redact.test.ts compares the two case by case. */
       function paintedShape(rect, radius, W, H) {
         var rad = Math.max(0, Math.floor(Number(radius) || 0));
@@ -793,7 +793,7 @@
 
     /* @resnap-plan-start
        Pure: which bars on a page still have to be measured against it, and what
-       they become. Split out of the DOM wiring on purpose — jsdom answers every
+       they become. Split out of the DOM wiring on purpose - jsdom answers every
        getBoundingClientRect with zeroes, so the wiring around this cannot be
        tested off-browser, but the decision it encodes is the part that can leak
        and so is the part worth pinning. tests/redact.test.ts extracts and
@@ -810,7 +810,7 @@
       /* The addresses a committed bar carries: 'm' = measured, nothing under
          it; 'm:3,17' = measured, delete these. An empty string would mean NEVER
          measured, and vector export refuses that rather than covering what it
-         promised to delete — so this never returns one. */
+         promised to delete - so this never returns one. */
       function marksFor(nodes, hit) {
         var ids = [];
         for (var i = 0; i < hit.length; i++) {
@@ -845,7 +845,7 @@
 
       /* Returns { changed, next } over the WHOLE document array, correcting
          only bars on `page`. A bar is re-snapped when it was never measured, and
-         only then — its geometry is otherwise the user's.
+         only then - its geometry is otherwise the user's.
 
          There used to be a second trigger: a bar that left any node partly
          covered was re-grown. That was load bearing while growth ran to a fixed
@@ -854,7 +854,7 @@
          With growth bounded to a single pass it becomes the creep instead: a bar
          whose inflation or quantise grid clips the word beside it is partial by
          construction, would be re-grown to swallow that word, would then clip
-         the next one, and would walk across the line a render at a time — the
+         the next one, and would walk across the line a render at a time - the
          same flood fill, arriving slowly. A drawn bar is grown once, when it is
          drawn, and after that partial coverage is REPORTED (RDGeom.partialNodes,
          the .rd-partial overlay and the toast) rather than silently corrected.
@@ -865,7 +865,7 @@
          without going near the DOM, and a batch instruction string is applied
          to file after file. A bar carrying 'm:37,41' that now sits over
          different words made vector export delete the elements it USED to touch
-         and paint an opaque rect over the ones it now touches — the covered
+         and paint an opaque rect over the ones it now touches - the covered
          text still in the file, fully extractable, and the gate silent because
          it only greps for what was removed. So a settled bar keeps its
          geometry, and its addresses are rewritten to whatever it actually
@@ -923,7 +923,7 @@
 
     /* ── Node measurement. Only reachable because the page is INLINE svg: an
        SVG inside an <img> is a closed document and none of this would exist.
-       Leaf drawables only — snapping to a <g> would swallow siblings the user
+       Leaf drawables only - snapping to a <g> would swallow siblings the user
        never touched, and a <text> box already contains its tspans. Anything
        inside a paint-server or clip definition is skipped: it has no painted
        box of its own, and deleting it would change artwork elsewhere. ── */
@@ -953,7 +953,7 @@
        interpreted PDF text run is one <text> carrying a <tspan> PER LINE (engine
        pdf-svg), so the element's box is the whole paragraph and a bar snapped to
        it covers the paragraph however tightly it was drawn. Whole lines are not
-       much better — you cannot redact a name out of a sentence. A range rect is
+       much better - you cannot redact a name out of a sentence. A range rect is
        the same ruler as everything else here (client rects, so ancestor
        transforms and the frame's fit scale are already in it), which is why this
        is a Range and not getExtentOfChar's user-space box.
@@ -978,7 +978,7 @@
         if (!tn || tn.nodeType !== 3) continue;
         var text = String(tn.nodeValue || '');
         /* Already one word: its own box IS the word box, and a Range would only
-           be a slower way to ask. Worth the special case — an interpreted page
+           be a slower way to ask. Worth the special case - an interpreted page
            can carry several hundred of these, and this walk runs per render. */
         if (text.trim() && !/\s/.test(text.trim())) {
           push(hosts[s], hosts[s].getBoundingClientRect(), idx);
@@ -1003,7 +1003,7 @@
 
     /* ── Paper, and why it is not a node ────────────────────────────────────
        An interpreted PDF page is not just its ink. A page produced by a word
-       processor carries a WHITE RECTANGLE PER LINE OF TEXT — the run's own
+       processor carries a WHITE RECTANGLE PER LINE OF TEXT - the run's own
        background box, 450pt wide on a 612pt page, invisible against the paper
        and meaningless to a reader. It is a node like any other to a
        getBoundingClientRect walk, and it was the real reason a 20x20pt bar came
@@ -1021,7 +1021,7 @@
        Excluding is the SAFE direction in every consumer. Growth: a bar no longer
        inherits a full-width backdrop it was never aimed at. Coverage warnings: a
        white rectangle is not "partly covered and still readable". Vector export:
-       a paper rectangle is not deleted — and that one matters twice over, since
+       a paper rectangle is not deleted - and that one matters twice over, since
        a white box drawn OVER text is how people fake a redaction, and removing
        it would expose exactly what its author was hiding. */
     function paintOf(el) {
@@ -1055,8 +1055,8 @@
     }
 
     /* Shapes only. Text, images and <use> are never paper (white text on a dark
-       plate is content), and skipping them by tag keeps getComputedStyle — the
-       expensive call here — off the several hundred text runs of a page. */
+       plate is content), and skipping them by tag keeps getComputedStyle - the
+       expensive call here - off the several hundred text runs of a page. */
     var PAPER_TAGS = { path: 1, rect: 1, circle: 1, ellipse: 1, line: 1, polyline: 1, polygon: 1 };
 
     function isPaperNode(el, tag, paper) {
@@ -1105,7 +1105,7 @@
         var idx = parseInt(el.getAttribute('data-rdn') || '', 10);
         /* LINE granularity, page frames only. One interpreted PDF text run is
            one <text> element carrying a <tspan> PER LINE (engine pdf-svg), so
-           its box is the whole paragraph — and a bar snapped to that covers the
+           its box is the whole paragraph - and a bar snapped to that covers the
            paragraph however tightly it was drawn. On a page frame the tspans are
            the honest unit: they are what a reader sees as separate things, and
            the page path only ever RASTERISES, so nothing here decides what gets
@@ -1118,7 +1118,7 @@
       return out;
     }
 
-    /* The addresses a committed bar carries — owned by the pure @resnap-plan
+    /* The addresses a committed bar carries - owned by the pure @resnap-plan
        block, because the draw path and the re-measure pass must write the same
        string for the same nodes. */
     var marksFor = RDResnap.marksFor;
@@ -1198,7 +1198,7 @@
       return Math.max(6, Math.round(frameH * presetFracs[preset]));
     }
 
-    /* Frame space — the units bars, node bounds and the export all share.
+    /* Frame space - the units bars, node bounds and the export all share.
        data-ptw/data-pth declare it (PDF points for a page, natural pixels for
        an inline SVG source); a raster <img> has neither, so its own natural
        pixel size is the space. */
@@ -1272,8 +1272,8 @@
         var prev = canvasRoot ? (parseInt(canvasRoot.dataset.rdPartialCount || '0', 10) || 0) : 0;
         if (canvasRoot) canvasRoot.dataset.rdPartialCount = String(total);
         if (total > 0 && total !== prev) {
-          /* Says exactly what was computed — an item with ink under a bar and
-             ink outside it — and nothing about which bar meant to take it. A
+          /* Says exactly what was computed - an item with ink under a bar and
+             ink outside it - and nothing about which bar meant to take it. A
              bar can clip a neighbour it was never aimed at, and for that one the
              fix is to pull back rather than to widen, so the copy offers both.
              See partialNodes in hooks.js for why both are reported. */
@@ -1304,7 +1304,7 @@
         };
       }
 
-      /* Nodes a bar could touch, in frame units. Empty for a raster source —
+      /* Nodes a bar could touch, in frame units. Empty for a raster source -
          flat pixels have no elements, so neither snap-to-cover nor the
          partial-coverage warning can fire there, and the copy says so. */
       function nodesNow(sp) {
@@ -1312,7 +1312,7 @@
       }
 
 
-      /* The painted boxes of this page's bars — the same rect the coverage
+      /* The painted boxes of this page's bars - the same rect the coverage
          maths use, and the test for "has this page anything to measure for". */
       function coversNow(sp) {
         var eff = effOfIn(sp);
@@ -1327,7 +1327,7 @@
 
       /* What the document-wide re-measure pass needs from THIS page: the
          measured nodes and the probe geometry. Published on the frame rather
-         than acted on here — see resnapAll, which is the only thing allowed to
+         than acted on here - see resnapAll, which is the only thing allowed to
          commit, because every frame shares one document-wide bars array and a
          per-frame commit would hand back a copy that reverts its neighbours. */
       frame.__rdMeasure = function () {
@@ -1368,7 +1368,7 @@
       /* The box a bar actually PAINTS, in frame units: the effective rect
          (integer snap, inflation, optional width quantise, clamp) grown by the
          corner radius. The preview draws this, not the raw drag box, because the
-         export burns exactly this — a preview of the pre-inflation rectangle
+         export burns exactly this - a preview of the pre-inflation rectangle
          would understate the covered area and hide the quantise widening. */
       function shapeOf(b, sp) {
         var e = RDGeom.effBox(b, sp.w, sp.h, geom.quantise !== false, geom.inflate, grid);
@@ -1390,7 +1390,7 @@
 
       /* The size the EXPORT computes its stamp in. For a page that is device
          pixels at the rebuild's dpi, for an image and an SVG it is the file's
-         own units — and the "too small for a label" cut is applied in that
+         own units - and the "too small for a label" cut is applied in that
          space, so the preview has to ask the question in the same one or it
          hides a stamp the downloaded file paints. */
       var stampUnit = frame.classList.contains('rd-pageframe')
@@ -1419,7 +1419,7 @@
         if (!sp.w || !sp.h) return;
         /* Measured once and shared: the re-snap pass and the partial-coverage
            overlay ask the same question of the same DOM. Skipped outright for a
-           page with nothing on it — walking every element of every page of a
+           page with nothing on it - walking every element of every page of a
            long document on every render is the one expensive thing here, and a
            page with no bar has neither a leak to find nor an address to fill
            in. */
@@ -1437,7 +1437,7 @@
           if (markCfg.label) {
             /* The stamp is drawn on top of an already-opaque bar, so it can
                reveal nothing. Sized and dropped in the EXPORT's own units
-               (stampFit / stampLayout), then converted for display — sizing it
+               (stampFit / stampLayout), then converted for display - sizing it
                in CSS pixels made the cut depend on how big the preview happened
                to be, so a big photo showed a clean bar and downloaded a stamped
                one. */
@@ -1517,11 +1517,11 @@
         var drawScale = rect.width / sp.w; /* frame units → CSS px, for the radii */
         /* SNAP-TO-COVER. Candidates are measured ONCE, here, so pointermove
            stays a pure arithmetic loop. A bar that half-covers a glyph is a
-           leak — ascenders and descenders sticking out of a strikethrough are
-           still readable — so on release the bar grows to contain every element
+           leak - ascenders and descenders sticking out of a strikethrough are
+           still readable - so on release the bar grows to contain every element
            it is OVER. There is no off switch: shipping a leak mode would undo
            the one promise this tool makes. It grows once, to what the drag
-           reached, and not to what the growth then reaches — see snapBarToNodes.
+           reached, and not to what the growth then reaches - see snapBarToNodes.
            The draft shows the grown outline DURING the drag, so the growth is
            never a surprise on release. */
         var nodes = nodesNow(sp);
@@ -1575,7 +1575,7 @@
           }
           return { x0: x0, y0: y0, x1: x1, y1: y1 };
         }
-        /* A client-space box in FRAME units — the space bars, node bounds and
+        /* A client-space box in FRAME units - the space bars, node bounds and
            the export all share. */
         function rawFrom(b) {
           return {
@@ -1587,9 +1587,9 @@
         }
         function paint(ev) {
           if (mode === 'bar' && draft) {
-            /* The draft shows the shape that will actually be painted — grown
+            /* The draft shows the shape that will actually be painted - grown
                to cover every element it touches, inflated, quantised and
-               rounded — so nothing about the committed bar is a surprise on
+               rounded - so nothing about the committed bar is a surprise on
                release. */
             var s = snapOf(rawFrom(box(ev)));
             styleShape(draft, shapeOf({ x: s.x, y: s.y, w: s.w, h: s.h }, sp), sp, drawScale);
@@ -1623,7 +1623,7 @@
 
           /* Every committed bar carries the addresses of the elements it
              touches, so vector export can delete them instead of covering
-             them. 'm' with no list means measured and nothing under it — an
+             them. 'm' with no list means measured and nothing under it - an
              EMPTY string would mean never measured, and the export refuses
              that rather than quietly covering what it promised to delete. */
           function finish(raw) {
@@ -1673,8 +1673,8 @@
     /* ── MEASURE THE BARS THIS CANVAS DID NOT DRAW ──────────────────────────
        snap-to-cover and the node addresses vector export deletes are computed
        on pointerup, which only ever runs for a bar drawn here. A bar that
-       arrived any other way — the sidebar blocks editor, a share link, `lolly
-       redact --bars=`, an MCP call, a session saved before addresses existed —
+       arrived any other way - the sidebar blocks editor, a share link, `lolly
+       redact --bars=`, an MCP call, a session saved before addresses existed -
        has never been near a DOM: it names no nodes, so vector export refuses it
        outright, and nothing ever grew it off a half-covered glyph. That second
        half is the leak snap-to-cover exists to close, and it does not care
@@ -1685,7 +1685,7 @@
        the entire array from the snapshot this script parsed at render time, so
        page 2's correction would hand back page 1's uncorrected row and revert
        it. The repaint that would refresh the snapshot is rAF-deferred, so the
-       frames cannot see each other's work — they have to be folded together
+       frames cannot see each other's work - they have to be folded together
        before anything is committed. */
     (function resnapAll() {
       var next = bars, changed = false;
@@ -1698,7 +1698,7 @@
       if (!changed) return;
 
       /* Parked on the canvas container, which survives the innerHTML swap each
-         paint performs — the script itself does not, so a plain local would
+         paint performs - the script itself does not, so a plain local would
          forget every time. Without it a document that cannot settle (a node
          running off the page edge can never be fully contained) would be
          re-corrected on render after render. */

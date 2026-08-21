@@ -1,4 +1,4 @@
-/* Street Map — layout + chrome. Map geometry colors are set as SVG attributes
+/* Street Map - layout + chrome. Map geometry colors are set as SVG attributes
    in the template script (so they survive SVG/PDF export without relying on CSS
    custom properties resolving in every shell). */
 
@@ -27,7 +27,7 @@
 }
 .sm-map-wrap svg:active { cursor: grabbing; }
 
-/* Zoom controls — hidden in exports, revealed on hover over the map. */
+/* Zoom controls - hidden in exports, revealed on hover over the map. */
 .sm-zoom-controls {
   position: absolute;
   right: 14px;

@@ -3,7 +3,7 @@
   "description": "Čisté vektorové mapy ulic libovolného města. Funguje offline.",
   "a11yLabel": "Mapa ulic se středem na {{city}}",
   "inputs.city.label": "Město",
-  "inputs.city.help": "Přidej další města offline pomocí scripts/build-street-clips.ts — při vykreslování se žádné API nepoužívá.",
+  "inputs.city.help": "Přidej další města offline pomocí scripts/build-street-clips.ts - při vykreslování se žádné API nepoužívá.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Athény",
   "inputs.city.options.bangkok": "Bangkok",

@@ -88,7 +88,7 @@
    with no gap. Single row -> width:fit-content hugs the content exactly, so the
    clip rounds only the true leftmost/rightmost buttons (a real pill). Once the
    row is too wide to fit, the container is forced to 100% width and flex-wrap
-   drops extra tabs to new lines *inside* the same clipped, rounded box — i.e. the
+   drops extra tabs to new lines *inside* the same clipped, rounded box - i.e. the
    whole group stays encapsulated as one pill/capsule instead of scattering into
    many separate floating pills. */
 .tt-tabs {
@@ -137,7 +137,7 @@
 .tt-info-btn:focus-visible, .tt-tab:focus-visible { outline: 2px solid hsl(var(--tt-brand)); outline-offset: -2px; }
 
 /* Mobile: the pill has nowhere good to wrap to, so it collapses behind a
-   hamburger instead — same tab buttons, no duplicate markup or click wiring,
+   hamburger instead - same tab buttons, no duplicate markup or click wiring,
    just re-flowed into a top-right dropdown list toggled by .is-open (JS). */
 .tt-hamburger {
   display: none;
@@ -421,7 +421,7 @@
   function decodeJwt(raw) {
     var t = raw.trim().replace(/^Bearer\s+/i, '').replace(/^["']|["']$/g, '').trim();
     var parts = t.split('.');
-    if (parts.length === 5) throw new Error('This is an encrypted token (JWE) — its contents need the decryption key.');
+    if (parts.length === 5) throw new Error('This is an encrypted token (JWE) - its contents need the decryption key.');
     if (parts.length !== 3) throw new Error('A JWT has 3 dot-separated parts; this has ' + parts.length + '.');
     var header, payload;
     try { header = JSON.parse(dec.decode(bytesFromB64(parts[0]))); }
@@ -440,7 +440,7 @@
       else bits.push('expires ' + relTime(payload.exp - now));
     } else { bits.push('no expiry'); tone = 'warn'; }
     if (typeof payload.nbf === 'number' && now < payload.nbf) { bits.push('not valid until ' + relTime(payload.nbf - now)); tone = 'warn'; }
-    if (/^none$/i.test(alg)) { bits.push('UNSIGNED — anyone can forge it'); tone = 'warn'; }
+    if (/^none$/i.test(alg)) { bits.push('UNSIGNED - anyone can forge it'); tone = 'warn'; }
     bits.push('signature not verified');
     return { text: bits.join(' · '), tone: tone };
   }
@@ -506,11 +506,11 @@
   }
 
   // ── YAML: real parser via the vendored eemeli/yaml library ──────────────────
-  // Full YAML 1.1/1.2 — anchors & aliases, merge keys, explicit "? key / : value",
+  // Full YAML 1.1/1.2 - anchors & aliases, merge keys, explicit "? key / : value",
   // block & folded scalars, flow collections, multi-document streams, octal/hex
   // numbers: everything the old hand-rolled stand-in parser could not do.
   // It ships as a classic-script global in the tool dir (loaded once, on demand),
-  // so it needs no bundler and is cached offline after first use — like the D3 tool.
+  // so it needs no bundler and is cached offline after first use - like the D3 tool.
   var YAML_LIB = '/tools/text-helper/lib/yaml.min.js';
   function loadYaml() {
     if (window.YAML) return Promise.resolve(window.YAML);
@@ -519,7 +519,7 @@
       s.src = YAML_LIB;
       s.onload = function () { window.YAML ? res(window.YAML) : rej(new Error('YAML engine loaded but exposed no global.')); };
       /* Remove the failed node so a re-paint doesn't accrete orphan <script>s. */
-      s.onerror = function () { s.remove(); window.__yamlLoading = null; rej(new Error('YAML engine failed to load — check your connection and retry.')); };
+      s.onerror = function () { s.remove(); window.__yamlLoading = null; rej(new Error('YAML engine failed to load - check your connection and retry.')); };
       document.head.appendChild(s);
     });
     return window.__yamlLoading;
@@ -550,7 +550,7 @@
     return Object.keys(refs).sort();
   }
   function helmNeutralise(src) {
-    // Blank directive-only lines (control flow), mask inline directives — preserving
+    // Blank directive-only lines (control flow), mask inline directives - preserving
     // line numbers so a YAML error still points at the user's original line.
     return src.split(/\r\n|\r|\n/).map(function (line) {
       if (line.replace(HELM_DIR, '').trim() === '') return '';
@@ -794,7 +794,7 @@
     });
     d.aliases = nA; d.types = nT; d.includes = nI; d.entities = entities;
     if (!entities.length) {
-      deidentEl.innerHTML = '<p class="tt-di-empty">Paste text on the left — detected names, companies and locations appear here for you to alias.</p>';
+      deidentEl.innerHTML = '<p class="tt-di-empty">Paste text on the left - detected names, companies and locations appear here for you to alias.</p>';
       return;
     }
     var rows = entities.map(function (e) {
@@ -855,7 +855,7 @@
       var on = t === tab;
       t.classList.toggle('is-active', on);
       t.setAttribute('aria-selected', on ? 'true' : 'false');
-      t.tabIndex = on ? 0 : -1; // roving tabindex — the whole tablist is one tab stop
+      t.tabIndex = on ? 0 : -1; // roving tabindex - the whole tablist is one tab stop
     });
     inLabel.textContent = activeOp === 'jwt' ? 'Token' : activeOp === 'yaml' ? 'YAML' : activeOp === 'helm' ? 'Chart / template' : activeOp === 'deident' ? 'Text' : 'Input';
     deidentEl.hidden = activeOp !== 'deident';
@@ -882,7 +882,7 @@
     activateTab(tabs[next], true);
   });
 
-  // ── mobile hamburger — the pill collapses into this toggled dropdown list ───
+  // ── mobile hamburger - the pill collapses into this toggled dropdown list ───
   function closeMobileMenu() {
     if (!tablistEl || !tablistEl.classList.contains('is-open')) return;
     tablistEl.classList.remove('is-open');
@@ -910,7 +910,7 @@
     });
   }
 
-  // ── about modal — click, backdrop click, or Esc all close it ────────────────
+  // ── about modal - click, backdrop click, or Esc all close it ────────────────
   var aboutLastFocus = null;
   function onAboutKeydown(e) {
     if (e.key === 'Escape') { e.preventDefault(); closeAbout(); }

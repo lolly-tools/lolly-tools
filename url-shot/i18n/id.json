@@ -7,9 +7,9 @@
   "inputs.scrollDepth.label": "Kedalaman gulir",
   "inputs.scrollDepth.help": "Seberapa jauh halaman digulir sebelum penangkapan. 0 = atas, 1 = bawah. Untuk video, ini adalah titik pan MULAI.",
   "inputs.waitMs.label": "Jeda stabilisasi (ms)",
-  "inputs.waitMs.help": "Waktu tunggu setelah halaman dimuat (dan setelah menggulir) sebelum pengambilan gambar — agar font, gambar, dan animasi sempat stabil.",
+  "inputs.waitMs.help": "Waktu tunggu setelah halaman dimuat (dan setelah menggulir) sebelum pengambilan gambar - agar font, gambar, dan animasi sempat stabil.",
   "inputs.css.label": "CSS kustom",
-  "inputs.css.help": "CSS yang disisipkan ke halaman sebelum tangkapan layar diambil — misalnya menyembunyikan banner cookie (.cookie-bar { display: none }) atau mengubah gaya elemen.",
+  "inputs.css.help": "CSS yang disisipkan ke halaman sebelum tangkapan layar diambil - misalnya menyembunyikan banner cookie (.cookie-bar { display: none }) atau mengubah gaya elemen.",
   "inputs.cropTop.label": "Pangkas atas",
   "inputs.cropTop.help": "Pangkas dari tepi atas, sebagai pecahan 0–0.9 dari tinggi. Hanya untuk format raster (png/jpg/svg).",
   "inputs.cropRight.label": "Pangkas kanan",
@@ -31,7 +31,7 @@
   "inputs.tintColor.label": "Warna tint",
   "inputs.tintColor.help": "Warna yang melapisi halaman saat Ubah warna diatur ke 'Tint'.",
   "inputs.scrollTo.label": "Gulir ke (video)",
-  "inputs.scrollTo.help": "Hanya untuk ekspor video: geser ke BAWAH hingga kedalaman ini selama klip — gulir halaman dari 'Kedalaman gulir' hingga ke sini. Setel sama dengan 'Kedalaman gulir' untuk tahan diam. Diabaikan untuk format gambar.",
-  "inputs.zoom.help": "Tingkat zoom browser — memperbesar halaman sebelum pengambilan (seperti Ctrl/Cmd +), sehingga bahkan tangkapan bitmap diperbesar dan tetap tajam, bukan di-upscale. 1 = 100%.",
+  "inputs.scrollTo.help": "Hanya untuk ekspor video: geser ke BAWAH hingga kedalaman ini selama klip - gulir halaman dari 'Kedalaman gulir' hingga ke sini. Setel sama dengan 'Kedalaman gulir' untuk tahan diam. Diabaikan untuk format gambar.",
+  "inputs.zoom.help": "Tingkat zoom browser - memperbesar halaman sebelum pengambilan (seperti Ctrl/Cmd +), sehingga bahkan tangkapan bitmap diperbesar dan tetap tajam, bukan di-upscale. 1 = 100%.",
   "inputs.zoom.label": "Zoom"
 }

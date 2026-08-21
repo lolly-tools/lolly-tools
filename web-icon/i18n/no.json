@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Fet",
   "inputs.weight.options.600": "Halvfet",
   "inputs.tracking.label": "Bokstavavstand",
-  "inputs.tracking.help": "Negative verdier trekker bokstavene tettere sammen — avgjørende for å få plass til 3–4 monospace-versaler i en 16 px-flis. Mono er bred, så sett verdien godt inn i minus.",
+  "inputs.tracking.help": "Negative verdier trekker bokstavene tettere sammen - avgjørende for å få plass til 3–4 monospace-versaler i en 16 px-flis. Mono er bred, så sett verdien godt inn i minus.",
   "inputs.labelScale.label": "Etikettstørrelse",
   "inputs.labelScale.help": "Juster den automatisk tilpassede etikettstørrelsen opp eller ned (prosent).",
   "inputs.showGrid.label": "16 px-forhåndsvisning",
-  "inputs.showGrid.help": "Vis ikonet i de faktiske favicon-størrelsene 16 og 32 px på lerretet, slik at du kan vurdere lesbarheten. Kun et redigeringshjelpemiddel — tas aldri med i eksporter."
+  "inputs.showGrid.help": "Vis ikonet i de faktiske favicon-størrelsene 16 og 32 px på lerretet, slik at du kan vurdere lesbarheten. Kun et redigeringshjelpemiddel - tas aldri med i eksporter."
 }

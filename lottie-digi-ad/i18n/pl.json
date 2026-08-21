@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Odtwórz 3 razy",
   "inputs.loop.options.once": "Odtwórz raz",
   "inputs.scenes.label": "Sceny",
-  "inputs.scenes.help": "Każda scena jest jednym segmentem sekwencji — animuje się na poprzedniej, z własną animacją Lottie zapętloną na wierzchu. Ostatnia scena jest kartą końcową w stanie spoczynku.",
+  "inputs.scenes.help": "Każda scena jest jednym segmentem sekwencji - animuje się na poprzedniej, z własną animacją Lottie zapętloną na wierzchu. Ostatnia scena jest kartą końcową w stanie spoczynku.",
   "inputs.scenes.addMenu.label": "Dodaj scenę",
   "inputs.scenes.fields.anim.label": "Animacja",
   "inputs.scenes.fields.bgColor.label": "Tło",

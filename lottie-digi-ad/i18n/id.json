@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Putar 3 kali",
   "inputs.loop.options.once": "Putar sekali",
   "inputs.scenes.label": "Adegan",
-  "inputs.scenes.help": "Setiap adegan adalah satu segmen dari urutan — ia beranimasi masuk di atas adegan sebelumnya, dengan animasi Lottie-nya sendiri yang berulang di atasnya. Adegan terakhir adalah kartu akhir yang diam.",
+  "inputs.scenes.help": "Setiap adegan adalah satu segmen dari urutan - ia beranimasi masuk di atas adegan sebelumnya, dengan animasi Lottie-nya sendiri yang berulang di atasnya. Adegan terakhir adalah kartu akhir yang diam.",
   "inputs.scenes.addMenu.label": "Tambah adegan",
   "inputs.scenes.fields.anim.label": "Animasi",
   "inputs.scenes.fields.bgColor.label": "Latar belakang",

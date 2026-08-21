@@ -1,7 +1,7 @@
 {
   "name": "Багатосторінковий PDF",
   "description": "Створіть багатосторінковий PDF - обкладинку, блоки контенту, що перетікають, і задню сторінку.",
-  "a11yLabel": "{{default coverTitle \"Untitled\"}} — багатосторінковий PDF-документ",
+  "a11yLabel": "{{default coverTitle \"Untitled\"}} - багатосторінковий PDF-документ",
   "featured.blurb": "Багатосторінкові PDF - обкладинка, вміст, задня сторінка",
   "inputs.pageSize.label": "Розмір сторінки",
   "inputs.pageSize.help": "Визначає розмір кожної сторінки та розмір експортованого PDF. Кожна сторінка документа рендериться саме в цьому розмірі.",
@@ -52,7 +52,7 @@
   "inputs.content.fields.heading.label": "Заголовок",
   "inputs.content.fields.heading.placeholder": "Заголовок (необов'язково)",
   "inputs.content.fields.body.label": "Основний текст",
-  "inputs.content.fields.body.placeholder": "Основний текст — підтримує заголовки #, **напівжирний**, *курсив*, маркери - та нумеровані списки 1.",
+  "inputs.content.fields.body.placeholder": "Основний текст - підтримує заголовки #, **напівжирний**, *курсив*, маркери - та нумеровані списки 1.",
   "inputs.content.fields.image.label": "Зображення",
   "inputs.content.fields.caption.label": "Підпис",
   "inputs.content.fields.caption.placeholder": "Підпис (необов'язково)",

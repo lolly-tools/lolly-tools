@@ -1,7 +1,7 @@
 {
   "name": "Belge Stüdyosu",
   "description": "Tuval üzerinde çok sayfalı bir belge yazın - zengin metin, başlıklar, tablolar ve sayfalara akan, PDF olarak dışa aktarılan eklenmiş Lolly görüntüleri.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — çok sayfalı belge",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - çok sayfalı belge",
   "inputs.pageSize.label": "Sayfa boyutu",
   "inputs.pageSize.help": "Her sayfanın boyutunu ve dışa aktarılan PDF sayfa boyutunu belirler.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 sütun",
   "inputs.columns.options.3": "3 sütun",
   "inputs.content.label": "Belge",
-  "inputs.content.help": "Belgenin kendisi — taşınabilir zengin metin (ProseMirror) JSON'u olarak saklanır. Doc Studio düzenleyicisiyle kanvasta yazılır; motor bu JSON'u dışa aktarım için sayfalara dönüştürür. Boşsa başlangıç belgesine döner.",
+  "inputs.content.help": "Belgenin kendisi - taşınabilir zengin metin (ProseMirror) JSON'u olarak saklanır. Doc Studio düzenleyicisiyle kanvasta yazılır; motor bu JSON'u dışa aktarım için sayfalara dönüştürür. Boşsa başlangıç belgesine döner.",
   "inputs.width.label": "Sayfa genişliği",
   "inputs.height.label": "Sayfa yüksekliği"
 }

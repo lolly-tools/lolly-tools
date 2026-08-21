@@ -3,7 +3,7 @@
   "description": "Mapas vectoriales limpios de las calles de cualquier ciudad. Funciona sin conexión.",
   "a11yLabel": "Mapa de calles centrado en {{city}}",
   "inputs.city.label": "Ciudad",
-  "inputs.city.help": "Añade más ciudades sin conexión con scripts/build-street-clips.ts — sin API en el momento del renderizado.",
+  "inputs.city.help": "Añade más ciudades sin conexión con scripts/build-street-clips.ts - sin API en el momento del renderizado.",
   "inputs.city.options.amsterdam": "Ámsterdam",
   "inputs.city.options.athens": "Atenas",
   "inputs.city.options.bangkok": "Bangkok",

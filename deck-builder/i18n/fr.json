@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Une petite ligne de pied de page (copyright, confidentialité) en bas de chaque diapositive, entre le logo et le numéro de diapositive.",
   "inputs.footerText.placeholder": "© 2026 Votre entreprise · Confidentiel",
   "inputs.deck.fields.layout.options.bignum": "Grand nombre",
-  "inputs.deck.fields.layout.options.mainpoint": "Idée clé"
+  "inputs.deck.fields.layout.options.mainpoint": "Idée clé",
+  "inputs.deck.fields.text1.label": "Texte de l’emplacement 1",
+  "inputs.deck.fields.text1.help": "Remplit l'emplacement avec une carte de texte quand aucune image ni aucun outil n'est défini. Si les deux sont définis, le média gagne.",
+  "inputs.deck.fields.text2.label": "Texte de l’emplacement 2",
+  "inputs.deck.fields.text2.help": "Remplit l'emplacement avec une carte de texte quand aucune image ni aucun outil n'est défini. Si les deux sont définis, le média gagne.",
+  "inputs.deck.fields.text3.label": "Texte de l’emplacement 3",
+  "inputs.deck.fields.text3.help": "Remplit l'emplacement avec une carte de texte quand aucune image ni aucun outil n'est défini. Si les deux sont définis, le média gagne.",
+  "inputs.deck.fields.text4.label": "Texte de l’emplacement 4",
+  "inputs.deck.fields.text4.help": "Remplit l'emplacement avec une carte de texte quand aucune image ni aucun outil n'est défini. Si les deux sont définis, le média gagne."
 }

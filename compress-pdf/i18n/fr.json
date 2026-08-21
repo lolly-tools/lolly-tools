@@ -6,9 +6,9 @@
   "inputs.source.help": "Un fichier PDF. Il est lu dans ton navigateur et ne quitte jamais ton appareil.",
   "inputs.level.label": "Compression",
   "inputs.level.help": "Le niveau de compression appliqué aux images intégrées. Plus la compression est forte, plus le fichier est léger et les images sont adoucies.",
-  "inputs.level.options.light": "Légère — conserve une qualité élevée",
+  "inputs.level.options.light": "Légère - conserve une qualité élevée",
   "inputs.level.options.balanced": "Équilibrée",
-  "inputs.level.options.strong": "Forte — fichier le plus léger",
+  "inputs.level.options.strong": "Forte - fichier le plus léger",
   "inputs.grayscale.label": "Convertir les images en niveaux de gris",
-  "inputs.grayscale.help": "Supprime la couleur des images pour un gain supplémentaire — utile pour les documents scannés en texte."
+  "inputs.grayscale.help": "Supprime la couleur des images pour un gain supplémentaire - utile pour les documents scannés en texte."
 }

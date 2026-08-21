@@ -1,10 +1,10 @@
 /**
- * Lottie Ad (lottie-digi-ad) — hooks.
+ * Lottie Ad (lottie-digi-ad) - hooks.
  *
  * digi-ad's scene model, with a Lottie motion asset per scene instead of a
  * static image: each scene is one absolutely-positioned, full-frame layer, the
  * scenes share ONE CSS timeline (a later scene animates IN over the one before
- * it — cover model, no blank gaps), and the last scene rests as the end card.
+ * it - cover model, no blank gaps), and the last scene rests as the end card.
  * The hook generates the per-scene @keyframes + animation bindings as a <style>
  * string ({{{animCss}}}) that lives INSIDE the template.
  *
@@ -19,19 +19,19 @@
  *  - "Animate off" is a class-gated FREEZE (.lda-frozen) baked declaratively
  *    via {{rootClass}} (survives the per-keystroke innerHTML rebuild). The
  *    freeze hides the scene stacking, but mounted Lottie players keep playing
- *    inside the resting scene — a png export simply captures whatever frame
+ *    inside the resting scene - a png export simply captures whatever frame
  *    they are on, which is acceptable for a still poster.
  *  - beforeExport toggles it: restart at t=0 for gif/webm/mp4/apng, freeze the
  *    poster for png. afterExport restores the pre-export class.
  */
 
-var DEFAULT_TRANS = 0.6; // default scene entrance length (seconds, at speed 1) — user-tunable
+var DEFAULT_TRANS = 0.6; // default scene entrance length (seconds, at speed 1) - user-tunable
 // Opacity fades in over AT MOST this many seconds, independently of the (possibly much
 // longer) transform. Kept short ON PURPOSE: a long opacity ramp leaves many muddy semi-
 // transparent frames in gif/video exports (dither + fatter files); translate/scale can take
 // their time because they don't blend pixels. See the split keyframes in compute().
 var OPACITY_SEC = 0.13;
-var MAX_SCENES = 12;    // soft cap — each scene is a layer + a keyframe block
+var MAX_SCENES = 12;    // soft cap - each scene is a layer + a keyframe block
 var GIF_CAP = 16;       // seconds; renderGif/apng have no frame ceiling, so bound it
 var VIDEO_CAP = 24;     // seconds; renderVideo caps at 600 frames (~25s @24fps)
 
@@ -49,13 +49,13 @@ function toInputs(model) {
   return o;
 }
 function num(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
-// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared clamp - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 function str(v) { return (typeof v === 'string') ? v : (v == null ? '' : String(v)); }
 
 // Colour is the ONE user value that lands in the raw {{{style}}} attribute (and
-// in the distributable HTML export), so it must be sanitised here — a crafted
+// in the distributable HTML export), so it must be sanitised here - a crafted
 // shared URL could otherwise set a "colour" that breaks out of the attribute or
 // injects CSS. Only hex / rgb(a) / hsl(a) / a few keywords are let through.
 var COLOUR_RE = /^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$|^(?:rgb|rgba|hsl|hsla)\([0-9.,%\s/]+\)$/;
@@ -79,7 +79,7 @@ function idealInk(hex) { return isDark(hex) ? '#ffffff' : '#0c322c'; }
 
 var ANIM_SIZES = { small: 1, medium: 1, large: 1, full: 1 };
 
-// Entrance TRANSFORMS (opacity is decoupled — always a brief fade). Each value is the
+// Entrance TRANSFORMS (opacity is decoupled - always a brief fade). Each value is the
 // starting transform that eases to none over the full transition. Because opacity no longer
 // rides the transform, these can be bold, longer moves without muddying the render.
 var DEFAULT_EASE = 'cubic-bezier(.22,.61,.36,1)'; // smooth decelerate for slides/zooms
@@ -130,7 +130,7 @@ function compute(model) {
     return { scenesOut: [], animCss: '', rootClass: 'lda', sceneCount: 0 };
   }
 
-  // Timeline: scene i enters at startS[i] over inS[i], then holds. Cover model —
+  // Timeline: scene i enters at startS[i] over inS[i], then holds. Cover model -
   // it stays visible (covered by later scenes) so there are no blank gaps.
   var inS = [], holdS = [], startS = [], acc = 0;
   for (var i = 0; i < n; i++) {
@@ -183,7 +183,7 @@ function compute(model) {
     var pStart = f4(startS[k] / R * 100);
     var pIn = f4((startS[k] + inS[k]) / R * 100);
     // Two decoupled tracks so opacity never lingers: OPACITY ramps 0→1 over a short window
-    // (opSec, ≤ OPACITY_SEC — or a near-instant flash for a hard cut), while the TRANSFORM
+    // (opSec, ≤ OPACITY_SEC - or a near-instant flash for a hard cut), while the TRANSFORM
     // eases from → none over the whole entrance (pStart → pIn). Both run the shared timeline.
     var opSec = e.cut ? Math.min(inS[k], 0.04) : Math.min(inS[k], OPACITY_SEC);
     var pOp = f4((startS[k] + opSec) / R * 100);
@@ -199,7 +199,7 @@ function compute(model) {
     bindings.push('.lda .lda-scene--' + k + '{animation:ldaO' + k + ' ' + T + 's ' + iter + ' both linear,ldaT' + k + ' ' + T + 's ' + iter + ' both linear}');
   }
 
-  // Freeze ("Animate" off / png poster) — rests on the end card. This only
+  // Freeze ("Animate" off / png poster) - rests on the end card. This only
   // stops the SCENE timeline; a mounted Lottie player inside the resting scene
   // keeps playing (see header comment).
   var freeze =
@@ -225,7 +225,7 @@ function beforeExport(ctx) {
   if (!root) return;
   _savedClass = root.className;
   var fmt = ctx.format;
-  // Play only for animated formats AND when "Animate" is on — otherwise every
+  // Play only for animated formats AND when "Animate" is on - otherwise every
   // format (incl. gif/webm/mp4/apng) exports the held still, honouring the toggle.
   var play = !!ANIMATED_FORMATS[fmt] && _animated;
 
@@ -235,7 +235,7 @@ function beforeExport(ctx) {
     root.classList.add('lda-frozen'); void root.offsetWidth;
     root.classList.remove('lda-frozen'); void root.offsetWidth;
     ctx.opts.wait = 0;
-    // The timeline IS the clip length — but keep frames under the bridge's 600-frame
+    // The timeline IS the clip length - but keep frames under the bridge's 600-frame
     // ceiling, which is fps-aware (the export bar's 60fps option flows in via opts.fps).
     var fps = (ctx.opts.fps > 0) ? ctx.opts.fps : 24;
     var cap = (fmt === 'gif' || fmt === 'apng') ? GIF_CAP : Math.min(VIDEO_CAP, Math.floor(595 / fps));
@@ -244,7 +244,7 @@ function beforeExport(ctx) {
     // 3 times" is honoured in the exported GIF/APNG, not just the live preview.
     if (fmt === 'gif' || fmt === 'apng') ctx.opts.repeat = _loop === 'loop' ? 0 : (_loop === 'once' ? -1 : 3);
   } else {
-    // Static poster / "Animate" off — hold the end card.
+    // Static poster / "Animate" off - hold the end card.
     root.classList.add('lda-frozen');
   }
 }

@@ -3,7 +3,7 @@
   "description": "어떤 도시든 깔끔한 벡터 스트리트 맵으로 표현해요. 오프라인에서도 작동해요.",
   "a11yLabel": "{{city}} 중심의 스트리트 맵",
   "inputs.city.label": "도시",
-  "inputs.city.help": "scripts/build-street-clips.ts로 오프라인에서 도시를 추가할 수 있어요 — 렌더링 시 API가 필요하지 않아요.",
+  "inputs.city.help": "scripts/build-street-clips.ts로 오프라인에서 도시를 추가할 수 있어요 - 렌더링 시 API가 필요하지 않아요.",
   "inputs.city.options.amsterdam": "암스테르담",
   "inputs.city.options.athens": "아테네",
   "inputs.city.options.bangkok": "방콕",

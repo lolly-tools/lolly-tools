@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Přehrát 3×",
   "inputs.loop.options.once": "Přehrát jednou",
   "inputs.scenes.label": "Scény",
-  "inputs.scenes.help": "Každá scéna je jeden segment sekvence — animuje se přes tu předchozí a navrch se na ní opakovaně přehrává vlastní animace Lottie. Poslední scéna je klidová závěrečná karta.",
+  "inputs.scenes.help": "Každá scéna je jeden segment sekvence - animuje se přes tu předchozí a navrch se na ní opakovaně přehrává vlastní animace Lottie. Poslední scéna je klidová závěrečná karta.",
   "inputs.scenes.addMenu.label": "Přidat scénu",
   "inputs.scenes.fields.anim.label": "Animace",
   "inputs.scenes.fields.bgColor.label": "Pozadí",

@@ -295,5 +295,13 @@
   "inputs.footerText.help": "各スライドの下部、ロゴとスライド番号の間に入る小さなフッター行(著作権、機密表示)。",
   "inputs.footerText.placeholder": "© 2026 あなたの会社 · 社外秘",
   "inputs.deck.fields.layout.options.bignum": "大きな数字",
-  "inputs.deck.fields.layout.options.mainpoint": "メインポイント"
+  "inputs.deck.fields.layout.options.mainpoint": "メインポイント",
+  "inputs.deck.fields.text1.label": "スロット1のテキスト",
+  "inputs.deck.fields.text1.help": "画像やツールが未設定のとき、スロットをテキストカードで埋めます。両方設定されている場合はメディアが優先されます。",
+  "inputs.deck.fields.text2.label": "スロット2のテキスト",
+  "inputs.deck.fields.text2.help": "画像やツールが未設定のとき、スロットをテキストカードで埋めます。両方設定されている場合はメディアが優先されます。",
+  "inputs.deck.fields.text3.label": "スロット3のテキスト",
+  "inputs.deck.fields.text3.help": "画像やツールが未設定のとき、スロットをテキストカードで埋めます。両方設定されている場合はメディアが優先されます。",
+  "inputs.deck.fields.text4.label": "スロット4のテキスト",
+  "inputs.deck.fields.text4.help": "画像やツールが未設定のとき、スロットをテキストカードで埋めます。両方設定されている場合はメディアが優先されます。"
 }

@@ -5,7 +5,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.1-3.1a2 2 0 0 0-2.8 0L7 20"/></svg>
       </div>
       <h2>Strip hidden data from an image or PDF</h2>
-      <p>Drag a JPEG, PNG, SVG or PDF anywhere onto this area, or choose one below. We'll show you the GPS location, camera, author, editor and document metadata it's carrying — then hand back a clean copy.</p>
+      <p>Drag a JPEG, PNG, SVG or PDF anywhere onto this area, or choose one below. We'll show you the GPS location, camera, author, editor and document metadata it's carrying - then hand back a clean copy.</p>
       <button type="button" class="exif-pick" data-file-pick>Choose a file…</button>
       <p class="exif-empty-note">Everything happens in your browser. Your file is never uploaded.</p>
     </div>
@@ -35,7 +35,7 @@
         {{else}}
           {{#if nothingFound}}
             <div class="exif-clean-state">
-              <p class="exif-clean">This {{kind}} is already clean — no hidden data found.</p>
+              <p class="exif-clean">This {{kind}} is already clean - no hidden data found.</p>
               <p class="exif-note">{{cleanNote}}</p>
               <button type="button" class="exif-download" data-export-file data-busy-label="Saving…">Download copy{{#if cleanSize}} ({{cleanSize}}){{/if}}</button>
             </div>
@@ -46,7 +46,7 @@
 
             <!-- Show details: a real (visually-hidden, keyboard-reachable) checkbox
                  drives the label; the actual embedded values stay hidden until it's
-                 on. Default off — the user sees WHAT was found, not the values,
+                 on. Default off - the user sees WHAT was found, not the values,
                  until they ask. Pure CSS, so it works on the sidebar-less canvas. -->
             <input type="checkbox" id="exif-show-details" class="exif-reveal-cb">
             <label for="exif-show-details" class="exif-reveal-toggle">

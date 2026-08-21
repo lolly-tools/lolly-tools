@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Малий рядок унизу кожного слайда (авторські права, конфіденційність), між логотипом і номером слайда.",
   "inputs.footerText.placeholder": "© 2026 Ваша компанія · Конфіденційно",
   "inputs.deck.fields.layout.options.bignum": "Велике число",
-  "inputs.deck.fields.layout.options.mainpoint": "Головна думка"
+  "inputs.deck.fields.layout.options.mainpoint": "Головна думка",
+  "inputs.deck.fields.text1.label": "Текст комірки 1",
+  "inputs.deck.fields.text1.help": "Заповнює комірку текстовою карткою, коли не задано зображення чи інструмент. Якщо задано обидва, перевага у медіа.",
+  "inputs.deck.fields.text2.label": "Текст комірки 2",
+  "inputs.deck.fields.text2.help": "Заповнює комірку текстовою карткою, коли не задано зображення чи інструмент. Якщо задано обидва, перевага у медіа.",
+  "inputs.deck.fields.text3.label": "Текст комірки 3",
+  "inputs.deck.fields.text3.help": "Заповнює комірку текстовою карткою, коли не задано зображення чи інструмент. Якщо задано обидва, перевага у медіа.",
+  "inputs.deck.fields.text4.label": "Текст комірки 4",
+  "inputs.deck.fields.text4.help": "Заповнює комірку текстовою карткою, коли не задано зображення чи інструмент. Якщо задано обидва, перевага у медіа."
 }

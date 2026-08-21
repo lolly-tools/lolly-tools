@@ -1,15 +1,15 @@
 /* global host */
 /**
- * Audiogram hooks — turn the chosen clip into a per-frame animation track.
+ * Audiogram hooks - turn the chosen clip into a per-frame animation track.
  *
  * The division of labour with template.html is deliberate:
  *
- *   hooks.js (here)  decides WHAT the animation knows — it calls host.audio to
+ *   hooks.js (here)  decides WHAT the animation knows - it calls host.audio to
  *                    analyse the clip (all of it, from the in-point to the end,
  *                    at an fps that adapts to its length), derives the brand
  *                    colour ramp from host.color, and hands both to the template
  *                    as a compact packed payload.
- *   template.html    decides how it LOOKS — a canvas draw function per style,
+ *   template.html    decides how it LOOKS - a canvas draw function per style,
  *                    reading that payload. No fetching, no decoding, no colour
  *                    science, and (importantly) no async work during a repaint.
  *
@@ -17,7 +17,7 @@
  * bands` numbers, so an 8-second clip at 30fps over 48 bands is 11,520 values.
  * As JSON that is ~80 KB of text re-parsed on every keystroke and embedded in
  * every exported HTML file; quantised to bytes and base64'd it is ~15 KB. The
- * values are all normalised 0..1 already, so a byte is the honest precision — a
+ * values are all normalised 0..1 already, so a byte is the honest precision - a
  * bar's height is being drawn into a pixel grid, not integrated.
  *
  * Everything the template needs travels IN the payload, which is what makes an
@@ -27,11 +27,11 @@
 
 /** Analysis frames per second at full rate. Matches the export's default fps, so one
  *  analysis frame is one video frame and nothing interpolates. Long clips scale this
- *  down — see MAX_FRAMES. */
+ *  down - see MAX_FRAMES. */
 const FPS = 30;
 
 /**
- * Frame budget for the whole animation track — the knob that lets the window follow
+ * Frame budget for the whole animation track - the knob that lets the window follow
  * the clip instead of stopping at 8 seconds. The analysis fps adapts so the frame
  * count stays near this budget: full 30fps up to 2 minutes, then coarser.
  *
@@ -44,7 +44,7 @@ const FPS = 30;
  *   vizWave           (1024 B/frame):     ~30 KB/s  at 30fps   ~6 KB/s    at 6fps
  *
  * So the spectrum track lands near MAX_FRAMES × 54 B ≈ 190 KB worst case, and the
- * sample-window styles (scope, milkdrop) near MAX_FRAMES × 1 KB ≈ 3.7 MB — bounded
+ * sample-window styles (scope, milkdrop) near MAX_FRAMES × 1 KB ≈ 3.7 MB - bounded
  * by the budget, not by the clip. Past 10 minutes the fps floor holds at FPS_MIN and
  * the payload grows linearly again, which still works; it is just coarser and
  * heavier, which is why the audio input's help says so.
@@ -54,7 +54,7 @@ const MAX_FRAMES = 3600;
 /** The fps floor. Below ~6fps the animation stops reading as animation. */
 const FPS_MIN = 6;
 
-/** The analysis fps for a clip of `sec` seconds — full rate up to the budget, then
+/** The analysis fps for a clip of `sec` seconds - full rate up to the budget, then
  *  scaled down, never below the floor. Integer, so the maths stays stable. */
 function adaptFps(sec) {
   if (!(sec > 0)) return FPS;
@@ -65,14 +65,14 @@ function adaptFps(sec) {
  *  at once, so styles subsample rather than ask for a second analysis. */
 const BANDS = 48;
 
-/** Overview waveform columns — the `wave` style's envelope. */
+/** Overview waveform columns - the `wave` style's envelope. */
 const BUCKETS = 160;
 
 /**
  * Oscilloscope window length, in samples. This is a TIME window, not a resolution:
  * 1024 samples is ~23ms, which is two or three cycles of a bass note, and that is
  * what makes a scope look like a scope. 256 was tried first on the reasoning that a
- * polyline across 1080 pixels cannot show more detail than that — true, but it
+ * polyline across 1080 pixels cannot show more detail than that - true, but it
  * covers only 5.8ms, less than one cycle of a 110Hz bass line, so it rendered as a
  * lazy sine wobble instead of a waveform.
  *
@@ -94,13 +94,13 @@ const SCOPE = 1024;
 const VIZ_SAMPLES = 1024;
 
 /** Seconds the PLACEHOLDER track covers (and the manifest's default export length).
- *  Real audio is always analysed to the end of the clip — the animation matches the
+ *  Real audio is always analysed to the end of the clip - the animation matches the
  *  duration of the selected audio by construction. */
 const PLACEHOLDER_SEC = 8;
 
 /**
  * Deterministic speech-like placeholder, so the tool (and its gallery examples)
- * renders as something recognisable with no audio chosen. Seeded — identical on
+ * renders as something recognisable with no audio chosen. Seeded - identical on
  * every run, which matters because a gallery thumbnail that changed every rebuild
  * would show up as churn in every preview diff.
  */
@@ -111,7 +111,7 @@ function synthTrack(count, bands) {
   const mag = new Array(count * bands);
   let env = 0.2;
   for (let i = 0; i < count; i++) {
-    // Bursts and decay — the shape of speech rather than of noise.
+    // Bursts and decay - the shape of speech rather than of noise.
     if (rnd() < 0.06) env = 0.35 + rnd() * 0.65;
     else env = env * 0.93 + rnd() * 0.05;
     rms[i] = Math.min(1, 0.1 + env * 0.9);
@@ -125,11 +125,11 @@ function synthTrack(count, bands) {
 }
 
 /**
- * Cue grouping — a tiny mirror of the engine's `groupWordsToCues`
+ * Cue grouping - a tiny mirror of the engine's `groupWordsToCues`
  * (engine/src/captions.ts), same defaults: 42 chars, 5 s on screen, a 0.6 s
  * silence starts a new cue, sentence punctuation closes the cue after its word.
  * Tools are data and may not import the engine, so the reference implementation
- * is mirrored here — a caption grouped by the web shell and one grouped here
+ * is mirrored here - a caption grouped by the web shell and one grouped here
  * must break at the same words, so change BOTH or neither
  * (tests/audiogram-captions.test.ts pins them against each other).
  */
@@ -233,7 +233,7 @@ let _analysedSec = PLACEHOLDER_SEC;
  *
  * Returns the extras the template reads. Called from both onInit and onInput
  * because every input that changes what is analysed (the clip, the in-point, and
- * — via the scope window — the style) has to re-derive it. The web shell's
+ * - via the scope window - the style) has to re-derive it. The web shell's
  * host.audio caches by source + options, so the common case of typing a title
  * re-requests an analysis that is already in hand.
  */
@@ -252,8 +252,8 @@ async function build(ctx) {
    * The MilkDrop style is progressive enhancement, decided HERE rather than in the
    * template: only a shell with `host.viz` can run a visualizer at all, and the
    * decision has to be made before the analysis so we don't carry a quarter of a
-   * megabyte of sample windows in a payload nothing will read. Everywhere else — a
-   * CLI render, a browser without WebGL2, an exported html file — the card falls
+   * megabyte of sample windows in a payload nothing will read. Everywhere else - a
+   * CLI render, a browser without WebGL2, an exported html file - the card falls
    * through to the `bars` draw, which needs no extra data.
    */
   const wantViz = style === 'milkdrop' && !!h.viz && h.viz.isAvailable();
@@ -281,7 +281,7 @@ async function build(ctx) {
     try {
       // The whole remaining clip is analysed: `window` is OMITTED, which the
       // host.audio contract defines as "to the end of the source". The fps adapts
-      // to the clip length (see MAX_FRAMES) — so the fps has to be guessed BEFORE
+      // to the clip length (see MAX_FRAMES) - so the fps has to be guessed BEFORE
       // the analysis. Uploaded and generated audio assets carry meta.durationMs,
       // which makes the guess exact in the common case; without it, guess full
       // rate and re-analyse below only if that turns out badly wrong.
@@ -295,7 +295,7 @@ async function build(ctx) {
         ...(wantSamples ? { samples: wantViz ? VIZ_SAMPLES : SCOPE } : {}),
       });
       let a = await h.audio.analyse(src, opts(hintSec ? adaptFps(hintSec) : FPS));
-      // The analysis reports the span it actually covered — that is the truth the
+      // The analysis reports the span it actually covered - that is the truth the
       // guess is checked against. Re-analyse only when the guess was off by more
       // than 2x (a missing durationMs on a long clip): a second decode is real
       // work, and a track within 2x of budget draws fine.
@@ -316,7 +316,7 @@ async function build(ctx) {
       for (let i = 0; i < f.count * BANDS; i++) bytes[at++] = byte(f.magnitude[i]);
       for (let i = 0; i < BUCKETS; i++) bytes[at++] = byte(a.peaks[i]);
       if (wantScope) {
-        // Already 0..255 centred on 128 — copy, do not re-quantise.
+        // Already 0..255 centred on 128 - copy, do not re-quantise.
         for (let i = 0; i < f.count * scopeLen; i++) bytes[at++] = f.wave[i];
       }
       packed = b64(bytes);
@@ -340,7 +340,7 @@ async function build(ctx) {
         beats = Array.from(a.beats).map((t) => Math.round(t * fps)).filter((i) => i >= 0 && i < f.count);
       }
       /**
-       * Captions — only when the clip carries its own word timings, which a
+       * Captions - only when the clip carries its own word timings, which a
        * Script-audio asset does (meta.tts.words, exact by construction from the
        * synthesis). Nothing is transcribed here: no timings, no captions. The
        * timings are clip-absolute and the analysis runs from the in-point, so
@@ -429,7 +429,7 @@ async function build(ctx) {
     // stand-in. Built here because hooks are where the numbers already are.
     agStatic: staticPath(peaks, BUCKETS),
     // The MilkDrop half. All four are empty unless the visualizer will actually run,
-    // and the template keys its placeholder off agVizPreset — so every other shell
+    // and the template keys its placeholder off agVizPreset - so every other shell
     // renders the ordinary `bars` card with no dead markup and no dead payload.
     agVizPreset: vizPreset,
     agVizMeta: vizPreset ? JSON.stringify(vizMeta) : '',
@@ -442,7 +442,7 @@ async function build(ctx) {
   };
 }
 
-/** The loudest frame in the middle 80% of the window — the poster frame. Clips open on
+/** The loudest frame in the middle 80% of the window - the poster frame. Clips open on
  *  silence often enough that frame 0 is the wrong still to freeze. */
 function loudest(rms, count) {
   const lo = Math.floor(count * 0.1);
@@ -455,7 +455,7 @@ function loudest(rms, count) {
 
 /**
  * The overview envelope as an SVG path over a 1000×400 box, mirrored about the
- * centre line. Used by the script-less fallback — the gallery preview pipeline, a
+ * centre line. Used by the script-less fallback - the gallery preview pipeline, a
  * CLI `html` render, and the moment before the canvas takes over.
  */
 function staticPath(peaks, buckets) {
@@ -482,17 +482,17 @@ async function onInput(ctx) {
 }
 
 /**
- * Make the video as long as the audio it is drawing — and an audio-only export the
+ * Make the video as long as the audio it is drawing - and an audio-only export the
  * same excerpt the video would have carried.
  *
  * VIDEO: the analysis covers the whole clip from the in-point, but the manifest's
- * default export length is still 8 seconds — so a 5-second voice memo or a 3-minute
+ * default export length is still 8 seconds - so a 5-second voice memo or a 3-minute
  * track would otherwise be walked across the wrong duration and the picture would
  * drift against its own soundtrack. Setting the duration from the analysed span makes
  * the animation and the audio end together by construction, at any clip length.
  *
  * AUDIO (wav/mp3/m4a/opus): the file IS the sound, and the sound is the excerpt the
- * card is about — from "Start at" (stamped on the stage as data-audio-start, which is
+ * card is about - from "Start at" (stamped on the stage as data-audio-start, which is
  * where the export path reads the in-point) to the end of the clip. The tool applies
  * NOTHING to it: no fade, no normalisation, no gain. The video's soundtrack is the
  * same span played at the export bar's own level, so the two exports agree about the

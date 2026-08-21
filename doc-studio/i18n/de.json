@@ -1,7 +1,7 @@
 {
   "name": "Dokumentstudio",
   "description": "Schreibt ein mehrseitiges Dokument auf der Fläche - Rich Text, Überschriften, Tabellen und eingefügte Lolly-Renderings, die auf Seiten fließen und als PDF exportiert werden.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} – mehrseitiges Dokument",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - mehrseitiges Dokument",
   "inputs.pageSize.label": "Seitengröße",
   "inputs.pageSize.help": "Legt die Größe aller Seiten sowie die Seitengröße der exportierten PDF-Datei fest.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 Spalten",
   "inputs.columns.options.3": "3 Spalten",
   "inputs.content.label": "Dokument",
-  "inputs.content.help": "Das Dokument selbst – gespeichert als portables Rich-Text-JSON (ProseMirror). Wird auf der Leinwand mit dem Dokumentstudio-Editor geschrieben; die Engine rendert dieses JSON für den Export in Seiten. Ist es leer, wird auf ein Startdokument zurückgegriffen.",
+  "inputs.content.help": "Das Dokument selbst - gespeichert als portables Rich-Text-JSON (ProseMirror). Wird auf der Leinwand mit dem Dokumentstudio-Editor geschrieben; die Engine rendert dieses JSON für den Export in Seiten. Ist es leer, wird auf ein Startdokument zurückgegriffen.",
   "inputs.width.label": "Seitenbreite",
   "inputs.height.label": "Seitenhöhe"
 }

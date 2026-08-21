@@ -20,7 +20,7 @@
 }
 
 /* The click proxy that hands a raycast hit to the shell's asset picker (see
-   template.html). Deliberately NOT display:none / [hidden] — a synthetic click
+   template.html). Deliberately NOT display:none / [hidden] - a synthetic click
    must still dispatch and bubble to the shell's delegated handler. Zero-sized and
    inert so it can never take a real pointer event or affect layout, and it
    contributes nothing to an export. */

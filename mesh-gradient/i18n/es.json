@@ -54,7 +54,7 @@
   "inputs.grainBlend.options.luminosity": "Luminosidad (clásico)",
   "inputs.animate.label": "Deriva",
   "inputs.animate.section": "Textura y movimiento",
-  "inputs.animate.help": "Deriva lenta y cíclica de los puntos de color — expórtalo en WebM o MP4 para un fondo animado en directo.",
+  "inputs.animate.help": "Deriva lenta y cíclica de los puntos de color - expórtalo en WebM o MP4 para un fondo animado en directo.",
   "inputs.distance.label": "Distancia de deriva",
   "inputs.distance.section": "Textura y movimiento",
   "inputs.distance.help": "Hasta dónde se alejan los puntos de color de su posición fijada. 100% es el tamaño de órbita predeterminado; 0% los inmoviliza en su sitio.",

@@ -3,7 +3,7 @@
   "description": "Чисті векторні карти вуличних квартàлів будь-якого міста. Працює офлайн.",
   "a11yLabel": "Карта вулиць із центром у {{city}}",
   "inputs.city.label": "Місто",
-  "inputs.city.help": "Додавайте більше міст офлайн за допомогою scripts/build-street-clips.ts — без API під час рендерингу.",
+  "inputs.city.help": "Додавайте більше міст офлайн за допомогою scripts/build-street-clips.ts - без API під час рендерингу.",
   "inputs.city.options.amsterdam": "Амстердам",
   "inputs.city.options.athens": "Афіни",
   "inputs.city.options.bangkok": "Бангкок",

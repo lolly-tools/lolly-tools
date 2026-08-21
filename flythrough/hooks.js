@@ -20,7 +20,7 @@ function num(v, fallback) {
 }
 
 // Lift is expensive (fetch + sanitise + enumerate) and only depends on the SHOT, so cache
-// it by URL at module scope — the hook closure persists across onInit/onInput calls, so a
+// it by URL at module scope - the hook closure persists across onInit/onInput calls, so a
 // slider tick reuses this instead of re-lifting. Only a new shot re-fetches.
 var _lift = { url: null, layers: [], viewBox: null };
 
@@ -94,7 +94,7 @@ async function compute(ctx) {
   };
 
   // The blocks value is an array of pose objects keyed by field id (numbers may arrive as
-  // strings — poseState coerces). Guard the degenerate shapes: none → the two-pose default;
+  // strings - poseState coerces). Guard the degenerate shapes: none → the two-pose default;
   // one → duplicate so the template can tween trivially (a single held pose).
   var rawPoses = Array.isArray(inp.poses) ? inp.poses : [];
   var poses = rawPoses.map(poseState);
@@ -108,7 +108,7 @@ async function compute(ctx) {
     layers: lift.layers,          // [] when the shot can't be lifted → single flat plane
     viewBox: lift.viewBox,
     // The EXPORT dimensions reach the hook as the reserved width/height (same as the 3d
-    // tool), so the WebGL buffer tracks the export panel live — hard-coding 1280×720 left
+    // tool), so the WebGL buffer tracks the export panel live - hard-coding 1280×720 left
     // the canvas the wrong size until a refresh happened to re-fit it.
     width: Math.max(16, Math.round(num(inp.width, 1280))),
     height: Math.max(16, Math.round(num(inp.height, 720))),

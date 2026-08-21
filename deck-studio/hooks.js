@@ -1,4 +1,4 @@
-// Deck Studio — turn a simple slide spec (the block builder OR a pasted JSON deck) into
+// Deck Studio - turn a simple slide spec (the block builder OR a pasted JSON deck) into
 // ONE px-positioned element list per slide, then render that same list two ways:
 //   • an HTML preview (a [data-pdf-page] section per slide) for the canvas + PDF/PNG export
 //   • a native PowerPoint model in <script data-pptx-deck> (editable text/tables/theme)
@@ -26,7 +26,7 @@ var SIZES = { wide: [1280, 720], classic: [1280, 960], square: [1080, 1080], sto
 
 // ─── brand theme (host.tokens → hex colours + font) ───────────────────────────
 // colours: swatch.value is ALWAYS hex; read by path. font: resolve('{font.brand}').
-// Everything guarded — headless/older shells and the blank profile just get fallbacks.
+// Everything guarded - headless/older shells and the blank profile just get fallbacks.
 // The extended hues drive the brand-template slide designs (the segmented footer
 // bar, hero backgrounds, card wells, arrow bullets). A pack that exposes named
 // brand colours (color.brand.*, color.ramp.*) gets them verbatim; any other pack
@@ -93,7 +93,7 @@ async function readBrandTheme() {
   } catch (e) { /* keep fallbacks */ }
   return T;
 }
-// The DrawingML theme (values) the engine threads into the .pptx — mirrors the SUSE
+// The DrawingML theme (values) the engine threads into the .pptx - mirrors the SUSE
 // template's own scheme shape: dk1 ink, accent1 green, accent3 blue, accent4 orange,
 // accent6 mint, lt2 the card grey.
 function pptxTheme(T) {
@@ -104,13 +104,13 @@ function pptxTheme(T) {
   };
 }
 
-// ─── brand logo (host.assets — pick light/dark + colour/mono variant per slide) ─
+// ─── brand logo (host.assets - pick light/dark + colour/mono variant per slide) ─
 // The active brand's logo is tagged in the catalog: logo + on-light|on-dark + optional
 // mono + horizontal|vertical. We query by those TAGS (portable across brands that follow
 // the convention) and identify the colour vs mono variant by id (the mono one carries the
 // `mono` tag, so it's the query result WITH it; the colour one is the other). Blank brands
 // with no logo asset just get nothing (guarded everywhere).
-// A logo SVG's true width/height ratio, read from its viewBox — the catalog carries no
+// A logo SVG's true width/height ratio, read from its viewBox - the catalog carries no
 // dimensions, so a fallback ratio would clip a wide lockup. Handles a data: URI (what
 // get() returns headless) and a plain url (fetched in the browser).
 async function svgAspect(url) {
@@ -132,7 +132,7 @@ async function resolveLogos() {
   try {
     if (typeof host === 'undefined' || !host || !host.assets || !host.assets.query) return out;
     async function q(tags) { try { return (await host.assets.query({ type: 'vector', tags: tags })) || []; } catch (e) { return []; } }
-    // query() results may carry no url (some shells return metadata only — the real url
+    // query() results may carry no url (some shells return metadata only - the real url
     // comes from get()). Always resolve the chosen id to a fetchable url + its real aspect.
     async function resolve(ref) {
       if (!ref) return null;
@@ -158,7 +158,7 @@ async function resolveLogos() {
       out[key].color = await resolve(color);
       out[key].mono = (await resolve(mono)) || out[key].color;
     }
-  } catch (e) { /* no logos — decks just render without one */ }
+  } catch (e) { /* no logos - decks just render without one */ }
   return out;
 }
 function pickLogo(logos, darkBg, mono) {
@@ -318,7 +318,7 @@ function parseSpec(specStr) {
       var doc = JSON.parse(s);
       var arr = Array.isArray(doc) ? doc : (doc && Array.isArray(doc.slides) ? doc.slides : null);
       if (arr && arr.length) return { slides: arr.map(specToContent), size: doc && !Array.isArray(doc) ? str(doc.size) : '' };
-    } catch (e) { /* not JSON after all — fall through to Markdown */ }
+    } catch (e) { /* not JSON after all - fall through to Markdown */ }
   }
   var md = parseMarkdownDeck(s);
   return md ? { slides: md, size: '' } : null;
@@ -405,7 +405,7 @@ function parseTableSrc(src, obj) {
   for (var i = 0; i < lines.length; i++) {
     var l = lines[i];
     if (pipe) {
-      // Only the SECOND line can be a header/body separator — an all-dash line elsewhere is data.
+      // Only the SECOND line can be a header/body separator - an all-dash line elsewhere is data.
       if (i === 1 && /^\s*\|?[\s:|-]+\|?\s*$/.test(l) && /-/.test(l)) continue;
       var cells = l.replace(/^\s*\|/, '').replace(/\|\s*$/, '').split('|').map(function (c) { return c.trim(); });
       rows.push(cells);
@@ -508,7 +508,7 @@ function pushStripes(els, list, W, H, T, side, dark) {
 }
 function addStripes(els, W, H, T, side, dark) { pushStripes(els, STRIPES, W, H, T, side, dark); }
 
-// Tag the LAST pushed element with a layout-placeholder binding — the engine emits
+// Tag the LAST pushed element with a layout-placeholder binding - the engine emits
 // `<p:ph>` for it, which is what makes outline view / Reset Slide / re-layout work
 // on the exported deck. Text elements only.
 function bindPh(els, type, idx) {
@@ -684,7 +684,7 @@ function tableEl(x, y, w, h, tbl, accent, T) {
 // PowerPoint's "New Slide" gallery with the logo/footer riding along. Names are the
 // Google-Slides canonical set (best re-import mapping); geometry follows the SUSE
 // brand template (margins 3.4%, title strip 3.4–14.6%, body to 84.7%, furniture
-// below 91.7% — see FURN). Light layouts get the on-light logo, dark the on-dark.
+// below 91.7% - see FURN). Light layouts get the on-light logo, dark the on-dark.
 var GALLERY = ['TITLE', 'SECTION_HEADER', 'TITLE_AND_BODY', 'TITLE_AND_TWO_COLUMNS', 'TITLE_ONLY', 'ONE_COLUMN_TEXT', 'MAIN_POINT', 'SECTION_TITLE_AND_DESCRIPTION', 'CAPTION_ONLY', 'BIG_NUMBER'];
 var LAYOUT_TO_ARCH = {
   title: 'TITLE', section: 'SECTION_HEADER', agenda: 'TITLE_AND_BODY', content: 'TITLE_AND_BODY',
@@ -801,7 +801,7 @@ function buildGallery(T, logos, W, H, ctx) {
   return out;
 }
 
-// One sample slide per archetype — the "Starter template" mode: a self-serve branded
+// One sample slide per archetype - the "Starter template" mode: a self-serve branded
 // .pptx (like the brand team's own template file) built from the active brand.
 function templateSlides() {
   function s(layout, title, subtitle, body, extra) {

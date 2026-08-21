@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Vet",
   "inputs.weight.options.600": "Halfvet",
   "inputs.tracking.label": "Letterspatiëring",
-  "inputs.tracking.help": "Negatieve waarden trekken de letters dichter naar elkaar toe — essentieel om 3–4 monospace hoofdletters in een tegel van 16 px te laten passen. Mono is breed, dus ga ruim de negatieve richting in.",
+  "inputs.tracking.help": "Negatieve waarden trekken de letters dichter naar elkaar toe - essentieel om 3–4 monospace hoofdletters in een tegel van 16 px te laten passen. Mono is breed, dus ga ruim de negatieve richting in.",
   "inputs.labelScale.label": "Labelgrootte",
   "inputs.labelScale.help": "Pas de automatisch aangepaste labelgrootte naar boven of beneden aan (percentage).",
   "inputs.showGrid.label": "16 px-voorbeeld",
-  "inputs.showGrid.help": "Toon het icoon op het canvas in de werkelijke favicon-formaten van 16 en 32 px, zodat je de leesbaarheid kunt beoordelen. Alleen een hulpmiddel in de editor — wordt nooit meegenomen in exports."
+  "inputs.showGrid.help": "Toon het icoon op het canvas in de werkelijke favicon-formaten van 16 en 32 px, zodat je de leesbaarheid kunt beoordelen. Alleen een hulpmiddel in de editor - wordt nooit meegenomen in exports."
 }

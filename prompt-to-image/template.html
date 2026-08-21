@@ -44,7 +44,7 @@
 
   // `|| fallback` is safe for MIN/MAX (never legitimately 0) but WRONG for PAD:
   // the new Margin input can be 0, and `Number("0") || 32` would silently reinstate
-  // a 32px margin — making the control dead at its own minimum and, worse, diverging
+  // a 32px margin - making the control dead at its own minimum and, worse, diverging
   // from the CLI (whose jsdom path keeps the inline --p2i-pad:0px). Read it NaN-aware
   // so an explicit 0 survives.
   function readNum(v, fallback) {
@@ -58,7 +58,7 @@
 
   // ── Export px → DOM px ─────────────────────────────────────────────────────
   // Every number hooks.js hands over is in export pixels, but the stage only
-  // paints the canvas 1:1 up to the tool's native 1024 — ask for a bigger page
+  // paints the canvas 1:1 up to the tool's native 1024 - ask for a bigger page
   // and it's previewed shrunk and scaled back up at capture. So a size that
   // "fits" is scale-invariant (both axes shrink together) but the LEGIBILITY
   // FLOOR is not: 6px of preview is 12px of a 2048 export, and it's the exported
@@ -76,11 +76,11 @@
   // way in from template code is the control the sidebar already owns: set its
   // value and fire the same `input` event a keystroke would. The shell's own
   // listener picks it up and calls runtime.setInput, so this rides the exact
-  // path typing does — no shell change, nothing to keep in sync.
+  // path typing does - no shell change, nothing to keep in sync.
   //
   // Scoped to #tool-inputs rather than the document: /multi renders several
   // tools side by side and a global [data-input-id] query would hit whichever
-  // card happened to be first. No panel (or no match) means fail closed — better
+  // card happened to be first. No panel (or no match) means fail closed - better
   // to ignore the paste than to write it into the wrong session.
   function setText(value) {
     var panel = document.getElementById('tool-inputs');
@@ -100,7 +100,7 @@
   //
   // The fit test leans on `column-fill: auto` + `overflow: hidden`. Columns fill
   // in order rather than balancing, so text that doesn't fit spills into an
-  // extra column past the right edge — which an overflow:hidden box reports as
+  // extra column past the right edge - which an overflow:hidden box reports as
   // scrollWidth > clientWidth. One number, no per-line measuring.
   function fits() {
     return cols.scrollWidth <= cols.clientWidth + 1;
@@ -113,7 +113,7 @@
 
   // Largest size at which `n` columns hold all the text, searched between the
   // floor and ceiling in DOM px. `over` is 0 when it fits, else how far past the
-  // edge it spills at the floor — which is what we rank by when nothing fits.
+  // edge it spills at the floor - which is what we rank by when nothing fits.
   function measure(n, min, max) {
     apply(n, max);
     if (fits()) return { n: n, fs: max, over: 0 };
@@ -133,7 +133,7 @@
   }
 
   function fit() {
-    if (!cols || !cols.clientWidth) return;   // no layout engine (jsdom/CLI) — keep the estimate
+    if (!cols || !cols.clientWidth) return;   // no layout engine (jsdom/CLI) - keep the estimate
 
     // Re-scale the margin before anything is measured: it sets the inner box the
     // whole search runs against.
@@ -141,7 +141,7 @@
     root.style.setProperty('--p2i-pad', (PAD * s) + 'px');
 
     var declared = root.dataset.columns;
-    // A mono grid holds ~the same number of glyphs however you slice it — the
+    // A mono grid holds ~the same number of glyphs however you slice it - the
     // column count only changes how much is WASTED. Narrow columns waste less on
     // short authored lines (lists, code, chat logs) and more on reflowed prose,
     // and which way that falls is not worth predicting, so auto just tries them.
@@ -162,10 +162,10 @@
     if (!stats || !fitEl) return;
     if (pick.over > 0) {
       // Clamped at the floor and still overflowing. Say so rather than shrinking
-      // into a smudge no model can read — the text is clipped, and silently
+      // into a smudge no model can read - the text is clipped, and silently
       // dropping the tail would be the worse failure.
       stats.classList.add('is-over');
-      fitEl.textContent = 'clipped at ' + MIN + ' px — too much text';
+      fitEl.textContent = 'clipped at ' + MIN + ' px - too much text';
     } else {
       stats.classList.remove('is-over');
       // Back into export px: the preview's size is an artefact of the stage, the
@@ -177,7 +177,7 @@
   fit();
 
   // ── Drop ───────────────────────────────────────────────────────────────────
-  // Wired on the root, which innerHTML rebuilds every paint — so these listeners
+  // Wired on the root, which innerHTML rebuilds every paint - so these listeners
   // die with the element they were attached to and there is nothing to clean up.
   var MAX_BYTES = 2 * 1024 * 1024;
 
@@ -217,7 +217,7 @@
   });
 
   // ── Paste ──────────────────────────────────────────────────────────────────
-  // The canvas isn't focusable, so there is no element to hang this off — it has
+  // The canvas isn't focusable, so there is no element to hang this off - it has
   // to be a document listener. Registered once per page (the script re-runs on
   // every paint) and guarded on the canvas still being mounted, so it goes inert
   // when the user navigates away rather than firing into a dead tool.
@@ -226,7 +226,7 @@
     document.addEventListener('paste', function (e) {
       if (!document.querySelector('.p2i-root')) return;
 
-      // A paste aimed at a real field is theirs, not ours — including the
+      // A paste aimed at a real field is theirs, not ours - including the
       // sidebar's own Text box.
       var t = e.target;
       if (t && t.closest && t.closest('input, textarea, select, [contenteditable]')) return;

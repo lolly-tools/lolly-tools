@@ -1,7 +1,7 @@
 {
   "name": "Mehrseitiges PDF",
   "description": "Erstellt ein mehrseitiges PDF - ein Deckblatt, fließende Inhaltsblöcke und eine Rückseite.",
-  "a11yLabel": "{{default coverTitle \"Untitled\"}} — mehrseitiges PDF-Dokument",
+  "a11yLabel": "{{default coverTitle \"Untitled\"}} - mehrseitiges PDF-Dokument",
   "featured.blurb": "Mehrseitige PDFs - Deckblatt, Inhalt, Rückseite",
   "inputs.pageSize.label": "Seitengröße",
   "inputs.pageSize.help": "Legt die Größe aller Seiten sowie die Seitengröße der exportierten PDF-Datei fest. Jede Seite im Dokument wird exakt in dieser Größe gerendert.",
@@ -52,7 +52,7 @@
   "inputs.content.fields.heading.label": "Überschrift",
   "inputs.content.fields.heading.placeholder": "Überschrift (optional)",
   "inputs.content.fields.body.label": "Fließtext",
-  "inputs.content.fields.body.placeholder": "Fließtext — unterstützt # Überschriften, **fett**, *kursiv*, Aufzählungspunkte mit - und nummerierte Listen mit 1.",
+  "inputs.content.fields.body.placeholder": "Fließtext - unterstützt # Überschriften, **fett**, *kursiv*, Aufzählungspunkte mit - und nummerierte Listen mit 1.",
   "inputs.content.fields.image.label": "Bild",
   "inputs.content.fields.caption.label": "Bildunterschrift",
   "inputs.content.fields.caption.placeholder": "Bildunterschrift (optional)",

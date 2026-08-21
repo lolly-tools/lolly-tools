@@ -10,7 +10,7 @@
           keep it anywhere (the canvas pick creates it if absent). Absolutely
           positioned so an empty slot never moves exported geometry; the web
           shell's cell editor arms it as a click-to-pick target (data-pick-armed).
-          No whitespace inside the span — the :empty styling depends on it. --}}
+          No whitespace inside the span - the :empty styling depends on it. --}}
     <span class="bc-icon" data-cell-pick="{{page.index}}" data-pick-column="Icon" data-pick-tag="icon">{{#if (lookup page.byColumn "icon")}}{{{markdown (lookup page.byColumn "icon")}}}{{/if}}</span>
 
     {{!-- data-cell stamps each rendered cell with its source address
@@ -21,7 +21,7 @@
     {{#if page.first}}
       <h1 class="bc-title" data-cell="{{page.index}}:0" data-fit>{{page.first}}</h1>
     {{else if page.cells.length}}
-      <h1 class="bc-title bc-title--empty" data-cell="{{page.index}}:0" data-cell-empty>—</h1>
+      <h1 class="bc-title bc-title--empty" data-cell="{{page.index}}:0" data-cell-empty>-</h1>
     {{else}}
       <h1 class="bc-title bc-title--empty">Paste a table to start</h1>
     {{/if}}
@@ -39,7 +39,7 @@
         {{#if value}}
         <div class="bc-field-value" data-cell="{{../page.index}}:{{col}}" data-cell-md data-fit>{{{markdown value}}}</div>
         {{else}}
-        <div class="bc-field-value bc-field-value--empty" data-cell="{{../page.index}}:{{col}}" data-cell-md data-cell-empty>—</div>
+        <div class="bc-field-value bc-field-value--empty" data-cell="{{../page.index}}:{{col}}" data-cell-md data-cell-empty>-</div>
         {{/if}}
       </div>
       {{/unless}}
@@ -54,12 +54,12 @@
         is a fixed-size, clipped box: styles.css sizes its font as
         calc(<size> * var(--fit, 1)) and the copy overflows it. This finds the
         largest --fit (≤ 1) at which the copy stops overflowing and writes it inline
-        on the slot. A unitless RATIO is scale-invariant — correct at both the stage
-        preview size and the scaled-up export DOM — and shrink-only, so a card that
+        on the slot. A unitless RATIO is scale-invariant - correct at both the stage
+        preview size and the scaled-up export DOM - and shrink-only, so a card that
         already fits is never touched.
 
         IIFE + var throughout: template scripts share the page's global scope and
-        re-run on every paint and soft revisit — a top-level const/let would throw
+        re-run on every paint and soft revisit - a top-level const/let would throw
         "already declared" on the second run and kill the whole script. --}}
   <script>
   (function () {
@@ -69,12 +69,12 @@
     var root = (script && script.closest) ? script.closest('.bc-card') : null;
     if (!root) return;
 
-    var MAX_STEPS = 9;      // bisection steps after the guess — ~0.2% of the authored size
+    var MAX_STEPS = 9;      // bisection steps after the guess - ~0.2% of the authored size
     var MIN_FIT = 0.08;     // the floor; below this the copy is hopeless and gets clipped
     function f3(x) { return Math.round(x * 1000) / 1000; }
 
     // A fit slot's room (`have`) vs. what its copy wants (`need`), both in px.
-    //   have — the space the copy may fill. For a hard-capped box (the title, capped
+    //   have - the space the copy may fill. For a hard-capped box (the title, capped
     //          by max-height) that is the CAP, not the box's current clientHeight:
     //          while the copy is short the box shrink-wraps it (clientHeight < cap),
     //          and measuring against the wrapped height would read the box's own
@@ -83,7 +83,7 @@
     //          has, so it is left alone; only copy that truly overruns the cap shrinks.
     //          A value panel has no cap and never shrink-wraps (flex:1), so there
     //          have === clientHeight, the honest fixed box.
-    //   need — the copy's natural extent (scrollHeight). Width counts too: an
+    //   need - the copy's natural extent (scrollHeight). Width counts too: an
     //          unbreakable run can overflow sideways with height to spare, so a
     //          horizontal overflow forces a shrink.
     function measure(el) {
@@ -97,7 +97,7 @@
       return { have: have, need: need, lh: parseFloat(cs.lineHeight) || 0 };
     }
     // Measuring against the cap already kills the shrink-wrap false-positive, so the
-    // tolerance can stay tight — a hair over a line's rounding — and copy is shrunk
+    // tolerance can stay tight - a hair over a line's rounding - and copy is shrunk
     // until it sits WITHIN its box rather than a partial last line clipping at the
     // edge. A tenth of a line is imperceptible (a descender tip) yet scale-stable.
     function fits(el) {
@@ -115,7 +115,7 @@
     }
     function fitOne(el) {
       el.style.removeProperty('--fit');
-      if (fits(el)) return;                 // fits as authored — shrink-only, so leave it
+      if (fits(el)) return;                 // fits as authored - shrink-only, so leave it
       var lo = MIN_FIT, hi = 1;             // hi is known not to fit; lo is the floor we'd settle for
       var g = guess(el);
       if (g > lo && g < hi) {
@@ -140,12 +140,12 @@
     runAll();
     try {
       if (document.fonts && document.fonts.status !== 'loaded') {
-        // The first pass may have measured FALLBACK font metrics — the wrong widths.
+        // The first pass may have measured FALLBACK font metrics - the wrong widths.
         // The export path awaits document.fonts.ready then mutation-silence, so this
         // re-fit lands inside the capture's wait rather than after the frame is taken.
         document.fonts.ready.then(runAll);
       }
-    } catch (e) { /* no font-loading API — the first pass stands */ }
+    } catch (e) { /* no font-loading API - the first pass stands */ }
   })();
   </script>
 </div>

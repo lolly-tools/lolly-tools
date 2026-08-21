@@ -4,11 +4,11 @@
      data-lolly-anno="{{chartType}} {{delimiter}} {{stackMode}} {{curve}} {{sizeBy}} {{sort}} {{yScaleType}} {{numberFormat}} {{palette}} {{colorBy}} {{textColor}} {{strokeColor}} {{legendPosition}}">
   <defs>
     <style>
-      /* Brand font via the injected var (community pattern — no @font-face here;
+      /* Brand font via the injected var (community pattern - no @font-face here;
          the shell loads the active brand's faces). 'SUSE' rides the fallback
          tail so an already-registered face still resolves on older shells. */
       #d3-svg text, #d3-svg tspan { font-family: var(--font-brand, 'SUSE', system-ui, -apple-system, sans-serif); }
-      /* Click-to-focus: annotated parts jump to their sidebar control on click — hint it. */
+      /* Click-to-focus: annotated parts jump to their sidebar control on click - hint it. */
       #d3-svg [data-canvas-input] { cursor: pointer; }
       /* Click-to-recolour: bars/slices open a brand-swatch picker on click. */
       #d3-svg [data-recolor] { cursor: pointer; }
@@ -34,7 +34,7 @@
      Multi-edit mounts MANY d3 instances inline in ONE document, so everything
      resolves against THIS instance's own container (found via the running
      <script>) and its per-instance state (epoch, rAF handle) lives on that ROOT
-     — never on `window`, which would collide across cards and, via duplicate
+     - never on `window`, which would collide across cards and, via duplicate
      ids + a shared epoch, blank all but one. Only the d3 library itself and its
      load promise stay global (loaded once, legitimately shared). */
   var _cs = document.currentScript;
@@ -46,7 +46,7 @@
   var stateEl = ROOT.querySelector('#d3-state');
   var svgEl = ROOT.querySelector('#d3-svg');
   if (!stateEl || !svgEl) return;
-  /* Scoped once: the plot/bg live inside THIS svg, the clock beside it — d3.select
+  /* Scoped once: the plot/bg live inside THIS svg, the clock beside it - d3.select
      and getElementById would otherwise grab the first match across all cards. */
   var plotEl = svgEl.querySelector('#d3-plot');
   var bgEl = svgEl.querySelector('#d3-bg');
@@ -73,15 +73,15 @@
   loadD3().then(function () {
     if (!alive()) return;
     /* Loaded but no global (e.g. an SPA fallback served index.html at the lib URL)
-       — surface it rather than leaving a silently blank canvas. */
+       - surface it rather than leaving a silently blank canvas. */
     if (!window.d3) { message('Chart library failed to load.'); return; }
     try { render(state, window.d3); startAnim(state, window.d3); }
     catch (err) { console.error('[d3] render error:', err); message(String(err && err.message || err)); }
   }).catch(function (e) { console.error('[d3]', e); message('Chart library failed to load.'); });
 
   /* ── palettes (shipped fallback) ──────────────────────────────────────────────────────── */
-  /* Ordered categorical hues — distinct colour families, CVD-considered. */
-  /* Lead with a green that clears WCAG 1.4.11 (3:1) on white — Pine #30BA78 is
+  /* Ordered categorical hues - distinct colour families, CVD-considered. */
+  /* Lead with a green that clears WCAG 1.4.11 (3:1) on white - Pine #30BA78 is
      only ~2.5:1, so the deeper #008657 takes slot 0 (like the reference tool). */
   var CATEGORICAL = ['#008657','#2453FF','#FE7C3F','#5D4F99','#00BDA7','#BD3314','#3C8EEF','#192072','#30BA78','#FAB088'];
   /* Sequential ramps, light → dark, as interpolate anchors. The dark anchor is the
@@ -111,11 +111,11 @@
     return 0.2126*f(parseInt(c.slice(0,2),16)) + 0.7152*f(parseInt(c.slice(2,4),16)) + 0.0722*f(parseInt(c.slice(4,6),16));
   }
   function contrast(a, b) { var hi = Math.max(lum(a),lum(b)), lo = Math.min(lum(a),lum(b)); return (hi+0.05)/(lo+0.05); }
-  /* Crossover for the near-black ink #111111 (luminance ~0.005) is ~0.18 — above it
+  /* Crossover for the near-black ink #111111 (luminance ~0.005) is ~0.18 - above it
      dark ink out-contrasts white on the mark (matches chart-creator's autoText). */
   function autoText(bg) { return lum(bg) > 0.179 ? '#111111' : '#ffffff'; }
   /* Auto ink for chart chrome (titles/axes/labels/legend/gridlines) when the user
-     leaves "Text & axis colour" blank — contrasts with the background so a dark bg
+     leaves "Text & axis colour" blank - contrasts with the background so a dark bg
      flips everything light without the user colouring each element. */
   function autoInk(bg) { return lum(bg) > 0.42 ? '#141414' : '#f4f4f4'; }
   function toRgb(hex){var c=String(hex).replace('#','');return [parseInt(c.slice(0,2),16),parseInt(c.slice(2,4),16),parseInt(c.slice(4,6),16)];}
@@ -150,7 +150,7 @@
   /* ── keyframe animation ──────────────────────────────────────────────────────
      When the data carries frames (a frame/time column), morph the chart between
      them on a loop by re-rendering with tweened series each tick. render() clears
-     and redraws #d3-plot every call, so the DOM genuinely changes frame-to-frame —
+     and redraws #d3-plot every call, so the DOM genuinely changes frame-to-frame -
      which is what lets the existing video pipeline (render.video) capture it as a
      looping APNG / MP4 / WebM, and what animates it live in the preview. The epoch
      guard stops a stale loop the moment a new paint supersedes it.
@@ -200,7 +200,7 @@
     function draw(t) {
       var f = frameFor(t);
       var tweened = lerp(frames[f.i], frames[f.j], f.tw);
-      /* scatter reads numericCols (x/y); the others read series — feed the tween to the right one. */
+      /* scatter reads numericCols (x/y); the others read series - feed the tween to the right one. */
       var st = { cfg: cfg, data: { categories: data.categories, series: tweened,
         numericCols: cfg.chartType === 'scatter' ? tweened : [], errorValues: null } };
       try { render(st, d3); } catch (e) { console.error('[d3 anim]', e); return; }
@@ -221,7 +221,7 @@
     clockEls.forEach(function (el) { el.__lollyFrameRender = function (t) { draw(clamp(+t || 0, 0, 0.999999)); }; });
     var frameDriven = function () { for (var i = 0; i < clockEls.length; i++) if (clockEls[i].__lollyFrameDriven) return true; return false; };
     /* Animated-SVG (SMIL) export: a sampled flipbook. Render draw(k/N) into N sibling
-       <g>s and cycle their visibility with discrete-opacity SMIL — reuses the exact live
+       <g>s and cycle their visibility with discrete-opacity SMIL - reuses the exact live
        renderer, so labels, hide-empties and every chart type come along for free, and a
        self-contained looping vector SVG plays natively. Driven by the beforeExport hook
        (format=svg); the rAF loop parks on __d3SmilActive so it can't clobber the build. */
@@ -262,7 +262,7 @@
     var clock = (prev.curT || 0) * loopMs, prevTs = null, lastDraw = -1e9, lastT = -1;
     function tick(ts) {
       if (!alive()) return;                                   // a newer paint owns the canvas now
-      if (frameDriven() || window.__d3SmilActive) { ROOT.__d3Raf = requestAnimationFrame(tick); return; }   // export owns the frame — don't clobber it
+      if (frameDriven() || window.__d3SmilActive) { ROOT.__d3Raf = requestAnimationFrame(tick); return; }   // export owns the frame - don't clobber it
       if (prevTs == null) prevTs = ts;
       var dt = ts - prevTs; prevTs = ts;
       var t;
@@ -283,9 +283,9 @@
     cfg.bar3d = cfg.barStyle === 'iso3d';
     cfg.pie3d = cfg.pieStyle === 'iso3d';
     /* ── palette source ───────────────────────────────────────────────────────
-       'ordered'  categorical — the brand's swatches in their authored order (the
+       'ordered'  categorical - the brand's swatches in their authored order (the
                   default; follows the palette the way the brand shows it).
-       'suse'     categorical — the brand's spectrum, spaced apart for contrast.
+       'suse'     categorical - the brand's spectrum, spaced apart for contrast.
        'seed'     categorical + ramps extrapolated from one base colour (the hook
                   builds cfg.seedPalette off host.color).
        the rest   sequential / diverging ramps. */
@@ -332,25 +332,25 @@
     }
 
     /* Colour functions. The categorical option follows the active brand's
-       spectrum when the hook resolved one (cfg.brandPalette — see hooks.js);
+       spectrum when the hook resolved one (cfg.brandPalette - see hooks.js);
        the shipped set is the fallback. */
     var slots = cfg.paletteSlots || [];   // manual Colour 1..6 (blank = brand palette)
     /* Ramp interpolator honouring the Colour blend choice. Smooth = perceptual
        CIELAB (passes through each anchor); sRGB = the classic B-spline blend. Vivid
-       is a TWO-colour CIELCh journey — from a base colour to the Second colour, the
+       is a TWO-colour CIELCh journey - from a base colour to the Second colour, the
        short way or the long way round the hue circle (like Colour Lab's blend ramp),
        so the midtones keep their chroma. Any failure falls back to the sRGB basis. */
     /* A Vivid (CIELCh) interpolation between two colours. Short takes the shortest
-       hue arc; Long takes the COMPLEMENTARY (longer) arc round the wheel — and a
+       hue arc; Long takes the COMPLEMENTARY (longer) arc round the wheel - and a
        FULL 360° loop when the two hues coincide, so "Long way round" always travels
        (d3.interpolateHclLong only skips the shortest-path wrap, so it looks identical
-       to Short whenever the hues are <180° apart — which surprised on green→dark).
+       to Short whenever the hues are <180° apart - which surprised on green→dark).
        An achromatic endpoint (near-black/grey) borrows the other's hue so there is
        still an arc to walk; chroma/lightness interpolate linearly. */
     function vividInterp(from, to, longWay) {
       var A = d3.hcl(from), B = d3.hcl(to);
       var ha = isNaN(A.h) ? B.h : A.h, hb = isNaN(B.h) ? A.h : B.h;
-      if (isNaN(ha)) { ha = 0; hb = 0; }           // both achromatic — nothing to travel
+      if (isNaN(ha)) { ha = 0; hb = 0; }           // both achromatic - nothing to travel
       var d = (((hb - ha) % 360) + 540) % 360 - 180;   // shortest signed delta, (-180, 180]
       if (longWay) d = d > 0 ? d - 360 : d + 360;      // the long arc; d===0 → a full -360 loop
       return function (t) { return d3.hcl(ha + d * t, A.c + (B.c - A.c) * t, A.l + (B.l - A.l) * t) + ''; };
@@ -375,7 +375,7 @@
       if (!isRampPalette(p)) return RAMPS.pine || RAMPS.suse;
       return RAMPS[p] || RAMPS.suse;
     }
-    /* Vivid's two endpoints. The 'from' is the palette's own base hue — the seed in
+    /* Vivid's two endpoints. The 'from' is the palette's own base hue - the seed in
        From-a-base-colour mode, else the most chromatic anchor of the current ramp
        (its true hue, not a light/dark end). The 'to' is the Second colour input,
        falling back to the ramp's far end when blank. makeRamp reads both above. */
@@ -390,7 +390,7 @@
     function catColorFn(n) {
       var catList = null;
       if (pal === 'ordered')   catList = CAT_ORDERED || CATEGORICAL;
-      // Seed mode is a DISTINCT categorical set by default — but choosing Vivid turns
+      // Seed mode is a DISTINCT categorical set by default - but choosing Vivid turns
       // it into a hue journey (base → Second colour, short/long way), so the series
       // sample that ramp instead. (Ramp palettes already sample it: catList stays null.)
       else if (pal === 'seed' && cfg.paletteBlend !== 'vivid')
@@ -415,7 +415,7 @@
     }
     function seqColorFn(min, max) {
       var ramp = makeRamp(rampAnchorsFor(pal));
-      /* A diverging ramp is only meaningful centred on zero — when the data spans
+      /* A diverging ramp is only meaningful centred on zero - when the data spans
          zero, put the neutral middle at 0 with a symmetric domain so blue/orange
          straddle it. Otherwise fall back to the plain min→max sequential mapping. */
       if (pal === 'diverging' && min < 0 && max > 0) {
@@ -581,7 +581,7 @@
     if (legendItems && legendItems.length) drawLegend(api, legendItems, legPos, legendReserve, PAD, titleH);
 
     /* A quiet diagnostic caption when the parser reshaped/adjusted the data
-       (pivoted long data, single column, truncation, header hint) — so the user
+       (pivoted long data, single column, truncation, header hint) - so the user
        sees WHAT happened instead of a silently-surprising chart. */
     if (data.note) root.append('text').attr('x', PAD).attr('y', H - 12)
       .attr('font-size', 15).attr('font-weight', 400).attr('fill', ink).attr('opacity', 0.5).text(data.note);
@@ -799,7 +799,7 @@
      sharpen the contrast between values, or a colour-matched glow. A neutral drop
      shares one filter; a glow gets one per colour. SVG/PNG faithful, EMF/EPS keep
      a vector shadow (engine gaussianShadowRings), PDF rasterises while a filter is
-     present — so this is opt-in (default none). */
+     present - so this is opt-in (default none). */
   var SHADOW_PRESETS = {
     soft:   { dy: 1, blur: 5,  op: 0.20, glow: false },
     medium: { dy: 2, blur: 10, op: 0.28, glow: false },
@@ -1091,7 +1091,7 @@
       else { whisk(c, p1, c, p2); whisk(c - cap, p1, c + cap, p1); whisk(c - cap, p2, c + cap, p2); }
     }
   }
-  /* Category tick labels — auto-fit: wrap into the column (horizontal bars),
+  /* Category tick labels - auto-fit: wrap into the column (horizontal bars),
      angle 45° or wrap (vertical bars) when labels would collide, ellipsising
      only as a last resort. All output is plain SVG <text> (rotate transforms and
      tspans) so it exports vector-clean. */
@@ -1128,7 +1128,7 @@
       });
       return;
     }
-    // single horizontal line — thin out to avoid collisions, ellipsise to slot
+    // single horizontal line - thin out to avoid collisions, ellipsise to slot
     var stepW = band.step();
     var every = Math.ceil(cats.length / Math.max(1, Math.floor(plot.w / 52)));
     cats.forEach(function (c, i) {
@@ -1232,7 +1232,7 @@
       series.forEach(function (s, si) {
         var raw = s.values[ci], v = +raw;
         /* While animating, drop a bar (and its label) for a category a frame has no
-           data for — absent (null) or ~empty — so blanks don't clutter as '0 0 0 0'.
+           data for - absent (null) or ~empty - so blanks don't clutter as '0 0 0 0'.
            Gated on animExtent so a static chart's genuine zeros are unaffected. */
         if (cfg.animExtent) { var eps = Math.max(1e-9, (cfg.animExtent[1] - cfg.animExtent[0]) * 0.002); if (raw == null || !isFinite(v) || Math.abs(v) < eps) return; }
         if (!isFinite(v)) return;
@@ -1314,7 +1314,7 @@
   }
   /* Parse the label column as dates (ISO, Y-M, D/M/Y, 'Jan 2024', 'Q1 2024', a
      plain 4-digit year, …). Returns per-index Date|null + whether it reads as a
-     real time series (≥60% parse). Month-only labels ('Jan') stay categorical —
+     real time series (≥60% parse). Month-only labels ('Jan') stay categorical -
      no year, and evenly spaced anyway. */
   function parseCatDates(cats, d3) {
     var qre1 = /^Q([1-4])[\s\-]?(\d{4})$/i, qre2 = /^(\d{4})[\s\-]?Q([1-4])$/i;
@@ -1328,7 +1328,7 @@
       q = s.match(qre2); if (q) return new Date(+q[1], (+q[2] - 1) * 3, 1);
       if (/^\d{4}$/.test(s)) { var yr = +s; return (yr >= 1900 && yr <= 2100) ? new Date(yr, 0, 1) : null; }
       /* A bare number that isn't a 4-digit year is a sequence index / count, NOT a
-         date — guard before the parsers, since the browser Date fallback coerces
+         date - guard before the parsers, since the browser Date fallback coerces
          "1" → Jan 2001, "2" → 2002… and mislabels a plain 1,2,3… column as time. */
       if (/^-?\d*\.?\d+$/.test(s)) return null;
       for (var i = 0; i < parsers.length; i++) { var d = parsers[i](s); if (d && d.getFullYear() >= 1900 && d.getFullYear() <= 2100) return d; }
@@ -1433,7 +1433,7 @@
         });
       });
     }
-    /* trend / error bars — non-stacked only. x in DATA units: date-ms in time mode
+    /* trend / error bars - non-stacked only. x in DATA units: date-ms in time mode
        (fed through the time scale), else the category index mapped linearly across
        the point band (equals pos[i] at integers). */
     if (!stacked && (cfg.trend !== 'none' || api.errors)) {
@@ -2160,7 +2160,7 @@
   /* ── low-level draw helpers ───────────────────────────────────────────────── */
   /* ── word cloud (label,count) ─────────────────────────────────────────────── */
   /* Words sized by their count and packed on an Archimedean spiral with AABB
-     collision — self-contained (no d3-cloud), vector-clean SVG <text>. Ideal for
+     collision - self-contained (no d3-cloud), vector-clean SVG <text>. Ideal for
      tallies of open-text / multiple-choice responses. */
   function drawWordcloud(api) {
     var d3 = api.d3, cfg = api.cfg, b = api.box;
@@ -2218,7 +2218,7 @@
   /* ── click-to-recolour picker ─────────────────────────────────────────────── */
   /* Clicking a bar/slice (tagged data-recolor="<label>") opens a brand-swatch
      popover; picking a swatch writes an override into the colorOverrides input via
-     the sidebar control (the exact path typing takes — URL sync / undo / save come
+     the sidebar control (the exact path typing takes - URL sync / undo / save come
      free). Many values can be highlighted at once (the override is a map). The
      click listener is wired ONCE per svg (capture phase, so a mark click doesn't
      also trigger the shell's click-to-focus); its state is refreshed each paint. */
@@ -2292,7 +2292,7 @@
   /* ── data-label annotations (arrows + notes) ──────────────────────────────── */
   /* Click a value label (tagged data-annot="<category>") → a floating widget:
      a directional-arrow icon + a short note + optional text/fill colours (set one
-     and the other auto-contrasts). The statistician's end-of-bar/line marker —
+     and the other auto-contrasts). The statistician's end-of-bar/line marker -
      significance, an event, a small-sample flag. Writes an `annotations` JSON map
      (category → {i,t,fg,bg}) through the sidebar input (URL sync / undo / save). */
   function parseAnnotations(s) {
@@ -2337,7 +2337,7 @@
     return { fg: ink, bg: null };
   }
   /* Render the badge INLINE starting at startX, with its text baseline on
-     baselineY — so it sits at the end of a data label, sharing that label's
+     baselineY - so it sits at the end of a data label, sharing that label's
      baseline (the "↗ Big Jump" after "120" placement). */
   function drawAnnotInline(g, startX, baselineY, ann, sz, ink) {
     if (!ann || (!ann.i && !ann.t)) return;

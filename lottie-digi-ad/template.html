@@ -8,12 +8,12 @@
   {{/each}}
 
   <style>
-    /* Everything is namespaced under .lda — the template <style> is injected raw
+    /* Everything is namespaced under .lda - the template <style> is injected raw
        (NOT engine-scoped), and frame-by-frame gif/video capture must see the full
        styling on the canvas node itself. Never move these rules (especially
        @keyframes) into styles.css: scopeCss() corrupts multi-step keyframes.
        There is deliberately NO <script> here: the shell mounts a Lottie player on
-       each [data-lottie-src] node — until it does, the box simply renders empty. */
+       each [data-lottie-src] node - until it does, the box simply renders empty. */
     .lda {
       position: relative;
       width: 100%;

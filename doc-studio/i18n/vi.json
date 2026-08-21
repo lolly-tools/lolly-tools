@@ -1,7 +1,7 @@
 {
   "name": "Studio Tài liệu",
   "description": "Viết tài liệu nhiều trang trên canvas - văn bản định dạng, tiêu đề, bảng và bản dựng Lolly chèn vào, tự động chảy sang trang mới và xuất thành PDF.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — tài liệu nhiều trang",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - tài liệu nhiều trang",
   "inputs.pageSize.label": "Kích thước trang",
   "inputs.pageSize.help": "Đặt kích thước cho mọi trang và kích thước trang PDF khi xuất.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 cột",
   "inputs.columns.options.3": "3 cột",
   "inputs.content.label": "Tài liệu",
-  "inputs.content.help": "Bản thân tài liệu — được lưu dưới dạng JSON văn bản định dạng có thể chuyển đổi (ProseMirror). Được viết trên canvas bằng trình soạn thảo Doc Studio; engine render JSON này thành các trang để xuất. Nếu để trống sẽ dùng tài liệu mẫu khởi đầu.",
+  "inputs.content.help": "Bản thân tài liệu - được lưu dưới dạng JSON văn bản định dạng có thể chuyển đổi (ProseMirror). Được viết trên canvas bằng trình soạn thảo Doc Studio; engine render JSON này thành các trang để xuất. Nếu để trống sẽ dùng tài liệu mẫu khởi đầu.",
   "inputs.width.label": "Chiều rộng trang",
   "inputs.height.label": "Chiều cao trang"
 }

@@ -2,7 +2,7 @@
  * URL Capture hooks.
  *
  * Capture is a slow, side-effectful navigation (load a page, settle, scroll,
- * read its pixels or geometry), so it runs in `beforeExport` — the deliberate
+ * read its pixels or geometry), so it runs in `beforeExport` - the deliberate
  * export action. The auto-fired hooks can't host it: onInit (5s) and onInput (2s)
  * are timeout-wrapped and a real page load + settle won't fit, and re-capturing on
  * every keystroke would hammer the network.
@@ -11,7 +11,7 @@
  * onInit/onInput stash the latest inputs in a module-level var for it to read
  * (the same pattern qr-code uses for its transparent-bg flag).
  *
- * beforeExport is FORMAT-AWARE — it stages the render node three ways:
+ * beforeExport is FORMAT-AWARE - it stages the render node three ways:
  *   • png/jpg/webp  → a raster still in <img> (host.capture.page, crop applied)
  *   • svg (+ pdf)   → a TRUE vector still in <img> (host.capture.vector). The
  *                     export SVG/PDF walker inlines an SVG-sourced <img> as nested
@@ -45,7 +45,7 @@ function recolorCss(v) {
 
 // Browser zoom → a `zoom` on <html>, injected with the recolor/user CSS. Chrome's
 // own Ctrl/Cmd-+ zoom uses the same mechanism, so this magnifies the page BEFORE
-// the shot (content renders bigger and crisper, not upscaled) — the way to enlarge
+// the shot (content renders bigger and crisper, not upscaled) - the way to enlarge
 // even a bitmap capture. scrollHeight reflows with it, so the scroll/crop geometry
 // (measured post-injection by the capture engine) stays self-consistent.
 function zoomCss(v) {
@@ -94,13 +94,13 @@ function reveal(node, which) {
   // later still export's frame-clock scan can't repaint a hidden canvas.
   if (canvas && which !== 'canvas') { try { delete canvas.__lollyFrameRender; } catch (e) { canvas.__lollyFrameRender = null; } }
   if (placeholder) placeholder.style.display = 'none';
-  // Mark the canvas as holding a capture — unlocks the hover-revealed re-capture
+  // Mark the canvas as holding a capture - unlocks the hover-revealed re-capture
   // button (styles.css .url-shot[data-captured]:hover .shot-refresh).
   if (root) root.setAttribute('data-captured', '');
 }
 
 // Load a captured strip and wire the canvas to draw a frame-height window of it at
-// normalized time t∈[0,1) — the video export's deterministic frame clock. The still
+// normalized time t∈[0,1) - the video export's deterministic frame clock. The still
 // paths (png/svg) never enter here; a still of THIS canvas would paint t=0 (the top).
 function setupPanCanvas(canvas, strip, frameCssH) {
   return new Promise(function (resolve, reject) {
@@ -133,12 +133,12 @@ function setupPanCanvas(canvas, strip, frameCssH) {
 }
 
 async function beforeExport({ node, format, opts, host }) {
-  // Thumbnails (and other cheap previews) must NOT trigger a fresh capture — that
+  // Thumbnails (and other cheap previews) must NOT trigger a fresh capture - that
   // is a slow headless-browser navigation. Reuse whatever is already on the canvas.
   if (opts && opts.thumbnail) return;
 
   if (!host.capture) {
-    throw new Error('URL capture needs the desktop app — the web app can’t screenshot external pages.');
+    throw new Error('URL capture needs the desktop app - the web app can’t screenshot external pages.');
   }
   if (!_params.url) {
     throw new Error('Enter a URL to capture.');
@@ -146,7 +146,7 @@ async function beforeExport({ node, format, opts, host }) {
 
   // Capture at the requested export dimensions when they're plain pixels; fall
   // back to the tool's render size. Physical units (e.g. "210mm") are resolved by
-  // the export bridge per format — the engine owns that math, not this hook — so
+  // the export bridge per format - the engine owns that math, not this hook - so
   // we only read a leading pixel value here.
   var px = function (d, fallback) {
     var n = parseFloat(d);
@@ -198,7 +198,7 @@ async function beforeExport({ node, format, opts, host }) {
     return;
   }
 
-  // ── Raster still (png/jpg/webp — and svg/pdf where no vector capture) ────────
+  // ── Raster still (png/jpg/webp - and svg/pdf where no vector capture) ────────
   var shot = await host.capture.page(Object.assign({}, baseSpec, { crop: _params.crop }));
   if (img) {
     img.setAttribute('src', shot.url);

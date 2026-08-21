@@ -295,5 +295,13 @@
   "inputs.footerText.help": "ہر سلائیڈ کے نیچے، لوگو اور سلائیڈ نمبر کے درمیان ایک چھوٹی فوٹر لائن (کاپی رائٹ، رازداری)۔",
   "inputs.footerText.placeholder": "© 2026 آپ کی کمپنی · خفیہ",
   "inputs.deck.fields.layout.options.bignum": "بڑا عدد",
-  "inputs.deck.fields.layout.options.mainpoint": "مرکزی نکتہ"
+  "inputs.deck.fields.layout.options.mainpoint": "مرکزی نکتہ",
+  "inputs.deck.fields.text1.label": "خانہ 1 کا متن",
+  "inputs.deck.fields.text1.help": "جب کوئی تصویر یا ٹول سیٹ نہ ہو تو خانے کو ٹیکسٹ کارڈ سے بھرتا ہے۔ دونوں ہوں تو میڈیا کو ترجیح ملتی ہے۔",
+  "inputs.deck.fields.text2.label": "خانہ 2 کا متن",
+  "inputs.deck.fields.text2.help": "جب کوئی تصویر یا ٹول سیٹ نہ ہو تو خانے کو ٹیکسٹ کارڈ سے بھرتا ہے۔ دونوں ہوں تو میڈیا کو ترجیح ملتی ہے۔",
+  "inputs.deck.fields.text3.label": "خانہ 3 کا متن",
+  "inputs.deck.fields.text3.help": "جب کوئی تصویر یا ٹول سیٹ نہ ہو تو خانے کو ٹیکسٹ کارڈ سے بھرتا ہے۔ دونوں ہوں تو میڈیا کو ترجیح ملتی ہے۔",
+  "inputs.deck.fields.text4.label": "خانہ 4 کا متن",
+  "inputs.deck.fields.text4.help": "جب کوئی تصویر یا ٹول سیٹ نہ ہو تو خانے کو ٹیکسٹ کارڈ سے بھرتا ہے۔ دونوں ہوں تو میڈیا کو ترجیح ملتی ہے۔"
 }

@@ -1,7 +1,7 @@
 {
   "name": "PDF de várias páginas",
   "description": "Monte um PDF multipágina - uma capa, blocos de conteúdo fluido e uma contracapa.",
-  "a11yLabel": "{{default coverTitle \"Sem título\"}} — documento PDF de várias páginas",
+  "a11yLabel": "{{default coverTitle \"Sem título\"}} - documento PDF de várias páginas",
   "featured.blurb": "PDFs multipágina - capa, conteúdo, contracapa",
   "inputs.pageSize.label": "Tamanho da página",
   "inputs.pageSize.help": "Define o tamanho de todas as páginas e o tamanho de página do PDF exportado. Cada página do documento é renderizada exatamente nesse tamanho.",
@@ -52,7 +52,7 @@
   "inputs.content.fields.heading.label": "Título",
   "inputs.content.fields.heading.placeholder": "Título (opcional)",
   "inputs.content.fields.body.label": "Corpo",
-  "inputs.content.fields.body.placeholder": "Texto do corpo — aceita títulos com #, **negrito**, *itálico*, marcadores (-) e listas numeradas (1.)",
+  "inputs.content.fields.body.placeholder": "Texto do corpo - aceita títulos com #, **negrito**, *itálico*, marcadores (-) e listas numeradas (1.)",
   "inputs.content.fields.image.label": "Imagem",
   "inputs.content.fields.caption.label": "Legenda",
   "inputs.content.fields.caption.placeholder": "Legenda (opcional)",

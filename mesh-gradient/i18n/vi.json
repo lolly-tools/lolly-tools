@@ -54,11 +54,11 @@
   "inputs.grainBlend.options.luminosity": "Độ sáng (cổ điển)",
   "inputs.animate.label": "Trôi dạt",
   "inputs.animate.section": "Kết cấu & Chuyển động",
-  "inputs.animate.help": "Các điểm màu trôi dạt chậm rãi, lặp lại — xuất dưới dạng WebM/MP4 để làm nền động.",
+  "inputs.animate.help": "Các điểm màu trôi dạt chậm rãi, lặp lại - xuất dưới dạng WebM/MP4 để làm nền động.",
   "inputs.distance.label": "Khoảng cách trôi dạt",
   "inputs.distance.section": "Kết cấu & Chuyển động",
   "inputs.distance.help": "Các điểm màu trôi dạt xa vị trí đã đặt bao nhiêu. 100% là kích thước quỹ đạo mặc định; 0% giữ chúng cố định tại chỗ.",
   "inputs.speed.label": "Tốc độ trôi dạt",
   "inputs.speed.section": "Kết cấu & Chuyển động",
-  "inputs.speed.help": "Số giây cho mỗi vòng lặp trôi dạt — giá trị càng cao thì càng chậm. Bản xuất video ghi lại một vòng lặp khi ngân sách khung hình cho phép (các vòng lặp dài sẽ được rút ngắn ở 60 khung hình/giây)."
+  "inputs.speed.help": "Số giây cho mỗi vòng lặp trôi dạt - giá trị càng cao thì càng chậm. Bản xuất video ghi lại một vòng lặp khi ngân sách khung hình cho phép (các vòng lặp dài sẽ được rút ngắn ở 60 khung hình/giây)."
 }

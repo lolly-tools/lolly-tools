@@ -3,7 +3,7 @@
   "description": "Peta blok jalan vektor yang bersih untuk kota mana pun. Berfungsi secara offline.",
   "a11yLabel": "Peta jalan yang berpusat di {{city}}",
   "inputs.city.label": "Kota",
-  "inputs.city.help": "Tambahkan lebih banyak kota secara offline dengan scripts/build-street-clips.ts — tanpa API saat rendering.",
+  "inputs.city.help": "Tambahkan lebih banyak kota secara offline dengan scripts/build-street-clips.ts - tanpa API saat rendering.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Athena",
   "inputs.city.options.bangkok": "Bangkok",

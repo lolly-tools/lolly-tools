@@ -7,9 +7,9 @@
   "inputs.scrollDepth.label": "捲動深度",
   "inputs.scrollDepth.help": "擷取前要向下捲動頁面的程度。0 = 最上方，1 = 最下方。",
   "inputs.waitMs.label": "穩定延遲（毫秒）",
-  "inputs.waitMs.help": "頁面載入（及捲動）後、擷取畫面前的等待時間——讓字型、圖片與動畫有時間穩定下來。",
+  "inputs.waitMs.help": "頁面載入（及捲動）後、擷取畫面前的等待時間--讓字型、圖片與動畫有時間穩定下來。",
   "inputs.css.label": "自訂 CSS",
-  "inputs.css.help": "在截圖前注入頁面的 CSS——例如隱藏 Cookie 橫幅（.cookie-bar { display: none }）或重新設計元素樣式。",
+  "inputs.css.help": "在截圖前注入頁面的 CSS--例如隱藏 Cookie 橫幅（.cookie-bar { display: none }）或重新設計元素樣式。",
   "inputs.cropTop.label": "上方裁切",
   "inputs.cropTop.help": "從上邊緣向內裁切，以高度的 0–0.9 比例表示。僅限點陣格式（png/jpg/svg）。",
   "inputs.cropRight.label": "右側裁切",
@@ -31,7 +31,7 @@
   "inputs.tintColor.label": "染色顏色",
   "inputs.tintColor.help": "當「重新上色」設為「染色」時，頁面要套上的顏色。",
   "inputs.scrollTo.label": "捲動至（影片）",
-  "inputs.scrollTo.help": "僅限影片匯出：在片段中向下平移至此深度 — 頁面會從「捲動深度」捲動至此處。設為與「捲動深度」相同即為靜止畫面。圖片格式會忽略此設定。",
+  "inputs.scrollTo.help": "僅限影片匯出：在片段中向下平移至此深度 - 頁面會從「捲動深度」捲動至此處。設為與「捲動深度」相同即為靜止畫面。圖片格式會忽略此設定。",
   "inputs.zoom.label": "縮放",
-  "inputs.zoom.help": "瀏覽器縮放層級 — 在截圖前放大頁面（類似 Ctrl/Cmd +），因此即使是位圖擷取也會放大且清晰，而非事後放大失真。1 = 100%。"
+  "inputs.zoom.help": "瀏覽器縮放層級 - 在截圖前放大頁面（類似 Ctrl/Cmd +），因此即使是位圖擷取也會放大且清晰，而非事後放大失真。1 = 100%。"
 }

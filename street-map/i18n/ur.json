@@ -3,7 +3,7 @@
   "description": "کسی بھی شہر کے صاف ستھرے ویکٹر اسٹریٹ بلاک نقشے۔ آف لائن کام کرتا ہے۔",
   "a11yLabel": "{{city}} پر مرکوز اسٹریٹ میپ",
   "inputs.city.label": "شہر",
-  "inputs.city.help": "scripts/build-street-clips.ts کے ساتھ مزید شہر آف لائن شامل کریں — رینڈر کے وقت کوئی API نہیں۔",
+  "inputs.city.help": "scripts/build-street-clips.ts کے ساتھ مزید شہر آف لائن شامل کریں - رینڈر کے وقت کوئی API نہیں۔",
   "inputs.city.options.amsterdam": "ایمسٹرڈیم",
   "inputs.city.options.athens": "ایتھنز",
   "inputs.city.options.bangkok": "بینکاک",

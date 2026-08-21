@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Spill av 3 ganger",
   "inputs.loop.options.once": "Spill av én gang",
   "inputs.scenes.label": "Scener",
-  "inputs.scenes.help": "Hver scene er ett segment i sekvensen — den animerer inn over den forrige, med sin egen Lottie-animasjon som går i loop oppå. Den siste scenen er det stillestående sluttkortet.",
+  "inputs.scenes.help": "Hver scene er ett segment i sekvensen - den animerer inn over den forrige, med sin egen Lottie-animasjon som går i loop oppå. Den siste scenen er det stillestående sluttkortet.",
   "inputs.scenes.addMenu.label": "Legg til scene",
   "inputs.scenes.fields.anim.label": "Animasjon",
   "inputs.scenes.fields.bgColor.label": "Bakgrunn",

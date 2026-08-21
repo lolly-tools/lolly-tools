@@ -1,4 +1,4 @@
-/* Battlecards — one card per table row (engine render.paginate).
+/* Battlecards - one card per table row (engine render.paginate).
    The card is the page box: a locked page size the paged canvas/PDF read
    ([data-pdf-page] pages export at their own CSS box), and the ONE query
    container every cq unit + @container rule below resolves against. Layout
@@ -72,7 +72,7 @@
 /* The field panels fill the whole card body: rows are sized by their content,
    then align-content: stretch hands every panel a share of the leftover
    height, so a four-field card reads as a designed 2×2 spread rather than a
-   list floating over whitespace. Cell copy is often a full paragraph — the
+   list floating over whitespace. Cell copy is often a full paragraph - the
    values are body text (comfortable line-height, pre-line so authored line
    breaks survive), not labels. Layout switches on the orientation class, NOT
    a container query: the class is deterministic across every export walker. */
@@ -100,7 +100,7 @@
   /* Let the grid size each panel from its share of the card, NOT from its copy:
      with min-height:0 (and the value below a 0-min-content scroll box) every row's
      base track is just the label, so align-content:stretch hands the panels an
-     even split of the body height — a stable box for the value to be fitted into. */
+     even split of the body height - a stable box for the value to be fitted into. */
   min-height: 0;
 }
 .bc-field-label {
@@ -110,7 +110,7 @@
   text-transform: uppercase;
   color: color-mix(in oklab, var(--bc-accent, #4f46e5) 70%, var(--bc-ink, #111827));
 }
-/* The value is the biggest text-volume slot — a full paragraph of pasted copy.
+/* The value is the biggest text-volume slot - a full paragraph of pasted copy.
    It fills the space the label leaves (flex:1) and clips it (overflow:hidden), so
    its box height is fixed by the panel, not by the copy; the fit-pass script then
    measures the copy's natural height against that box and writes a <1 --fit that
@@ -132,7 +132,7 @@
    headings, lists, emphasis, links and images. Everything here is sized in cqmin
    against the card, like the rest of the layout, so a card scales as one piece at
    any export size. Block margins are collapsed away and re-added as a single gap
-   between siblings — a cell is a small panel, not a document, and a leading or
+   between siblings - a cell is a small panel, not a document, and a leading or
    trailing margin would push the copy off its own baseline. */
 .bc-field-value > * + * { margin-top: 0.9em; }
 .bc-field-value h1,
@@ -151,7 +151,7 @@
 .bc-field-value h4,
 .bc-field-value h5,
 .bc-field-value h6 { font-size: 1em; }
-/* A heading immediately above its own body text belongs to it — tighten that pair. */
+/* A heading immediately above its own body text belongs to it - tighten that pair. */
 .bc-field-value :is(h1, h2, h3, h4, h5, h6) + * { margin-top: 0.35em; }
 
 .bc-field-value ul,
@@ -232,7 +232,7 @@
 
 /* ── On-canvas editing affordances ───────────────────────────────────────────
    Everything below keys off attributes only the web shell's cell editor sets
-   ([contenteditable], [data-pick-armed]) — offscreen/CLI renders never mount it,
+   ([contenteditable], [data-pick-armed]) - offscreen/CLI renders never mount it,
    so these rules are inert in every export path. Outlines, not borders/insets:
    zero layout impact. */
 .bc-card [data-cell][contenteditable] {
@@ -249,7 +249,7 @@
 }
 
 /* An EMPTY armed icon slot: a quiet "+" that only exists while editing is live,
-   revealed on card hover / its own focus. Opacity-only — no flow, no export. */
+   revealed on card hover / its own focus. Opacity-only - no flow, no export. */
 .bc-icon[data-pick-armed] { cursor: pointer; }
 .bc-icon[data-pick-armed]:empty {
   display: flex;

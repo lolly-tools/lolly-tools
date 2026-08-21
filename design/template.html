@@ -11,11 +11,11 @@
 {{!-- Hand-authored frames (plan 93 F1a-part-2): each kind:"frame" box becomes its own
       [data-pdf-page], sized to the frame's own w×h with the frame's bg, and its member
       boxes (box.frame === frame.id) sit at frame-LOCAL coordinates inside it. Scratch
-      boxes (frame === "") render LOOSE on the pasteboard below (F1b-2) — inside
+      boxes (frame === "") render LOOSE on the pasteboard below (F1b-2) - inside
       .lolly-frames but OUTSIDE every [data-pdf-page], so the editor shows them but the
       per-page export excludes them by construction. The export/CLI path already detects
       [data-pdf-page] and sizes each page independently (renderMultiPagePdf), no bridge change.
-      The per-box markup is IDENTICAL to the artboard branch below — only the page wrapping
+      The per-box markup is IDENTICAL to the artboard branch below - only the page wrapping
       and the frame-local left/top override (baked into boxStyle by the hook) are new. --}}
 <div class="lolly-frames"{{{lookup seqAttrs 0}}}>
   {{#each frameGroups}}
@@ -93,7 +93,7 @@
   {{!-- Bound-path layer (plan 96 P5): one artboard-sized <svg> built by the engine via
         host.connectors (hooks.js lineLayerFor), holding every path box with an end attached
         to another box, BEHIND the boxes. A FREE path draws inside its own box instead
-        (pathHtml). Wrapped in a plain <div> so the artboard's first child is not an <svg> —
+        (pathHtml). Wrapped in a plain <div> so the artboard's first child is not an <svg> -
         otherwise the SVG/PDF exporter would treat the whole artboard as one SVG and drop
         the boxes. --}}
   <div class="lolly-conn-wrap">{{{connectorSvg}}}</div>
@@ -108,21 +108,21 @@
   {{!-- ── the text-fit pass ────────────────────────────────────────────────────────
         The one job CSS cannot do: shrink a box's text until it fits the box it was
         drawn in. It needs the LAID-OUT height of the text, and only the DOM knows that
-        — a DOM-free hook can't measure it either. Runs ONLY for boxes that opted in
+        - a DOM-free hook can't measure it either. Runs ONLY for boxes that opted in
         (data-fit="1", set from the `fitText` field); every other box is untouched, so
         grow-to-fit (the editor growing the box to the text) stays the default.
 
         Two properties make this safe in a tool that exports:
           1. SCALE-INVARIANT. The authored size is written as
              `calc(<size>px * var(--fit, 1))` (see hooks.js textCss), so this pass writes
-             exactly ONE unitless number per fit box. A ratio holds at any canvas size —
+             exactly ONE unitless number per fit box. A ratio holds at any canvas size -
              the stage previews small and the export bridge scales the SAME DOM up.
           2. SHRINK-ONLY. --fit starts at 1 and the search only looks below it: the
              authored size is the intent, fit is the safety net when the copy outgrows it.
 
         It re-runs on every paint (the shell re-executes template <script>s after each
         innerHTML rebuild) and again once webfonts land (the first pass may have measured
-        fallback metrics). IIFE + `var` throughout — template scripts share the page's
+        fallback metrics). IIFE + `var` throughout - template scripts share the page's
         global scope and run again on every paint, so a top-level const/let would throw
         "already declared" on the second run and kill the whole script. --}}
   <script>
@@ -133,13 +133,13 @@
     var root = (script && script.closest) ? script.closest('.artboard') : null;
     if (!root) return;
 
-    var MAX_STEPS = 9;      // bisection steps after the guess — ~0.2% of the authored size
+    var MAX_STEPS = 9;      // bisection steps after the guess - ~0.2% of the authored size
     var MIN_FIT = 0.08;     // the floor; below this the copy is hopeless and gets clipped
     function f3(x) { return Math.round(x * 1000) / 1000; }
 
     // A box's measurement, as { have, need } in px. The box (.lolly-box) is fixed at the
     // size the user drew; its .lolly-box-text child is content-sized (a flex item, never
-    // stretched — hooks.js sets align-items to a start/centre/end value, never stretch),
+    // stretched - hooks.js sets align-items to a start/centre/end value, never stretch),
     // so its scroll height is the height the copy WANTS. Width counts too: an unbreakable
     // run can overflow sideways with height to spare, which forces a shrink.
     function measure(box) {
@@ -163,7 +163,7 @@
     }
     function fitOne(box) {
       box.style.removeProperty('--fit');
-      if (fits(box)) return;                // fits as authored — shrink-only, so leave it
+      if (fits(box)) return;                // fits as authored - shrink-only, so leave it
       var lo = MIN_FIT, hi = 1;             // hi is known not to fit; lo is the floor
       var g = guess(box);
       if (g > lo && g < hi) {
@@ -193,7 +193,7 @@
         // capture's wait rather than after the frame is taken.
         document.fonts.ready.then(runAll);
       }
-    } catch (e) { /* no font-loading API — the first pass stands */ }
+    } catch (e) { /* no font-loading API - the first pass stands */ }
   })();
   </script>
 </div>

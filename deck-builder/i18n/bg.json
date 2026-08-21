@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Малък ред в долната част на всеки слайд (авторски права, поверителност), между логото и номера на слайда.",
   "inputs.footerText.placeholder": "© 2026 Вашата компания · Поверително",
   "inputs.deck.fields.layout.options.bignum": "Голямо число",
-  "inputs.deck.fields.layout.options.mainpoint": "Основна идея"
+  "inputs.deck.fields.layout.options.mainpoint": "Основна идея",
+  "inputs.deck.fields.text1.label": "Текст на слот 1",
+  "inputs.deck.fields.text1.help": "Запълва слота с текстова карта, когато няма изображение или инструмент. Ако са зададени и двете, медията печели.",
+  "inputs.deck.fields.text2.label": "Текст на слот 2",
+  "inputs.deck.fields.text2.help": "Запълва слота с текстова карта, когато няма изображение или инструмент. Ако са зададени и двете, медията печели.",
+  "inputs.deck.fields.text3.label": "Текст на слот 3",
+  "inputs.deck.fields.text3.help": "Запълва слота с текстова карта, когато няма изображение или инструмент. Ако са зададени и двете, медията печели.",
+  "inputs.deck.fields.text4.label": "Текст на слот 4",
+  "inputs.deck.fields.text4.help": "Запълва слота с текстова карта, когато няма изображение или инструмент. Ако са зададени и двете, медията печели."
 }

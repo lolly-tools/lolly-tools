@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "3 بار چلائیں",
   "inputs.loop.options.once": "ایک بار چلائیں",
   "inputs.scenes.label": "مناظر",
-  "inputs.scenes.help": "ہر منظر ترتیب کا ایک حصہ ہے — یہ پچھلے منظر کے اوپر متحرک ہو کر آتا ہے، اپنی الگ Lottie اینیمیشن اوپر لوپ ہوتی رہتی ہے۔ آخری منظر آرام دہ اینڈ کارڈ ہے۔",
+  "inputs.scenes.help": "ہر منظر ترتیب کا ایک حصہ ہے - یہ پچھلے منظر کے اوپر متحرک ہو کر آتا ہے، اپنی الگ Lottie اینیمیشن اوپر لوپ ہوتی رہتی ہے۔ آخری منظر آرام دہ اینڈ کارڈ ہے۔",
   "inputs.scenes.addMenu.label": "منظر شامل کریں",
   "inputs.scenes.fields.anim.label": "اینیمیشن",
   "inputs.scenes.fields.bgColor.label": "پس منظر",

@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MPL-2.0
-// `3d` tool hooks — pure, DOM-free (sandboxed: no window/document/fetch).
+// `3d` tool hooks - pure, DOM-free (sandboxed: no window/document/fetch).
 // Fold the input model into one config object and hand it to the template as the
 // `_state` extra (underscore prefix keeps annotateTemplate from touching it, so it
 // stays valid JSON inside <script type="application/json">). The template's WebGL

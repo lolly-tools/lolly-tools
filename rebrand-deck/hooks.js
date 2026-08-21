@@ -1,9 +1,9 @@
 /* global onInit, onInput, exportFile */
 /**
- * Rebrand a Deck — hooks.
+ * Rebrand a Deck - hooks.
  *
  * A transform utility (deck in → re-themed deck out). The OOXML surgery lives
- * in the shell behind `host.pptx` (the engine's pptx primitives) — the hook
+ * in the shell behind `host.pptx` (the engine's pptx primitives) - the hook
  * sandbox has no zip/XML library and no `import`, so it just orchestrates: ask
  * the host to inspect the picked deck (slide count, read theme, the literal
  * colours and typefaces on slides), seed the editable colour/font mapping rows
@@ -13,7 +13,7 @@
  * The same inspect job backs both the live review card (onInit/onInput) and
  * the download's theme plan (exportFile): a one-entry promise cache keyed on
  * file identity means the read runs once. The review is bounded by a short
- * inner budget so a huge deck can't trip the runtime's 2s onInput timeout —
+ * inner budget so a huge deck can't trip the runtime's 2s onInput timeout -
  * if it doesn't finish in time the card shows "reading…" and the job stays
  * cached for the next pass and the download.
  *
@@ -27,7 +27,7 @@
 // and the download share a single read instead of parsing the deck twice.
 var _job = { key: '', promise: null };
 // The file key whose inspect result last seeded the mapping rows. Rows for a
-// seeded key belong to the user — they are never patched again (see compute).
+// seeded key belong to the user - they are never patched again (see compute).
 var _seededKey = null;
 // How long the live review waits for the inspect before falling back to
 // "reading…" (kept well under the runtime's 2s onInput timeout).
@@ -41,15 +41,15 @@ function inputsFrom(model) {
   return o;
 }
 
-// "PK\x03\x04" zip magic — a .pptx is a zip package. The manifest `accept` is a
+// "PK\x03\x04" zip magic - a .pptx is a zip package. The manifest `accept` is a
 // UX hint only, so the bytes are validated here.
 function isPptx(bytes) {
   return Boolean(bytes && bytes.length > 3 &&
     bytes[0] === 0x50 && bytes[1] === 0x4B && bytes[2] === 0x03 && bytes[3] === 0x04);
 }
 
-// "%PDF" magic. A PDF is the single most likely wrong pick here — it's what a
-// deck gets exported AS — and it earns its own message, because "not a deck"
+// "%PDF" magic. A PDF is the single most likely wrong pick here - it's what a
+// deck gets exported AS - and it earns its own message, because "not a deck"
 // doesn't explain why a PDF can never be rebranded: the export flattened the
 // colours and typefaces into page content, and re-saving it would not change a
 // pixel. Same for the deck-shaped case below.
@@ -77,7 +77,7 @@ function jobKey(file) {
   return (file.url || '') + '|' + file.name + '|' + file.size;
 }
 
-// Brand swatches for the inspect's nearest-colour suggestions — the active
+// Brand swatches for the inspect's nearest-colour suggestions - the active
 // brand's colour tokens, when the shell provides them. No tokens → empty, and
 // the inspect still reports what the deck carries (just without suggestions).
 async function brandSwatches(host) {
@@ -93,7 +93,7 @@ async function brandSwatches(host) {
 }
 
 // The brand's font slots live at the `font.<slot>` token paths (DTCG
-// fontFamily — a family string or a stack array; the first plain family wins).
+// fontFamily - a family string or a stack array; the first plain family wins).
 // Nothing resolvable → undefined, so the inspect offers no font suggestions.
 var FONT_SLOTS = ['brand', 'serif', 'mono'];
 
@@ -119,7 +119,7 @@ async function brandFonts(host) {
 
 // Return the shared inspect promise for this file key, starting it if needed.
 // A failed job is dropped so a later attempt re-runs rather than reusing the
-// rejection (inspect itself never throws — this guards the token reads).
+// rejection (inspect itself never throws - this guards the token reads).
 function jobFor(host, file, key) {
   if (_job.key === key && _job.promise) return _job.promise;
   var p = Promise.resolve().then(async function () {
@@ -147,7 +147,7 @@ function withBudget(promise, ms) {
 }
 
 // The before/after strip pairs the deck's read theme with the brand suggestion
-// — the 12 clrScheme colour slots (fonts ride the mapping list instead).
+// - the 12 clrScheme colour slots (fonts ride the mapping list instead).
 var THEME_SLOTS = ['dk1', 'lt1', 'dk2', 'lt2', 'accent1', 'accent2', 'accent3', 'accent4', 'accent5', 'accent6', 'hlink', 'folHlink'];
 
 function themeRows(res) {
@@ -166,7 +166,7 @@ function plural(n, word) { return n + ' ' + word + (n === 1 ? '' : 's'); }
 // Is anything on the slides actually rebrandable? Returns the sentence to show
 // when the answer is no, or '' when the deck has live content to work on.
 //
-// `content` (engine 1.79) is the direct signal — a node-kind tally per deck. An
+// `content` (engine 1.79) is the direct signal - a node-kind tally per deck. An
 // older shell omits it, so there is a fallback: no literal colour anywhere AND
 // no typeface beyond the two the theme itself declares means the slides carry
 // nothing a colour/font map could reach. The fallback is deliberately weaker
@@ -177,14 +177,14 @@ function flattenedNote(res) {
   if (c) {
     var live = (c.texts || 0) + (c.shapes || 0) + (c.tables || 0) + (c.unknown || 0);
     if ((c.pictures || 0) > 0 && live === 0) {
-      return 'Every slide in this deck is a flat picture — there is no live text, ' +
+      return 'Every slide in this deck is a flat picture - there is no live text, ' +
         'shape or table on them. Rebranding cannot change a pixel of it: colours ' +
         'and typefaces baked into an image are part of the image. This is what a ' +
         'deck exported to PDF, or rebuilt from page images, looks like. Go back to ' +
         'the editable original and rebrand that.';
     }
     if (live === 0 && (c.pictures || 0) === 0) {
-      return 'These slides are empty — there is nothing on them to rebrand. Only the ' +
+      return 'These slides are empty - there is nothing on them to rebrand. Only the ' +
         'deck\'s theme would be rewritten, and the download would look identical.';
     }
     return '';
@@ -199,7 +199,7 @@ function flattenedNote(res) {
   res.fonts.forEach(function (f) { if (!themeFaces[String(f.family).toLowerCase()]) slideFonts++; });
   if (res.colors.length === 0 && slideFonts === 0) {
     return 'No hardcoded colour or typeface was found on these slides. If they are flat ' +
-      'pictures — a deck exported to PDF, or rebuilt from page images — the download ' +
+      'pictures - a deck exported to PDF, or rebuilt from page images - the download ' +
       'will look identical to what you uploaded, because colours baked into an image ' +
       'cannot be swapped. If the deck is theme-linked instead, the brand theme below ' +
       'still does the whole job.';
@@ -212,7 +212,7 @@ async function compute(ctx) {
   var host = ctx.host;
   var f = inputs.source;
 
-  // Display-only extras — `useTheme`/`dropFonts` reflect from the input values
+  // Display-only extras - `useTheme`/`dropFonts` reflect from the input values
   // directly (a hook key matching an input id writes back to the model). The
   // two mapping inputs are the deliberate exception: compute patches them by
   // id exactly once per file (the seed below), never after.
@@ -253,7 +253,7 @@ async function compute(ctx) {
 
   // Known limitation (consistent with compress-pdf): a job that finishes just
   // after the budget stays "pending" until the next input event re-runs
-  // compute — a hook can't push a late patch into the model.
+  // compute - a hook can't push a late patch into the model.
   if (!res) { base.pending = true; return base; }
   if (!res.ok) {
     // zip magic, but not a readable deck (a .docx, a renamed zip, a corrupt file)
@@ -271,12 +271,12 @@ async function compute(ctx) {
     plural(base.colorCount, 'hardcoded colour') + ' · ' +
     plural(base.fontCount, 'typeface');
   base.reviewText = base.reviewCount > 0
-    ? plural(base.reviewCount, 'colour') + ' worth a look — the nearest brand match is a perceptual stretch.'
+    ? plural(base.reviewCount, 'colour') + ' worth a look - the nearest brand match is a perceptual stretch.'
     : '';
   base.themeRows = themeRows(res);
   base.hasTheme = base.themeRows.length > 0;
 
-  // A deck the rebrand cannot visibly touch — slides that are nothing but
+  // A deck the rebrand cannot visibly touch - slides that are nothing but
   // pictures (a PDF or exported images dropped onto blank slides). The theme
   // swap still rewrites the theme part, but no slide references it and there is
   // no live text or shape fill to remap, so the download would come back
@@ -284,7 +284,7 @@ async function compute(ctx) {
   var flat = flattenedNote(res);
   if (flat) { base.flattened = true; base.flattenedText = flat; }
 
-  // Seed the editable mapping rows from the FIRST result for this file — and
+  // Seed the editable mapping rows from the FIRST result for this file - and
   // only then. A key already seeded means the rows are the user's (edits,
   // removals); re-patching them here would wipe that work on every input. A
   // fresh mount that restored rows for this same file (a saved session) is
@@ -310,8 +310,8 @@ async function compute(ctx) {
 function onInit(ctx) { return compute(ctx); }
 function onInput(ctx) { return compute(ctx); }
 
-// Mapping rows → the plan's plain from→to record. Identity rows — seeded
-// suggestions the user left pointing at the same value — are dropped, so a
+// Mapping rows → the plan's plain from→to record. Identity rows - seeded
+// suggestions the user left pointing at the same value - are dropped, so a
 // no-op row never churns slide parts. Null when nothing maps.
 function mapOf(rows) {
   if (!Array.isArray(rows)) return null;

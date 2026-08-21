@@ -3,7 +3,7 @@
   "description": "Des cartes vectorielles épurées des rues de n'importe quelle ville. Fonctionne hors ligne.",
   "a11yLabel": "Carte des rues centrée sur {{city}}",
   "inputs.city.label": "Ville",
-  "inputs.city.help": "Ajoute d'autres villes hors ligne avec scripts/build-street-clips.ts — aucune API au moment du rendu.",
+  "inputs.city.help": "Ajoute d'autres villes hors ligne avec scripts/build-street-clips.ts - aucune API au moment du rendu.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Athènes",
   "inputs.city.options.bangkok": "Bangkok",

@@ -3,7 +3,7 @@
   "description": "Czyste, wektorowe mapy siatki ulic dla każdego miasta. Działa offline.",
   "a11yLabel": "Mapa ulic wyśrodkowana na {{city}}",
   "inputs.city.label": "Miasto",
-  "inputs.city.help": "Dodawaj kolejne miasta offline za pomocą scripts/build-street-clips.ts — bez API w czasie renderowania.",
+  "inputs.city.help": "Dodawaj kolejne miasta offline za pomocą scripts/build-street-clips.ts - bez API w czasie renderowania.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Atenee",
   "inputs.city.options.bangkok": "Bangkok",

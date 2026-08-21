@@ -5,7 +5,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6"/><path d="M9 17h3"/></svg>
       </div>
       <h2>Compress a PDF</h2>
-      <p>Drag a PDF anywhere onto this area, or choose one below. We recompress its images — bulky photos and scans — and hand back a smaller file.</p>
+      <p>Drag a PDF anywhere onto this area, or choose one below. We recompress its images - bulky photos and scans - and hand back a smaller file.</p>
       <button type="button" class="cmp-pick" data-file-pick>Choose a PDF…</button>
       <p class="cmp-empty-note">Everything happens in your browser. Your file is never uploaded.</p>
     </div>
@@ -66,19 +66,19 @@
 
         {{#if noGain}}
           <div class="cmp-result">
-            <span class="cmp-result-saved">Already well-optimised — little to gain at this level.</span>
+            <span class="cmp-result-saved">Already well-optimised - little to gain at this level.</span>
           </div>
           <p class="cmp-note">Try <strong>Strong</strong> or grayscale, or this PDF may simply be mostly text (which is already small).</p>
         {{/if}}
 
         {{#if pending}}
           <div class="cmp-result">
-            <span class="cmp-result-saved">Ready — your compressed PDF is built when you download.</span>
+            <span class="cmp-result-saved">Ready - your compressed PDF is built when you download.</span>
           </div>
         {{/if}}
 
         <button type="button" class="cmp-download" data-export-file data-busy-label="Compressing…">Download compressed PDF</button>
-        <p class="cmp-note cmp-tail">Re-saving rewrites the document (pages preserved), so the result isn't byte-for-byte and any digital signature is invalidated. Text and vector graphics are untouched — only images are recompressed.</p>
+        <p class="cmp-note cmp-tail">Re-saving rewrites the document (pages preserved), so the result isn't byte-for-byte and any digital signature is invalidated. Text and vector graphics are untouched - only images are recompressed.</p>
       {{/if}}
     </div>
   {{/if}}

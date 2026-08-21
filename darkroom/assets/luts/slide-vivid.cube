@@ -1,7 +1,7 @@
 TITLE "Vivid slide"
 # Preset LUT for Lolly Bitmap Studio.
 # Derived from sguyader/FilmSim "Velvia_Vivid_v2" (CC0 1.0, https://github.com/sguyader/FilmSim),
-# resampled from the 144³ HaldCLUT to a 33³ .cube. Public domain — see NOTICE.md.
+# resampled from the 144³ HaldCLUT to a 33³ .cube. Public domain - see NOTICE.md.
 LUT_3D_SIZE 33
 DOMAIN_MIN 0.0 0.0 0.0
 DOMAIN_MAX 1.0 1.0 1.0

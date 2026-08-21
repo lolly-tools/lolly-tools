@@ -3,7 +3,7 @@
   "description": "Чисти векторни карти на уличните блокове на всеки град. Работи офлайн.",
   "a11yLabel": "Улична карта, центрирана върху {{city}}",
   "inputs.city.label": "Град",
-  "inputs.city.help": "Добавяй още градове офлайн със scripts/build-street-clips.ts — без API при рендиране.",
+  "inputs.city.help": "Добавяй още градове офлайн със scripts/build-street-clips.ts - без API при рендиране.",
   "inputs.city.options.amsterdam": "Амстердам",
   "inputs.city.options.athens": "Атина",
   "inputs.city.options.bangkok": "Банкок",

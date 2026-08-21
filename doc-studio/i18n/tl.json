@@ -1,7 +1,7 @@
 {
   "name": "Doc Studio",
   "description": "Sumulat ng multi-page na dokumento sa canvas - rich text, headings, tables at mga isinamang Lolly render na dumadaloy sa mga pahina at nag-e-export bilang PDF.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — multi-page na dokumento",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - multi-page na dokumento",
   "inputs.pageSize.label": "Sukat ng pahina",
   "inputs.pageSize.help": "Nagtatakda ng sukat ng bawat pahina at ng sukat ng pahina ng na-export na PDF.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 na column",
   "inputs.columns.options.3": "3 na column",
   "inputs.content.label": "Dokumento",
-  "inputs.content.help": "Ang dokumento mismo — naka-imbak bilang portable na rich-text (ProseMirror) JSON. Isinusulat sa canvas gamit ang Doc Studio editor; ino-render ng engine ang JSON na ito tungo sa mga pahina para sa pag-export. Kapag walang laman, babalik ito sa isang starter na dokumento.",
+  "inputs.content.help": "Ang dokumento mismo - naka-imbak bilang portable na rich-text (ProseMirror) JSON. Isinusulat sa canvas gamit ang Doc Studio editor; ino-render ng engine ang JSON na ito tungo sa mga pahina para sa pag-export. Kapag walang laman, babalik ito sa isang starter na dokumento.",
   "inputs.width.label": "Lapad ng pahina",
   "inputs.height.label": "Taas ng pahina"
 }

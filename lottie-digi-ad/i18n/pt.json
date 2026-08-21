@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Reproduzir 3 vezes",
   "inputs.loop.options.once": "Reproduzir uma vez",
   "inputs.scenes.label": "Cenas",
-  "inputs.scenes.help": "Cada cena é um segmento da sequência — ela anima sobre a cena anterior, com sua própria animação Lottie em loop por cima. A última cena é o card final, que fica parado.",
+  "inputs.scenes.help": "Cada cena é um segmento da sequência - ela anima sobre a cena anterior, com sua própria animação Lottie em loop por cima. A última cena é o card final, que fica parado.",
   "inputs.scenes.addMenu.label": "Adicionar cena",
   "inputs.scenes.fields.anim.label": "Animação",
   "inputs.scenes.fields.bgColor.label": "Fundo",

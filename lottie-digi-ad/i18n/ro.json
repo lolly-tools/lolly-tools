@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Redă de 3 ori",
   "inputs.loop.options.once": "Redă o singură dată",
   "inputs.scenes.label": "Scene",
-  "inputs.scenes.help": "Fiecare scenă este un segment din succesiune — se animă peste cea anterioară, cu propria animație Lottie care rulează în buclă deasupra. Ultima scenă este cardul final, static.",
+  "inputs.scenes.help": "Fiecare scenă este un segment din succesiune - se animă peste cea anterioară, cu propria animație Lottie care rulează în buclă deasupra. Ultima scenă este cardul final, static.",
   "inputs.scenes.addMenu.label": "Adaugă scenă",
   "inputs.scenes.fields.anim.label": "Animație",
   "inputs.scenes.fields.bgColor.label": "Fundal",

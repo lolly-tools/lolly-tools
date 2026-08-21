@@ -7,9 +7,9 @@
   "inputs.scrollDepth.label": "Profondeur de défilement",
   "inputs.scrollDepth.help": "Jusqu'où descendre dans la page avant la capture. 0 = haut, 1 = bas.",
   "inputs.waitMs.label": "Délai de stabilisation (ms)",
-  "inputs.waitMs.help": "Temps d'attente après le chargement (et après le défilement) avant la capture — le temps que les polices, images et animations se stabilisent.",
+  "inputs.waitMs.help": "Temps d'attente après le chargement (et après le défilement) avant la capture - le temps que les polices, images et animations se stabilisent.",
   "inputs.css.label": "CSS personnalisé",
-  "inputs.css.help": "CSS injecté dans la page avant la capture d'écran — par exemple pour masquer une bannière de cookies (.cookie-bar { display: none }) ou modifier le style d'éléments.",
+  "inputs.css.help": "CSS injecté dans la page avant la capture d'écran - par exemple pour masquer une bannière de cookies (.cookie-bar { display: none }) ou modifier le style d'éléments.",
   "inputs.cropTop.label": "Rogner en haut",
   "inputs.cropTop.help": "Réduit depuis le bord supérieur, sous forme de fraction de la hauteur entre 0 et 0,9. Uniquement pour les formats matriciels (png/jpg/svg).",
   "inputs.cropRight.label": "Rogner à droite",
@@ -31,7 +31,7 @@
   "inputs.tintColor.label": "Couleur de teinte",
   "inputs.tintColor.help": "La couleur dans laquelle la page est teintée quand Recolorer est sur « Teinter ».",
   "inputs.scrollTo.label": "Défiler jusqu'à (vidéo)",
-  "inputs.scrollTo.help": "Export vidéo uniquement : effectue un panoramique VERS LE BAS jusqu'à cette profondeur pendant le clip — un défilement de la page de « Profondeur de défilement » jusqu'ici. Mets la même valeur que « Profondeur de défilement » pour une image fixe. Ignoré pour les formats image.",
-  "inputs.zoom.help": "Niveau de zoom du navigateur — agrandit la page avant la capture (comme Ctrl/Cmd +), afin que même une capture bitmap soit agrandie et nette plutôt que suréchantillonnée. 1 = 100 %.",
+  "inputs.scrollTo.help": "Export vidéo uniquement : effectue un panoramique VERS LE BAS jusqu'à cette profondeur pendant le clip - un défilement de la page de « Profondeur de défilement » jusqu'ici. Mets la même valeur que « Profondeur de défilement » pour une image fixe. Ignoré pour les formats image.",
+  "inputs.zoom.help": "Niveau de zoom du navigateur - agrandit la page avant la capture (comme Ctrl/Cmd +), afin que même une capture bitmap soit agrandie et nette plutôt que suréchantillonnée. 1 = 100 %.",
   "inputs.zoom.label": "Zoom"
 }

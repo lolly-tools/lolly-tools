@@ -5,7 +5,7 @@
   "inputs.model.label": "Modelo",
   "inputs.model.section": "Modelo",
   "inputs.model.help": "Un modelo de muestra incluido. Sube el tuyo abajo para sustituirlo.",
-  "inputs.model.options.sample-1": "Muestra 1 — animada",
+  "inputs.model.options.sample-1": "Muestra 1 - animada",
   "inputs.model.options.sample-2": "Muestra 2",
   "inputs.model.options.sample-3": "Muestra 3",
   "inputs.modelUpload.label": "Subir un modelo",

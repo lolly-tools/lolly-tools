@@ -1,7 +1,7 @@
 {
   "name": "Wielostronicowy PDF",
   "description": "Zbuduj wielostronicowy PDF - okładkę, płynące bloki treści i tylną stronę.",
-  "a11yLabel": "{{default coverTitle \"Untitled\"}} — dokument PDF wielostronicowy",
+  "a11yLabel": "{{default coverTitle \"Untitled\"}} - dokument PDF wielostronicowy",
   "featured.blurb": "Wielostronicowe PDF-y - okładka, treść, tył",
   "inputs.pageSize.label": "Rozmiar strony",
   "inputs.pageSize.help": "Ustawia rozmiar każdej strony oraz rozmiar strony eksportowanego PDF-a. Każda strona dokumentu renderuje się w tym dokładnym rozmiarze.",
@@ -52,7 +52,7 @@
   "inputs.content.fields.heading.label": "Nagłówek",
   "inputs.content.fields.heading.placeholder": "Nagłówek (opcjonalnie)",
   "inputs.content.fields.body.label": "Treść",
-  "inputs.content.fields.body.placeholder": "Treść — obsługuje nagłówki #, **pogrubienie**, *kursywę*, punktory - i listy numerowane 1.",
+  "inputs.content.fields.body.placeholder": "Treść - obsługuje nagłówki #, **pogrubienie**, *kursywę*, punktory - i listy numerowane 1.",
   "inputs.content.fields.image.label": "Obraz",
   "inputs.content.fields.caption.label": "Podpis",
   "inputs.content.fields.caption.placeholder": "Podpis (opcjonalnie)",

@@ -3,7 +3,7 @@
   "description": "Render elk catalogusbestand - of een Lolly-toollink - naar elk formaat en elke afmeting.",
   "a11yLabel": "Geëxporteerd asset",
   "inputs.src.label": "Asset",
-  "inputs.src.help": "Het asset dat gerenderd wordt — een catalogus-id (zie `lolly assets`) of een geplakte lolly.tools-toollink. Vectorassets blijven vector in SVG/PDF; rasterassets worden ingesloten als afbeelding.",
+  "inputs.src.help": "Het asset dat gerenderd wordt - een catalogus-id (zie `lolly assets`) of een geplakte lolly.tools-toollink. Vectorassets blijven vector in SVG/PDF; rasterassets worden ingesloten als afbeelding.",
   "inputs.fit.label": "Passend maken",
   "inputs.fit.help": "Contain toont het hele asset binnen het kader; Cover vult het kader en kan de randen bijsnijden.",
   "inputs.fit.options.contain": "Contain (hele asset, met balken)",

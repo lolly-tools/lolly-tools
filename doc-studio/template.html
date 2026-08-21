@@ -32,7 +32,7 @@
      background/border draws wrong in the vector export (getBoundingClientRect unions the
      two fragment boxes into one that spans the gutter). break-inside:avoid is only
      advisory (dropped when the block is taller than a column), so instead make these span
-     ALL columns — a spanning box is a single, unfragmentable box. Tables, code, quotes,
+     ALL columns - a spanning box is a single, unfragmentable box. Tables, code, quotes,
      rules and the top two heading levels (which carry an accent underline) span; short
      h3/h4 just avoid an ugly mid-heading split. Paragraphs, lists and images have no fill
      to mis-draw, so they flow within the columns (image is atomic → moves whole). */
@@ -73,7 +73,7 @@
   .doc-fig { margin: .5em 0; }
   .doc-fig img { max-width: 100%; height: auto; display: block; border-radius: 4px; }
 
-  /* Table — a CSS grid of bordered cells (grid draws vector-cleanly, unlike <table>).
+  /* Table - a CSS grid of bordered cells (grid draws vector-cleanly, unlike <table>).
      Border style (grid/rows/none) and cell padding (tight/normal/roomy) are per-table
      presets; a per-cell fill is an inline background (set from the editor's cell selection). */
   .doc-table { display: grid; width: 100%; border: 1px solid var(--table-line); margin: .5em 0; }
@@ -83,7 +83,7 @@
     overflow-wrap: break-word;
   }
   .doc-cell-head { font-weight: 700; background: var(--head-bg); }
-  /* Border presets — cells always draw top+left; the table draws the outer edge. */
+  /* Border presets - cells always draw top+left; the table draws the outer edge. */
   .doc-tb-rows { border-left: none; border-right: none; }
   .doc-tb-rows > .doc-cell { border-left: none; }
   .doc-tb-none { border: none; }

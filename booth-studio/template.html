@@ -6,13 +6,13 @@
        and clicks it: the shell's delegated [data-canvas-input] handler then opens
        its own asset picker for that input id and commits the pick. No shell
        changes, and the picker stays byte-for-byte the sidebar's. Kept out of the
-       layout (not display:none — a click must still bubble). -->
+       layout (not display:none - a click must still bubble). -->
   <span class="booth-proxy" id="booth-proxy" aria-hidden="true"></span>
 </div>
 <script type="application/json" id="booth-state">{{{_state}}}</script>
 <script>
 (function () {
-  /* Idempotent per-paint IIFE — the template re-runs on EVERY paint (see the
+  /* Idempotent per-paint IIFE - the template re-runs on EVERY paint (see the
      'Template script IIFE required' invariant). An epoch guard drops stale async
      callbacks from a prior paint; the previous renderer is disposed so we never
      leak WebGL contexts (browsers cap ~16). Mirrors tools/3d/template.html. */
@@ -50,7 +50,7 @@
   }
 
   /* Shared with the `3d` tool: both live in this pack, so the profile view always
-     mounts them together, and a tool id is a permanent contract — so this URL is
+     mounts them together, and a tool id is a permanent contract - so this URL is
      stable. Deliberate: a second copy would be ~780 KB of duplicate three.js to
      keep version-synced. If `3d` ever leaves this pack, vendor a copy here. */
   var LIB = '/tools/3d/lib/three.min.js';
@@ -108,7 +108,7 @@
       ],
     },
     // The tower sits front-LEFT on purpose. The default camera views from +x/+z,
-    // so anything parked front-right eclipses the whole stand — which is exactly
+    // so anything parked front-right eclipses the whole stand - which is exactly
     // what the first pass did.
     island: {
       panels: [
@@ -116,7 +116,7 @@
         { role: 'leftWing',  w: 2.5, h: 2.6,  t: 0.06, pos: [-2.0, 1.3, -0.55], rot: [0, 90, 0] },
         // Faces OUTWARD (+x), unlike the left wing. Panels are single-sided, so an
         // inward-facing right wing shows the default camera nothing but its
-        // unprinted back — a black slab across a third of the frame. Outward-facing
+        // unprinted back - a black slab across a third of the frame. Outward-facing
         // is also what an island stand actually does with its street-side fin.
         { role: 'rightWing', w: 2.2, h: 2.6,  t: 0.06, pos: [2.0, 1.3, -0.65], rot: [0, 90, 0] },
         { role: 'header',    w: 4.3, h: 0.55, t: 0.1,  pos: [0, 3.05, -0.7] },
@@ -152,7 +152,7 @@
     },
   };
 
-  // Human-readable panel names — used for the empty-panel placeholder art. Kept
+  // Human-readable panel names - used for the empty-panel placeholder art. Kept
   // in step with the input labels in tool.json.
   var ROLE_LABEL = {
     backWall: 'Back wall', leftWing: 'Left wing', rightWing: 'Right wing',
@@ -199,7 +199,7 @@
   // Background video. Cached on `window` like the images, and for a stronger
   // reason: the template re-runs on EVERY paint, so a per-paint <video> would
   // restart playback on every slider nudge. The element is deliberately detached
-  // (never in the DOM) — it exists only as a frame source to draw from.
+  // (never in the DOM) - it exists only as a frame source to draw from.
   var vidCache = window.__lollyBoothVids = window.__lollyBoothVids || {};
   function loadVideo(url) {
     if (vidCache[url]) return vidCache[url];
@@ -269,12 +269,12 @@
 
   // An unset panel. Deliberately reads as an empty slot rather than an
   // affordance ("click to add"), because this art is captured verbatim by every
-  // export — a hint would ship inside the sponsor's PNG. Discoverability comes
+  // export - a hint would ship inside the sponsor's PNG. Discoverability comes
   // from the hover highlight and the sidebar's Panels list instead.
   function drawPlaceholder(ctx, s, p) {
     // Just a quiet name on the flat brand colour. An earlier pass drew a dashed
     // border here and the whole stand read as an unbuilt wireframe rather than an
-    // undressed booth — and that art is what a sponsor sees in any export where a
+    // undressed booth - and that art is what a sponsor sees in any export where a
     // panel was left empty. The click affordance lives in the hover highlight.
     var label = (ROLE_LABEL[p.role] || p.role).toUpperCase();
     var size = Math.max(10, Math.min(s.w, s.h) * 0.055);
@@ -294,12 +294,12 @@
 
   // The backdrop, composited on a 2D canvas: colour/gradient base, then the
   // background content blurred + blended over it. Doing it in 2D (rather than as
-  // a textured quad in the scene) is what makes blend modes and a real blur free —
+  // a textured quad in the scene) is what makes blend modes and a real blur free -
   // globalCompositeOperation and ctx.filter do both natively, and the result maps
   // 1:1 onto scene.background because it's authored at the render aspect.
   //
   // BG_W is well under the render width on purpose: this is a backdrop, usually
-  // blurred, and it is re-composited EVERY FRAME when the source is a video —
+  // blurred, and it is re-composited EVERY FRAME when the source is a video -
   // so full-resolution blur per frame would be paid for nothing visible.
   var BG_W = 1280;
   function backgroundCanvas(cfg, media, aspect) {
@@ -318,11 +318,11 @@
 
     if (media && cfg.bgOpacity > 0) {
       // Blur is authored against the 1600-wide render, so scale it to this canvas
-      // — otherwise the slider would mean different amounts at different BG_W.
+      // - otherwise the slider would mean different amounts at different BG_W.
       var blur = cfg.bgBlur * (w / 1600);
       // Overscan by the blur radius. A blur samples beyond the source edges, so an
       // image drawn exactly to the canvas edge fades to transparent at the border
-      // and the base colour shows through as a bright halo — very visible under a
+      // and the base colour shows through as a bright halo - very visible under a
       // blend mode. Growing the draw rect pushes that fade off-canvas.
       var over = blur * 3;
       ctx.save();
@@ -336,19 +336,19 @@
   }
 
   // Fit `media` into a w×h box (grown by `over` on every side), cover or contain,
-  // anchored by pos {x,y} in percent — the same idea as CSS object-fit +
+  // anchored by pos {x,y} in percent - the same idea as CSS object-fit +
   // object-position, which is what the two fit icons in the sidebar promise.
   function drawMedia(ctx, media, w, h, fit, pos, over) {
     var s = mediaSize(media);
     var tw = w + over * 2, th = h + over * 2;
     var k = fit === 'contain' ? Math.min(tw / s.w, th / s.h) : Math.max(tw / s.w, th / s.h);
     var dw = s.w * k, dh = s.h * k;
-    // For cover, (tw-dw) is negative — the overflow — so x=0 pins the left edge and
+    // For cover, (tw-dw) is negative - the overflow - so x=0 pins the left edge and
     // x=100 the right. For contain it's positive and slides within the letterbox.
     ctx.drawImage(media, -over + (tw - dw) * (pos.x / 100), -over + (th - dh) * (pos.y / 100), dw, dh);
   }
 
-  // A person silhouette, drawn once and billboarded — it sells the scale of the
+  // A person silhouette, drawn once and billboarded - it sells the scale of the
   // stand (is this a 3×3 or a 6×6?) without the weight of a rigged human model.
   function personTexture(THREE) {
     var c = document.createElement('canvas'); c.width = 128; c.height = 320;
@@ -377,7 +377,7 @@
 
     // Declared up front: the async panel-texture callbacks below close over
     // `disposed`, and addPeople() populates `people` before the render loop is
-    // set up — `var` hoisting would otherwise make these undefined at use.
+    // set up - `var` hoisting would otherwise make these undefined at use.
     var raf = 0, disposed = false, hovered = null, people = [];
     // Backdrop state. bgVideo is set only for a moving background, and is the flag
     // the render loop uses to decide whether to re-composite per frame.
@@ -407,7 +407,7 @@
     applyScene(THREE, scene, renderer);
 
     // The backdrop. Installed synchronously with whatever we have (colour/gradient
-    // only), then upgraded once the content decodes — so the stand is never held
+    // only), then upgraded once the content decodes - so the stand is never held
     // behind a background download, and a failed one degrades to the plain sweep
     // rather than to nothing.
     function paintBackdrop(media) {
@@ -460,7 +460,7 @@
       panelMeshes.push(mesh);
 
       var slot = cfg.panels[p.role];
-      // Placeholder immediately, artwork when it decodes — so the booth is never
+      // Placeholder immediately, artwork when it decodes - so the booth is never
       // blank while images are in flight, and a failed image degrades to the
       // labelled empty panel rather than a hole.
       art.map = texFromCanvas(THREE, panelCanvas(p, null, cfg));
@@ -504,13 +504,13 @@
     // Framing. Fitting the largest dimension against the vertical FOV (what the
     // `3d` tool does, for a roughly cubic model on a square canvas) wastes most of
     // a 16:10 frame on a wide flat stand. Measuring half-extents from the bbox
-    // CENTRE is also wrong — the near corners are up to `radius` closer to the
+    // CENTRE is also wrong - the near corners are up to `radius` closer to the
     // camera and project bigger, which silently overflows the frame.
     //
     // So solve it exactly: for each bbox corner, find the smallest camera distance
     // that still lands it inside both FOVs, and take the largest answer. A corner
     // at offset v needs |v·right| <= (d + v·fwd)·tan(hFov/2), i.e.
-    // d >= |v·right|/tan(hFov/2) - v·fwd — and the same against the vertical.
+    // d >= |v·right|/tan(hFov/2) - v·fwd - and the same against the vertical.
     var vFov = d2r(cfg.camera.fov);
     var hFov = 2 * Math.atan(Math.tan(vFov / 2) * (W / H));
     var tH = Math.tan(hFov / 2), tV = Math.tan(vFov / 2);
@@ -538,7 +538,7 @@
       return need;
     }
     // A move that swings the camera has to stay framed at EVERY angle it passes
-    // through, not just the base pose — otherwise a turntable clips its own edges
+    // through, not just the base pose - otherwise a turntable clips its own edges
     // mid-orbit. A static shot fits its one pose, which frames it tightest.
     var swings = cfg.cameraMove === 'orbit' || cfg.cameraMove === 'arc' || cfg.cameraMove === 'reveal';
     var need = 0;
@@ -598,7 +598,7 @@
       return { azi: azi, elev: elev, zoom: Math.max(0.1, zoom), pan: pan, fov: fov };
     }
 
-    // Re-draw a moving backdrop into the SAME canvas the texture already wraps —
+    // Re-draw a moving backdrop into the SAME canvas the texture already wraps -
     // needsUpdate re-uploads it, so a video costs one texture, not one per frame.
     function refreshBackdrop() {
       if (!bgVideo || !bgCanvas || !bgTex || cfg.transparentBg) return;
@@ -658,7 +658,7 @@
       var mat = new THREE.MeshBasicMaterial({ map: tex, transparent: true, alphaTest: 0.5, depthWrite: true });
       disp.push(tex, mat);
       // Real adult heights, standing just outside the stand's footprint and a step
-      // in front of it — so they never mask the artwork we are selling, and the
+      // in front of it - so they never mask the artwork we are selling, and the
       // viewer gets an instant read on whether this is a 3×3 or a 6×6.
       // ONE figure, off the -x edge, at the stand's OWN depth.
       //
@@ -668,7 +668,7 @@
       // relative scale (a 1.76 m adult really is most of a 2.4 m totem).
       //
       // Side: the default camera comes in from +x, so a figure off the +x edge
-      // perspective-projects straight over the back wall — i.e. a person-shaped
+      // perspective-projects straight over the back wall - i.e. a person-shaped
       // hole in the sponsor's logo, which is the one thing this render is selling.
       // -x is the side that stays clear. One figure is enough to set the scale.
       var cz = (box.min.z + box.max.z) / 2;
@@ -697,7 +697,7 @@
       // takes the click) and needs no per-frame reprojection.
       var hits = raycaster.intersectObjects(panelMeshes, false);
       for (var i = 0; i < hits.length; i++) {
-        // Only the artwork face is clickable — an edge hit would be a panel the
+        // Only the artwork face is clickable - an edge hit would be a panel the
         // user can't even see the front of.
         if (hits[i].face && hits[i].face.materialIndex === 4) return hits[i].object;
       }
@@ -743,7 +743,7 @@
     // an exact frame at normalized loop time t∈[0,1) → seconds. Stored ON THE
     // CANVAS (per-node) so it can't leak across tool navigation. Makes gif/apng +
     // stills capture a clean, reproducible loop instead of a random wall-clock
-    // frame — and drops the hover highlight, which must never bake into an export.
+    // frame - and drops the hover highlight, which must never bake into an export.
     var resumeAfterDrive = false;
     canvas.__lollyFrameRender = function (t01) {
       if (!alive()) return;
@@ -752,7 +752,7 @@
       renderFrame((t01 || 0) * cfg.duration);
     };
 
-    // One SYNC frame now — a headless/hidden tab may never fire rAF — then hold
+    // One SYNC frame now - a headless/hidden tab may never fire rAF - then hold
     // `tool:ready` until every panel image has decoded, so exports capture the
     // dressed booth rather than a wall of placeholders.
     renderFrame(0);
@@ -772,7 +772,7 @@
         canvas.removeEventListener('pointerleave', onLeave);
         canvas.removeEventListener('click', onClick);
         // The element stays in vidCache (that's what keeps playback continuous
-        // across paints) but MUST stop decoding — otherwise navigating away from
+        // across paints) but MUST stop decoding - otherwise navigating away from
         // the tool leaves a video running for the rest of the session.
         if (bgVideo) { try { bgVideo.pause(); } catch (e) {} bgVideo = null; }
         if (bgTex) { try { bgTex.dispose(); } catch (e) {} bgTex = null; }

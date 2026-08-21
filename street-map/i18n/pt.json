@@ -3,7 +3,7 @@
   "description": "Mapas vetoriais limpos de quarteirões de qualquer cidade. Funciona offline.",
   "a11yLabel": "Mapa de ruas centralizado em {{city}}",
   "inputs.city.label": "Cidade",
-  "inputs.city.help": "Adicione mais cidades offline com scripts/build-street-clips.ts — sem API no momento da renderização.",
+  "inputs.city.help": "Adicione mais cidades offline com scripts/build-street-clips.ts - sem API no momento da renderização.",
   "inputs.city.options.amsterdam": "Amsterdã",
   "inputs.city.options.athens": "Atenas",
   "inputs.city.options.bangkok": "Bangcoc",

@@ -3,7 +3,7 @@
   "description": "Malinis na vector na mapa ng mga kalye ng kahit anong lungsod. Gumagana kahit offline.",
   "a11yLabel": "Mapa ng kalye na nakasentro sa {{city}}",
   "inputs.city.label": "Lungsod",
-  "inputs.city.help": "Magdagdag ng mas maraming lungsod nang offline gamit ang scripts/build-street-clips.ts — walang API kapag nag-render.",
+  "inputs.city.help": "Magdagdag ng mas maraming lungsod nang offline gamit ang scripts/build-street-clips.ts - walang API kapag nag-render.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Athens",
   "inputs.city.options.bangkok": "Bangkok",

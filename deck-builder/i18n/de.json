@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Eine kleine Fußzeile (Copyright, Vertraulichkeit) am unteren Rand jeder Folie, zwischen Logo und Foliennummer.",
   "inputs.footerText.placeholder": "© 2026 Ihr Unternehmen · Vertraulich",
   "inputs.deck.fields.layout.options.bignum": "Große Zahl",
-  "inputs.deck.fields.layout.options.mainpoint": "Kernaussage"
+  "inputs.deck.fields.layout.options.mainpoint": "Kernaussage",
+  "inputs.deck.fields.text1.label": "Text für Feld 1",
+  "inputs.deck.fields.text1.help": "Füllt das Feld mit einer Textkarte, wenn kein Bild oder Tool gesetzt ist. Sind beide gesetzt, gewinnt das Medium.",
+  "inputs.deck.fields.text2.label": "Text für Feld 2",
+  "inputs.deck.fields.text2.help": "Füllt das Feld mit einer Textkarte, wenn kein Bild oder Tool gesetzt ist. Sind beide gesetzt, gewinnt das Medium.",
+  "inputs.deck.fields.text3.label": "Text für Feld 3",
+  "inputs.deck.fields.text3.help": "Füllt das Feld mit einer Textkarte, wenn kein Bild oder Tool gesetzt ist. Sind beide gesetzt, gewinnt das Medium.",
+  "inputs.deck.fields.text4.label": "Text für Feld 4",
+  "inputs.deck.fields.text4.help": "Füllt das Feld mit einer Textkarte, wenn kein Bild oder Tool gesetzt ist. Sind beide gesetzt, gewinnt das Medium."
 }

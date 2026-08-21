@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Una pequeña línea de pie (copyright, confidencialidad) en la parte inferior de cada diapositiva, entre el logotipo y el número de diapositiva.",
   "inputs.footerText.placeholder": "© 2026 Tu empresa · Confidencial",
   "inputs.deck.fields.layout.options.bignum": "Número grande",
-  "inputs.deck.fields.layout.options.mainpoint": "Idea principal"
+  "inputs.deck.fields.layout.options.mainpoint": "Idea principal",
+  "inputs.deck.fields.text1.label": "Texto del hueco 1",
+  "inputs.deck.fields.text1.help": "Rellena el hueco con una tarjeta de texto cuando no hay imagen ni herramienta. Si hay ambos, gana el medio.",
+  "inputs.deck.fields.text2.label": "Texto del hueco 2",
+  "inputs.deck.fields.text2.help": "Rellena el hueco con una tarjeta de texto cuando no hay imagen ni herramienta. Si hay ambos, gana el medio.",
+  "inputs.deck.fields.text3.label": "Texto del hueco 3",
+  "inputs.deck.fields.text3.help": "Rellena el hueco con una tarjeta de texto cuando no hay imagen ni herramienta. Si hay ambos, gana el medio.",
+  "inputs.deck.fields.text4.label": "Texto del hueco 4",
+  "inputs.deck.fields.text4.help": "Rellena el hueco con una tarjeta de texto cuando no hay imagen ni herramienta. Si hay ambos, gana el medio."
 }

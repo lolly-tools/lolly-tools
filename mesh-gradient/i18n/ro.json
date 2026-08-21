@@ -54,11 +54,11 @@
   "inputs.grainBlend.options.luminosity": "Luminozitate (clasică)",
   "inputs.animate.label": "Derivă",
   "inputs.animate.section": "Textură și mișcare",
-  "inputs.animate.help": "Derivă lentă și ciclică a punctelor de culoare — exportă în WebM/MP4 pentru un fundal animat.",
+  "inputs.animate.help": "Derivă lentă și ciclică a punctelor de culoare - exportă în WebM/MP4 pentru un fundal animat.",
   "inputs.distance.label": "Distanța de derivă",
   "inputs.distance.section": "Textură și mișcare",
   "inputs.distance.help": "Cât de departe se îndepărtează punctele de culoare de poziția lor fixă. 100% este dimensiunea implicită a orbitei; 0% le imobilizează pe loc.",
   "inputs.speed.label": "Viteza de derivă",
   "inputs.speed.section": "Textură și mișcare",
-  "inputs.speed.help": "Secunde per buclă de derivă — cu cât valoarea e mai mare, cu atât mișcarea e mai lentă. Exporturile video captează o buclă completă atunci când bugetul de cadre permite (buclele lungi sunt scurtate la 60 fps)."
+  "inputs.speed.help": "Secunde per buclă de derivă - cu cât valoarea e mai mare, cu atât mișcarea e mai lentă. Exporturile video captează o buclă completă atunci când bugetul de cadre permite (buclele lungi sunt scurtate la 60 fps)."
 }

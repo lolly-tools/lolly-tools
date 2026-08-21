@@ -3,7 +3,7 @@
   "description": "Renderize qualquer recurso do catálogo - ou um link de ferramenta Lolly - em qualquer formato e tamanho.",
   "a11yLabel": "Recurso exportado",
   "inputs.src.label": "Recurso",
-  "inputs.src.help": "O recurso a ser renderizado — um ID do catálogo (veja `lolly assets`) ou um link de ferramenta lolly.tools colado. Recursos vetoriais permanecem vetoriais em SVG/PDF; recursos raster são incorporados como imagens.",
+  "inputs.src.help": "O recurso a ser renderizado - um ID do catálogo (veja `lolly assets`) ou um link de ferramenta lolly.tools colado. Recursos vetoriais permanecem vetoriais em SVG/PDF; recursos raster são incorporados como imagens.",
   "inputs.fit.label": "Ajuste",
   "inputs.fit.help": "Conter mostra o recurso inteiro dentro do quadro; Cobrir preenche o quadro e pode cortar as bordas.",
   "inputs.fit.options.contain": "Conter (recurso inteiro, com faixas)",

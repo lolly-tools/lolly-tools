@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Main 3 kali",
   "inputs.loop.options.once": "Main sekali",
   "inputs.scenes.label": "Adegan",
-  "inputs.scenes.help": "Setiap adegan ialah satu segmen urutan — ia beranimasi masuk di atas adegan sebelumnya, dengan animasi Lottie sendiri berulang di atasnya. Adegan terakhir ialah kad penutup yang kekal.",
+  "inputs.scenes.help": "Setiap adegan ialah satu segmen urutan - ia beranimasi masuk di atas adegan sebelumnya, dengan animasi Lottie sendiri berulang di atasnya. Adegan terakhir ialah kad penutup yang kekal.",
   "inputs.scenes.addMenu.label": "Tambah adegan",
   "inputs.scenes.fields.anim.label": "Animasi",
   "inputs.scenes.fields.bgColor.label": "Latar belakang",

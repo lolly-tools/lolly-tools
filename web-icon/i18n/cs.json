@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Tučné",
   "inputs.weight.options.600": "Polotučné",
   "inputs.tracking.label": "Prostrkání",
-  "inputs.tracking.help": "Záporné hodnoty přitáhnou písmena k sobě — nezbytné pro to, aby se 3–4 velká písmena monospace fontu vešla do dlaždice 16 px. Mono je široké písmo, takže hodnotu klidně posuň hodně do záporu.",
+  "inputs.tracking.help": "Záporné hodnoty přitáhnou písmena k sobě - nezbytné pro to, aby se 3–4 velká písmena monospace fontu vešla do dlaždice 16 px. Mono je široké písmo, takže hodnotu klidně posuň hodně do záporu.",
   "inputs.labelScale.label": "Velikost popisku",
   "inputs.labelScale.help": "Uprav automaticky přizpůsobenou velikost popisku nahoru nebo dolů (v procentech).",
   "inputs.showGrid.label": "Náhled 16 px",
-  "inputs.showGrid.help": "Zobrazí ikonu na plátně v jejích skutečných velikostech faviconu 16 a 32 px, abys mohl posoudit čitelnost. Pouze pomůcka editoru — nikdy není součástí exportu."
+  "inputs.showGrid.help": "Zobrazí ikonu na plátně v jejích skutečných velikostech faviconu 16 a 32 px, abys mohl posoudit čitelnost. Pouze pomůcka editoru - nikdy není součástí exportu."
 }

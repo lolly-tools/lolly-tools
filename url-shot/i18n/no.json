@@ -7,9 +7,9 @@
   "inputs.scrollDepth.label": "Scroll-dybde",
   "inputs.scrollDepth.help": "Hvor langt ned på siden det skal scrolles før den fanges. 0 = øverst, 1 = nederst. For video er dette der panoreringen STARTER.",
   "inputs.waitMs.label": "Ventetid (ms)",
-  "inputs.waitMs.help": "Tid å vente etter innlasting (og etter scrolling) før bildet tas — slik at skrifter, bilder og animasjoner rekker å falle på plass.",
+  "inputs.waitMs.help": "Tid å vente etter innlasting (og etter scrolling) før bildet tas - slik at skrifter, bilder og animasjoner rekker å falle på plass.",
   "inputs.css.label": "Egendefinert CSS",
-  "inputs.css.help": "CSS som settes inn på siden før skjermbildet tas — f.eks. for å skjule et informasjonskapsel-banner (.cookie-bar { display: none }) eller endre stilen på elementer.",
+  "inputs.css.help": "CSS som settes inn på siden før skjermbildet tas - f.eks. for å skjule et informasjonskapsel-banner (.cookie-bar { display: none }) eller endre stilen på elementer.",
   "inputs.cropTop.label": "Beskjæring øverst",
   "inputs.cropTop.help": "Beskjær innover fra toppkanten, som en andel (0–0,9) av høyden. Kun raster (png/jpg/svg).",
   "inputs.cropRight.label": "Beskjæring høyre",
@@ -31,7 +31,7 @@
   "inputs.tintColor.label": "Toningsfarge",
   "inputs.tintColor.help": "Fargen siden fargelegges med når Omfarging er satt til «Toning».",
   "inputs.scrollTo.label": "Rull til (video)",
-  "inputs.scrollTo.help": "Bare for videoeksport: panorer NED til denne dybden over klippet — en rulling av siden fra «Rulledybde» til her. Sett lik «Rulledybde» for et stillbilde. Ignoreres for bildeformater.",
-  "inputs.zoom.help": "Nettleserens zoomnivå — forstørrer siden før opptaket (som Ctrl/Cmd +), slik at selv en bitmap-fangst blir forstørret og skarp i stedet for oppskalert. 1 = 100%.",
+  "inputs.scrollTo.help": "Bare for videoeksport: panorer NED til denne dybden over klippet - en rulling av siden fra «Rulledybde» til her. Sett lik «Rulledybde» for et stillbilde. Ignoreres for bildeformater.",
+  "inputs.zoom.help": "Nettleserens zoomnivå - forstørrer siden før opptaket (som Ctrl/Cmd +), slik at selv en bitmap-fangst blir forstørret og skarp i stedet for oppskalert. 1 = 100%.",
   "inputs.zoom.label": "Zoom"
 }

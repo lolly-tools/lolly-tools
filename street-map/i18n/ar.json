@@ -3,7 +3,7 @@
   "description": "خرائط شوارع متجهة نظيفة لأي مدينة. تعمل دون اتصال.",
   "a11yLabel": "خريطة شوارع متمركزة على {{city}}",
   "inputs.city.label": "المدينة",
-  "inputs.city.help": "أضف مدنا أخرى دون اتصال عبر scripts/build-street-clips.ts — بلا أي API وقت العرض.",
+  "inputs.city.help": "أضف مدنا أخرى دون اتصال عبر scripts/build-street-clips.ts - بلا أي API وقت العرض.",
   "inputs.city.options.amsterdam": "أمستردام",
   "inputs.city.options.athens": "أثينا",
   "inputs.city.options.bangkok": "بانكوك",

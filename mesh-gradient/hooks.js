@@ -2,13 +2,13 @@
 /**
  * Mesh Gradient hooks.
  *
- * Builds the whole SVG as a string (qr-code pattern) — stacked radial
+ * Builds the whole SVG as a string (qr-code pattern) - stacked radial
  * gradients over a base fill, with optional blur/grain via an SVG filter and
  * optional CSS-keyframe drift for video exports. Gradients use
  * gradientUnits="userSpaceOnUse" so the template script can move a point live
  * during a drag by setting cx/cy on its <radialGradient>, and drift animates
  * the wrapping <g> (a CSS transform on the group carries the gradient with it
- * — the frame-by-frame video capture reads computed styles, so CSS keyframes
+ * - the frame-by-frame video capture reads computed styles, so CSS keyframes
  * are the one animation mechanism that survives export; SMIL freezes at t=0).
  */
 
@@ -16,13 +16,13 @@ var VBW = 1600;
 var VBH = 900;
 
 // Brand-agnostic fallbacks for when a semantic token alias doesn't resolve
-// (an unresolved alias flattens to '') — one per colour slot.
+// (an unresolved alias flattens to '') - one per colour slot.
 var FALLBACK = ['#6d5bd8', '#e0679f', '#2fb6a3', '#f6f1e7', '#f2a65a', '#5b8def'];
 var DEF_POS = [[14, 20], [85, 18], [80, 82], [18, 78], [52, 10], [50, 88]];
 
 // Drift = one closed orbit per blob, passing through its set position.
 // Everything derives deterministically from the blob index (golden-angle
-// rotation, alternating spin, 3–10% amplitude) — no Math.random, so the memo
+// rotation, alternating spin, 3–10% amplitude) - no Math.random, so the memo
 // key stays honest and video restarts / URL renders land identical poses.
 var GOLDEN = 137.508;
 
@@ -33,14 +33,14 @@ function _num(v, d) { var n = Number(v); return Number.isFinite(n) ? n : d; }
 function _clamp(n, lo, hi) { return Math.min(hi, Math.max(lo, n)); }
 
 // Colour values land raw inside the SVG string (and can arrive via URL
-// params), so allow only colour-function characters — never markup.
+// params), so allow only colour-function characters - never markup.
 function _safeColor(v, fb) {
   v = (v == null ? '' : String(v)).trim();
   return v && /^[#a-zA-Z0-9(),.%\s\/-]+$/.test(v) ? v : fb;
 }
 
 // A vector input's value is an { x, y } object everywhere (URL mode uses
-// per-field params — pos1.x= / pos1.y= — never a packed string).
+// per-field params - pos1.x= / pos1.y= - never a packed string).
 function _pos(v, d) {
   var x = d[0], y = d[1];
   if (v && typeof v === 'object') { x = _num(v.x, x); y = _num(v.y, y); }
@@ -66,13 +66,13 @@ function _filterDef(blur, grain, blend) {
 
 function _animCss(count, speed, distancePct) {
   var css = '';
-  var STEPS = 8; // waypoints per orbit — smooth with linear timing
+  var STEPS = 8; // waypoints per orbit - smooth with linear timing
   var distanceScale = distancePct / 100;
   for (var i = 0; i < count; i++) {
     // Orbit rotated by the golden angle so no two blobs ever drift the same
     // way; alternating spin direction; amplitude (max displacement, = the
     // orbit diameter) spans 3–10% of the frame per blob at the default 100%
-    // float distance — the "distance" input scales that range up or down.
+    // float distance - the "distance" input scales that range up or down.
     var theta = (i * GOLDEN + 23) * Math.PI / 180;
     var ampPct = (3 + ((i * 53) % 71) / 10) * distanceScale;
     var dir = i % 2 === 0 ? 1 : -1;
@@ -83,7 +83,7 @@ function _animCss(count, speed, distancePct) {
     for (var s = 0; s <= STEPS; s++) {
       var t = s / STEPS;
       // Phase chosen so t=0 sits exactly on the set position (translate 0,0)
-      // — static exports freeze there and restarts are clean.
+      // - static exports freeze there and restarts are clean.
       var a = theta + Math.PI + dir * 2 * Math.PI * t;
       frames += (t * 100).toFixed(1) + '%{transform:translate('
         + (ox + rx * Math.cos(a)).toFixed(1) + 'px,' + (oy + ry * Math.sin(a)).toFixed(1) + 'px)}';
@@ -91,14 +91,14 @@ function _animCss(count, speed, distancePct) {
     css += '@keyframes mg-d' + (i + 1) + '{' + frames + '}';
     // Linear timing = constant orbital speed (continuous float, not
     // ease pulses); negative delays desync the blobs while keeping one
-    // seamless loop of `speed` seconds — and stop every blob crossing its
+    // seamless loop of `speed` seconds - and stop every blob crossing its
     // set position at the same instant.
     css += '.mg-blob-' + (i + 1) + '{animation:mg-d' + (i + 1) + ' ' + speed + 's linear infinite;'
       + 'animation-delay:' + (-(speed * i) / count).toFixed(2) + 's}';
   }
   css += '.mg-frozen .mg-blob{animation:none!important}';
   // Reduce-motion calms the LIVE canvas only; an explicit webm/mp4 export
-  // still animates (beforeExport adds .mg-export for the capture window) —
+  // still animates (beforeExport adds .mg-export for the capture window) -
   // otherwise those users would silently get an all-identical-frames video.
   css += '@media (prefers-reduced-motion:reduce){svg.mg-svg:not(.mg-export) .mg-blob{animation:none}}';
   return '<style>' + css + '</style>';
@@ -174,7 +174,7 @@ function compute(model) {
   return _memoResult;
 }
 
-// Brand palette for the canvas "shuffle colours" button — the same swatch set
+// Brand palette for the canvas "shuffle colours" button - the same swatch set
 // the colour picker offers (host.tokens.colors()), fetched once. The shuffle
 // itself writes concrete hex values into the colour inputs, so a shuffled
 // state stays deterministic / URL-expressible.
@@ -230,12 +230,12 @@ function beforeExport(ctx) {
     var cap = Math.floor(595 / fps);
     ctx.opts.duration = Math.min(_speed, cap);
     if (cap < _speed && typeof host !== 'undefined' && host && host.log) {
-      // Frame budget can't fit a whole loop at this fps — say so instead of
+      // Frame budget can't fit a whole loop at this fps - say so instead of
       // silently shipping a clip that pops at the seam.
       try {
         (host.log.warn || host.log.info || function () {}).call(
           host.log,
-          '[mesh-gradient] ' + _speed + 's loop shortened to ' + cap + 's at ' + fps + ' fps (frame budget) — the loop seam will jump; lower the fps or the loop length for a seamless clip.'
+          '[mesh-gradient] ' + _speed + 's loop shortened to ' + cap + 's at ' + fps + ' fps (frame budget) - the loop seam will jump; lower the fps or the loop length for a seamless clip.'
         );
       } catch (e) { /* logging must never break an export */ }
     }

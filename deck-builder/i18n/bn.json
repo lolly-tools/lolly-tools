@@ -295,5 +295,13 @@
   "inputs.footerText.help": "প্রতিটি স্লাইডের নিচে লোগো ও স্লাইড নম্বরের মাঝে একটি ছোট ফুটার লাইন (কপিরাইট, গোপনীয়তা)।",
   "inputs.footerText.placeholder": "© 2026 আপনার কোম্পানি · গোপনীয়",
   "inputs.deck.fields.layout.options.bignum": "বড় সংখ্যা",
-  "inputs.deck.fields.layout.options.mainpoint": "মূল বক্তব্য"
+  "inputs.deck.fields.layout.options.mainpoint": "মূল বক্তব্য",
+  "inputs.deck.fields.text1.label": "স্লট 1 লেখা",
+  "inputs.deck.fields.text1.help": "ছবি বা টুল সেট না থাকলে স্লটটি একটি টেক্সট কার্ড দিয়ে পূরণ হয়। দুটিই থাকলে মিডিয়া দেখানো হয়।",
+  "inputs.deck.fields.text2.label": "স্লট 2 লেখা",
+  "inputs.deck.fields.text2.help": "ছবি বা টুল সেট না থাকলে স্লটটি একটি টেক্সট কার্ড দিয়ে পূরণ হয়। দুটিই থাকলে মিডিয়া দেখানো হয়।",
+  "inputs.deck.fields.text3.label": "স্লট 3 লেখা",
+  "inputs.deck.fields.text3.help": "ছবি বা টুল সেট না থাকলে স্লটটি একটি টেক্সট কার্ড দিয়ে পূরণ হয়। দুটিই থাকলে মিডিয়া দেখানো হয়।",
+  "inputs.deck.fields.text4.label": "স্লট 4 লেখা",
+  "inputs.deck.fields.text4.help": "ছবি বা টুল সেট না থাকলে স্লটটি একটি টেক্সট কার্ড দিয়ে পূরণ হয়। দুটিই থাকলে মিডিয়া দেখানো হয়।"
 }

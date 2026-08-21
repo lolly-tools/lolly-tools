@@ -3,7 +3,7 @@
   "description": "Rena vektorkartor över gatukvarter i valfri stad. Fungerar offline.",
   "a11yLabel": "Gatukarta centrerad på {{city}}",
   "inputs.city.label": "Stad",
-  "inputs.city.help": "Lägg till fler städer offline med scripts/build-street-clips.ts – inget API vid rendering.",
+  "inputs.city.help": "Lägg till fler städer offline med scripts/build-street-clips.ts - inget API vid rendering.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Aten",
   "inputs.city.options.bangkok": "Bangkok",

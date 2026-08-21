@@ -54,11 +54,11 @@
   "inputs.grainBlend.options.luminosity": "Luminosità (classica)",
   "inputs.animate.label": "Deriva",
   "inputs.animate.section": "Texture e movimento",
-  "inputs.animate.help": "Movimento lento e in loop dei punti colore — esporta come WebM/MP4 per uno sfondo animato.",
+  "inputs.animate.help": "Movimento lento e in loop dei punti colore - esporta come WebM/MP4 per uno sfondo animato.",
   "inputs.distance.label": "Distanza di deriva",
   "inputs.distance.section": "Texture e movimento",
   "inputs.distance.help": "Quanto si allontanano i punti colore dalla posizione impostata. 100% è la dimensione di orbita predefinita; a 0% restano fissi.",
   "inputs.speed.label": "Velocità di deriva",
   "inputs.speed.section": "Texture e movimento",
-  "inputs.speed.help": "Secondi per ciclo di deriva — più alto è, più lento è. Gli export video catturano un ciclo completo quando il budget di fotogrammi lo consente (i cicli lunghi vengono accorciati a 60 fps)."
+  "inputs.speed.help": "Secondi per ciclo di deriva - più alto è, più lento è. Gli export video catturano un ciclo completo quando il budget di fotogrammi lo consente (i cicli lunghi vengono accorciati a 60 fps)."
 }

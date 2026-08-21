@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Malý řádek zápatí (copyright, důvěrnost) dole na každém snímku, mezi logem a číslem snímku.",
   "inputs.footerText.placeholder": "© 2026 Vaše společnost · Důvěrné",
   "inputs.deck.fields.layout.options.bignum": "Velké číslo",
-  "inputs.deck.fields.layout.options.mainpoint": "Hlavní myšlenka"
+  "inputs.deck.fields.layout.options.mainpoint": "Hlavní myšlenka",
+  "inputs.deck.fields.text1.label": "Text pole 1",
+  "inputs.deck.fields.text1.help": "Vyplní pole textovou kartou, když není nastaven obrázek ani nástroj. Pokud je nastaveno obojí, má přednost médium.",
+  "inputs.deck.fields.text2.label": "Text pole 2",
+  "inputs.deck.fields.text2.help": "Vyplní pole textovou kartou, když není nastaven obrázek ani nástroj. Pokud je nastaveno obojí, má přednost médium.",
+  "inputs.deck.fields.text3.label": "Text pole 3",
+  "inputs.deck.fields.text3.help": "Vyplní pole textovou kartou, když není nastaven obrázek ani nástroj. Pokud je nastaveno obojí, má přednost médium.",
+  "inputs.deck.fields.text4.label": "Text pole 4",
+  "inputs.deck.fields.text4.help": "Vyplní pole textovou kartou, když není nastaven obrázek ani nástroj. Pokud je nastaveno obojí, má přednost médium."
 }

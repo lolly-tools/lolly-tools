@@ -3,7 +3,7 @@
   "description": "Mappe vettoriali essenziali delle strade di qualsiasi città. Funziona offline.",
   "a11yLabel": "Mappa stradale centrata su {{city}}",
   "inputs.city.label": "Città",
-  "inputs.city.help": "Aggiungi altre città offline con scripts/build-street-clips.ts — nessuna API necessaria in fase di rendering.",
+  "inputs.city.help": "Aggiungi altre città offline con scripts/build-street-clips.ts - nessuna API necessaria in fase di rendering.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Atene",
   "inputs.city.options.bangkok": "Bangkok",

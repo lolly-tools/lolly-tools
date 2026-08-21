@@ -6,9 +6,9 @@
   "inputs.source.help": "Een PDF-bestand. Het wordt gelezen in je browser en verlaat nooit je apparaat.",
   "inputs.level.label": "Compressie",
   "inputs.level.help": "Hoe sterk ingesloten afbeeldingen worden gecomprimeerd. Sterker betekent kleinere bestanden en zachtere afbeeldingen.",
-  "inputs.level.options.light": "Licht — kwaliteit hoog houden",
+  "inputs.level.options.light": "Licht - kwaliteit hoog houden",
   "inputs.level.options.balanced": "Gebalanceerd",
-  "inputs.level.options.strong": "Sterk — kleinste bestand",
+  "inputs.level.options.strong": "Sterk - kleinste bestand",
   "inputs.grayscale.label": "Afbeeldingen omzetten naar grijstinten",
-  "inputs.grayscale.help": "Verwijder kleur uit afbeeldingen voor extra besparing — handig voor gescande tekstdocumenten."
+  "inputs.grayscale.help": "Verwijder kleur uit afbeeldingen voor extra besparing - handig voor gescande tekstdocumenten."
 }

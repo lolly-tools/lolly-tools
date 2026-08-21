@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "播放 3 次",
   "inputs.loop.options.once": "播放一次",
   "inputs.scenes.label": "场景",
-  "inputs.scenes.help": "每个场景是序列中的一个片段——它会在前一个场景之上以动画方式进入，并叠加播放各自的 Lottie 动画循环。最后一个场景是停留的结尾卡片。",
+  "inputs.scenes.help": "每个场景是序列中的一个片段--它会在前一个场景之上以动画方式进入，并叠加播放各自的 Lottie 动画循环。最后一个场景是停留的结尾卡片。",
   "inputs.scenes.addMenu.label": "添加场景",
   "inputs.scenes.fields.anim.label": "动画",
   "inputs.scenes.fields.bgColor.label": "背景",

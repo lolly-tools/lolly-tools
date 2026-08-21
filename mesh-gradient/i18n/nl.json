@@ -54,11 +54,11 @@
   "inputs.grainBlend.options.luminosity": "Luminantie (klassiek)",
   "inputs.animate.label": "Deining",
   "inputs.animate.section": "Textuur & beweging",
-  "inputs.animate.help": "Langzame, herhalende deining van de kleurpunten — exporteer als WebM/MP4 voor een levende achtergrond.",
+  "inputs.animate.help": "Langzame, herhalende deining van de kleurpunten - exporteer als WebM/MP4 voor een levende achtergrond.",
   "inputs.distance.label": "Deiningsafstand",
   "inputs.distance.section": "Textuur & beweging",
   "inputs.distance.help": "Hoe ver de kleurpunten van hun ingestelde positie wegdrijven. 100% is de standaard baangrootte; bij 0% blijven ze vast op hun plek.",
   "inputs.speed.label": "Deiningssnelheid",
   "inputs.speed.section": "Textuur & beweging",
-  "inputs.speed.help": "Seconden per deiningslus — hoe hoger, hoe langzamer. Video-exports leggen één lus vast als het framebudget dat toelaat (lange lussen worden bij 60 fps ingekort)."
+  "inputs.speed.help": "Seconden per deiningslus - hoe hoger, hoe langzamer. Video-exports leggen één lus vast als het framebudget dat toelaat (lange lussen worden bij 60 fps ingekort)."
 }

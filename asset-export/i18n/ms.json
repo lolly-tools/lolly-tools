@@ -3,7 +3,7 @@
   "description": "Render mana-mana aset katalog - atau pautan alat Lolly - kepada sebarang format dan saiz.",
   "a11yLabel": "Aset yang dieksport",
   "inputs.src.label": "Aset",
-  "inputs.src.help": "Aset untuk dirender — ID katalog (lihat `lolly assets`) atau pautan alat lolly.tools yang ditampal. Aset vektor kekal vektor melalui SVG/PDF; aset raster dibenamkan sebagai imej.",
+  "inputs.src.help": "Aset untuk dirender - ID katalog (lihat `lolly assets`) atau pautan alat lolly.tools yang ditampal. Aset vektor kekal vektor melalui SVG/PDF; aset raster dibenamkan sebagai imej.",
   "inputs.fit.label": "Muat Suai",
   "inputs.fit.help": "\"Sesuai\" memaparkan keseluruhan aset di dalam bingkai; \"Litupi\" memenuhi bingkai dan mungkin memotong tepi.",
   "inputs.fit.options.contain": "Sesuai (seluruh aset, berjalur hitam)",

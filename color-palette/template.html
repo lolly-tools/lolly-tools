@@ -18,7 +18,7 @@
     {{/each}}
   </svg>
 
-  <!-- On-canvas DTCG panel — the same tokens fragment the JSON export downloads
+  <!-- On-canvas DTCG panel - the same tokens fragment the JSON export downloads
        (template.json = {{{tokensJson}}}), offered inline for a quick copy. The
        palette also downloads as CSS/SCSS/GIMP/Adobe-swatch files via host.color.
        data-export-hide keeps this panel out of every export. -->
@@ -35,7 +35,7 @@
 (function () {
   'use strict';
   /* Template scripts re-execute on every canvas paint, so scope to OUR wrap
-     (the script's previous sibling — offscreen compose/batch stages can mount
+     (the script's previous sibling - offscreen compose/batch stages can mount
      extra copies) and wire once via a dataset flag. */
   var cs = document.currentScript;
   var wrap = cs && cs.previousElementSibling && cs.previousElementSibling.classList

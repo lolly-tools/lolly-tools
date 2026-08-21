@@ -1,6 +1,6 @@
 /* global onInit, onInput, exportFile */
 /**
- * Convert Font — reads a dropped font, reports its container, and hands back the
+ * Convert Font - reads a dropped font, reports its container, and hands back the
  * source bytes named for the chosen target. The actual container swap (TTF/OTF ⇄
  * WOFF) is done by the shell's export.file(), because a tool hook cannot reach the
  * engine's sfnt/WOFF codecs. Nothing leaves the device; the glyph outlines are
@@ -8,7 +8,7 @@
  * in-tree Brotli encoder).
  */
 
-/** sfnt / WOFF magic (uint32 BE) — inlined; the hook has no engine access. */
+/** sfnt / WOFF magic (uint32 BE) - inlined; the hook has no engine access. */
 function fontKind(bytes) {
   if (!bytes || bytes.length < 4) return null;
   const m = ((bytes[0] << 24) | (bytes[1] << 16) | (bytes[2] << 8) | bytes[3]) >>> 0;

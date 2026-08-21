@@ -2,7 +2,7 @@
  *
  * The page is deliberately not brand-themed: white ground, black text, one mono
  * face, no dark-mode variant. The output is read by a machine, so maximum
- * contrast and a fixed grid beat house style — and a mono face means the layout
+ * contrast and a fixed grid beat house style - and a mono face means the layout
  * estimate in hooks.js is arithmetic rather than guesswork.
  *
  * Geometry (--p2i-pad, --p2i-line) is pushed in from hooks.js so there is one
@@ -31,7 +31,7 @@
   column-rule: 1px solid #e5e5e5;
   /* Fill each column to the bottom before starting the next one, rather than
      balancing. Balancing would leave every column short of the box, and the
-     template's fit test reads "does it overflow to an N+1th column?" — which
+     template's fit test reads "does it overflow to an N+1th column?" - which
      only means anything when the columns are filled in order. */
   column-fill: auto;
 
@@ -45,7 +45,7 @@
 }
 
 .p2i-cols p {
-  /* One blank line between paragraphs — the mono convention, and the clearest
+  /* One blank line between paragraphs - the mono convention, and the clearest
      structural signal a reader (human or model) gets out of an untitled wall of
      text. em resolves against --p2i-fs, so the gap tracks the fitted size, and
      --p2i-para scales it from the "Paragraph gap" input (0 closes it entirely). */
@@ -103,7 +103,7 @@
 
 /* The verdict: is this page actually cheaper than sending the text? An image is
    a flat price whatever it holds, so the answer flips as the page is dragged
-   bigger — it earns its own line, and a colour, because it's the one number that
+   bigger - it earns its own line, and a colour, because it's the one number that
    says whether the export was worth making. */
 .p2i-stats .p2i-verdict {
   display: block;
@@ -112,7 +112,7 @@
 }
 .p2i-stats .p2i-verdict.is-win  { color: #1f6b3b; }
 .p2i-stats .p2i-verdict.is-loss { color: #8a4b00; }
-/* Break-even: neither wins, so neither colour — a neutral grey that reads as
+/* Break-even: neither wins, so neither colour - a neutral grey that reads as
    "your call" rather than a verdict. */
 .p2i-stats .p2i-verdict.is-even { color: #555555; }
 .p2i-stats .p2i-verdict b { color: inherit; }
@@ -124,7 +124,7 @@
   color: #8a8a8a;
 }
 
-/* Overflow warning — the text needed a size below the legibility floor, so it is
+/* Overflow warning - the text needed a size below the legibility floor, so it is
    clamped and clipped rather than shrunk into an unreadable smudge. */
 .p2i-stats.is-over {
   background: rgba(255, 238, 214, 0.96);
@@ -132,7 +132,7 @@
 }
 .p2i-stats.is-over b { color: #7a4a00; }
 .p2i-stats.is-over .p2i-note { color: #9a6a24; }
-/* A clipped page can't be compared honestly — it doesn't hold all the text, so a
+/* A clipped page can't be compared honestly - it doesn't hold all the text, so a
    "saving" measured against the full prompt is really just the words that fell
    off the end. Fold the verdict into the warning until it fits. */
 .p2i-stats.is-over .p2i-verdict.is-win,

@@ -295,5 +295,13 @@
   "inputs.footerText.help": "En liten bunntekstlinje (opphavsrett, konfidensialitet) nederst på hvert lysbilde, mellom logoen og lysbildenummeret.",
   "inputs.footerText.placeholder": "© 2026 Ditt firma · Konfidensielt",
   "inputs.deck.fields.layout.options.bignum": "Stort tall",
-  "inputs.deck.fields.layout.options.mainpoint": "Hovedpoeng"
+  "inputs.deck.fields.layout.options.mainpoint": "Hovedpoeng",
+  "inputs.deck.fields.text1.label": "Tekst for felt 1",
+  "inputs.deck.fields.text1.help": "Fyller feltet med et tekstkort når ingen bilde eller verktøy er valgt. Er begge satt, vinner mediet.",
+  "inputs.deck.fields.text2.label": "Tekst for felt 2",
+  "inputs.deck.fields.text2.help": "Fyller feltet med et tekstkort når ingen bilde eller verktøy er valgt. Er begge satt, vinner mediet.",
+  "inputs.deck.fields.text3.label": "Tekst for felt 3",
+  "inputs.deck.fields.text3.help": "Fyller feltet med et tekstkort når ingen bilde eller verktøy er valgt. Er begge satt, vinner mediet.",
+  "inputs.deck.fields.text4.label": "Tekst for felt 4",
+  "inputs.deck.fields.text4.help": "Fyller feltet med et tekstkort når ingen bilde eller verktøy er valgt. Er begge satt, vinner mediet."
 }

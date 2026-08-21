@@ -19,7 +19,7 @@
         Click to preview
       </button>
     </div>
-    <p class="hint">Captured live in a real browser — preview here, then Export to save. SVG gives a true vector; webm/mp4 pans a scroll of the page.</p>
+    <p class="hint">Captured live in a real browser - preview here, then Export to save. SVG gives a true vector; webm/mp4 pans a scroll of the page.</p>
   </div>
   <button type="button" class="shot-compose" data-compose data-export-hide hidden aria-label="Compose visually" title="Compose visually">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3z"/><path d="M14 14h7v7h-7z"/><path d="M14 3h7v7h-7z" opacity=".4"/><path d="M3 14h7v7H3z" opacity=".4"/></svg>
@@ -36,7 +36,7 @@
 
   // Same-origin only: a browser can't frame or read a cross-origin page (X-Frame-
   // Options / CSP / tainted canvas), so visual composition is offered exactly when
-  // the target is one of OUR OWN app routes — the docs-author case. A bare "/…"
+  // the target is one of OUR OWN app routes - the docs-author case. A bare "/…"
   // path, or a URL whose origin matches ours, qualifies; anything else keeps the
   // capture-only flow (export still routes through the desktop/CLI capture path).
   function sameOriginUrl(raw) {
@@ -53,7 +53,7 @@
   // Write a value back to the tool. Prefer the shell's runtime setter (reaches
   // custom controls like the crop/scroll SLIDERS, which aren't native inputs), and
   // fall back to the native-input pattern (set value + fire `input`) for shells
-  // that don't expose it. Both land in runtime.setInput — URL sync, undo, dirty and
+  // that don't expose it. Both land in runtime.setInput - URL sync, undo, dirty and
   // session-save all come free.
   function setInput(id, value) {
     if (typeof window.__lollySetInput === 'function') { window.__lollySetInput(id, value); return; }
@@ -65,7 +65,7 @@
   }
 
   // Buttons re-bind every paint (innerHTML rebuilds the canvas); the overlay lives
-  // on <body> so it survives repaints — a live iframe inside the canvas would
+  // on <body> so it survives repaints - a live iframe inside the canvas would
   // reload on every keystroke.
   root.querySelectorAll('[data-compose]').forEach(function (btn) {
     btn.addEventListener('click', function () {
@@ -84,11 +84,11 @@
     });
   });
 
-  // Define the composer factory once per page — pure DOM/UI, no host dependency.
+  // Define the composer factory once per page - pure DOM/UI, no host dependency.
   if (window.__lollyOpenUrlComposer) return;
 
   // The overlay is body-level, so its CSS can't live in the tool's (canvas-scoped)
-  // styles.css — inject it into <head> once.
+  // styles.css - inject it into <head> once.
   function ensureStyles() {
     if (document.getElementById('__urlc_styles')) return;
     var st = document.createElement('style'); st.id = '__urlc_styles';
@@ -174,12 +174,12 @@
     var urlEl = bar.querySelector('.urlc-url'), urlNote = bar.querySelector('.urlc-url-note');
     scrollEl.value = String(scroll); cssEl.value = css;
 
-    // The recipe captures a URL, a scroll, a crop and CSS — but NOT interactive
+    // The recipe captures a URL, a scroll, a crop and CSS - but NOT interactive
     // state you reach by clicking inside the preview (expanding a panel, opening a
     // menu). Anything that's URL-addressable IS captured: navigate/deep-link inside
     // the frame and we sync the recipe's url to the frame's live location. For a
     // pure UI toggle that doesn't move the URL, use a deep-link (e.g. ?focus=…) or
-    // a CSS override to force the state — those the recipe reproduces.
+    // a CSS override to force the state - those the recipe reproduces.
     function relUrl() {
       try {
         var h = frame.contentWindow.location.href;
@@ -239,7 +239,7 @@
     frame.addEventListener('load', function () {
       injectCss(); scrollFrame(); syncUrl();
       // Hash routing keeps the same window, so a click that deep-links (e.g. a
-      // section that sets ?focus=…) fires hashchange, not load — catch both.
+      // section that sets ?focus=…) fires hashchange, not load - catch both.
       try {
         frame.contentWindow.addEventListener('hashchange', syncUrl);
         frame.contentWindow.addEventListener('popstate', syncUrl);

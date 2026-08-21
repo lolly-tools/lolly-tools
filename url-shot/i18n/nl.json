@@ -7,9 +7,9 @@
   "inputs.scrollDepth.label": "Scrolldiepte",
   "inputs.scrollDepth.help": "Hoe ver er over de pagina wordt gescrolld voordat de opname wordt gemaakt. 0 = boven, 1 = onder.",
   "inputs.waitMs.label": "Wachttijd (ms)",
-  "inputs.waitMs.help": "Wachttijd na het laden (en na het scrollen) voordat de opname wordt gemaakt — geeft lettertypen, afbeeldingen en animaties de tijd om tot rust te komen.",
+  "inputs.waitMs.help": "Wachttijd na het laden (en na het scrollen) voordat de opname wordt gemaakt - geeft lettertypen, afbeeldingen en animaties de tijd om tot rust te komen.",
   "inputs.css.label": "Eigen CSS",
-  "inputs.css.help": "CSS die vóór de screenshot in de pagina wordt geïnjecteerd — bijvoorbeeld om een cookiebanner te verbergen (.cookie-bar { display: none }) of elementen anders te stylen.",
+  "inputs.css.help": "CSS die vóór de screenshot in de pagina wordt geïnjecteerd - bijvoorbeeld om een cookiebanner te verbergen (.cookie-bar { display: none }) of elementen anders te stylen.",
   "inputs.cropTop.label": "Bijsnijden boven",
   "inputs.cropTop.help": "Snijdt bij vanaf de bovenrand, als fractie van 0–0,9 van de hoogte. Alleen raster (png/jpg/svg).",
   "inputs.cropRight.label": "Bijsnijden rechts",
@@ -31,7 +31,7 @@
   "inputs.tintColor.label": "Tintkleur",
   "inputs.tintColor.help": "De kleur waarin de pagina wordt gewassen wanneer Herkleuren op 'Tint' staat.",
   "inputs.scrollTo.label": "Scrollen naar (video)",
-  "inputs.scrollTo.help": "Alleen bij video-export: pan omlaag naar deze diepte over de duur van de clip — een scroll van de pagina van 'Scroldiepte' naar hier. Stel gelijk aan 'Scroldiepte' in voor een stilstaand beeld. Wordt genegeerd bij afbeeldingsformaten.",
-  "inputs.zoom.help": "Zoomniveau van de browser — vergroot de pagina vóór de opname (zoals Ctrl/Cmd +), zodat ook een bitmap-opname vergroot en scherp is in plaats van opgeschaald. 1 = 100%.",
+  "inputs.scrollTo.help": "Alleen bij video-export: pan omlaag naar deze diepte over de duur van de clip - een scroll van de pagina van 'Scroldiepte' naar hier. Stel gelijk aan 'Scroldiepte' in voor een stilstaand beeld. Wordt genegeerd bij afbeeldingsformaten.",
+  "inputs.zoom.help": "Zoomniveau van de browser - vergroot de pagina vóór de opname (zoals Ctrl/Cmd +), zodat ook een bitmap-opname vergroot en scherp is in plaats van opgeschaald. 1 = 100%.",
   "inputs.zoom.label": "Zoom"
 }

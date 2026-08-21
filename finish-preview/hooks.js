@@ -1,8 +1,8 @@
 /**
- * Finish Preview — hooks.
+ * Finish Preview - hooks.
  *
  * Simulates physical print finishes (foil, spot UV, emboss/deboss, soft-touch
- * matte) over the user's artwork, and — the actual deliverable — exports the
+ * matte) over the user's artwork, and - the actual deliverable - exports the
  * finish MASK PLATE as pure black shapes on white for the print house.
  *
  * The whole scene is emitted as one inline <svg> (extra `finishSvg`) so exports
@@ -10,15 +10,15 @@
  * resolution, the finish materials are real SVG gradients/filters, and the
  * plate view is a filter-free black-on-white raster inside the SVG (PDF-safe).
  *
- * The finish mask is computed per-pixel in OKLab — lightness thresholds use
- * OKLab L and the by-colour mode uses OKLab distance, never naive sRGB — via
+ * The finish mask is computed per-pixel in OKLab - lightness thresholds use
+ * OKLab L and the by-colour mode uses OKLab distance, never naive sRGB - via
  * the self-contained colour port below (Björn Ottosson's reference matrices).
  * Metallic foil ramps are interpolated in OKLab too; the holographic foil is
  * an OKLCH hue sweep.
  *
  * Pixel decoding needs a real <canvas> (browser only). In a headless shell
  * (CLI/jsdom) there's no 2D context, so the hook degrades to a friendly
- * placeholder instead of throwing — this is a browser-rendered tool.
+ * placeholder instead of throwing - this is a browser-rendered tool.
  *
  * Deterministic by construction: no unseeded randomness anywhere (the grain
  * uses a fixed feTurbulence seed; the sheen is a fixed-period loop that stills
@@ -30,13 +30,13 @@
 // DEFAULT viewBox edge when the tool has no explicit size yet (a square frame
 // matching render.width/height). Once an image is picked, the auto-fit <script> in
 // template.html snaps the export Width/Height to the artwork's native size, so the
-// canvas takes the photo's own aspect ratio — dimW/dimH read those inputs, and the
+// canvas takes the photo's own aspect ratio - dimW/dimH read those inputs, and the
 // whole scene is emitted at W×H rather than the old fixed 1000² square.
 var VIEW = 1000;
 var MAX_EDGE = 8000;                 // matches the auto-fit cap in template.html + the width/height input max
-var _lastW = VIEW, _lastH = VIEW;    // most recent canvas size — read by setSheenPhase (export sweep range)
+var _lastW = VIEW, _lastH = VIEW;    // most recent canvas size - read by setSheenPhase (export sweep range)
 // The default source image shown until the user picks one (a Lolly tool URL,
-// resolved lazily via host.compose — same convention as the other filter tools).
+// resolved lazily via host.compose - same convention as the other filter tools).
 var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
 
 // Decoded-image cache (keyed by URL); holds the in-flight PROMISE so re-renders
@@ -64,14 +64,14 @@ function inputsFrom(model) {
   return o;
 }
 function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
-// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared clamp - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 function f2(v) { return Math.round(v * 100) / 100; }
 // FNV-1a → base36. Derives a CONTENT-DERIVED prefix for every SVG def id this
 // tool emits: two instances mounted in ONE document (the /multi view, a composed
 // board, "render everything") must not resolve url(#…) to whichever defs happen
-// to sit first in document order — here the mask IS the deliverable, so a
+// to sit first in document order - here the mask IS the deliverable, so a
 // cross-wired mask means approving a plate that belongs to different artwork.
 // Content-derived rather than a counter: each mount gets its own hooks module
 // scope, so a per-module counter would restart at 1 and collide anyway. Equal
@@ -82,7 +82,7 @@ function hash32(s) {
   for (var i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
   return (h >>> 0).toString(36);
 }
-// === lolly:shared esc — generated from community/_shared/text.js; edit there and run npm run sync:shared ===
+// === lolly:shared esc - generated from community/_shared/text.js; edit there and run npm run sync:shared ===
 function esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -101,7 +101,7 @@ function dimW(inputs) { return clamp(Math.round(n(inputs.width, VIEW)), 1, MAX_E
 function dimH(inputs) { return clamp(Math.round(n(inputs.height, VIEW)), 1, MAX_EDGE); }
 
 // `extra` carries the auto-fit anchor attributes (data-img-key etc.) onto the root
-// <svg> — the template.html <script> reads them. Stamped on the root (not a child)
+// <svg> - the template.html <script> reads them. Stamped on the root (not a child)
 // so the single-root-<svg> CLI vector path is preserved, exactly like filter-imperfections.
 function svgOpen(W, H, extra) {
   return '<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" '
@@ -121,7 +121,7 @@ function placeholder(message, W, H) {
 
 // ── image decoding ───────────────────────────────────────────────────────────
 
-// === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+// === lolly:shared loadImage - generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function loadImage(url) {
   if (!host.raster) return Promise.reject(new Error('no raster'));
   return host.raster.decode(url);
@@ -136,7 +136,7 @@ function getImage(url) {
   return promise;
 }
 
-// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+// === lolly:shared canRaster - generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function canRaster() {
   return !!(host.raster && host.raster.canRaster());
 }
@@ -145,7 +145,7 @@ function canRaster() {
 // ── OKLab colour port (Björn Ottosson's reference matrices) ──────────────────
 // sRGB <-> OKLab, plus OKLCH construction. Used for the mask (perceptual
 // lightness thresholds + colour distance) and the metallic foil ramps
-// (perceptual interpolation — no muddy sRGB lerps).
+// (perceptual interpolation - no muddy sRGB lerps).
 
 function srgbToLinear(c) { return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4); }
 function linearToSrgb(c) { return c <= 0.0031308 ? 12.92 * c : 1.055 * Math.pow(c, 1 / 2.4) - 0.055; }
@@ -251,9 +251,9 @@ function holoStops() {
 }
 
 var FINISH_LABELS = {
-  'foil-gold': 'Foil — gold',
-  'foil-silver': 'Foil — silver',
-  'foil-holographic': 'Foil — holographic',
+  'foil-gold': 'Foil - gold',
+  'foil-silver': 'Foil - silver',
+  'foil-holographic': 'Foil - holographic',
   'spot-uv-gloss': 'Spot UV gloss',
   'emboss': 'Emboss',
   'deboss': 'Deboss',
@@ -275,9 +275,9 @@ function sstep(edge0, edge1, x) {
 }
 
 // Rasterise the artwork into the mask working grid and derive two data-URI PNGs:
-//   maskUrl  — white with per-pixel ALPHA = mask coverage (luminance×alpha in an
+//   maskUrl  - white with per-pixel ALPHA = mask coverage (luminance×alpha in an
 //              SVG <mask> ⇒ soft, feathered finish edges in the preview);
-//   plateUrl — the printer plate: hard-thresholded pure black on white (opaque,
+//   plateUrl - the printer plate: hard-thresholded pure black on white (opaque,
 //              filter-free, so the plate view survives every export path).
 // Returns null when pixels can't be read (headless / tainted canvas).
 function computeMasks(img, cw, ch, fit, source, thr, soft, maskLab) {
@@ -342,7 +342,7 @@ function computeMasks(img, cw, ch, fit, source, thr, soft, maskLab) {
     }
     // Preview mask: white, alpha = coverage (soft edges survive).
     m[p] = 255; m[p + 1] = 255; m[p + 2] = 255; m[p + 3] = Math.round(v * 255);
-    // Plate: hard 1-bit — black where the finish prints, white elsewhere.
+    // Plate: hard 1-bit - black where the finish prints, white elsewhere.
     var ink = v >= 0.5 ? 0 : 255;
     q[p] = ink; q[p + 1] = ink; q[p + 2] = ink; q[p + 3] = 255;
   }
@@ -367,7 +367,7 @@ function gradientStopsMarkup(stops) {
 
 // The sheen sweep gradient: a soft light band across the finish, rotated to the
 // sweep angle. Animated with SMIL (additive translate along the gradient axis)
-// only when `animate` is true; otherwise it rests, centred — a still or a
+// only when `animate` is true; otherwise it rests, centred - a still or a
 // reduced-motion preview never shows a mid-sweep pose.
 function sheenGradient(id, angle, opacity, sharp, animate, W, H) {
   var stops = sharp
@@ -395,14 +395,14 @@ function buildSvg(args) {
   var region = args.region;
   var rx = f2(region.x), ry = f2(region.y), rw = f2(region.w), rh = f2(region.h);
   var label = FINISH_LABELS[args.finish] || args.finish;
-  // Auto-fit anchor stamped on the root <svg> — the demo default carries an empty key
+  // Auto-fit anchor stamped on the root <svg> - the demo default carries an empty key
   // (never resizes); the decoded native size rides along for the fast path. See template.html.
   var rootExtra = args.imgKey != null
     ? ' data-img-key="' + esc(args.imgKey) + '"'
       + (args.imgW > 0 && args.imgH > 0 ? ' data-img-w="' + args.imgW + '" data-img-h="' + args.imgH + '"' : '')
     : '';
 
-  // ── plate view: the printer deliverable — pure black mask on white + label ──
+  // ── plate view: the printer deliverable - pure black mask on white + label ──
   // Filter-free by construction (the plate PNG is already black-on-white), so
   // it survives PDF export and any strict vector path unchanged.
   if (args.plate) {
@@ -414,7 +414,7 @@ function buildSvg(args) {
       // image-rendering:pixelated, NOT optimizeQuality: computeMasks hard-thresholds
       // the plate to exactly 0 or 255 so it is 1-bit by construction. Smoothed
       // resampling at any scale other than 1:1 would turn every plate edge into a
-      // grey ramp, which a RIP then re-thresholds at its own arbitrary cut-off —
+      // grey ramp, which a RIP then re-thresholds at its own arbitrary cut-off -
       // the foil die would no longer match the mask the user approved on screen.
       pl += '<image href="' + esc(args.plateUrl) + '" x="' + rx + '" y="' + ry + '" width="' + rw
         + '" height="' + rh + '" preserveAspectRatio="none" image-rendering="crisp-edges" '
@@ -423,12 +423,12 @@ function buildSvg(args) {
     // The overprint label is an ANNOTATION, never plate ink. It used to be #111111
     // (a second tone for the separator, not solid spot ink) with a 6px white
     // paint-order stroke, which punched a white halo straight through the black
-    // plate underneath — physically cutting the foil/UV shape away along the
+    // plate underneath - physically cutting the foil/UV shape away along the
     // label. Solid #000000, no knockout, in a documented strippable group: never
     // paint white over plate geometry.
     pl += '<g id="fp-plate-annotation">'
       + '<text x="24" y="' + (H - 20) + '" font-family="SUSE, system-ui, sans-serif" font-size="22" fill="#000000">'
-      + esc(label + ' · prints as spot plate — overprint') + '</text></g>';
+      + esc(label + ' · prints as spot plate - overprint') + '</text></g>';
     pl += '</svg>';
     return pl;
   }
@@ -439,7 +439,7 @@ function buildSvg(args) {
   var angle = clamp(n(args.angle, 35), 0, 360);
   var animate = !!args.animate && (kind === 'foil' || kind === 'uv');
   // Per-render def-id prefix (see hash32). args.maskHash stands in for the mask
-  // PNG itself — same finish settings over DIFFERENT artwork must not collide,
+  // PNG itself - same finish settings over DIFFERENT artwork must not collide,
   // because it is the mask that would get cross-wired.
   var U = 'fp' + hash32(JSON.stringify([
     args.finish, k, angle, animate, args.cover, args.wholeMask, args.bg, args.maskHash || '',
@@ -531,7 +531,7 @@ function buildSvg(args) {
     // INNER bands: each band is SourceAlpha minus a displaced copy of itself, so
     // it sits just inside the shape edge. The outer form (offset copy minus
     // SourceAlpha) draws strictly OUTSIDE the shape, which is invisible whenever
-    // the mask is the whole region — the bands land outside the viewBox and are
+    // the mask is the whole region - the bands land outside the viewBox and are
     // clipped away, so the finish did nothing at all. Inner bands are always in
     // frame, for a shaped mask and a full-bleed one alike.
     // Displacing the copy DOWN-RIGHT leaves the TOP-LEFT inner edge uncovered,
@@ -578,7 +578,7 @@ function buildSvg(args) {
 }
 
 // ── reduced-motion: the OS media query ONLY. Deliberately does NOT read the
-// shell's `data-a11y-motion` attribute — that is chrome-private state which is
+// shell's `data-a11y-motion` attribute - that is chrome-private state which is
 // documented as never reaching inside the tool canvas, and a tool is data, not
 // chrome. The OS query is a platform API any renderer may consult.
 // Exports are unaffected either way: beforeExport pins the sheen to its rest
@@ -627,7 +627,7 @@ async function compute(model) {
     ? inputs.maskSource : 'light';
   var maskColorHex = color(inputs.maskColor, '#30ba78');
   var animate = Boolean(inputs.sheen) && !plate && !prefersReducedMotion();
-  // Canvas size from the export-group width/height inputs — the whole scene is emitted
+  // Canvas size from the export-group width/height inputs - the whole scene is emitted
   // at W×H, so a picked image's aspect (auto-fit) or a manual resize reflows it.
   var W = dimW(inputs), H = dimH(inputs);
 
@@ -667,7 +667,7 @@ async function compute(model) {
       var softV = clamp(n(inputs.softness, 4), 0, 20);
       // Second, NARROWER memo: only these six inputs reach computeMasks. Without
       // it every strength / sweep-angle / sheen / background / plate-view change
-      // re-ran a multi-megapixel OKLab loop plus two PNG encodes — the sweep-angle
+      // re-ran a multi-megapixel OKLab loop plus two PNG encodes - the sweep-angle
       // slider alone has 73 stops, and past HOOK_BUDGET_MS.onInput (2s) the
       // runtime abandons the patch, so the preview silently stops updating while
       // the hook keeps burning CPU. Those inputs now only re-run buildSvg (string
@@ -677,7 +677,7 @@ async function compute(model) {
         masks = _maskVal;
       } else {
         // Plate resolution: the plate is a PRINT deliverable, so the mask grid is
-        // sized from the artwork, not from the 1000-unit viewBox — a 4000px logo
+        // sized from the artwork, not from the 1000-unit viewBox - a 4000px logo
         // used to be thrown away at ~85 dpi on a business card, exactly where edge
         // fidelity matters most. Capped at MASK_LONG_EDGE: the per-pixel OKLab
         // loop and the two PNG encodes have to stay inside the onInput budget on
@@ -728,12 +728,12 @@ function onInput(ctx) { return compute(ctx.model); }
 // Blink returns CSSAnimation/CSSTransition/script animations and never SVG SMIL,
 // and `__lollyFrameRender` is a canvas hook this tool has no reason to own for
 // its still path. So a PNG exported at t=2.0s and the same URL at t=4.3s used to
-// differ — a determinism violation, and for gif/apng/webm/mp4 the sweep was
+// differ - a determinism violation, and for gif/apng/webm/mp4 the sweep was
 // paced by capture jitter, the exact drift the frame clock exists to remove.
 //
 // beforeExport therefore takes the animation OUT of the DOM for the duration of
 // the export and pins gradientTransform itself:
-//   • stills (png/svg/pdf/…) get the documented centred REST pose — and the
+//   • stills (png/svg/pdf/…) get the documented centred REST pose - and the
 //     exported SVG file carries no infinite SMIL loop for downstream tools;
 //   • motion formats get one exact sweep per clip, driven by the export frame
 //     clock, so frame N is the same image every run.
@@ -759,7 +759,7 @@ function pinSheen(node) {
   }
 }
 // t ∈ [0,1): normalised loop time from the export frame clock. Reproduces the
-// SMIL sweep exactly — additive translate from -max(W,H) to +max(W,H) along the axis.
+// SMIL sweep exactly - additive translate from -max(W,H) to +max(W,H) along the axis.
 function setSheenPhase(t) {
   if (!_sheenPinned) return;
   // Sweep range spans the longer edge (matches sheenGradient's from/to = ±max(W,H)).

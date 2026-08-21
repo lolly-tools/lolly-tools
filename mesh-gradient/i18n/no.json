@@ -54,11 +54,11 @@
   "inputs.grainBlend.options.luminosity": "Luminans (klassisk)",
   "inputs.animate.label": "Drift",
   "inputs.animate.section": "Tekstur og bevegelse",
-  "inputs.animate.help": "Langsom, sløyfende driving av fargepunktene — eksporter som WebM/MP4 for en animert bakgrunn.",
+  "inputs.animate.help": "Langsom, sløyfende driving av fargepunktene - eksporter som WebM/MP4 for en animert bakgrunn.",
   "inputs.distance.label": "Driftavstand",
   "inputs.distance.section": "Tekstur og bevegelse",
   "inputs.distance.help": "Hvor langt fargepunktene driver fra sin faste posisjon. 100 % er standard baneomkrets; ved 0 % låses de fast.",
   "inputs.speed.label": "Drifthastighet",
   "inputs.speed.section": "Tekstur og bevegelse",
-  "inputs.speed.help": "Sekunder per drift-sløyfe — høyere er tregere. Videoeksport fanger én sløyfe der bildebudsjettet tillater det (lange sløyfer forkortes ved 60 bilder/sek)."
+  "inputs.speed.help": "Sekunder per drift-sløyfe - høyere er tregere. Videoeksport fanger én sløyfe der bildebudsjettet tillater det (lange sløyfer forkortes ved 60 bilder/sek)."
 }

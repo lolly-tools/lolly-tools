@@ -1,4 +1,4 @@
-/* Bitmap Studio — screen-only chrome over the render. Everything here styles
+/* Bitmap Studio - screen-only chrome over the render. Everything here styles
    the [data-export-hide] HUD; the artwork itself is one composed bitmap inside
    the SVG and carries no CSS dependency, so exports are byte-stable. */
 
@@ -89,7 +89,7 @@
   white-space: nowrap;
 }
 
-/* ── Histogram card — movable + resizable, quiet until hovered ────────────────
+/* ── Histogram card - movable + resizable, quiet until hovered ────────────────
    Position + size are set inline by the controller script; these are the resting
    look. */
 .bs-hist {

@@ -1,5 +1,5 @@
 /**
- * D3 Chart Studio — hooks.
+ * D3 Chart Studio - hooks.
  *
  * The chart itself is drawn by D3 in the template <script> (it needs the DOM and
  * d3, which the sandboxed hook context has neither of). The hook's ONLY job is
@@ -10,9 +10,9 @@
  * safe to read inside <script>. Same split as street-map / meeting-planner.
  *
  * One model shape feeds all 13 chart types:
- *   categories   – labels down column 0 (the x-axis / slice / row labels)
- *   series       – every OTHER numeric column, aligned to categories
- *   numericCols  – every numeric column in order (scatter x/y/size)
+ *   categories   - labels down column 0 (the x-axis / slice / row labels)
+ *   series       - every OTHER numeric column, aligned to categories
+ *   numericCols  - every numeric column in order (scatter x/y/size)
  * Charts pick what they need: bar/line/area/radar use categories×series; pie/
  * donut/treemap/pack use the first series; scatter uses numericCols; heatmap uses
  * the categories×series matrix; histogram bins the first numeric column.
@@ -25,7 +25,7 @@
 // and newlines), folds CRLF, tolerates a leading BOM. Works for any single-char
 // delimiter (comma / tab / semicolon / pipe).
 function splitTable(text, delim) {
-  const s = String(text).replace(/^﻿/, '');
+  const s = String(text).replace(/^/, '');
   const rows = [];
   let row = [], field = '', inQ = false, i = 0;
   while (i < s.length) {
@@ -38,7 +38,7 @@ function splitTable(text, delim) {
       field += c; i++; continue;
     }
     // A quote only OPENS a quoted field at the field start (RFC 4180). A quote
-    // mid-field (an inch/second mark like 6.1" or a foot-inch 5'6") is literal —
+    // mid-field (an inch/second mark like 6.1" or a foot-inch 5'6") is literal -
     // otherwise it would swallow the rest of the table into one cell.
     if (c === '"' && field === '') { inQ = true; i++; continue; }
     if (c === delim) { row.push(field); field = ''; i++; continue; }
@@ -57,7 +57,7 @@ function splitTable(text, delim) {
 // does not recur, so it loses. Falls back to the old first-line-max heuristic
 // when no candidate is fully consistent (e.g. genuinely ragged data).
 function detectDelim(text) {
-  const lines = String(text).replace(/^﻿/, '').split(/\r?\n/).filter((l) => l.trim() !== '').slice(0, 12);
+  const lines = String(text).replace(/^/, '').split(/\r?\n/).filter((l) => l.trim() !== '').slice(0, 12);
   if (!lines.length) return ',';
   const cands = ['\t', ';', '|', ','];
   let fallback = ',', fbN = 1, consistent = null, consistentN = 1;
@@ -73,13 +73,13 @@ function detectDelim(text) {
 
 const DELIM_MAP = { comma: ',', tab: '\t', semicolon: ';', pipe: '|' };
 
-// Blank / not-a-number tokens that must count as a GAP, not as text — otherwise a
+// Blank / not-a-number tokens that must count as a GAP, not as text - otherwise a
 // few "N/A"s or a spreadsheet error cell would drag a real number column below the
 // numeric threshold and drop it. Covers dashes, Excel errors, and common fillers.
 function isBlankToken(raw) {
   const t = String(raw == null ? '' : raw).trim();
   if (!t) return true;
-  return /^(-{1,2}|–|—|\.|\?|nil|none|null|nan|na|n\/?a|tbd|#n\/?a|#ref!?|#div\/0!?|#value!?|#name\??!?|#null!?|#num!?)$/i.test(t);
+  return /^(-{1,2}|–|\u2014|\.|\?|nil|none|null|nan|na|n\/?a|tbd|#n\/?a|#ref!?|#div\/0!?|#value!?|#name\??!?|#null!?|#num!?)$/i.test(t);
 }
 
 // Parse one cell, tolerating how spreadsheets/locales actually write numbers:
@@ -94,8 +94,8 @@ function parseNum(raw, commaDecimal) {
   let sign = 1;
   const paren = /^\((.+)\)$/.exec(s);                       // (1,234) accounting negative
   if (paren) { sign = -1; s = paren[1].trim(); }
-  s = s.replace(/^[−‒–—]/, '-');        // unicode minus / dashes
-  s = s.replace(/[€$£¥%\s' ]/g, '');    // currency / % / apostrophe & space grouping
+  s = s.replace(/^[−‒–\u2014]/, '-');        // unicode minus / dashes
+  s = s.replace(/[€$£¥%\s' ]/g, '');    // currency / % / apostrophe & space grouping
   let mult = 1;
   const suf = /[kmbt]$/i.exec(s);                           // 1.2M, 850k, 3.4B, 5T
   if (suf && /\d/.test(s)) { mult = { k: 1e3, m: 1e6, b: 1e9, t: 1e12 }[suf[0].toLowerCase()]; s = s.slice(0, -1); }
@@ -201,7 +201,7 @@ function buildModel(text, opts) {
 
   // ── reshape: long/tidy → wide ──────────────────────────────────────────────
   // Explicit pivot (a column the user chose) OR auto (a REPEATED label column + a
-  // text "key" column + a numeric value column → one series per key) — the most
+  // text "key" column + a numeric value column → one series per key) - the most
   // common "my data won't chart" case for pasted spreadsheet extracts.
   const wantPivot = pivotIdx >= 0 && pivotIdx !== labelIdx;
   if (wantPivot || new Set(categories).size < categories.length) {
@@ -224,22 +224,22 @@ function buildModel(text, opts) {
       note: appendNote(note, 'Charted a single value column with row numbers as labels.') };
   }
 
-  // Diagnostics — turn silent mis-parses into a nudge the user can act on.
+  // Diagnostics - turn silent mis-parses into a nudge the user can act on.
   if (!series.length && !numericCols.length) {
-    note = appendNote(note, 'No numeric columns found — is the first row a header, and are the values numbers?');
+    note = appendNote(note, 'No numeric columns found - is the first row a header, and are the values numbers?');
   } else if (!series.length) {
-    note = appendNote(note, 'The only numeric column is the label — pick a Series column, or add data columns.');
+    note = appendNote(note, 'The only numeric column is the label - pick a Series column, or add data columns.');
   } else if (opts.hasHeader && headerLooksNumeric(header, numericFlag)) {
-    note = appendNote(note, 'First row looks like data — turn off “First row is a header” if a row is missing.');
+    note = appendNote(note, 'First row looks like data - turn off “First row is a header” if a row is missing.');
   } else if (!opts.hasHeader && firstRowLooksLikeHeader(body, numericFlag)) {
-    note = appendNote(note, 'First row looks like column names — turn on “First row is a header”.');
+    note = appendNote(note, 'First row looks like column names - turn on “First row is a header”.');
   }
   return { categories, series, numericCols, errorValues, note };
 }
 
 function range(n) { const a = []; for (let i = 0; i < n; i++) a.push(i); return a; }
 function orDefault(i, d) { return i >= 0 ? i : d; }
-// Resolve a column reference — a 1-based number OR a case-insensitive header name —
+// Resolve a column reference - a 1-based number OR a case-insensitive header name -
 // to a 0-based index, or -1 when blank / unknown.
 function resolveColRef(ref, header) {
   const s = String(ref == null ? '' : ref).trim();
@@ -255,7 +255,7 @@ function resolveColList(ref, header) {
 // keyCol value, cell = valCol. null when the result has <2 or >40 series.
 function pivotRows(body, labelIdx, keyCol, valCol, commaDecCol) {
   const catOf = (r) => String(r[labelIdx] == null ? '' : r[labelIdx]).trim() || 'Item';
-  const keyOf = (r) => String(r[keyCol] == null ? '' : r[keyCol]).trim() || '—';
+  const keyOf = (r) => String(r[keyCol] == null ? '' : r[keyCol]).trim() || '-';
   const cats = uniqueInOrder(body.map(catOf));
   const keys = uniqueInOrder(body.map(keyOf));
   if (keys.length < 2 || keys.length > 40) return null;
@@ -327,7 +327,7 @@ function buildConfig(inp) {
   // so titles/axes/labels/legend/gridlines stay legible on any background without
   // the user colouring each one. A real hex overrides.
   const textColor = isHex(inp.textColor) ? inp.textColor.trim() : 'auto';
-  // Manual categorical palette slots (Colour 1..6) — blank = brand palette there.
+  // Manual categorical palette slots (Colour 1..6) - blank = brand palette there.
   const paletteSlots = ['palette1', 'palette2', 'palette3', 'palette4', 'palette5', 'palette6']
     .map((k) => (isHex(inp[k]) ? inp[k].trim().toLowerCase() : null));
 
@@ -356,7 +356,7 @@ function buildConfig(inp) {
     pieStyle:       String(inp.pieStyle || 'flat'),
     depth3d:        clamp(num(inp.depth3d, 0), 0, 160),
     reference:      String(inp.reference || ''),          // reference lines & bands (one per line)
-    trend:          String(inp.trend || 'none'),          // none/linear/poly2/exp/log/power/movavg — fitted trend line
+    trend:          String(inp.trend || 'none'),          // none/linear/poly2/exp/log/power/movavg - fitted trend line
     errorColumn:    String(inp.errorColumn || ''),        // column name/number holding the ± error per value
     frameColumn:    String(inp.frameColumn || ''),        // column whose distinct values become animation keyframes
     animSpeed:      clamp(num(inp.animSpeed, 1.5), 0.3, 8),// seconds each keyframe holds before morphing
@@ -367,7 +367,7 @@ function buildConfig(inp) {
     frameLabelPos:  String(inp.frameLabelPos || 'tr'),      // tl / tr / bl / br
     animEase:       String(inp.animEase || 'smooth'),      // smooth / linear / steps
     animDirection:  String(inp.animDirection || 'loop'),   // loop / bounce (ping-pong)
-    timeAxis:       String(inp.timeAxis || 'auto'),        // auto / on / off — parse the label column as dates
+    timeAxis:       String(inp.timeAxis || 'auto'),        // auto / on / off - parse the label column as dates
     yScaleType:     String(inp.yScaleType || 'linear'),
     yZero:          inp.yZero !== false && inp.yZero !== 'false',
     yMax:           Math.max(0, num(inp.yMax, 0)),
@@ -380,7 +380,7 @@ function buildConfig(inp) {
     palette:        String(inp.palette || 'ordered'),
     paletteBlend:   String(inp.paletteBlend || 'smooth'),  // smooth / vivid / srgb ramp interpolation
     paletteSeed:    isHex(inp.paletteSeed) ? inp.paletteSeed.trim() : '',        // base colour (seed palette + vivid 'from')
-    paletteBlendTo: isHex(inp.paletteBlendTo) ? inp.paletteBlendTo.trim() : '',  // vivid 'to' — the second colour
+    paletteBlendTo: isHex(inp.paletteBlendTo) ? inp.paletteBlendTo.trim() : '',  // vivid 'to' - the second colour
     hueRoute:       inp.hueRoute === 'long' ? 'long' : 'short',                  // vivid hue travel: short / long way round
     colorBy:        String(inp.colorBy || 'series'),
     shadow:         String(inp.shadow || 'none'),          // none / soft / medium / strong / glow
@@ -438,13 +438,13 @@ function safeJson(obj) {
 // ── brand-driven palettes (host.color/host.tokens, engine ≥ 1.40) ────────────
 // Resolves the ACTIVE brand's colours ONCE in onInit so every palette feels
 // native to the brand instead of the shipped SUSE hues:
-//   • spectrum   – categorical hues (color.spectrum.*), topped up via distinct()
-//   • ramps      – sequential/diverging/mono ramps built from the brand's
+//   • spectrum   - categorical hues (color.spectrum.*), topped up via distinct()
+//   • ramps      - sequential/diverging/mono ramps built from the brand's
 //                  primary/secondary with host.color.ramp()/mix() (variations of
-//                  one brand hue + combinations of two) — light→dark anchor stops
+//                  one brand hue + combinations of two) - light→dark anchor stops
 //                  the template feeds to d3 exactly like the shipped RAMPS
-//   • swatches   – a curated brand-swatch list for the click-to-recolour picker
-//   • monochrome – fewer than 4 spectrum hues → the template auto-adds patterns
+//   • swatches   - a curated brand-swatch list for the click-to-recolour picker
+//   • monochrome - fewer than 4 spectrum hues → the template auto-adds patterns
 // A brand/host that can't supply a piece leaves it null and the template falls
 // back to its shipped hand-tuned palette (older shells stay byte-identical).
 let BRAND = null;
@@ -498,12 +498,12 @@ async function resolveBrandColors() {
       if (!secondary && c.schemes) { const acc = c.schemes(primary, 'complement'); if (acc && acc[0] && acc[0].hex) secondary = acc[0].hex; }
       if (!secondary && spectrum[1]) secondary = spectrum[1];
       if (!secondary) secondary = primary;
-      // The "vibrant" brand hue leads the sequential ramps — the more chromatic of
+      // The "vibrant" brand hue leads the sequential ramps - the more chromatic of
       // primary/secondary. (SUSE's primary is a near-black ink and its Pine green
       // lives in secondary, so this keeps charts feeling Pine-green, not grey.)
       const vib = chroma(secondary) > chroma(primary) ? secondary : primary;
       // A SECOND, distinct hue for the alternate + diverging ramps: the other
-      // semantic hue, or — when that's near-neutral / too close — the most
+      // semantic hue, or - when that's near-neutral / too close - the most
       // chromatic spectrum hue that's far from vib.
       let second = (vib === secondary) ? primary : secondary;
       if (chroma(second) < 0.04 || (c.deltaE && c.deltaE(second, vib) < 0.12)) {
@@ -539,8 +539,8 @@ async function resolveBrandColors() {
     // tints & shades of the two lead hues (variations) → a few neutrals for
     // emphasis last. Near-greys are held back so brand HUES lead the picker.
     // The FULL brand palette for the pickers: primary/secondary lead, then EVERY
-    // brand swatch (spectrum, brand hues, ramp steps) — chromatic hues first, then
-    // the neutral ramp steps — then tint/shade variations of the lead hues, then a
+    // brand swatch (spectrum, brand hues, ramp steps) - chromatic hues first, then
+    // the neutral ramp steps - then tint/shade variations of the lead hues, then a
     // few semantic neutrals. Generous cap so the whole palette is selectable.
     const swatches = [], sseen = new Set();
     const pushSwatch = (name, value, path) => {
@@ -569,7 +569,7 @@ async function resolveBrandColors() {
     return {
       spectrum: spectrum.length ? spectrum : null,
       // The brand's swatches in their AUTHORED order (primary → secondary → brand
-      // hues → variations → neutrals) — what the 'ordered' palette (the default)
+      // hues → variations → neutrals) - what the 'ordered' palette (the default)
       // and the recolour picker both follow, so a chart matches the palette the way
       // the brand presents it rather than a re-spaced spectrum.
       ordered: swatches.length ? swatches.map(function (s) { return s.value; }) : null,
@@ -579,13 +579,13 @@ async function resolveBrandColors() {
       surface: surfaceHex, text: textHex,
     };
   } catch (e) {
-    return null; // tokens/host unavailable (older shell) — shipped palette
+    return null; // tokens/host unavailable (older shell) - shipped palette
   }
 }
 
 // Extrapolate a WHOLE palette from ONE base colour (the 'seed' palette option): a
 // spread of distinct categorical hues anchored on the seed, plus light→dark
-// sequential ramps and a diverging ramp — the same shapes resolveBrandColors
+// sequential ramps and a diverging ramp - the same shapes resolveBrandColors
 // builds for the brand, keyed off the user's chosen hue. All host.color calls are
 // synchronous; returns null on an older shell so the template keeps the brand
 // palette. Surface/text anchors come from the brand (so the ramps sit on the
@@ -626,7 +626,7 @@ function seedPalette(seedHex) {
 
 // Split the pasted table into animation keyframes by a frame/time column. Each
 // distinct frame value (first-seen order) yields one keyframe of series aligned to
-// the UNION of category labels across all frames — so a bar/line morphs between
+// the UNION of category labels across all frames - so a bar/line morphs between
 // them. Returns null when there's no frame column, <2 frames, or no numeric series.
 // (Only built for the tweenable chart types; scatter/pie fall back to buildModel.)
 function buildFrames(text, opts) {
@@ -653,7 +653,7 @@ function buildFrames(text, opts) {
   if (!seriesCols.length) return null;
   const cell = (r, i) => String(r[i] == null ? '' : r[i]).trim();
   const frameOrder = [], frameRows = {};
-  body.forEach((r) => { const f = cell(r, frameIdx) || '—'; if (!(f in frameRows)) { frameRows[f] = []; frameOrder.push(f); } frameRows[f].push(r); });
+  body.forEach((r) => { const f = cell(r, frameIdx) || '-'; if (!(f in frameRows)) { frameRows[f] = []; frameOrder.push(f); } frameRows[f].push(r); });
   if (frameOrder.length < 2) return null;
   const catOrder = [], seen = {};
   body.forEach((r) => { const c = cell(r, labelIdx) || '?'; if (!(c in seen)) { seen[c] = 1; catOrder.push(c); } });
@@ -700,7 +700,7 @@ function compute(model) {
     const cats = frameData.categories, frs = frameData.frames;
     const ext = (pick) => { let mn = Infinity, mx = -Infinity; frs.forEach((fr) => pick(fr, (v) => { const n = Number(v); if (Number.isFinite(n)) { if (n < mn) mn = n; if (n > mx) mx = n; } })); return [Number.isFinite(mn) ? mn : 0, Number.isFinite(mx) ? mx : 1]; };
     if (cfg.chartType === 'scatter') {
-      // scatter: series[0]=X, series[1]=Y — fix BOTH axes independently.
+      // scatter: series[0]=X, series[1]=Y - fix BOTH axes independently.
       cfg.animExtentX = ext((fr, add) => (fr[0] ? fr[0].values : []).forEach(add));
       cfg.animExtent  = ext((fr, add) => (fr[1] ? fr[1].values : []).forEach(add));
     } else {
@@ -714,7 +714,7 @@ function compute(model) {
         }
       });
     }
-    // scatter reads numericCols (x/y cols); bar/line/pie read series — populate the one each needs from frame 0.
+    // scatter reads numericCols (x/y cols); bar/line/pie read series - populate the one each needs from frame 0.
     data = { categories: frameData.categories, series: frameData.frames[0],
       numericCols: cfg.chartType === 'scatter' ? frameData.frames[0] : [], errorValues: null,
       frames: frameData.frames, frameLabels: frameData.labels,
@@ -756,7 +756,7 @@ function d3Md(inp) {
 }
 
 // A brand result is "degraded" when tokens weren't ready at resolve time (no
-// primary / spectrum / ramps) — e.g. a cold first paint before the brand pack
+// primary / spectrum / ramps) - e.g. a cold first paint before the brand pack
 // loads. Re-attempt on the next input so the chart picks the brand up rather than
 // being stuck on the shipped fallback palette for the session.
 function brandDegraded(b) { return !b || (!b.primary && !b.spectrum && !b.ramps); }

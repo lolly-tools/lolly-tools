@@ -1,12 +1,12 @@
 /**
- * Doc Studio — hooks.
+ * Doc Studio - hooks.
  *
  * The document is authored on the canvas with a TipTap (ProseMirror) editor and stored
  * as portable ProseMirror JSON in the `content` input. This hook is the ENGINE render
  * path: it parses that JSON and walks the node tree into fixed-size page boxes so the
  * export bridge emits one true PDF page per [data-pdf-page] box (and CLI / OG previews
- * render the same document headlessly). Pagination is heuristic — hooks run before the
- * DOM exists and can't measure — so each top-level block's height is estimated from its
+ * render the same document headlessly). Pagination is heuristic - hooks run before the
+ * DOM exists and can't measure - so each top-level block's height is estimated from its
  * content and blocks flow down a single column, opening a new page when it fills. A block
  * is atomic (never split across a page). No client JS ships in the canvas.
  *
@@ -17,19 +17,19 @@
 // ── primitives ─────────────────────────────────────────────────────────────────
 function toInputs(model) { var o = {}; model.forEach(function (i) { o[i.id] = i.value; }); return o; }
 function num(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
-// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared clamp - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 function str(v) { return (typeof v === 'string') ? v : (v == null ? '' : String(v)); }
 function r2(x) { return Math.round(x * 100) / 100; }
-// === lolly:shared esc — generated from community/_shared/text.js; edit there and run npm run sync:shared ===
+// === lolly:shared esc - generated from community/_shared/text.js; edit there and run npm run sync:shared ===
 function esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
 // === /lolly:shared esc ===
 
-// Colour / font-family reaching a style="" attribute — only validated shapes pass.
+// Colour / font-family reaching a style="" attribute - only validated shapes pass.
 var COLOUR_RE = /^#(?:[0-9a-fA-F]{3,4}|[0-9a-fA-F]{6}|[0-9a-fA-F]{8})$|^(?:rgb|rgba|hsl|hsla)\([0-9.,%\s/]+\)$/;
 function safeColor(v) { var s = str(v).trim(); return COLOUR_RE.test(s) ? s : ''; }
 function safeFont(v) {
@@ -42,7 +42,7 @@ function safeFont(v) {
   if (/suse|brand|sans/i.test(s)) return "var(--font-brand, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)";
   return '';
 }
-// A link href reaching an <a href> — only safe schemes (no javascript:/data:).
+// A link href reaching an <a href> - only safe schemes (no javascript:/data:).
 function safeUrl(v) { var s = str(v).trim(); return /^(https?:\/\/|mailto:|\/|#)/i.test(s) ? esc(s) : ''; }
 // A link href for MARKDOWN output: same scheme guard, NOT HTML-escaped, and
 // angle-bracketed when it contains spaces or parens so the `[](url)` still parses.
@@ -59,11 +59,11 @@ var STARTER = {
     { type: 'paragraph', content: [
       { type: 'text', text: 'Welcome to ' },
       { type: 'text', marks: [{ type: 'bold' }], text: 'Doc Studio' },
-      { type: 'text', text: ' — a real word processor. Select and delete across anything, and insert tables, lists and images inline.' },
+      { type: 'text', text: ' - a real word processor. Select and delete across anything, and insert tables, lists and images inline.' },
     ] },
     { type: 'heading', attrs: { level: 2 }, content: [{ type: 'text', text: 'Write the way you think' }] },
     { type: 'bulletList', content: [
-      { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Paste rich text — bold, italics, lists and tables keep their shape' }] }] },
+      { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Paste rich text - bold, italics, lists and tables keep their shape' }] }] },
       { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Insert a Lolly render (a QR code, a chart, a map) inline' }] }] },
       { type: 'listItem', content: [{ type: 'paragraph', content: [{ type: 'text', text: 'Headings 1 to 4, SUSE or SUSE Mono, export to PDF' }] }] },
     ] },
@@ -115,7 +115,7 @@ function inline(nodes) {
 
 // Per-block inline style: alignment + line-height + letter-spacing (the two
 // typographic block attrs the Doc Studio editor sets). Every value is range-checked
-// before it reaches a style="" attribute — only validated shapes pass.
+// before it reaches a style="" attribute - only validated shapes pass.
 function blockStyle(attrs) {
   var a = attrs || {};
   var s = '';
@@ -192,7 +192,7 @@ function blockHtml(node) {
       return '<blockquote class="doc-quote">' + inner + '</blockquote>';
     }
     case 'codeBlock': {
-      // Join ALL text nodes — a multi-line block can be more than one node.
+      // Join ALL text nodes - a multi-line block can be more than one node.
       var code = '', cc = node.content || [];
       for (var ci = 0; ci < cc.length; ci++) code += (cc[ci] && cc[ci].text) || '';
       return '<pre class="doc-pre"><code>' + esc(code) + '</code></pre>';
@@ -316,7 +316,7 @@ function docToMarkdown(doc) {
   var content = (doc && Array.isArray(doc.content)) ? doc.content : [];
   var out = '';
   for (var i = 0; i < content.length; i++) out += blockMd(content[i]);
-  // Collapse 3+ newlines between blocks — but NOT inside fenced code (verbatim
+  // Collapse 3+ newlines between blocks - but NOT inside fenced code (verbatim
   // whitespace). Mask fenced regions (open fence → same-length close) first.
   var fences = [];
   out = out.replace(/(`{3,})[^]*?\1/g, function (m) { fences.push(m); return '\x00F' + (fences.length - 1) + '\x00'; });

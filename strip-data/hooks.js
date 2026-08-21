@@ -1,10 +1,10 @@
 /* global onInit, onInput, exportFile */
 /**
- * Strip Hidden Data — runs entirely in the sandboxed hook context (no DOM,
+ * Strip Hidden Data - runs entirely in the sandboxed hook context (no DOM,
  * no network). Reads the picked file's bytes (input.value.bytes), reports the
  * hidden / non-rendering data it carries, and produces a clean copy.
  *
- * Three formats, one tool, all by lossless surgery — the image content is copied
+ * Three formats, one tool, all by lossless surgery - the image content is copied
  * through untouched, only metadata is removed:
  *   JPEG: drop APP1 (EXIF/XMP), APP2 (ICC), APP13 (IPTC/Photoshop) and COM
  *         comment segments; keep APP0 (JFIF) and all image segments.
@@ -152,7 +152,7 @@ function scanJpeg(bytes) {
   const segs = [];
   let p = 2;
   while (p + 1 < bytes.length) {
-    if (bytes[p] !== 0xFF) break;                 // misaligned — bail, keep file intact
+    if (bytes[p] !== 0xFF) break;                 // misaligned - bail, keep file intact
     let marker = bytes[p + 1];
     while (marker === 0xFF && p + 2 < bytes.length) { p++; marker = bytes[p + 1]; } // fill bytes
     if (marker === 0xD9) { segs.push({ marker, start: p, end: p + 2 }); break; } // EOI
@@ -280,14 +280,14 @@ function prefixOf(name) {
 // Namespaces that are editor-private or pure metadata and never paint pixels.
 const DROP_EL_PREFIX = new Set(['sodipodi', 'inkscape', 'i', 'x']); // i:/x: = Adobe private
 const DROP_EL_NAME = new Set(['metadata']);
-// Whitespace inside these is content — never collapse it.
+// Whitespace inside these is content - never collapse it.
 const SPACE_SENSITIVE = new Set(['text', 'tspan', 'textpath', 'tref', 'style', 'title', 'desc', 'script']);
-// Namespace declarations safe to drop — ONLY for prefixes we also strip wholesale
+// Namespace declarations safe to drop - ONLY for prefixes we also strip wholesale
 // (elements + attributes). We must not drop a decl while leaving attributes in that
 // namespace behind (e.g. Affinity's serif:id, Adobe's a:*), so those stay.
 const DROP_XMLNS = new Set([
   'xmlns:inkscape', 'xmlns:sodipodi', 'xmlns:i', 'xmlns:x', // dropped as element/attr prefixes
-  'xmlns:dc', 'xmlns:cc', 'xmlns:rdf',                      // metadata-only — block is removed
+  'xmlns:dc', 'xmlns:cc', 'xmlns:rdf',                      // metadata-only - block is removed
 ]);
 
 function shouldDropElement(name) {
@@ -295,7 +295,7 @@ function shouldDropElement(name) {
 }
 
 function shouldDropAttr(name) {
-  if (name === 'xml:space') return false;           // rendering-relevant — keep
+  if (name === 'xml:space') return false;           // rendering-relevant - keep
   if (DROP_EL_PREFIX.has(prefixOf(name))) return true; // inkscape:*, sodipodi:*, i:*, x:*
   if (DROP_XMLNS.has(name.toLowerCase())) return true;
   if (name === 'data-name') return true;            // Illustrator layer names (privacy)
@@ -391,7 +391,7 @@ function clean(toks) {
   let dropName = null, dropDepth = 0;
 
   for (const tk of toks) {
-    if (dropDepth > 0) {     // inside a dropped subtree — watch only its nesting
+    if (dropDepth > 0) {     // inside a dropped subtree - watch only its nesting
       if (tk.t === 'open' && tk.name === dropName) dropDepth++;
       else if (tk.t === 'close' && tk.name === dropName) dropDepth--;
       continue;
@@ -521,7 +521,7 @@ function analyzeSvg(toks) {
   if (titleTrim) findings.push({ label: 'Title', detail: titleTrim, tone: '' });
   const descTrim = descText.replace(/\s+/g, ' ').trim();
   if (descTrim) findings.push({ label: 'Description', detail: descTrim, tone: '' });
-  if (embeddedImgs) findings.push({ label: 'Embedded images', detail: `${embeddedImgs} image${embeddedImgs > 1 ? 's' : ''}${embeddedBytes ? `, ~${fmtBytes(embeddedBytes)}` : ''} — kept`, tone: '' });
+  if (embeddedImgs) findings.push({ label: 'Embedded images', detail: `${embeddedImgs} image${embeddedImgs > 1 ? 's' : ''}${embeddedBytes ? `, ~${fmtBytes(embeddedBytes)}` : ''} - kept`, tone: '' });
 
   return findings;
 }
@@ -561,18 +561,18 @@ function cleanBytes(bytes, info) {
   if (kind === 'JPEG') return stripJpeg(bytes);
   if (kind === 'PNG') return stripPng(bytes);
   if (kind === 'SVG') return encodeText(clean(tokenize(text)));
-  return bytes; // unrecognised — leave untouched rather than risk corruption
+  return bytes; // unrecognised - leave untouched rather than risk corruption
 }
 
 // Verify-after-strip: re-scan a *cleaned* buffer for anything the strip is meant
 // to have removed. Returns a short reason, or null when it's verifiably clean.
 // This is what lets exportFile fail loud instead of silently handing back an
-// un-stripped original under a "-clean" name — the cardinal sin for a privacy
+// un-stripped original under a "-clean" name - the cardinal sin for a privacy
 // tool. Narrow by design: only the segments/chunks/nodes cleanBytes drops.
 function residualMetadata(bytes, kind) {
   if (kind === 'JPEG') {
     for (const s of scanJpeg(bytes) || []) {
-      if (s.sos) break; // scan/entropy data begins — no metadata beyond here
+      if (s.sos) break; // scan/entropy data begins - no metadata beyond here
       if (s.marker === 0xFE) return 'a JPEG comment';
       if (s.marker >= 0xE1 && s.marker <= 0xEF) return `a JPEG APP${s.marker - 0xE0} metadata segment`;
     }
@@ -619,7 +619,7 @@ async function patch({ model, host }) {
     return { ...base, kind: 'file' }; // supported:false → template shows guidance
   }
 
-  // PDF can't be cleaned by in-hook byte surgery — it goes through host.pdf (a
+  // PDF can't be cleaned by in-hook byte surgery - it goes through host.pdf (a
   // real PDF library in the shell). Shells without that capability degrade to a
   // clear "not available here" rather than a wrong "already clean".
   if (info.kind === 'PDF') {
@@ -635,10 +635,10 @@ async function patch({ model, host }) {
       findings,
       nothingFound: findings.length === 0,
       cleanSize: '', // a re-save's size isn't meaningful to preview, so it's omitted
-      tailNote: 'Your PDF is re-saved without its metadata — the pages are preserved; only the document info and any XMP packet are removed. (A re-save isn\'t byte-for-byte and invalidates any digital signature.)',
+      tailNote: 'Your PDF is re-saved without its metadata - the pages are preserved; only the document info and any XMP packet are removed. (A re-save isn\'t byte-for-byte and invalidates any digital signature.)',
       cleanNote: 'You can still download a re-saved copy below.',
       metaSummary: findings.length
-        ? `Found ${findings.length} item${findings.length > 1 ? 's' : ''} of hidden data — they'll be removed.`
+        ? `Found ${findings.length} item${findings.length > 1 ? 's' : ''} of hidden data - they'll be removed.`
         : '',
     };
   }
@@ -656,8 +656,8 @@ async function patch({ model, host }) {
   const pct = f.bytes.length > 0 ? Math.round((removed / f.bytes.length) * 100) : 0;
   const sizeNote = removed > 0 ? `That's ${fmtBytes(removed)} smaller${pct >= 1 ? ` (−${pct}%)` : ''}. ` : '';
   const tailNote = isVector
-    ? `${sizeNote}The artwork renders identically — only metadata, comments and editor cruft are removed.`
-    : 'The clean copy keeps the image pixels byte-for-byte — only the metadata is removed, nothing is re-compressed.';
+    ? `${sizeNote}The artwork renders identically - only metadata, comments and editor cruft are removed.`
+    : 'The clean copy keeps the image pixels byte-for-byte - only the metadata is removed, nothing is re-compressed.';
 
   return {
     ...base,
@@ -671,7 +671,7 @@ async function patch({ model, host }) {
       ? `${sizeNote}You can still download the re-saved copy below.`
       : 'You can still download a re-saved copy below.',
     metaSummary: findings.length
-      ? `Found ${findings.length} item${findings.length > 1 ? 's' : ''} of hidden data${removed > 0 ? ` — ${fmtBytes(removed)} will be removed` : ''}.`
+      ? `Found ${findings.length} item${findings.length > 1 ? 's' : ''} of hidden data${removed > 0 ? ` - ${fmtBytes(removed)} will be removed` : ''}.`
       : '',
   };
 }
@@ -692,17 +692,17 @@ async function exportFile({ model, host }) {
   }
 
   // JPEG / PNG / SVG: lossless in-hook surgery (an unrecognised file has no
-  // metadata we claim to remove, so it passes through untouched — the report
+  // metadata we claim to remove, so it passes through untouched - the report
   // already tells the user it isn't a supported image). For the supported kinds
   // a privacy tool must NEVER hand back the original under a "-clean" name, so we
   // do NOT swallow errors: if the surgery throws, or the result still carries
   // metadata we claim to remove, we fail loud and download nothing (the shell
   // surfaces the thrown message on the button).
   const info = classify(f.bytes);
-  const bytes = cleanBytes(f.bytes, info); // may throw — deliberately not caught
+  const bytes = cleanBytes(f.bytes, info); // may throw - deliberately not caught
   const residual = residualMetadata(bytes, info.kind);
   if (residual) {
-    throw new Error(`Couldn't fully remove ${residual} from this ${info.kind} — nothing was downloaded.`);
+    throw new Error(`Couldn't fully remove ${residual} from this ${info.kind} - nothing was downloaded.`);
   }
   return { bytes, mime: f.mime || 'application/octet-stream', filename: cleanName(f.name) };
 }

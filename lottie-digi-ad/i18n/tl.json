@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Tumugtog nang 3 beses",
   "inputs.loop.options.once": "Tumugtog nang minsan",
   "inputs.scenes.label": "Mga eksena",
-  "inputs.scenes.help": "Ang bawat eksena ay isang bahagi ng sequence — pumapasok ito nang may animation sa ibabaw ng nauna, may sarili itong Lottie animation na paulit-ulit na tumatakbo sa ibabaw. Ang huling eksena ang resting end card.",
+  "inputs.scenes.help": "Ang bawat eksena ay isang bahagi ng sequence - pumapasok ito nang may animation sa ibabaw ng nauna, may sarili itong Lottie animation na paulit-ulit na tumatakbo sa ibabaw. Ang huling eksena ang resting end card.",
   "inputs.scenes.addMenu.label": "Magdagdag ng eksena",
   "inputs.scenes.fields.anim.label": "Animation",
   "inputs.scenes.fields.bgColor.label": "Background",

@@ -1,4 +1,4 @@
-# NOTICE — lolly-tools
+# NOTICE - lolly-tools
 
 The tool definitions in this repository (manifests, templates, hooks, styles,
 thumbnails, and tool-local assets) are licensed under **MPL-2.0** (see

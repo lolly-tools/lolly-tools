@@ -1,21 +1,21 @@
 /**
- * Wordmark — type a word, get a pure-path vector wordmark.
+ * Wordmark - type a word, get a pure-path vector wordmark.
  *
  * The whole render is host.* data: host.tokens names the brand's font family
  * ({font.brand} / {font.mono}), host.text.fontUrl (v1.60) resolves that family
  * to an actual font file (plus the variable-axis settings for the requested
  * weight), and host.text.toPath (HarfBuzz) shapes the run into one SVG <path>.
- * The preview IS the export — true outlines, so SVG/PDF/EMF/EPS/DXF need no
+ * The preview IS the export - true outlines, so SVG/PDF/EMF/EPS/DXF need no
  * font installed to view, and the same code renders headlessly in the CLI/TUI
  * (the Node shell implements both methods over the catalog font files).
  *
  * When either method is missing (older host) or the resolved font lacks a
- * glyph for some character (toPath's notdef count), outlining would draw tofu —
+ * glyph for some character (toPath's notdef count), outlining would draw tofu -
  * so we fall back to a live <text> element and say why in `wmWarning` instead
  * of silently exporting blanks.
  */
 
-// The platform face — every shell can resolve it (web: font-registry's PLATFORM_FACES;
+// The platform face - every shell can resolve it (web: font-registry's PLATFORM_FACES;
 // CLI/TUI: the node shell scans shells/web/public/fonts). 'Outfit' until 2026-08-10;
 // SUSE is the default now AND has a real italic, which Outfit never did.
 var FALLBACK_FAMILY = 'SUSE';
@@ -52,7 +52,7 @@ async function familyFor(host, kind) {
 }
 
 // Honest fallback: a live <text> run (needs the font at view time). Width is a
-// rough estimate — the preview stays usable and wmWarning explains what happened.
+// rough estimate - the preview stays usable and wmWarning explains what happened.
 function textSvg(text, family, weight, size, tracking, color) {
   var w = Math.max(size * 2, text.length * (size * 0.62 + Math.max(0, tracking)));
   var h = size * 1.5;
@@ -72,7 +72,7 @@ async function compute(host, args) {
   if (key === _memoKey) return _memoResult;
 
   // Hard cap (manifest maxLength mirror): URL mode / headless renders bypass the
-  // input UI, and the output viewBox scales with text length × size — unbounded
+  // input UI, and the output viewBox scales with text length × size - unbounded
   // text would mint an arbitrarily huge SVG for downstream rasterisers.
   var text = (typeof args.text === 'string' && args.text.trim()) ? args.text.trim().slice(0, 120) : 'Wordmark';
   var size = Math.min(1000, Math.max(8, num(args.size, 160)));
@@ -99,11 +99,11 @@ async function compute(host, args) {
     });
     if (!run || !run.bbox || !run.d) throw new Error('nothing to outline');
     if (run.notdef > 0) {
-      // The font has no glyph for some characters — an outline would be tofu.
+      // The font has no glyph for some characters - an outline would be tofu.
       result = {
         svgContent: textSvg(text, family, weight, size, tracking, color),
         wmWarning: run.notdef + ' character' + (run.notdef === 1 ? '' : 's') + ' missing from ' + family
-          + ' — showing live text instead of outlines, so exports need the font installed.',
+          + ' - showing live text instead of outlines, so exports need the font installed.',
       };
     } else {
       var pad = size * 0.12;
@@ -120,7 +120,7 @@ async function compute(host, args) {
     result = {
       svgContent: textSvg(text, family, weight, size, tracking, color),
       wmWarning: 'Could not outline "' + family + '" (' + ((err && err.message) || 'unknown error')
-        + ') — showing live text, so exports need the font installed.',
+        + ') - showing live text, so exports need the font installed.',
     };
   }
 

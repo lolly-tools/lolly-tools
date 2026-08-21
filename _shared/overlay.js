@@ -1,5 +1,5 @@
 /**
- * Shared hook helpers — the filter-* brand overlay (logo + lower-third).
+ * Shared hook helpers - the filter-* brand overlay (logo + lower-third).
  *
  * CANONICAL SOURCE for the `overlay` region below. Tool hooks.js ship as
  * self-contained data (no imports), so each consumer carries a byte-for-byte
@@ -8,11 +8,11 @@
  * `npm run validate:catalog` fails if any consumer drifts from this file.
  *
  * The region depends on `host` (host.assets.get / host.profile.get) being in
- * scope — true inside any hooks.js — and declares its own module state
+ * scope - true inside any hooks.js - and declares its own module state
  * (_logoCache, _profileHeadshotUrl, _liveOvStart).
  */
 
-// === lolly:shared overlay — canonical source; edit here and run npm run sync:shared ===
+// === lolly:shared overlay - canonical source; edit here and run npm run sync:shared ===
 var LOGO_ASPECT = 210.179 / 37.666;   // SUSE horizontal lockup, from its own viewBox
 var _logoCache = {};                  // variantId -> url | null (resolved once per variant)
 var _profileHeadshotUrl;              // undefined = not looked up; null = none; string = url
@@ -56,7 +56,7 @@ function logoVariantId(style) {
       : 'suse/logo/hor-neg-white';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame — it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
 function resolveLogoUrl(style) {
   var id = logoVariantId(style);
   if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
@@ -192,23 +192,23 @@ function ovRRect(x, y, w, h, r, fill, op) {
 
 // ── Export frame clock (motion formats only) ─────────────────────────────────
 // A still export always renders the overlay at rest (mode:'still' → fully faded
-// in, no offset) — correct for png/svg/pdf/etc. But a gif/webm/mp4 export of a
+// in, no offset) - correct for png/svg/pdf/etc. But a gif/webm/mp4 export of a
 // STILL photo previously held that same resting pose for the whole clip: the
 // intro ease-in buildOverlaySvg already does for 'live' (camera) mode never
 // played, because nothing called it with mode:'live' + an advancing elapsed.
 // armOverlayClock wires that up: register __lollyFrameRender on the tool's
 // inert clock-anchor canvas (see docs on <canvas data-ov-clock> in template.html
-// — the same anchor-element convention as the slides tool, required because the
+// - the same anchor-element convention as the slides tool, required because the
 // capture loop only drives a t through a <canvas> carrying that property), and
 // on each captured frame rebuild JUST the overlay markup (via the untouched
 // buildOverlaySvg) at that frame's elapsed ms, splicing it into a stable slot
 // (`<g id="lolly-ov-slot">`, wrapped once around every buildOverlaySvg() call
 // site in the tool's buildSvg()). The expensive filtered-image content is never
-// touched — only the overlay's own small SVG fragment is rebuilt per frame.
-// getOv(t) returns a full overlay-input object (mode:'live', elapsed: t*clipMs) —
+// touched - only the overlay's own small SVG fragment is rebuilt per frame.
+// getOv(t) returns a full overlay-input object (mode:'live', elapsed: t*clipMs) -
 // callers build it from their own cached _lastOv (see armFilterOverlayExport).
 // W/H are the SAME viewBox-units box the tool's own buildOverlaySvg(W, H, …) call
-// used for the still render — a fixed VIEW constant for the square-canvas tools,
+// used for the still render - a fixed VIEW constant for the square-canvas tools,
 // or the tool's own current width/height for the ones with dynamic W/H inputs.
 function armOverlayClock(root, W, H, getOv) {
   var canvas = root && root.querySelector && root.querySelector('[data-ov-clock]');
@@ -226,14 +226,14 @@ function disarmOverlayClock(canvas) {
   if (!canvas) return;
   try { delete canvas.__lollyFrameRender; } catch (e) { canvas.__lollyFrameRender = undefined; }
 }
-// Formats the clock should arm for — every other export (png/svg/pdf/jpg/webp/…)
+// Formats the clock should arm for - every other export (png/svg/pdf/jpg/webp/…)
 // captures the still, at-rest overlay exactly as before.
 var OV_MOTION_FORMATS = { gif: 1, apng: 1, webm: 1, mp4: 1 };
 // Serialise the overlay's export state (its box + the FULLY-RESOLVED overlay
 // params, logo/headshot URLs included) for the render patch. The template stamps
 // it onto the clock anchor as data-ov-params; armFilterOverlayExport reads it back
 // from the DOM. This is the isolation-safe channel (plans/86 section 18): the render hook
-// — which alone holds the resolved URLs — writes the state into its patch, which
+// - which alone holds the resolved URLs - writes the state into its patch, which
 // reaches the DOM whether the hook ran in this realm or in a Worker, so the
 // in-realm export hook never depends on a module var a Worker-side hook wrote.
 // Empty string when the overlay is inactive, so the attribute costs nothing then.
@@ -242,9 +242,9 @@ function overlayExportParams(W, H, ov) {
 }
 // Shared beforeExport/afterExport glue: arms the clock for a motion export.
 // Two call forms:
-//   armFilterOverlayExport(ctx)                 — isolation-safe: recover W/H/ov
+//   armFilterOverlayExport(ctx)                 - isolation-safe: recover W/H/ov
 //     from the clock anchor's data-ov-params (written via overlayExportParams).
-//   armFilterOverlayExport(ctx, W, H, lastOv)   — legacy: params from the tool's
+//   armFilterOverlayExport(ctx, W, H, lastOv)   - legacy: params from the tool's
 //     own module state (only correct when the render hook ran in THIS realm).
 // The DOM path is preferred; the legacy path stays until every filter migrates.
 var _ovClock = null;

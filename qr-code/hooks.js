@@ -6,13 +6,13 @@
  * scope (no imports, no globals beyond standard ECMAScript built-ins).
  *
  * The library generates a complete SVG string which the template renders
- * directly via {{{svgContent}}} — no per-module Handlebars loop needed.
+ * directly via {{{svgContent}}} - no per-module Handlebars loop needed.
  */
 
 // ─── qrcode-svg library (MIT) ────────────────────────────────────────────────
 // Source: https://github.com/papnkukn/qrcode-svg
 // Modifications: removed QRCode.prototype.save (uses require('fs')) and the
-// CommonJS module.exports guard — both incompatible with the sandbox.
+// CommonJS module.exports guard - both incompatible with the sandbox.
 
 function QR8bitByte(data) {
   this.mode = QRMode.MODE_8BIT_BYTE;
@@ -265,7 +265,7 @@ function compute(args) {
   } catch (err) {
     var msg = (err && err.message) ? err.message : 'Could not generate QR code';
     var note = /too long|overflow/i.test(msg)
-      ? 'Content is too long for a QR code — shorten the text or URL, or lower the error-correction level.'
+      ? 'Content is too long for a QR code - shorten the text or URL, or lower the error-correction level.'
       : msg;
     // qrError is surfaced to the template/UI; svgContent renders the note in-place.
     result = { svgContent: _errorSvg(note), qrError: note };

@@ -1,5 +1,5 @@
 <style>
-/* SUSE Mono static heavy weights — favicon labels live or die on weight + spacing,
+/* SUSE Mono static heavy weights - favicon labels live or die on weight + spacing,
    and a monospaced face keeps a 3–4 letter label evenly packed at 16 px. Mono's
    heaviest static face is Extra-bold (800); there is no Black, so the weight
    control tops out there. */
@@ -47,7 +47,7 @@
 .favx-tile.shape-square  { border-radius: 0; }
 
 /* With an image: glyph fills the upper area, label pins to the lower edge.
-   No side padding — the image fills the tile width edge-to-edge (zoom out to add
+   No side padding - the image fills the tile width edge-to-edge (zoom out to add
    margin); the label carries its own inset so text never touches the corners. */
 .favx-tile.has-art { justify-content: flex-start; padding:  0 0; }
 .favx-art {
@@ -68,7 +68,7 @@
 }
 
 /* The label. Size + tracking are computed by the hook so any 1–4 char string
-   fills the tile without overflowing — see hooks.js. */
+   fills the tile without overflowing - see hooks.js. */
 .favx-label {
   flex: none;
   width: 100%;
@@ -99,7 +99,7 @@
 }
 .favx-chip { display: flex; flex-direction: column; align-items: center; gap: 1.4cqmin; }
 /* The chip is its OWN size container so the cloned tile's cqmin (border-radius,
-   padding, label size) resolve against 16/32 px — NOT the 512 px stage. */
+   padding, label size) resolve against 16/32 px - NOT the 512 px stage. */
 .favx-chip-box {
   display: block;
   width: var(--px); height: var(--px);

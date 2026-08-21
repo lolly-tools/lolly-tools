@@ -4,12 +4,12 @@
  * The whole challenge of a favicon label is legibility once the icon is scaled
  * down to a 16 px browser tab. So the label is AUTO-FITTED: we estimate the
  * rendered width of the (upper-cased) text, then pick the largest font size that
- * fills the tile without spilling out — taking letter-spacing into account.
+ * fills the tile without spilling out - taking letter-spacing into account.
  * The label is set in SUSE Mono, so every glyph shares one advance width and the
  * estimate is just a per-character constant. Pure arithmetic, no DOM, so it
  * produces the same result in the web shell and the headless CLI.
  *
- * Returns extras only (labelSize / trackingEm / tileBg) — none collide with a
+ * Returns extras only (labelSize / trackingEm / tileBg) - none collide with a
  * declared input id, so nothing is clobbered.
  */
 
@@ -33,7 +33,7 @@ function compute(a) {
   var trackingEm = trackingNum / 100;
 
   // Total advance of the line in em (glyphs + the gaps between them). Monospace,
-  // so weight doesn't change the advance — every glyph is MONO_ADV wide.
+  // so weight doesn't change the advance - every glyph is MONO_ADV wide.
   var n = text.length;
   var totalEm = 0;
   for (var i = 0; i < n; i++) totalEm += advance(text[i]);

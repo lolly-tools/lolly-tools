@@ -15,7 +15,7 @@
     'use strict';
     /* Draggable colour-point dots. Revealed on canvas hover, excluded from
        every export via data-export-hide. During a drag the blob follows live
-       by moving its <radialGradient> cx/cy (userSpaceOnUse — no re-render);
+       by moving its <radialGradient> cx/cy (userSpaceOnUse - no re-render);
        the position only commits to the posN vector input on release, because
        committing re-renders the tool and would tear the DOM out from under an
        active drag. Commit = set both .vec-num fields, then fire one bubbling
@@ -23,7 +23,7 @@
     /* Own wrap = this script's previous sibling (offscreen compose/batch
        stages mount extra .mg-wrap copies after the app root, so a global
        last-match can grab the wrong instance). currentScript is null when the
-       shell executes detached — fall back to newest-wrap then. */
+       shell executes detached - fall back to newest-wrap then. */
     var cs = document.currentScript;
     var wrap = cs && cs.previousElementSibling && cs.previousElementSibling.classList
       && cs.previousElementSibling.classList.contains('mg-wrap')
@@ -36,7 +36,7 @@
     if (!wrap) return;
     /* Per-canvas commit channel (the shell binds it to THIS session's runtime,
        so an edit never leaks to sibling designs in multi-edit). Absent offscreen
-       and in older shells — then commit() falls back to the sidebar poke below.
+       and in older shells - then commit() falls back to the sidebar poke below.
        The stable canvas element also holds our focus marker so N mounted
        instances don't stomp one shared window global. */
     var canvasRoot = wrap.closest('[data-lolly-canvas]');
@@ -99,7 +99,7 @@
       dot.style.left = pt.x + '%';
       dot.style.top = pt.y + '%';
       dot.style.setProperty('--dot-c', pt.color);
-      dot.title = 'Colour point ' + n + ' — drag to move';
+      dot.title = 'Colour point ' + n + ' - drag to move';
       dotsBox.appendChild(dot);
       if (refocus === n) { dot.focus(); refocus = null; }
 
@@ -117,7 +117,7 @@
       }
 
       dot.addEventListener('pointerdown', function (e) {
-        e.preventDefault(); // stops text-selection/scroll — but also native focus
+        e.preventDefault(); // stops text-selection/scroll - but also native focus
         dot.focus();
         /* A pending nudge commit firing mid-drag would re-render and tear the
            dragged dot out from under the pointer capture. */
@@ -163,7 +163,7 @@
 
     /* Shuffle buttons. Both write CONCRETE values into the sidebar inputs
        (hex into the native colour input, rounded x/y into the vector fields),
-       so the shuffled state is deterministic — the URL, saves and re-renders
+       so the shuffled state is deterministic - the URL, saves and re-renders
        reproduce it exactly; no randomness survives into the render path. */
     var actions = wrap.querySelector('.mg-actions');
     if (actions && !actions.dataset.mgWired) {

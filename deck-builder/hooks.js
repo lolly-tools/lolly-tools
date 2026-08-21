@@ -1,9 +1,9 @@
 /**
- * Slides — hooks.
+ * Slides - hooks.
  *
  * Each slide (a Lolly "blocks" item) is one absolutely-positioned, full-frame
  * [data-pdf-page] layer. The slides share ONE timeline: a later slide animates IN
- * over the one before it (a cover transition — no blank gaps), and the last one
+ * over the one before it (a cover transition - no blank gaps), and the last one
  * rests as the end card. The hook generates the per-slide @keyframes + the
  * animation bindings as a <style> string ({{{animCss}}}) inside the template,
  * because the timeline depends on the slide count.
@@ -11,42 +11,42 @@
  * The deck is ONE DOM shape serving two contradictory export families, reconciled
  * by a class swap in beforeExport (the digi-ad idiom):
  *
- *   pdf / pptx  →  .sl-static — every stacked slide opaque and motionless. Both
+ *   pdf / pptx  →  .sl-static - every stacked slide opaque and motionless. Both
  *       walkers measure a page against its OWN rect and descend only its OWN
  *       subtree, so overlapping siblings can't contaminate a page; but a slide left
- *       hidden is DROPPED, and pptx still emits it — blank. So: all of them, shown.
- *   gif / mp4 / webm  →  .sl-anim — the deck plays, and the clip is timed off the
+ *       hidden is DROPPED, and pptx still emits it - blank. So: all of them, shown.
+ *   gif / mp4 / webm  →  .sl-anim - the deck plays, and the clip is timed off the
  *       authored timeline (see beforeExport).
  *
  * All motion is the parent's own CSS: the export bridge freezes every <video> to a
  * still for the whole capture, and a gif/Lottie in an <img> exports as a still, so
  * a composed child NEVER animates inside the deck's clip.
  *
- * NO MOTION is client-side JS — the animation is pure CSS, identical across the live
+ * NO MOTION is client-side JS - the animation is pure CSS, identical across the live
  * preview and frame-by-frame capture. Only two things are imperative, and neither
  * touches the timeline: the export frame clock (registered ONLY for the duration of a
- * motion export — see armFrameClock), and the template's TEXT-FIT pass, which is the
+ * motion export - see armFrameClock), and the template's TEXT-FIT pass, which is the
  * one job CSS genuinely cannot do (it has to measure laid-out text to know whether it
  * overflowed). The fit pass writes ONE unitless --fit multiplier per fit root, so what
- * it produces is still a scale-invariant ratio the CSS applies — see template.html.
+ * it produces is still a scale-invariant ratio the CSS applies - see template.html.
  */
 
-var MAX_SLIDES = 40;   // soft cap — each slide is a layer + a keyframe block
-var MAX_BOXES = 120;   // per freeform slide — bounds the DOM a single slide can add
+var MAX_SLIDES = 40;   // soft cap - each slide is a layer + a keyframe block
+var MAX_BOXES = 120;   // per freeform slide - bounds the DOM a single slide can add
 // The freeform box coordinate space: px on the tool's NATIVE render canvas. This is
-// the exact canvas the on-slide overlay (deck-editor.ts) manipulates —
-// manifest.render.width × render.height = 1920 × 1920 — so a box authored at (x,y)
+// the exact canvas the on-slide overlay (deck-editor.ts) manipulates -
+// manifest.render.width × render.height = 1920 × 1920 - so a box authored at (x,y)
 // with size (w,h) in that space renders here at the SAME fraction of the slide. The
 // two must stay in lock-step; the overlay divides by these same numbers.
 var NATIVE_W = 1920;
 var NATIVE_H = 1920;
-var GIF_FPS = 15;      // the gif encoder's own fixed rate — it ignores opts.fps
+var GIF_FPS = 15;      // the gif encoder's own fixed rate - it ignores opts.fps
 var MAX_FRAMES = 595;  // the bridge truncates past 600 frames with only a warning
 // How long opacity takes to arrive WHEN A TRANSFORM IS CARRYING THE ENTRANCE
 // (slide/zoom). Kept short ON PURPOSE: a long opacity ramp leaves many muddy
 // semi-transparent frames in gif/video exports, while translate/scale can take their
 // time because they don't blend pixels. A plain fade has no transform, so opacity IS
-// the transition and takes the whole length instead — see the split keyframes in
+// the transition and takes the whole length instead - see the split keyframes in
 // buildAnimCss.
 var OPACITY_SEC = 0.13;
 
@@ -67,7 +67,7 @@ var SLOTS_FOR = {
 var PAGED = { pdf: 1, pptx: 1 };            // one slide per [data-pdf-page], all shown
 var CLIP  = { mp4: 1, webm: 1, gif: 1 };    // the deck plays and is captured frame by frame
 
-// Entrance TRANSFORMS (opacity is decoupled — always a brief fade). Each value is
+// Entrance TRANSFORMS (opacity is decoupled - always a brief fade). Each value is
 // the starting transform that eases to none over the transition length.
 var DEFAULT_EASE = 'cubic-bezier(.22,.61,.36,1)';
 var ENTER = {
@@ -87,12 +87,12 @@ function entrance(kind) {
 
 // Shared with beforeExport/afterExport, which only receive format/opts/node.
 var _totalDuration = 6;   // the authored timeline, in wall-clock seconds
-var _clipMs = 0;          // the exported clip's length in ms — what the frame clock seeks across
+var _clipMs = 0;          // the exported clip's length in ms - what the frame clock seeks across
 var _loop = 'loop';
 var _savedClass = null;
 var _clock = null;
-var _theme = null;   // resolved brand tokens (readBrandTheme) — cached across onInput
-var _logos = null;   // resolved logo variants (resolveLogos) — cached across onInput
+var _theme = null;   // resolved brand tokens (readBrandTheme) - cached across onInput
+var _logos = null;   // resolved logo variants (resolveLogos) - cached across onInput
 
 // ── helpers ──────────────────────────────────────────────────────────────────
 
@@ -102,17 +102,17 @@ function toInputs(model) {
   return o;
 }
 function num(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
-// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared clamp - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
-// === lolly:shared safeColor — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared safeColor - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function safeColor(v, fallback) {
   var s = String(v == null ? '' : v).trim();
   if (!s) return fallback;
   if (/^#[0-9a-fA-F]{3,8}$/.test(s)) return s;
   if (/^(rgb|rgba|hsl|hsla)\([0-9.,%\s/]+\)$/i.test(s)) return s;
   if (/^[a-zA-Z]+$/.test(s)) return s; // named colour (e.g. "transparent", "tomato")
-  // A brand-token CSS var with an OPTIONAL literal-colour fallback — the documented
+  // A brand-token CSS var with an OPTIONAL literal-colour fallback - the documented
   // brand-inheritance path (brand-vars.ts injects --brand-primary/… onto the canvas root,
   // so a template can carry var(--brand-primary, #hex)). Strict on purpose: a var name and
   // at most one hex / named / rgb / hsl fallback, so nothing (no ; " ' < > { } or a nested
@@ -156,18 +156,18 @@ function idealInk(hex) { return relLum(hex) < 0.5 ? '#ffffff' : '#141b2d'; }
 // ── markdown → safe HTML ───────────────────────────────────────────────────────
 // The content field is a plain markdown STRING. We NEVER hand raw HTML to the
 // logic-less template: every text run is esc()'d FIRST, then only a fixed set of
-// tags is introduced by operating on the already-escaped text — the doc-studio
+// tags is introduced by operating on the already-escaped text - the doc-studio
 // inline() discipline. This escape-first order is the entire security model: no
 // piece of user text (cell, link text, list item, heading) can ever emit a live
 // tag, so a `javascript:` URL or an `<img onerror>` in a cell is inert.
 //
 // Both slide modes (mdToParts for LAYOUT, mdBox for FREEFORM) share ONE block
-// parser (renderBlocks) so they can't drift — they differ only in a class map and
+// parser (renderBlocks) so they can't drift - they differ only in a class map and
 // whether the first heading is lifted out as the slide title.
 
 // A URL is safe only if it names an allowed scheme (http/https/mailto) or names no
-// scheme at all (relative / scheme-relative / fragment / query). Everything else —
-// javascript:, data:, vbscript:, file:, … — is dropped (the link renders as plain
+// scheme at all (relative / scheme-relative / fragment / query). Everything else -
+// javascript:, data:, vbscript:, file:, … - is dropped (the link renders as plain
 // text). The probe strips control/whitespace chars first, so `java\tscript:` and
 // friends can't smuggle a scheme past the test.
 function safeUrl(u) {
@@ -288,7 +288,7 @@ function renderList(items, cls) {
         out += '</' + stack.pop().tag + '></li>';                                 // pop deeper levels
       }
     }
-    out += '<li>' + inlineMd(it.text);   // <li> left open — closed on dedent or at the end
+    out += '<li>' + inlineMd(it.text);   // <li> left open - closed on dedent or at the end
   }
   while (stack.length) out += '</li></' + stack.pop().tag + '>';
   return out;
@@ -313,8 +313,8 @@ function renderBlocks(md, cls, extractTitle) {
     var raw = lines[i], t = raw.trim();
     if (!t) { flush(); continue; }
 
-    // Fenced code block (``` or ~~~). Its content is LITERAL — esc()'d, with NO inline
-    // markdown and no block parsing — and it runs to the matching closing fence (a line
+    // Fenced code block (``` or ~~~). Its content is LITERAL - esc()'d, with NO inline
+    // markdown and no block parsing - and it runs to the matching closing fence (a line
     // of the same fence char, at least as long) or to EOF. Checked before every other
     // block so ` # `, ` | ` or ` - ` INSIDE a code fence stay literal text.
     var fence = /^(`{3,}|~{3,})/.exec(t);
@@ -352,7 +352,7 @@ function renderBlocks(md, cls, extractTitle) {
       quoteBuf.push(t.replace(/^>\s?/, ''));
       continue;
     }
-    // List item (indentation preserved — buffered so a whole run nests together).
+    // List item (indentation preserved - buffered so a whole run nests together).
     var li = listItem(raw);
     if (li) { flushPara(); flushQuote(); listBuf.push(li); continue; }
     // Anything else is paragraph text.
@@ -379,7 +379,7 @@ function mdToParts(md) {
 function mdBox(md) { return renderBlocks(md, CLS_BOX, false).body; }
 
 // ── freeform boxes ──────────────────────────────────────────────────────────────
-// A freeform slide carries a `boxes` array — the flat records the overlay drags
+// A freeform slide carries a `boxes` array - the flat records the overlay drags
 // around. The value arrives EITHER as a real array (overlay set it in-memory) OR as
 // a JSON string (the declared `text` sub-field, so it round-trips through URL/session
 // state). Tolerate both; anything malformed renders as an empty canvas, never throws.
@@ -393,7 +393,7 @@ function parseBoxes(v) {
   return [];
 }
 // A box `src` is a resolved URL string, or a {url} asset ref (the engine does NOT
-// auto-resolve refs nested inside a box — only DECLARED asset sub-fields — so the
+// auto-resolve refs nested inside a box - only DECLARED asset sub-fields - so the
 // overlay hands us a URL). Only known-safe schemes reach an <img src>.
 function boxUrl(src) {
   var s = (src && typeof src === 'object') ? refUrl(src) : str(src);
@@ -408,7 +408,7 @@ function pctW(v) { return f4(num(v, 0) / NATIVE_W * 100) + '%'; }
 function pctH(v) { return f4(num(v, 0) / NATIVE_H * 100) + '%'; }
 var BOX_ALIGN = { l: 'left', left: 'left', c: 'center', center: 'center', centre: 'center', r: 'right', right: 'right' };
 function boxAlign(v) { return BOX_ALIGN[str(v).toLowerCase()] || 'left'; }
-// Where the text sits VERTICALLY inside the box it was given — the counterpart to align.
+// Where the text sits VERTICALLY inside the box it was given - the counterpart to align.
 // Compact codes are what the overlay stores; the full words are what hand-written JSON and
 // design-shaped boxes use, so both are read. Absent → top (the flow default, which
 // is what every box authored before this field rendered as).
@@ -416,12 +416,12 @@ var BOX_VALIGN = { t: 't', top: 't', m: 'm', middle: 'm', center: 'm', centre: '
 function boxValign(v) { return BOX_VALIGN[str(v).toLowerCase()] || 't'; }
 // A kind:"box" is a plain filled shape (no text/image of its own). Its corner
 // rounding and border MUST scale with the slide (the box is sized in % of the frame),
-// so we express both in slide-relative units — cqw against the deck query container,
-// exactly like box.fontSize — NOT fixed px. `radius` is authored in NATIVE px.
+// so we express both in slide-relative units - cqw against the deck query container,
+// exactly like box.fontSize - NOT fixed px. `radius` is authored in NATIVE px.
 var BOX_SHAPES = { rect: 1, round: 1, pill: 1, ellipse: 1 };
 function boxShape(v) { var s = str(v).toLowerCase(); return BOX_SHAPES[s] ? s : 'rect'; }
 // `radius` is authored in NATIVE px, as EITHER one number (all four corners) or a
-// [topLeft, topRight, bottomRight, bottomLeft] array — CSS corner order, so the four
+// [topLeft, topRight, bottomRight, bottomLeft] array - CSS corner order, so the four
 // values pass straight through to border-radius. Anything malformed reads as 0.
 function radiusList(b) {
   var r = b.radius;
@@ -437,7 +437,7 @@ function boxRadiusCss(b) {
   var shape = boxShape(b.shape);
   if (shape === 'pill') return '9999px';               // stadium ends, size-independent
   if (shape === 'ellipse') return '50%';               // border-radius:50% draws an ellipse
-  // rect and round BOTH honour the authored corners — `shape` only names the two geometries
+  // rect and round BOTH honour the authored corners - `shape` only names the two geometries
   // (pill/ellipse) that radius can't express, so there is no redundant shape⇄radius switch
   // to keep in sync. No radius at all → square corners, which is what `rect` has always been.
   var rs = radiusList(b);
@@ -472,7 +472,7 @@ function renderBoxes(raw) {
     };
     if (isBox) {
       // A plain shape: solid fill (empty = transparent), slide-relative radius + border.
-      // No markdown, no image — text/image layer as separate boxes above it (array
+      // No markdown, no image - text/image layer as separate boxes above it (array
       // order is z-order). Every value is sanitised (safeColor / numeric coercion), so
       // nothing raw reaches the style attribute.
       box.fill = safeColor(b.fill, '');
@@ -501,7 +501,7 @@ function renderBoxes(raw) {
 
 // ── brand theme (host.tokens → the 7 semantic colours) ─────────────────────────
 // SUSE + blank profiles declare NO color.semantic slots, so the static fallbacks
-// rule unless a brand fills them in. Everything guarded — older/headless shells
+// rule unless a brand fills them in. Everything guarded - older/headless shells
 // and blank brands just get the fallbacks.
 function isHexish(s) { return typeof s === 'string' && /^#?[0-9a-fA-F]{3,8}$/.test(s.trim()); }
 function normHex(s) { s = str(s).trim(); return /^[0-9a-fA-F]{3,8}$/.test(s) ? '#' + s : s; }
@@ -544,7 +544,7 @@ async function readBrandTheme() {
     T.pine2 = pick(['color.ramp.pine.2']) || mixHex(T.ink, T.green, 0.28);
     T.paleA = pick(['color.ramp.pine.8']) || mixHex(T.green, '#ffffff', 0.92);
     T.paleB = pick(['color.ramp.jungle.7']) || mixHex(T.green, '#ffffff', 0.72);
-    // The brand face — used by the exported layout gallery's text styles + theme fonts.
+    // The brand face - used by the exported layout gallery's text styles + theme fonts.
     if (host.tokens.resolve) {
       var f = await host.tokens.resolve('{font.brand}');
       if (typeof f === 'string' && f && f.indexOf('{') !== 0) T.font = f;
@@ -564,7 +564,7 @@ function mixHex(a, b, t) {
 // ── named schemes: {bg, ink, accent} derived from the resolved brand tokens ────
 var SCHEMES = { auto: 1, brand: 1, light: 1, dark: 1, primary: 1, accent: 1 };
 function normScheme(v, dflt) { v = str(v); return SCHEMES[v] ? v : (dflt || 'auto'); }
-// WCAG contrast — host.color.contrast when the shell offers it (v1.40+), else a
+// WCAG contrast - host.color.contrast when the shell offers it (v1.40+), else a
 // luminance-ratio approximation, so we pick a legible ink either way.
 function contrastOf(a, b) {
   try { if (typeof host !== 'undefined' && host && host.color && host.color.contrast) { var r = host.color.contrast(a, b); if (isFinite(r)) return r; } } catch (e) { /* fall through */ }
@@ -585,7 +585,7 @@ function schemeColors(name, T) {
   }
 }
 
-// ── brand logo (host.assets — light/dark + colour/mono variant per slide) ──────
+// ── brand logo (host.assets - light/dark + colour/mono variant per slide) ──────
 // Mirrors deck-studio resolveLogos: query by TAGS (portable across brands that
 // follow the convention), identify the mono variant by its `mono` tag, and read
 // each SVG's true aspect from its viewBox so a wide lockup is never clipped. Blank
@@ -616,7 +616,7 @@ function slideFit(v, deckOn) {
   if (s === 'off') return false;
   return !!deckOn;                     // 'auto' / absent / unknown → the deck's setting
 }
-// Only the `title` layout has free space to move the text into — every other layout pins the
+// Only the `title` layout has free space to move the text into - every other layout pins the
 // text band above a slot grid that grows to fill whatever's left, so a valign there would be
 // a control that does nothing. The manifest gates the field to `title` (showFor); this
 // returns '' for the rest so the template omits the attribute entirely rather than emitting
@@ -668,7 +668,7 @@ async function resolveLogos() {
       out[key].color = await resolve(color);
       out[key].mono = (await resolve(mono)) || out[key].color;
     }
-  } catch (e) { /* no logos — decks just render without one */ }
+  } catch (e) { /* no logos - decks just render without one */ }
   return out;
 }
 function pickLogo(logos, darkBg, mono) {
@@ -707,7 +707,7 @@ function fontVal(v) {
 }
 // Per-element overrides → CSS custom properties on the deck root. An element is only
 // emitted when its CHIP is on (inputs[<el>On]); toggling the chip off keeps the values
-// in state but stops applying them — like a layer's visibility. Within an on element,
+// in state but stops applying them - like a layer's visibility. Within an on element,
 // each of size / weight / font is emitted only when it departs from the default.
 function buildStyleVars(inputs) {
   var out = '';
@@ -736,7 +736,7 @@ function buildStyleVars(inputs) {
 // it scoped in shells that don't (defence in depth) and lifts its specificity over the
 // tool's own class rules, so a plain `h1 { font-size: … }` actually takes. Two things
 // are neutralised: `</style` (the one HTML-level breakout out of the <style> element)
-// and `@import` (an external fetch — this deck is offline-first). Everything else is
+// and `@import` (an external fetch - this deck is offline-first). Everything else is
 // the user's own CSS in their own canvas.
 function buildUserCss(v) {
   var css = str(v);
@@ -764,7 +764,7 @@ function buildAnimCss(n, startS, inS, R, T, motion, loop, focusIdx) {
     // Two decoupled tracks on the shared timeline. When a TRANSFORM carries the
     // entrance (slide/zoom) it eases from → none over the whole length while opacity
     // ramps 0→1 in a short window on top, so it never lingers. A fade has no
-    // transform, so opacity IS the entrance and takes the whole length — capping it
+    // transform, so opacity IS the entrance and takes the whole length - capping it
     // would leave "Transition length" doing nothing for the default transition. A cut
     // is a near-instant flash either way.
     var opSec = e.cut ? Math.min(inS[k], 0.04)
@@ -789,7 +789,7 @@ function buildAnimCss(n, startS, inS, R, T, motion, loop, focusIdx) {
     bindings.push('.slides.sl-anim .sl-slide--' + k + '{animation:' + anim + '}');
   }
 
-  // Editor freeze — hold the slide being edited (styles.css hides the rest, and takes
+  // Editor freeze - hold the slide being edited (styles.css hides the rest, and takes
   // pointer-events off ALL of them: every slide is a full-frame layer, so the topmost one
   // would otherwise swallow clicks meant for the visible one). Re-arm both on the focused
   // slide, so on-canvas editing can hit-test its real text.
@@ -802,7 +802,7 @@ function buildAnimCss(n, startS, inS, R, T, motion, loop, focusIdx) {
 
 // Bottom-corner furniture (per slide): the brand logo (bottom-left, light/dark or
 // mono, per-slide override) and the page number (bottom-right). Both are REAL slide
-// content — they export (never [data-export-hide]). The logo box is sized in cqh
+// content - they export (never [data-export-hide]). The logo box is sized in cqh
 // (share of the slide height) so it scales with any deck size; ~4cqh (SMALLER than
 // deck-studio's 5.5%). Width follows the SVG's real aspect so a wide lockup fits
 // `contain` without clipping.
@@ -810,7 +810,7 @@ function furniture(bg, row, theme, logos, pageNumbers, brandLogo, index, scheme)
   var out = { logo: null, showPageNo: false, pageNo: index + 1 };
   out.showPageNo = !!pageNumbers;
   var mode = normLogo(row.logo);
-  // On the accent scheme the background IS the brand accent/secondary — which in most brands
+  // On the accent scheme the background IS the brand accent/secondary - which in most brands
   // is (or is close to) the logomark colour, so a colour logo would clash or vanish into it.
   // Force the mono variant there (unless the slide explicitly turned the logo off).
   var useMono = (mode === 'mono') || (scheme === 'accent');
@@ -831,7 +831,7 @@ function furniture(bg, row, theme, logos, pageNumbers, brandLogo, index, scheme)
 // slides from PowerPoint's "New Slide" gallery with the logo/footer riding along.
 // Geometry follows the SUSE brand template (margins 3.4%, title strip 3.4–14.6%,
 // body to 84.7%, logo bottom-left 2.4%/92% at 4.4% tall, number bottom-right).
-// Authored in a fixed 1280×720 `ref` space — the export bridge rescales it into the
+// Authored in a fixed 1280×720 `ref` space - the export bridge rescales it into the
 // real page box, so any deck size/aspect keeps the fractions.
 var GALLERY = ['TITLE', 'SECTION_HEADER', 'TITLE_AND_BODY', 'TITLE_AND_TWO_COLUMNS', 'TITLE_ONLY', 'ONE_COLUMN_TEXT', 'MAIN_POINT', 'SECTION_TITLE_AND_DESCRIPTION', 'CAPTION_ONLY', 'BIG_NUMBER'];
 var LAYOUT_TO_ARCH = {
@@ -984,7 +984,7 @@ function compute(model, theme, logos) {
   var pageNumbers = inputs.pageNumbers !== false;   // default on
   var brandLogo = inputs.brandLogo !== false;       // default on
   var footerText = str(inputs.footerText);
-  var deckFit = inputs.fitText !== false;           // default ON — long text shrinks to fit its slide
+  var deckFit = inputs.fitText !== false;           // default ON - long text shrinks to fit its slide
   var T = theme || THEME_FALLBACK;
 
   var all = Array.isArray(inputs.deck) ? inputs.deck : [];
@@ -1001,7 +1001,7 @@ function compute(model, theme, logos) {
     };
   }
 
-  // Timeline: slide i arrives at startS[i] over inS[i], then holds. Cover model —
+  // Timeline: slide i arrives at startS[i] over inS[i], then holds. Cover model -
   // it stays visible (covered by later slides) so there are no blank gaps.
   var inS = [], startS = [], acc = 0;
   for (var i = 0; i < n; i++) {
@@ -1013,7 +1013,7 @@ function compute(model, theme, logos) {
   var TT = f4(R);
   _totalDuration = TT;
 
-  // The engine applies NO defaults to block sub-fields — every one is defended here.
+  // The engine applies NO defaults to block sub-fields - every one is defended here.
   var pages = [];
   for (var k = 0; k < n; k++) {
     var row = rows[k] || {};
@@ -1064,7 +1064,11 @@ function compute(model, theme, logos) {
       var slots = [];
       var fields = SLOTS_FOR[layout];
       for (var s = 0; s < fields.length; s++) {
-        slots.push({ n: s + 1, url: refUrl(row[fields[s]]) });
+        // A slot takes media OR text: media wins when both are set; text renders as a
+        // brand card well (markdown through the same renderer as freeform boxes).
+        var slotUrl = refUrl(row[fields[s]]);
+        var slotTxt = slotUrl ? '' : str(row['text' + (s + 1)]);
+        slots.push({ n: s + 1, url: slotUrl, html: slotTxt.trim() ? mdBox(slotTxt) : '' });
       }
       page.boxes = [];
       page.titleHtml = parts.titleHtml;
@@ -1086,7 +1090,7 @@ function compute(model, theme, logos) {
   var focusIdx = (focus > 0) ? clamp(focus - 1, 0, n - 1) : (animOff ? 0 : -1);
 
   // The returned keys (pages/animCss/rootClass/durSec/slideCount) must never collide
-  // with an input id — a match would overwrite that INPUT instead of landing in
+  // with an input id - a match would overwrite that INPUT instead of landing in
   // extras. The blocks input is `deck` precisely so `pages` stays free.
   return {
     pages: pages,
@@ -1103,8 +1107,8 @@ function compute(model, theme, logos) {
     // template extras rather than overwriting an input.
     styleVars: buildStyleVars(inputs),
     userCss: buildUserCss(inputs.customCss),
-    // The brand-bar hues as custom properties for the furniture CSS.
-    barVars: '--sl-mint:' + T.mint + ';--sl-blue:' + T.blue + ';--sl-orange:' + T.orange + ';--sl-green:' + T.green + ';',
+    // The brand-bar + card-well hues as custom properties for the furniture CSS.
+    barVars: '--sl-mint:' + T.mint + ';--sl-blue:' + T.blue + ';--sl-orange:' + T.orange + ';--sl-green:' + T.green + ';--sl-card:' + T.card + ';--sl-card-ink:' + T.ink + ';',
     // The branded layout gallery + brand theme the .pptx export attaches (see
     // buildPptxLayouts). Key chosen NOT to collide with any input id.
     pptxLayouts: safeJson(buildPptxLayouts(T, logos, footerText, pageNumbers, brandLogo))
@@ -1126,16 +1130,16 @@ function onInput(ctx) { return compute(ctx.model, _theme || THEME_FALLBACK, _log
  * Register the deterministic export frame clock.
  *
  * The capture loop re-serialises the whole node once per frame and hands frame()
- * a normalised time t — but it only USES that t when a <canvas> inside the node
+ * a normalised time t - but it only USES that t when a <canvas> inside the node
  * carries __lollyFrameRender. Without one, capture happens at serialisation speed
  * while the encoder replays at a fixed fps, so the authored "seconds per slide" and
  * "transition length" are simply ignored and the clip drifts. So we seek the deck
  * ourselves: pause every animation and pin it to t's exact millisecond. A PAUSED
  * animation has a stable computed style, which is what the serialiser copies onto
- * its clone — more reliable than sampling a live, mid-flight phase.
+ * its clone - more reliable than sampling a live, mid-flight phase.
  *
  * Degrades to the wall-clock path both ways. Without Web Animations there is no
- * clock at all (frame() falls back to real-time capture — digi-ad's shipping
+ * clock at all (frame() falls back to real-time capture - digi-ad's shipping
  * behaviour), and if the seek ever throws mid-capture the animations are simply
  * left running, which is the same fallback. The CSS timeline stays the single
  * source of truth either way; the clock only ever reads it.
@@ -1153,7 +1157,7 @@ function armFrameClock(root) {
         anims[i].currentTime = ms;
       }
     } catch (e) {
-      // Leave them running — the frame captures the wall-clock phase instead.
+      // Leave them running - the frame captures the wall-clock phase instead.
     }
   };
 }
@@ -1181,7 +1185,7 @@ function beforeExport(ctx) {
   root.classList.remove('sl-restart'); void root.offsetWidth;
 
   ctx.opts.wait = 0;                  // the animation is already running
-  // The timeline IS the clip length — but the bridge truncates past 600 frames with
+  // The timeline IS the clip length - but the bridge truncates past 600 frames with
   // only a warning, so clamp the seconds ourselves and say so. gif encodes at its
   // own fixed rate; video honours the export bar's fps.
   var fps = (fmt === 'gif') ? GIF_FPS : ((ctx.opts.fps > 0) ? ctx.opts.fps : 24);
@@ -1190,7 +1194,7 @@ function beforeExport(ctx) {
   ctx.opts.duration = clip;
   if (cap < _totalDuration && host.log) {
     host.log('warn', 'slides: clip clamped to ' + cap + 's of a ' + _totalDuration +
-      's deck (the exporter\'s 600-frame ceiling) — shorten the deck, or drop "Seconds per slide", to fit it all in.');
+      's deck (the exporter\'s 600-frame ceiling) - shorten the deck, or drop "Seconds per slide", to fit it all in.');
   }
   // Loop count (gifenc repeat semantics: -1 once, 0 forever).
   ctx.opts.repeat = (_loop === 'once') ? -1 : 0;

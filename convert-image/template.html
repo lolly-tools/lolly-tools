@@ -5,7 +5,7 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="14" height="14" rx="2"/><circle cx="8" cy="8" r="1.6"/><path d="m3 14 4-4 5 5"/><path d="M21 11v6a4 4 0 0 1-4 4h-6"/><path d="m14 18 3 3 3-3"/></svg>
       </div>
       <h2>Convert an image</h2>
-      <p>Drag an image anywhere onto this area, or choose one below. HEIC and HEIF (iPhone photos), AVIF, TIFF, JPEG, PNG and WebP come in — WebP, JPEG or PNG comes out.</p>
+      <p>Drag an image anywhere onto this area, or choose one below. HEIC and HEIF (iPhone photos), AVIF, TIFF, JPEG, PNG and WebP come in - WebP, JPEG or PNG comes out.</p>
       <button type="button" class="cvt-pick" data-file-pick>Choose an image…</button>
       <p class="cvt-empty-note">Everything happens in your browser. Your photo is never uploaded.</p>
     </div>
@@ -69,7 +69,7 @@
         </fieldset>
 
         {{#if animatedNote}}
-          <p class="cvt-note">This is an animated image — converting keeps only its first frame.</p>
+          <p class="cvt-note">This is an animated image - converting keeps only its first frame.</p>
         {{/if}}
 
         {{#if done}}
@@ -82,12 +82,12 @@
 
         {{#if pending}}
           <div class="cvt-result">
-            <span class="cvt-result-delta">Ready — your converted image is built when you download.</span>
+            <span class="cvt-result-delta">Ready - your converted image is built when you download.</span>
           </div>
         {{/if}}
 
         <button type="button" class="cvt-download" data-export-file data-busy-label="Converting…">Download {{formatLabel}}</button>
-        <p class="cvt-note cvt-tail">Converted on your device — the file is decoded and re-encoded in your browser, never uploaded. Hidden metadata (EXIF, GPS) does not survive the re-encode.</p>
+        <p class="cvt-note cvt-tail">Converted on your device - the file is decoded and re-encoded in your browser, never uploaded. Hidden metadata (EXIF, GPS) does not survive the re-encode.</p>
       {{/if}}
     </div>
   {{/if}}

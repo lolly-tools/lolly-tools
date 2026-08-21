@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Fett",
   "inputs.weight.options.600": "Halbfett",
   "inputs.tracking.label": "Kerning",
-  "inputs.tracking.help": "Negative Werte rücken die Buchstaben näher zusammen – unerlässlich, um 3–4 Monospace-Großbuchstaben in eine 16-px-Kachel einzupassen. Mono ist breit angelegt, daher sollten Sie deutlich in den negativen Bereich gehen.",
+  "inputs.tracking.help": "Negative Werte rücken die Buchstaben näher zusammen - unerlässlich, um 3–4 Monospace-Großbuchstaben in eine 16-px-Kachel einzupassen. Mono ist breit angelegt, daher sollten Sie deutlich in den negativen Bereich gehen.",
   "inputs.labelScale.label": "Beschriftungsgröße",
   "inputs.labelScale.help": "Passt die automatisch angepasste Beschriftungsgröße nach oben oder unten an (in Prozent).",
   "inputs.showGrid.label": "16-px-Vorschau",
-  "inputs.showGrid.help": "Zeigt das Symbol auf der Zeichenfläche in seinen tatsächlichen Favicon-Größen von 16 und 32 px an, damit Sie die Lesbarkeit beurteilen können. Nur eine Hilfestellung im Editor – wird nie in Exporte übernommen."
+  "inputs.showGrid.help": "Zeigt das Symbol auf der Zeichenfläche in seinen tatsächlichen Favicon-Größen von 16 und 32 px an, damit Sie die Lesbarkeit beurteilen können. Nur eine Hilfestellung im Editor - wird nie in Exporte übernommen."
 }

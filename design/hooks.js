@@ -1,14 +1,14 @@
 /* global onInit, onInput, beforeExport, host */
 
 /**
- * Design — a free-form WYSIWYG canvas of positioned "boxes".
+ * Design - a free-form WYSIWYG canvas of positioned "boxes".
  *
  * The tool is DATA: each box is one row of the `boxes` blocks input, carrying flat
  * geometry (x/y/w/h/rot) + decoration (shape/radius/fill/opacity/image/text/…).
  * The direct-manipulation overlay (select / drag / resize / rotate / z-order /
  * align / distribute) lives entirely in the web shell (shells/web/src/views/
  * free-canvas.js) and only ever writes this flat array back through the normal
- * input path — so the engine, the URL, and the CLI never see the editor, and a
+ * input path - so the engine, the URL, and the CLI never see the editor, and a
  * headless render of the same state produces identical artwork.
  *
  * This hook is PURE (no DOM, no async): Handlebars is logic-less, so it can't
@@ -28,22 +28,22 @@ function num(v, d) {
   var x = typeof v === 'number' ? v : parseFloat(v);
   return isFinite(x) ? x : d;
 }
-// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared clamp - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 
-// Only let a value through if it's a shape CSS colour can't be smuggled past —
+// Only let a value through if it's a shape CSS colour can't be smuggled past -
 // box fill/text colour come from colour inputs, but a hand-edited URL could carry
 // anything, and these land inside a style="" attribute, so guard against
 // property-injection via a stray ';'.
-// === lolly:shared safeColor — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared safeColor - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function safeColor(v, fallback) {
   var s = String(v == null ? '' : v).trim();
   if (!s) return fallback;
   if (/^#[0-9a-fA-F]{3,8}$/.test(s)) return s;
   if (/^(rgb|rgba|hsl|hsla)\([0-9.,%\s/]+\)$/i.test(s)) return s;
   if (/^[a-zA-Z]+$/.test(s)) return s; // named colour (e.g. "transparent", "tomato")
-  // A brand-token CSS var with an OPTIONAL literal-colour fallback — the documented
+  // A brand-token CSS var with an OPTIONAL literal-colour fallback - the documented
   // brand-inheritance path (brand-vars.ts injects --brand-primary/… onto the canvas root,
   // so a template can carry var(--brand-primary, #hex)). Strict on purpose: a var name and
   // at most one hex / named / rgb / hsl fallback, so nothing (no ; " ' < > { } or a nested
@@ -65,7 +65,7 @@ function boolVal(v, dflt) {
 }
 
 // Escape a string for safe inclusion in raw HTML output ({{{ }}} in the template).
-// === lolly:shared esc — generated from community/_shared/text.js; edit there and run npm run sync:shared ===
+// === lolly:shared esc - generated from community/_shared/text.js; edit there and run npm run sync:shared ===
 function esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -94,8 +94,8 @@ function inlineMd(s) {
   // a validated colour (safeColor → only a real colour reaches style=""), a numeric
   // weight wNNN, a closed font token mono|sans, and/or the decoration flags u
   // (underline) / s (strikethrough); anything else leaves the {…|…} literal so ordinary
-  // "{x|y}" copy is never swallowed. Only fixed, validated values reach style="" — no
-  // token text is echoed — so this stays XSS-safe. The inner text still carries **/*,
+  // "{x|y}" copy is never swallowed. Only fixed, validated values reach style="" - no
+  // token text is echoed - so this stays XSS-safe. The inner text still carries **/*,
   // handled just below. The vector export reads each run's computed colour, weight and
   // font-family (and draws underline/strike), so styled text outlines correctly.
   s = s.replace(/\{([^|{}]+)\|([^{}]*)\}/g, function (whole, attrs, inner) {
@@ -164,7 +164,7 @@ var V_ALIGN = { top: 'flex-start', middle: 'center', bottom: 'flex-end' };
 var DECK_ALIGN = { left: 'l', center: 'ctr', right: 'r' };
 var DECK_ANCHOR = { top: 't', middle: 'ctr', bottom: 'b' };
 // Any 100-step weight in the variable font's range. Sans stacks commonly cover
-// 100–900; mono cuts rarely ship a Black, so cap mono at 800 — this keeps the
+// 100–900; mono cuts rarely ship a Black, so cap mono at 800 - this keeps the
 // browser render and the static-TTF vector export in agreement.
 function weightOf(b) {
   var w = clamp(Math.round(num(b.weight, 700) / 100) * 100, 100, 900);
@@ -183,7 +183,7 @@ var FONTS = {
 };
 function fontFamily(v) {
   var key = String(v);
-  // Own-property, not bare truthiness — the SHADOW_TARGETS rule, applied to every enum
+  // Own-property, not bare truthiness - the SHADOW_TARGETS rule, applied to every enum
   // whitelist in this file: `font=constructor` from a hand-edited URL would otherwise
   // return Object and emit its source text as a font-family.
   if (Object.prototype.hasOwnProperty.call(FONTS, key)) return FONTS[key];
@@ -193,7 +193,7 @@ function fontFamily(v) {
 // A box font → a PLAIN PowerPoint typeface NAME for the deck model (NOT fontFamily's
 // CSS stack, which is a var()/fallback list unusable as a pptx font). The built-in
 // 'sans'/'mono' keywords resolve to CSS custom properties with no single static face
-// name in the blank profile, so they are OMITTED (undefined) — the deck theme's minor
+// name in the blank profile, so they are OMITTED (undefined) - the deck theme's minor
 // font then applies. A brand family the user added carries a real name; sanitise it
 // exactly as fontFamily() does before it reaches the pptx run.
 function deckFont(b) {
@@ -203,7 +203,7 @@ function deckFont(b) {
   return safe || undefined;
 }
 var FITS = { cover: 1, contain: 1, fill: 1, none: 1, 'scale-down': 1 };
-// Whitelisted CSS object-position anchors — the free-canvas 3×3 picker writes one of
+// Whitelisted CSS object-position anchors - the free-canvas 3×3 picker writes one of
 // these. The value lands in a style="" attr, so (like safeColor) only known keywords
 // pass. 'center' is the CSS default, so it's emitted as nothing to keep URLs terse.
 // Picks which edge/corner a contain-fitted image sits against, or which part of a
@@ -215,7 +215,7 @@ var OBJPOS = {
   top: 1, bottom: 1, left: 1, right: 1,
 };
 // CSS mix-blend-mode keywords. Faithful in raster (PNG/JPG/WebP) export; the vector
-// walkers (SVG/PDF) don't honour blend, so it flattens there — documented.
+// walkers (SVG/PDF) don't honour blend, so it flattens there - documented.
 var BLENDS = {
   multiply: 1, screen: 1, overlay: 1, darken: 1, lighten: 1, 'color-dodge': 1,
   'color-burn': 1, 'hard-light': 1, 'soft-light': 1, difference: 1, exclusion: 1,
@@ -226,11 +226,11 @@ var BLENDS = {
 // on the frame: the fill (boxCss), the shadow/clip/blur (compute), the text (compute)
 // and the media element (mediaHtmlFor). Mirrors sequence-studio's predicate verbatim so
 // Design and Sequence Studio decide identically. A box is audio when it SAYS so
-// (kind:'audio' — what the Audio add-kind seeds and what the shell's timeline compositor
+// (kind:'audio' - what the Audio add-kind seeds and what the shell's timeline compositor
 // keys its waveform lane off), or when the asset it carries is audio by type/extension.
 // Both, because a catalog ref's url is an opaque `asset:`/blob id with no extension and a
 // resolver may not fill in .type, so the kind is the only reliable signal for a library
-// track — while the extension test still catches an audio file dropped onto an ordinary box.
+// track - while the extension test still catches an audio file dropped onto an ordinary box.
 function isAudioBox(b) {
   if (!b) return false;
   if (String(b.kind) === 'audio') return true;
@@ -241,10 +241,10 @@ function isAudioBox(b) {
   return re.test(String(img.url == null ? '' : img.url)) || re.test(String(img.id == null ? '' : img.id));
 }
 
-// plan 104 section 5.4 — "is this box a camera?". A camera is a non-visual TIMELINE citizen
+// plan 104 section 5.4 - "is this box a camera?". A camera is a non-visual TIMELINE citizen
 // like an audio bed: it carries the scene's pose (its own `kf` track and `z`) and paints
 // nothing at all. Keyed off `kind` ALONE, unlike isAudioBox: no asset can imply a camera,
-// so there is no second signal to reconcile — a box is a camera because the Camera
+// so there is no second signal to reconcile - a box is a camera because the Camera
 // add-kind seeded it (or a hand-edited URL says so).
 function isCameraBox(b) {
   return !!b && String(b.kind) === 'camera';
@@ -267,8 +267,8 @@ function boxCss(b, grad) {
   // the box centre (transform-origin:50% 50% in styles.css). Composed AFTER the rotate as
   // `rotate() scale()` so the scale applies in the box's own frame (the artwork turns over in
   // place, and a rotated box mirrors about its own axes). Because the whole transform lands in
-  // the box's inline style, the export walkers read it too — a 2-D affine, so the negative
-  // scale survives as a mirror (engine isAxisAlignedMat) — so PNG/SVG/PDF flip, not just the
+  // the box's inline style, the export walkers read it too - a 2-D affine, so the negative
+  // scale survives as a mirror (engine isAxisAlignedMat) - so PNG/SVG/PDF flip, not just the
   // live canvas.
   var fh = boolVal(b.flipH, false);
   var fv = boolVal(b.flipV, false);
@@ -276,7 +276,7 @@ function boxCss(b, grad) {
     + ((fh || fv) ? (rot ? ' ' : '') + 'scale(' + (fh ? -1 : 1) + ',' + (fv ? -1 : 1) + ')' : '');
   var op = clamp(num(b.opacity, 100), 0, 100) / 100;
   // A path box's `bg` is the PATH's fill (see pathHtmlFor), so the div behind it
-  // stays transparent — otherwise every pen shape would sit on an opaque rectangle
+  // stays transparent - otherwise every pen shape would sit on an opaque rectangle
   // of its own fill colour. An audio box or a camera marker paints nothing at all (see
   // mediaHtmlFor), so their fill is dropped for the same reason: they must leave no mark
   // on the frame.
@@ -311,7 +311,7 @@ function boxCss(b, grad) {
     var dash = String(b.strokeDash) === 'dashed' ? 'dashed' : String(b.strokeDash) === 'dotted' ? 'dotted' : 'solid';
     css += 'border:' + (Math.round(sw * 100) / 100) + 'px ' + dash + ' ' + sc + ';';
   }
-  // Backdrop blur ("frosted glass") — blurs whatever is painted BEHIND the box, as
+  // Backdrop blur ("frosted glass") - blurs whatever is painted BEHIND the box, as
   // opposed to `blur`, which blurs the box's own paint. Boxes only: a path box's
   // frame is the curve's bbox, so a rectangular frost behind an arbitrary outline
   // would be wrong. Same clamp + 1-decimal rounding discipline as blurCss, and the
@@ -337,17 +337,17 @@ function imgCss(b) {
 
 // A box's media element. When its image is a Lottie asset, emit the marker div the
 // web shell's lottie-mount enhancer plays (data-lottie-src → live <svg>; still
-// formats snapshot a frame, gif/webm/mp4 capture the motion) — otherwise a plain
+// formats snapshot a frame, gif/webm/mp4 capture the motion) - otherwise a plain
 // <img>. Empty when the box has no (resolved) image. Asset refs are resolved before
 // this hook runs, so b.image carries .type + .url (same shape lottie-digi-ad reads).
-// Pure/string-only, mirroring textHtml, so the CLI produces the same markup — the
+// Pure/string-only, mirroring textHtml, so the CLI produces the same markup - the
 // marker div is simply inert there (no browser enhancer). The url is esc()'d for
 // parity with the {{asset image}} Handlebars escaping it replaces.
 function mediaHtmlFor(b) {
-  // plan 104 section 5.4 — a CAMERA box is a bare marker and nothing else: no fill (boxCss), no
+  // plan 104 section 5.4 - a CAMERA box is a bare marker and nothing else: no fill (boxCss), no
   // media, no text, no shadow (compute). It exists so the scene's pose has somewhere to
-  // live — the pose itself rides on the wrapper's data-t-kf/data-t-z, exactly like every
-  // other timing attribute — and the marker is what the evaluators key their camera
+  // live - the pose itself rides on the wrapper's data-t-kf/data-t-z, exactly like every
+  // other timing attribute - and the marker is what the evaluators key their camera
   // branch off. Checked FIRST, before the `url` guard: a camera carries no image, so an
   // early return on "no url" would swallow the marker entirely. data-export-hide keeps it
   // out of every export walk (the same tag the editor's own chrome carries), on top of
@@ -365,11 +365,11 @@ function mediaHtmlFor(b) {
   // has no picture, so it paints nothing and a still export can never show a stray
   // rectangle where it sits (styles.css hides the marker; boxCss keeps the box
   // transparent and compute() drops its text). The marker div is the only trace, carrying
-  // the src for the shell compositor's waveform + audio mix — inert in the CLI and a plain
+  // the src for the shell compositor's waveform + audio mix - inert in the CLI and a plain
   // browser render, exactly like the Lottie marker below. Checked BEFORE the lottie/video
   // branches so an asset typed 'audio' can never fall through to a broken <img>. Mirrors
   // sequence-studio's marker verbatim: class + data-audio-src (always), data-audio-dur
-  // (only when the source's own length in ms is known — a procedural zzfxm bed omits it).
+  // (only when the source's own length in ms is known - a procedural zzfxm bed omits it).
   if (isAudioBox(b)) {
     var adur = img && img.meta && Number(img.meta.durationMs);
     var adurAttr = (isFinite(adur) && adur > 0) ? ' data-audio-dur="' + Math.round(adur) + '"' : '';
@@ -399,12 +399,12 @@ function mediaHtmlFor(b) {
   // An ANIMATED SVG (a CSS/SMIL-animated vector) is a motion source like Lottie, so it
   // earns the same live-marker treatment instead of a frozen <img>: emit the anim marker
   // div the web shell's anim-svg enhancer inlines as a LIVE sanitized <svg> (plays in
-  // preview, seekable for frame-accurate export). A STATIC svg stays the <img> below —
+  // preview, seekable for frame-accurate export). A STATIC svg stays the <img> below -
   // inlining every svg would risk id collisions across boxes and a perf hit. This hook is
   // pure/sync and cannot fetch the file, so "animated" is gated on a signal the resolved
   // ref already carries: an svg (type 'vector' / format 'svg' / .svg url) whose meta says
   // so (meta.animated === true, or an 'animated' tag on meta.tags / the ref's own tags).
-  // Mirrors the lottie marker above — fit → cover|meet (the anim enhancer's vocabulary),
+  // Mirrors the lottie marker above - fit → cover|meet (the anim enhancer's vocabulary),
   // url esc()'d, style shared with the other branches (data-anim-fit carries the real fit).
   var isSvg = (img && (img.type === 'vector' || img.format === 'svg')) || /\.svg($|\?|#)/i.test(url);
   var animTags = (img && (img.meta && img.meta.tags || img.tags)) || [];
@@ -423,8 +423,8 @@ function mediaHtmlFor(b) {
 //
 // A `kind:'path'` box is a pen shape. Its geometry is NOT in this file: the box
 // carries an AUTHORED path (nodes + handles + spline kind) in its `path` field,
-// and the engine's geometry kernel — reached through host.geom, because tools may
-// not import from the engine — decodes it and lowers it to cubics. That is what
+// and the engine's geometry kernel - reached through host.geom, because tools may
+// not import from the engine - decodes it and lowers it to cubics. That is what
 // makes a pen shape render headlessly: a URL render, a CLI render and an export
 // all run manifest -> inputs -> hooks -> template with no editor anywhere, so if
 // the lowering lived in the overlay a shared link would arrive blank.
@@ -434,13 +434,13 @@ function mediaHtmlFor(b) {
 // they do on every other kind, without rewriting a node. They are mapped into
 // box-local PIXELS here, before the lowering, for two reasons: the spline then
 // solves in the same frame it is drawn in (so what the pen tool previews is what
-// exports), and the emitted <svg> can carry a 1:1 viewBox. The alternative — a
-// viewBox of "0 0 1 1" with preserveAspectRatio="none" — would scale the stroke
+// exports), and the emitted <svg> can carry a 1:1 viewBox. The alternative - a
+// viewBox of "0 0 1 1" with preserveAspectRatio="none" - would scale the stroke
 // non-uniformly with the box and leans on export-walker behaviour we don't rely on.
 
 var FILL_RULES = { nonzero: 1, evenodd: 1 };
 // Stroke decoration whitelists. Every one of these reaches an ATTRIBUTE VALUE in markup
-// emitted through {{{ }}}, so a value is only ever a key of one of these maps — never the
+// emitted through {{{ }}}, so a value is only ever a key of one of these maps - never the
 // user's string with escaping applied on top, which would still let `stroke-dasharray`
 // carry arbitrary numbers (and `NaN`) into the renderer.
 var LINE_CAPS = { butt: 1, round: 1, square: 1 };
@@ -451,7 +451,7 @@ var DASH_STYLES = { dashed: 1, dotted: 1 };
 var MITER_LIMIT = 4;
 
 // host.geom is OPTIONAL and additive (HostV1 v1.64), so feature-detect it the way
-// the shipped tools feature-detect host.color — never assume, never throw.
+// the shipped tools feature-detect host.color - never assume, never throw.
 function geomApi() {
   return typeof host !== 'undefined' && host && host.geom ? host.geom : null;
 }
@@ -468,7 +468,7 @@ function pathWarn(msg) {
 // A box's GRADIENT fill as CSS, or '' for none.
 //
 // The value stored on the box is a Lolly gradient spec (`lin_90_30ba78-0_efefef-100`)
-// — a terse string, because it has to survive the same round trip every other field
+// - a terse string, because it has to survive the same round trip every other field
 // does (editor → block row → shared URL → CLI). The engine turns it into a CSS
 // gradient with its stops interpolated in OKLab and BAKED down to plain sRGB stops
 // (host.color.gradientCss, HostV1 v1.68): a two-stop brand gradient that would look
@@ -478,7 +478,7 @@ function pathWarn(msg) {
 //
 // OPTIONAL bridge method, so feature-detect exactly like geomApi above: on an older
 // engine a gradient box degrades to its flat `bg` fill rather than throwing. And
-// note what is NOT here — b.grad never reaches the style attribute itself. Only the
+// note what is NOT here - b.grad never reaches the style attribute itself. Only the
 // engine's output does, which is hex stops and percentages by construction.
 function gradCssFor(b) {
   // A path box's `bg` is the PATH's fill, not the div's (see pathHtmlFor), so a
@@ -500,7 +500,7 @@ function gradCssFor(b) {
 
 // The honest degrade: a dashed outline of the box frame. A path we cannot draw is
 // still a box the user placed, and an invisible element is the one answer that
-// can't be acted on — this one says "there is a shape here and it did not draw",
+// can't be acted on - this one says "there is a shape here and it did not draw",
 // keeps the element selectable in the editor, and carries no geometry it made up.
 // currentColor + fixed numbers, so nothing from the box can reach the markup.
 function pathPlaceholder(w, h, why) {
@@ -520,7 +520,7 @@ function pathPlaceholder(w, h, why) {
 // (encodeBlocksCompact refuses the whole compact string), so an authored "8, 4" would push
 // every design link onto the lossless JSON fallback.
 //
-// Solid returns '' — no attribute at all, which is what keeps an existing shape's markup
+// Solid returns '' - no attribute at all, which is what keeps an existing shape's markup
 // byte-identical to what it was before this field existed.
 // `dashLen`/`gapLen` are the AUTHORED lengths (Penpot 2.17 exports them as strokeDash /
 // strokeGap, absolute px). They are numbers, so they still cannot carry a comma or a
@@ -539,7 +539,7 @@ function dashArrayFor(style, w, cap, dashLen, gapLen) {
   if (style === 'dotted') {
     // A round or square cap already paints a full w across the line, so the dot is a
     // ZERO-length dash and the gap is the whole period. A flat (butt) cap paints nothing
-    // at zero length, so it needs a real w-long dash — which is a square dot, correctly.
+    // at zero length, so it needs a real w-long dash - which is a square dot, correctly.
     return cap === 'butt' ? f2(w) + ' ' + f2(w) : '0 ' + f2(w * 2);
   }
   return f2(w * 3) + ' ' + f2(w * 2);
@@ -547,7 +547,7 @@ function dashArrayFor(style, w, cap, dashLen, gapLen) {
 
 // ── plan 96: one path primitive, so a path carries connector decorations ─────
 //
-// A spline, a line and a connector are the SAME thing here — an authored path — so the
+// A spline, a line and a connector are the SAME thing here - an authored path - so the
 // arrowheads that used to belong to a connector edge belong to any path box. The shapes
 // and their geometry are the engine's (`edgeArrowHead`), reached through the host bridge
 // so the editor, the export and a headless CLI draw one head, not three.
@@ -560,21 +560,21 @@ function dashArrayFor(style, w, cap, dashLen, gapLen) {
 // the value reaches a bridge call and, through it, an attribute in {{{ }}} markup. The
 // membership test is an OWN-property lookup, not the bare `HEAD_KINDS[s]` truthiness test,
 // because every object literal inherits truthy `constructor`/`__proto__`/`toString`/
-// `valueOf` from Object.prototype — `headEnd=constructor` in a hand-edited URL would
+// `valueOf` from Object.prototype - `headEnd=constructor` in a hand-edited URL would
 // otherwise pass the gate and reach the engine, which draws a triangle for any name it
 // doesn't recognise. Same posture as SHADOW_TARGETS, FONTS, BLENDS, TRANSITIONS, EASINGS
-// and KF_EASES. NOT yet universal — FILL_RULES, LINE_CAPS, LINE_JOINS, DASH_STYLES, FITS,
+// and KF_EASES. NOT yet universal - FILL_RULES, LINE_CAPS, LINE_JOINS, DASH_STYLES, FITS,
 // OBJPOS, H_JUSTIFY, V_ALIGN and the DECK_* maps still use the bare truthiness test. An
 // inherited key there lands as a nonsense keyword in an attribute or a CSS declaration
 // (inert: no Object.prototype key, and no function's source text, carries a quote or `<`),
-// so converting them is a tidy-up rather than a hole — but it is still owed.
+// so converting them is a tidy-up rather than a hole - but it is still owed.
 var HEAD_KINDS = { none: 1, triangle: 1, open: 1, circle: 1, diamond: 1, bar: 1 };
 function headKind(v) {
   var s = String(v == null ? '' : v);
   return Object.prototype.hasOwnProperty.call(HEAD_KINDS, s) ? s : 'none';
 }
 
-// host.connectors is OPTIONAL and additive — feature-detect exactly like geomApi().
+// host.connectors is OPTIONAL and additive - feature-detect exactly like geomApi().
 function connApi() {
   return typeof host !== 'undefined' && host && host.connectors ? host.connectors : null;
 }
@@ -596,8 +596,8 @@ function headInsetFor(kind, s) {
   return s * 0.9;   // triangle
 }
 
-// One arrowhead as an SVG fragment, via the bridge. `angle` is RADIANS about the +x axis —
-// atan2 order — and the primitive derives the head size from `width` the same way
+// One arrowhead as an SVG fragment, via the bridge. `angle` is RADIANS about the +x axis -
+// atan2 order - and the primitive derives the head size from `width` the same way
 // headSizeFor does. Absent primitive (older engine) → '' and the path simply has no head.
 function headSvgFor(tip, ux, uy, kind, color, width) {
   var api = connApi();
@@ -615,7 +615,7 @@ function headSvgFor(tip, ux, uy, kind, color, width) {
 
 // ── end tangents ─────────────────────────────────────────────────────────────
 // A head needs a tip and a direction. On a routed connector the direction falls out of the
-// route; on an AUTHORED path there is none, so it is read off the LOWERED curve — the only
+// route; on an AUTHORED path there is none, so it is read off the LOWERED curve - the only
 // honest source, since the same nodes lower to different tangents under different spline
 // kinds. Both vectors point OUT of the path: the way a head at that end faces.
 // `curves` is the engine's cubic form: [x0,y0, c1x,c1y, c2x,c2y, x3,y3].
@@ -673,14 +673,14 @@ function insetCurveEnds(curves, dirs, insetStart, insetEnd) {
 // ── authored dash arrays + corner fit ────────────────────────────────────────
 //
 // The keyword style (dashArrayFor above) derives its pattern from the stroke width. A power
-// user wants the numbers, so `strokeDashArray` carries them as a SPACE-separated string —
+// user wants the numbers, so `strokeDashArray` carries them as a SPACE-separated string -
 // space because the compact blocks URL splits rows on '~' and fields on ',', and neither
 // can be escaped inside a value. When it is set it WINS over the keyword.
 //
 // The parse is the engine's when the engine has one (host.connectors.dashFit.parse is the
 // authority the editor validates against too), and this local one otherwise, so a hand-
 // edited URL param is checked either way. Nothing but finite non-negative NUMBERS ever
-// reaches the attribute — which is the whole reason a keyword was the only option before.
+// reaches the attribute - which is the whole reason a keyword was the only option before.
 var DASH_MAX = 16;
 function parseDashArrayText(v) {
   var text = String(v == null ? '' : v).trim();
@@ -698,7 +698,7 @@ function parseDashArrayText(v) {
     out.push(n);
   }
   for (i = 0; i < out.length; i++) if (out[i] > 0) return out;
-  return null;   // all zeros paints nothing — not a pattern
+  return null;   // all zeros paints nothing - not a pattern
 }
 
 // The length of one cubic, by chord sampling. Exact arc length of a cubic has no closed
@@ -716,7 +716,7 @@ function cubicLength(c) {
   return total;
 }
 
-// The lengths the dash pattern has to come out even over — Illustrator's "align dashes to
+// The lengths the dash pattern has to come out even over - Illustrator's "align dashes to
 // corners and path ends". A CORNER is a node the curve actually turns at: every node on a
 // polyline (`kind:'line'`), and a node marked `corner` on any other kind. A smooth spline
 // has none, so its whole run is one span between its two ends; a CLOSED path has no ends,
@@ -737,7 +737,7 @@ function dashSpanLengths(curves, nodes, kind, closed) {
   }
   if (acc > 0) spans.push(acc);
   // On a closed path the run that starts at node 0 and the one that ends there are the SAME
-  // span unless node 0 is itself a corner — otherwise a smooth loop would report a seam the
+  // span unless node 0 is itself a corner - otherwise a smooth loop would report a seam the
   // curve does not have.
   if (closed && !isCorner[0] && spans.length > 1) spans[0] += spans.pop();
   var out = [];
@@ -747,7 +747,7 @@ function dashSpanLengths(curves, nodes, kind, closed) {
 
 // The pattern actually emitted: the authored one, adjusted so a whole number of periods
 // fits each span when "Fit dashes to corners" is on. The fit is the ENGINE's arithmetic
-// (host.connectors.dashFit.cornerFitDashArray) — absent, or refusing, and the authored
+// (host.connectors.dashFit.cornerFitDashArray) - absent, or refusing, and the authored
 // pattern is emitted unchanged, which is the same drawing minus the corner alignment.
 function fittedDashArray(pattern, spans) {
   var api = connApi();
@@ -778,7 +778,7 @@ function pathHtmlFor(b) {
   if (String(b.kind) !== 'path') return '';
   // A BOUND path is a connector: its shape is the route between two live rects, in CANVAS
   // coordinates, and a box <svg> can only draw inside its own frame. So it is drawn by
-  // lineLayerFor() instead and nothing is emitted here — see the plan 96 P3 block below.
+  // lineLayerFor() instead and nothing is emitted here - see the plan 96 P3 block below.
   if (isBoundPath(b)) return '';
   var w = Math.max(1, Math.round(num(b.w, 1)));
   var h = Math.max(1, Math.round(num(b.h, 1)));
@@ -795,7 +795,7 @@ function pathHtmlFor(b) {
   if (!dec || !dec.ok) {
     return pathPlaceholder(w, h, 'path box: ' + ((dec && dec.message) || 'unreadable path field'));
   }
-  // A value carries a LIST of contours, always — one for a pen-drawn shape, several
+  // A value carries a LIST of contours, always - one for a pen-drawn shape, several
   // when a boolean punched a hole or split the shape into loops. Every contour is
   // lowered on its own and the subpaths are concatenated into ONE `d`, which is what
   // makes the hole a hole: fill-rule is a property of a path, so two <path>s can
@@ -822,7 +822,7 @@ function pathHtmlFor(b) {
       tension: src.tension, decimals: 3,
     });
     if (!res || !res.ok) {
-      return pathPlaceholder(w, h, 'path box: ' + ((res && res.code) || 'error') + ' — ' + ((res && res.message) || 'could not lower the path'));
+      return pathPlaceholder(w, h, 'path box: ' + ((res && res.code) || 'error') + ' - ' + ((res && res.message) || 'could not lower the path'));
     }
     // ok with no geometry is an ANSWER, not a failure (fewer than two nodes lowers to
     // no curves), so an empty contour is skipped rather than treated as a refusal.
@@ -848,8 +848,8 @@ function pathHtmlFor(b) {
 
   // ── plan 96 decorations: arrowheads + the authored dash pattern ────────────
   //
-  // Both need the LOWERED curve — the tangent a head points along, and the arc lengths a
-  // corner fit divides — and both are meaningful only on a path with two ends, so they
+  // Both need the LOWERED curve - the tangent a head points along, and the arc lengths a
+  // corner fit divides - and both are meaningful only on a path with two ends, so they
   // apply to a SINGLE OPEN contour. A closed loop has no ends; a multi-contour result (a
   // boolean, a traced glyph) has no single pair of them, and picking one arbitrarily would
   // put an arrow on whichever subpath happened to be first. Those keep today's markup.
@@ -884,7 +884,7 @@ function pathHtmlFor(b) {
       var hsz = headSizeFor(sw);
       // Each head is BUILT FIRST and the shaft is pulled back only where one actually came
       // back. The primitive is feature-detected, so "no head" is a real outcome on an older
-      // engine — and trimming for a head that was never drawn would leave the line visibly
+      // engine - and trimming for a head that was never drawn would leave the line visibly
       // short of its own endpoint with nothing there to explain it.
       var hs = headSvgFor(tips.start, dirs.start.x, dirs.start.y, headStart, stroke, sw);
       var he = headSvgFor(tips.end, dirs.end.x, dirs.end.y, headEnd, stroke, sw);
@@ -895,7 +895,7 @@ function pathHtmlFor(b) {
           he ? headInsetFor(headEnd, hsz) : 0);
         // Re-serialising the pulled-back curve is the engine's job too, so the `d` the
         // browser reads is the `d` the SVG/PDF walkers read. No toPathData (or a refusal)
-        // leaves the shaft at full length under its head — a cosmetic loss, not a wrong
+        // leaves the shaft at full length under its head - a cosmetic loss, not a wrong
         // drawing, so it is not worth a placeholder.
         if (typeof geom.toPathData === 'function') {
           var td = geom.toPathData([{ curves: trimmed, closed: false }], { decimals: 3 });
@@ -910,12 +910,12 @@ function pathHtmlFor(b) {
   }
 
   // The STROKE PAD. The frame is the curve's tight bounding box (the pen tool refits it to
-  // exactly that), so a stroke straddles the frame edge and half of it falls outside — and
+  // exactly that), so a stroke straddles the frame edge and half of it falls outside - and
   // an outer <svg> clips to its viewport, so without a pad every stroked pen shape loses
   // half its outline all the way round. `overflow: visible` is NOT the fix: this markup is
   // read by three renderers (the browser, the SVG export walker, the PDF walker) and a
   // nested <svg> clips by default in SVG output too, so the geometry is made explicit
-  // instead — the element is grown by `pad` on every side and offset by −pad, and the
+  // instead - the element is grown by `pad` on every side and offset by −pad, and the
   // viewBox is shifted to match, which leaves path coordinates mapping to 0..w / 0..h
   // exactly as before. A round cap and a round join both reach exactly half the stroke
   // width, so sw / 2 is sufficient for the defaults; the two decorations that reach FURTHER
@@ -925,10 +925,10 @@ function pathHtmlFor(b) {
   //     sw/2·√2 from the endpoint;
   //   - a MITER join's spike is bounded by stroke-miterlimit · sw/2, and the limit is
   //     emitted explicitly below (4, SVG's default) precisely so this bound is a fact
-  //     rather than a per-renderer default — PDF's own default is 10.
+  //     rather than a per-renderer default - PDF's own default is 10.
   //
   // The inline geometry also has to override styles.css's `inset: 0; width/height: 100%`,
-  // which would otherwise pull the element back to the frame — hence `inset:auto` first.
+  // which would otherwise pull the element back to the frame - hence `inset:auto` first.
   //   - an ARROWHEAD (plan 96) is the third: it sits ON the frame edge and spreads across
   //     the tangent, so `headReach` above sizes the pad for whichever head is on. A path
   //     with no head contributes 0 and the pad is byte-identical to what it was.
@@ -951,7 +951,7 @@ function pathHtmlFor(b) {
       : '') +
     '></path>' +
     // The heads follow the shaft so they paint over its end, and they are NOT esc()'d:
-    // they are engine-built SVG fragments, not values — the engine escapes the one thing
+    // they are engine-built SVG fragments, not values - the engine escapes the one thing
     // in them that came from the box (the colour), exactly as it does for a connector.
     heads +
     '</svg>';
@@ -1009,7 +1009,7 @@ function clipCss(b, byId) {
 // object literal inherits truthy `constructor`/`__proto__`/`toString`/`valueOf` from
 // Object.prototype, so `shadow=constructor` in a hand-edited URL would otherwise select
 // a shadow target that does not exist and fall through to the content branch. Same
-// posture as isTransition below — one rule for every enum whitelist in this file.
+// posture as isTransition below - one rule for every enum whitelist in this file.
 var SHADOW_TARGETS = { box: 1, text: 1, content: 1, depth: 1 };
 function isShadowTarget(v) {
   return Object.prototype.hasOwnProperty.call(SHADOW_TARGETS, v);
@@ -1017,7 +1017,7 @@ function isShadowTarget(v) {
 function shadowCss(b) {
   var tgt = String(b.shadow || 'none');
   if (!isShadowTarget(tgt)) return { box: '', text: '', filterFn: '' };
-  // The depth shadow is a pure function of `z` — straight overhead light, alpha and
+  // The depth shadow is a pure function of `z` - straight overhead light, alpha and
   // spread growing with the lift, so raising a box off the surface reads as height
   // rather than as a light direction (a baked down-right offset is an LTR assumption
   // that would be wrong in half of the 26 locales). The manual shadowColor/X/Y/Blur
@@ -1040,7 +1040,7 @@ function shadowCss(b) {
   return { box: '', text: '', filterFn: 'drop-shadow(' + off + col + ')' };
 }
 
-// Layer blur — gaussian blur of the whole box as a CSS filter function (no
+// Layer blur - gaussian blur of the whole box as a CSS filter function (no
 // property/terminator; compute() merges it with a content drop-shadow into one
 // filter declaration, blur first so the shadow follows the blurred silhouette).
 function blurCss(b) {
@@ -1051,8 +1051,8 @@ function blurCss(b) {
 // Uniform letter-spacing ("kerning" in the UI) in px, and OpenType feature toggles:
 // ligatures default ON (off → disable liga/clig), stylistic alternates default OFF
 // (on → salt). Expressed through font-feature-settings ONLY (one property) so the
-// browser render and the vector exporter — which reads the computed feature string
-// and re-shapes via HarfBuzz — stay in agreement.
+// browser render and the vector exporter - which reads the computed feature string
+// and re-shapes via HarfBuzz - stay in agreement.
 function typeFeatureCss(b) {
   var track = clamp(num(b.tracking, 0), -100, 400);
   var ligOff = !boolVal(b.ligatures, true);
@@ -1089,12 +1089,12 @@ function textCss(b) {
   );
 }
 
-// ── time model (phase 1: inert data only — no panel mounts this yet) ───────────
+// ── time model (phase 1: inert data only - no panel mounts this yet) ───────────
 //
 // Enter/exit transition keywords, mirroring record's tool.json transition options
 // exactly. A hostile enum value (e.g. from a hand-edited URL) must never reach an
 // HTML attribute unescaped, so timeAttrsFor only ever emits a value that's a member
-// of this whitelist or a clamped number — never raw user text.
+// of this whitelist or a clamped number - never raw user text.
 var TRANSITIONS = {
   fade: 1, pop: 1, grow: 1, rise: 1, drop: 1, 'slide-left': 1, 'slide-right': 1,
   'slide-up': 1, 'slide-down': 1, 'zoom-in': 1, 'zoom-out': 1, tilt: 1, swoop: 1,
@@ -1102,7 +1102,7 @@ var TRANSITIONS = {
 };
 
 // Is `v` a value that parses to a finite number at all (as opposed to num()'s
-// "finite, or fall back to a default")? Distinguishes "authored 0" from "empty" —
+// "finite, or fall back to a default")? Distinguishes "authored 0" from "empty" -
 // start:"" means scenery (never timed), start:0 means "enters at the top".
 function isFiniteNum(v) {
   if (v == null || v === '') return false;
@@ -1111,14 +1111,14 @@ function isFiniteNum(v) {
 }
 
 // Ceiling (seconds) for every authored time value. An hour is far past anything a
-// layout document should hold, and clamping EVERY time field to it — start included
-// — keeps the emitted attribute a plain integer: 1e308 * 1000 is Infinity, and
+// layout document should hold, and clamping EVERY time field to it - start included
+// - keeps the emitted attribute a plain integer: 1e308 * 1000 is Infinity, and
 // anything from 1e21 up stringifies exponentially ("1e+24"), both of which a
 // parseInt on the phase-2 side would read as NaN / 1.
 var MAX_TIME_S = 3600;
 
 // Is `v` one of the whitelisted transition keywords? An own-property test, not the
-// bare `TRANSITIONS[v]` truthiness check — every object literal inherits truthy
+// bare `TRANSITIONS[v]` truthiness check - every object literal inherits truthy
 // `constructor` / `__proto__` / `toString` / `valueOf` from Object.prototype, so a
 // hand-authored URL could otherwise smuggle any of those through as a "transition".
 // The typeof guard also stops an object-valued field (?boxes= accepts raw JSON) from
@@ -1140,13 +1140,13 @@ var EASINGS = {
 
 // An authored easing, canonicalised for the attribute: a whitelisted preset name, or
 // a cubic-bezier re-emitted from its own PARSED numbers rather than from the user's
-// string — which is what keeps arbitrary text out of an attribute this hook writes
+// string - which is what keeps arbitrary text out of an attribute this hook writes
 // through {{{ }}}. The x controls are TIME and must stay inside 0..1 or the curve is
 // not a function of progress (CSS refuses the same thing); y is unbounded on purpose,
 // because that is the whole overshoot family. Anything else answers '' and the
 // attribute is omitted entirely, so the preset keeps the built-in curve it has always
 // had. Mirrors easingPoints/easingToWire in shells/web/src/lib/transitions.ts, which
-// re-validates on the way back in — two guards, one vocabulary.
+// re-validates on the way back in - two guards, one vocabulary.
 function easeAttr(v) {
   if (typeof v !== 'string') return '';
   var s = v.trim();
@@ -1179,14 +1179,14 @@ function startSeconds(b) {
 // at most one ease token for the segment leaving it (eo, or eb(0.32)(0)(0.67)(1)).
 //
 // It is free text, authorable from a hand-edited share URL, and it lands in an HTML
-// attribute through {{{ }}} — so this hook NEVER emits the authored string. It PARSES the
+// attribute through {{{ }}} - so this hook NEVER emits the authored string. It PARSES the
 // value and re-serialises its own: the easeAttr posture, one step further out. A track
 // carrying `"><img` leaves no surviving token, so the attribute is omitted entirely
-// rather than escaped — the same answer this file gives a non-whitelisted transition.
+// rather than escaped - the same answer this file gives a non-whitelisted transition.
 //
 // The tables below are TRANSCRIBED from engine/src/keyframes.ts (KF_CHANNELS, KF_CLAMPS,
 // KF_QUANTA, KF_EASE_PRESETS and the parse caps), because a hook cannot import the
-// engine. So the grammar has two implementations — and tests/timeline-model.test.ts pins
+// engine. So the grammar has two implementations - and tests/timeline-model.test.ts pins
 // them to each other by asserting the emitted attribute equals the engine's own
 // serialiseKf(parseKf(raw)) for a corpus of hostile and ordinary tracks. Change one side
 // without the other and that test fails, which is exactly what it is for.
@@ -1197,7 +1197,7 @@ var KF_CHANNEL_ORDER = ['x', 'y', 'z', 's', 'r', 'rx', 'ry', 'o', 'b', 'f', 'a',
 var KF_CHANNELS_BY_LEN = ['rx', 'ry', 'a', 'b', 'f', 'o', 'p', 'r', 's', 'x', 'y', 'z'];
 // `z` spans ±12000 on the WIRE, which is NOT the z field's own −300…900: one kf grammar
 // carries both a box's lift and the CAMERA's dolly, and camZ is the only zoom control
-// there is. The field clamp still governs the z FIELD — see data-t-z below.
+// there is. The field clamp still governs the z FIELD - see data-t-z below.
 var KF_CLAMPS = {
   x: [-100000, 100000], y: [-100000, 100000], z: [-12000, 12000], s: [0.01, 100],
   r: [-3600, 3600], rx: [-180, 180], ry: [-180, 180], o: [0, 1], b: [0, 300],
@@ -1218,7 +1218,7 @@ var KF_HOLD_EASE = 'eh';
 var KF_DEFAULT_EASE = 'eio'; // absent from the wire means this curve
 var KF_BEZIER_Q = 0.001;
 var KF_BEZIER_Y_MAX = 10;
-var KF_MAX_KEYS = 256;   // parse caps — a blocks sub-field has no length limit of its own
+var KF_MAX_KEYS = 256;   // parse caps - a blocks sub-field has no length limit of its own
 // DERIVED from KF_MAX_KEYS, not picked: 256 keyframes at the widest a keyframe can
 // serialise to (154 chars) plus separators is 39 679, so a full-density track always
 // fits and the two caps can never disagree. The engine pins the derivation.
@@ -1228,7 +1228,7 @@ var KF_T = /^t(-?(?:\d+(?:\.\d+)?|\.\d+))$/;
 var KF_EB = /^eb\(([^()]*)\)\(([^()]*)\)\(([^()]*)\)\(([^()]*)\)$/;
 
 // Round to a quantum whose inverse is an exact power of ten, so String() of the result is
-// its shortest round-tripping spelling — and −0 never reaches the wire.
+// its shortest round-tripping spelling - and −0 never reaches the wire.
 function kfQuant(v, q) {
   var inv = Math.round(1 / q);
   var n = Math.round(v * inv) / inv;
@@ -1255,7 +1255,7 @@ function kfEase(tok) {
     if (n === null) return '';
     // The odd positions are the x controls: TIME, which must stay inside 0..1 or the
     // curve is not a function of progress (the rule easeAttr applies to cubic-bezier).
-    // y is bounded only to keep the attribute finite — the overshoot family lives
+    // y is bounded only to keep the attribute finite - the overshoot family lives
     // outside 0..1 by design. Clamped, never rejected: the engine's parser clamps too,
     // and the two must agree on every input.
     var odd = (i % 2) === 1;
@@ -1292,7 +1292,7 @@ function kfAttr(v) {
     for (var i = 1; i < toks.length; i++) {
       var tok = toks[i];
       if (tok.charAt(0) === 'e') {
-        // Later tokens overwrite earlier ones — the wire reads as a list of assignments.
+        // Later tokens overwrite earlier ones - the wire reads as a list of assignments.
         var e = kfEase(tok);
         if (e) { ease = e; continue; }
       }
@@ -1333,13 +1333,13 @@ function kfAttr(v) {
 // Author-supplied CSS class tokens for one box (the `cls` field, plan 112 M4).
 //
 // Returns '' or a string with a LEADING SPACE, so the template can write
-// `class="lolly-box{{cls}}"` with no separator bookkeeping — the same shape the
+// `class="lolly-box{{cls}}"` with no separator bookkeeping - the same shape the
 // attribute helpers above use.
 //
 // Sanitising is a parse-and-re-serialise, never a pass-through: lowercase, keep only
 // [a-z0-9_-] within a token, collapse whitespace, and drop anything that could not be a
 // class name (a token starting with a digit, or empty after cleaning). Tokens are also
-// refused by PREFIX — `lolly-`, `pr-`, `seq-`, `fc-` are the shell's own namespaces
+// refused by PREFIX - `lolly-`, `pr-`, `seq-`, `fc-` are the shell's own namespaces
 // (the box/frame classes, the presenter's state contract, the sequence clock's off-gate,
 // the free-canvas chrome), and a document that could mint `seq-off` on itself could make
 // a box vanish from the timeline. Authors get every other name.
@@ -1359,14 +1359,14 @@ function classTokens(v) {
 
 // A box's time attributes, or '' for a box with no timing, no depth and no keyframes.
 // Pure; every value lands in an HTML attribute via {{{ }}}, so every emitted value is
-// either a clamped NUMBER or a whitelisted enum token — never raw user text. `kf` is the
+// either a clamped NUMBER or a whitelisted enum token - never raw user text. `kf` is the
 // one free-text field among them, and kfAttr parses and re-serialises it rather than
 // passing it through, so the invariant holds unchanged.
 // Each attribute string starts with a leading space so concatenation into a tag is
 // safe with no manual separator bookkeeping.
 function timeAttrsFor(b) {
   var parts = [];
-  // SCENERY (no lane, no start authored) carries no TIMING attributes — the contract
+  // SCENERY (no lane, no start authored) carries no TIMING attributes - the contract
   // every document written before the time model still renders under. Depth and
   // keyframes are not timing: a scenery box on a sequence stage is visible throughout
   // and can still be lifted off the surface or animated, and an always-on camera is
@@ -1387,7 +1387,7 @@ function timeAttrsFor(b) {
     }
     if (isTransition(b.enter)) {
       parts.push(' data-t-enter="' + b.enter + '" data-t-enter-ms="' + Math.round(clamp(num(b.enterMs, 400), 100, 3000)) + '"');
-      // Only ever alongside a kind, and only when it survives easeAttr — an unauthored
+      // Only ever alongside a kind, and only when it survives easeAttr - an unauthored
       // or unparseable curve leaves the attribute absent, which is what every reader
       // treats as "the preset's own curve".
       var enterEase = easeAttr(b.enterEase);
@@ -1401,12 +1401,12 @@ function timeAttrsFor(b) {
     if (boolVal(b.mute, false)) parts.push(' data-t-mute="1"');
     if (b.lane === 'seq') parts.push(' data-t-lane="seq"');
   }
-  // plan 104 section 5.3 / section 5.1 — depth as a clamped number (the ±300 house clamp on one side,
+  // plan 104 section 5.3 / section 5.1 - depth as a clamped number (the ±300 house clamp on one side,
   // 900 on the other so a deep lift stays clear of the behind-camera guard), and the
   // keyframe track as re-serialised tokens. Both stay absent unless authored, so a
   // document using neither renders byte-identically to before the feature landed.
-  // NOT on a FRAME: section 5.4 scopes v1 to boxes on a [data-sequence] stage — "frame pages
-  // are excluded from projection and cannot carry kf" — and frameGroupsFor stamps this
+  // NOT on a FRAME: section 5.4 scopes v1 to boxes on a [data-sequence] stage - "frame pages
+  // are excluded from projection and cannot carry kf" - and frameGroupsFor stamps this
   // same string onto the [data-pdf-page] div. Excluded HERE, at the one place the
   // attribute is written, rather than left for every future reader to remember to skip.
   if (String(b.kind) !== 'frame') {
@@ -1420,7 +1420,7 @@ function timeAttrsFor(b) {
 
 var DEFAULT_SEQ_S = 5; // no box has an authored duration, but something is timed
 
-// The sequence's total derived length in ms — single source of truth, reused
+// The sequence's total derived length in ms - single source of truth, reused
 // verbatim by the phase-2 timeline panel. `dur` is TIMELINE seconds (the author's
 // own trim, already reflecting any speed change), so it is never multiplied by
 // speed here. Open-ended boxes (no dur authored) extend to fill this length.
@@ -1445,9 +1445,9 @@ function seqDurationMs(boxes) {
 // the other end (another bound box, or the path's own free node as an `@x,y` point) and
 // re-solves that route every render, so the line sticks to the boxes wherever they move.
 //
-// The route is chosen by the path's own SPLINE KIND — host.connectors.routeStyleForKind,
+// The route is chosen by the path's own SPLINE KIND - host.connectors.routeStyleForKind,
 // the engine's single mapping (line→straight, a 3+-node polyline→elbow, spiro→arc, every
-// other kind→the curved S) — overridden by the box's `route` field for the nine variants
+// other kind→the curved S) - overridden by the box's `route` field for the nine variants
 // six kinds cannot name (elbow-v/-h/-src/-tgt, curved-v/-h, the arc bows). Heads, dashes
 // and colour ride along as the box's own decoration fields.
 //
@@ -1465,7 +1465,7 @@ function bindOf(b, which) {
   var v = which === 'start' ? b.bindStart : b.bindEnd;
   return v == null ? '' : String(v).trim();
 }
-// Is this box a connector? One binding is enough — a path pinned at one end and loose at
+// Is this box a connector? One binding is enough - a path pinned at one end and loose at
 // the other still routes, from the border toward the loose point.
 function isBoundPath(b) {
   return String(b.kind) === 'path' && (bindOf(b, 'start') !== '' || bindOf(b, 'end') !== '');
@@ -1530,7 +1530,7 @@ function boundPathRow(b) {
 
 // The committed line layer: every bound path in the document, routed + decorated by the
 // engine (host.connectors.build, v1.106/v1.111) so the SAME geometry lands in the editor's
-// live preview, the export, and a headless CLI. Export-safe by the engine's contract —
+// live preview, the export, and a headless CLI. Export-safe by the engine's contract -
 // filled <path> / chevron <line> heads and real <line> dash segments, never a <marker>,
 // a <polygon> or a stroke-dasharray. '' on an older engine, and '' when nothing is bound,
 // so a document with no connectors emits exactly the markup it always did.
@@ -1572,8 +1572,8 @@ function lineLayerFor(boxes) {
 // from the next render on.
 //
 // Lossless by construction. The edge's own `style` is written to the box's `route`
-// override — six spline kinds cannot name thirteen routes, so an elbow-src edge would
-// otherwise collapse to a plain elbow — and `arrow` + one shared `head` map onto the two
+// override - six spline kinds cannot name thirteen routes, so an elbow-src edge would
+// otherwise collapse to a plain elbow - and `arrow` + one shared `head` map onto the two
 // per-end heads exactly as the engine's own edge reading does (`end` → a head at the end
 // and none at the start, `both` → the same shape at each, anything else → neither). The
 // result routes through the very same host.connectors.build call the edge layer used, so
@@ -1600,14 +1600,14 @@ function twoNodePathValue(n0, n1) {
 // A box with kind==='frame' is a PAGE. Every OTHER box carries a STORED `frame`
 // field = the id of its parent frame ("" = top-level scratch/pasteboard). When at
 // least one frame-kind box exists we emit `frameGroups`: one entry per frame, ordered
-// (order asc, then x asc — matching seedFrameOrder in free-canvas-math.ts), each
+// (order asc, then x asc - matching seedFrameOrder in free-canvas-math.ts), each
 // holding the page's own style plus its member boxes re-wrapped at FRAME-LOCAL
 // coordinates (left = box.x - frame.x, top = box.y - frame.y). Membership is READ from
-// the stored box.frame — geometry is never re-resolved here (that resolution lives in
+// the stored box.frame - geometry is never re-resolved here (that resolution lives in
 // the shell overlay, F1b). The per-box markup/style REUSES the same index-aligned
 // arrays the artboard path already computed (boxStyle/textStyle/… in `ext`); only the
 // wrapping and the frame-local left/top override are new. A scratch box (frame === "",
-// or a frame id matching no page) is NOT put in any page here — it renders LOOSE on the
+// or a frame id matching no page) is NOT put in any page here - it renders LOOSE on the
 // editor pasteboard via pasteboardFor() (F1b-2), and a frame-kind box is the page
 // container, never also rendered as a child. When NO frame exists we return undefined so
 // the template's {{#if frameGroups}} is false and {{else}} renders today's single
@@ -1625,7 +1625,7 @@ function frameGroupsFor(boxes, ext) {
     if (!fb || String(fb.kind) !== 'frame') continue;
     frameEntries.push({ box: fb, idx: f, order: num(fb.order, 0), x: num(fb.x, 0) });
   }
-  // Page order: ascending `order`, tie-break ascending x (left→right) — the exact rule
+  // Page order: ascending `order`, tie-break ascending x (left→right) - the exact rule
   // seedFrameOrder() uses so a headless render matches the editor's frame numbering.
   frameEntries.sort(function (a, b) { return (a.order - b.order) || (a.x - b.x); });
 
@@ -1643,17 +1643,17 @@ function frameGroupsFor(boxes, ext) {
     // multi-frame docs render side by side / anywhere (not stacked in block flow). The
     // overlay reads back these offsetLeft/offsetTop to drive frame-local drag (F1b). fx/fy
     // are already rounded, matching the frame-local left/top baked onto member boxes.
-    // A frame is a BOARD, so a frame with NO authored bg must still read as a surface —
+    // A frame is a BOARD, so a frame with NO authored bg must still read as a surface -
     // not the transparent hole it used to be, which on a dark canvas showed only the
     // editor's shadow/ring (chrome that never exports). The default is the theme-aware
     // --lolly-frame-surface token (styles.css: light paper / dark raised surface) with a
     // concrete #ffffff fallback so a headless/CLI render, which has no brand vars, still
     // gets a visible board deterministically. This is REAL page fill, so the SVG/PDF/raster
-    // walkers export it faithfully. An authored bg still wins — safeColor returns it and
+    // walkers export it faithfully. An authored bg still wins - safeColor returns it and
     // the token is never emitted.
     // A frame is a BOARD, so like a box shape it can carry a REAL border (stroke colour
     // + width), not just the editor-only shadow/ring. Same safeColor/num/dash discipline
-    // boxCss uses, with box-sizing:border-box so it is an INSIDE stroke — the border sits
+    // boxCss uses, with box-sizing:border-box so it is an INSIDE stroke - the border sits
     // within fw/fh, keeping the frame's OUTER box (fw×fh at fx,fy) unmoved. Emitted only
     // when authored (colour + positive width); the SVG/PDF/raster walkers export it
     // faithfully.
@@ -1661,12 +1661,12 @@ function frameGroupsFor(boxes, ext) {
     // from insetting the CONTAINING BLOCK of the page's absolutely-positioned children:
     // an abs child resolves left/top against the page's PADDING box, which the border
     // pushes in by border-width on every side. So a child authored at frame-local (lx,ly)
-    // would paint at (lx+bw, ly+bw) — a persistent strokeW-px drift off the model
+    // would paint at (lx+bw, ly+bw) - a persistent strokeW-px drift off the model
     // coordinate that selection chrome, live drag and connectors all anchor at. We cancel
     // it by subtracting the border width (frameBW) from each child's frame-local origin
     // below, so painted position == model position for any strokeW. (An edge-flush child's
-    // stroke-band is then covered/clipped by the inside stroke — the correct semantics of
-    // an inside stroke — instead of the whole child sliding inward.)
+    // stroke-band is then covered/clipped by the inside stroke - the correct semantics of
+    // an inside stroke - instead of the whole child sliding inward.)
     var fsw = num(fb.strokeW, 0);
     var fsc = safeColor(fb.stroke, '');
     var frameBW = (fsc && fsw > 0) ? (Math.round(fsw * 100) / 100) : 0;
@@ -1716,10 +1716,10 @@ function frameGroupsFor(boxes, ext) {
       });
     }
     // Frames-as-scenes (plan 92): when a frame has been SEQUENCED (lane==='seq' or a
-    // finite start — the same scenery guard timeAttrsFor uses), stamp the timeline
+    // finite start - the same scenery guard timeAttrsFor uses), stamp the timeline
     // attributes onto the frame PAGE div so the sequence clock's [data-t-start] selector
     // gates it: the page whose [start,start+dur) contains the playhead stays visible, the
-    // rest get .seq-off (display:none) — one slide at a time. A frame with NO timing gets
+    // rest get .seq-off (display:none) - one slide at a time. A frame with NO timing gets
     // no data-t-start → never selected → every frame shows (spatial view); the depth and
     // keyframe attributes are outside that guard (plan 104) but the CLOCK gates on
     // data-t-start alone, so an untimed frame is still never selected. fb carries the
@@ -1728,7 +1728,7 @@ function frameGroupsFor(boxes, ext) {
     // Stamp the frame id onto the page div (template: data-frame-id). Presentation
     // mode (plan 112) reads it to deep-link a slide; it also gives the timeline a real
     // id to resolve so a frame's labelFor stops falling back to a generic "Clip".
-    // data-frame-dur (ms) is the frame's own dwell for present-mode kiosk auto-advance —
+    // data-frame-dur (ms) is the frame's own dwell for present-mode kiosk auto-advance -
     // emitted whenever the frame has a positive dur, INDEPENDENT of sequencing (the
     // timeline's data-t-dur only appears for a sequenced frame; a spatial deck has none).
     var fdur = fb ? Number(fb.dur) : NaN;
@@ -1751,7 +1751,7 @@ function frameGroupsFor(boxes, ext) {
 
 // Editor pasteboard (plan 93 F1b-2): the scratch boxes frameGroupsFor omits from every
 // page. A non-frame box is loose when its stored `frame` matches NO existing frame id
-// (frame === "", or an orphan id whose frame was deleted). It renders at its GLOBAL x/y —
+// (frame === "", or an orphan id whose frame was deleted). It renders at its GLOBAL x/y -
 // ext.boxStyle[j] already carries the global left/top from boxCss, so (unlike a page
 // child) NO frame-local override is appended. The template drops these directly under
 // .lolly-frames, OUTSIDE every [data-pdf-page]; the per-page export path walks
@@ -1775,7 +1775,7 @@ function pasteboardFor(boxes, ext) {
       id: (cb.id != null && cb.id !== '') ? cb.id : j,
       fit: ext.boxFit[j],
       cls: ext.boxCls[j],
-      boxStyle: ext.boxStyle[j],   // GLOBAL left/top from boxCss — no frame-local override
+      boxStyle: ext.boxStyle[j],   // GLOBAL left/top from boxCss - no frame-local override
       timeAttrs: ext.timeAttrs[j],
       pathHtml: ext.pathHtml[j],
       mediaHtml: ext.mediaHtml[j],
@@ -1791,7 +1791,7 @@ function pasteboardFor(boxes, ext) {
 // The DUAL of frameGroupsFor: when frames exist, lower the SAME frames + members to
 // a deck-studio-shaped model { size:{w,h}, slides:[{ bg, elements:[…] }] }. The
 // export bridge (shells/web/src/bridge/export-pptx.ts → pptx-deck.ts, UNCHANGED)
-// reads it off <script data-pptx-deck> and builds an EDITABLE .pptx — real text
+// reads it off <script data-pptx-deck> and builds an EDITABLE .pptx - real text
 // boxes / rects / pictures, not a rasterised picture of the DOM (which needs a live
 // browser). Because it re-runs frameGroupsFor's frame filter, the SAME
 // order-asc-then-x sort, the SAME fid derivation and the SAME lx/ly frame-local
@@ -1801,7 +1801,7 @@ function pasteboardFor(boxes, ext) {
 //
 // v1 maps the kinds the flat deck model can EXPRESS: text → an editable text box,
 // box → a rect, a still image → a picture. Anything the model cannot carry emits
-// NOTHING native here — a path (pen) box, a lottie/video image, and any box wearing
+// NOTHING native here - a path (pen) box, a lottie/video image, and any box wearing
 // rotation, a gradient fill, a clip mask, layer/backdrop blur, a blend mode or a
 // shadow. Rasterise-to-image for those is a documented FOLLOW-UP; it does NOT block
 // the deck (the missing element just isn't in the .pptx). A single no-frames design
@@ -1817,9 +1817,9 @@ function deckInexpressible(b, byId) {
   if (num(b.rot, 0) !== 0) return true;
   // A flip is a negative scale in boxCss's transform; the flat deck element is axis-aligned
   // and carries none, so a flipped box is skipped native and rasterised (mirror intact),
-  // exactly like a rotated one — never emitted as an UNFLIPPED rect/text/picture.
+  // exactly like a rotated one - never emitted as an UNFLIPPED rect/text/picture.
   if (boolVal(b.flipH, false) || boolVal(b.flipV, false)) return true;
-  if (clamp(num(b.opacity, 100), 0, 100) !== 100) return true; // boxCss emits opacity:<1 — the flat deck element carries no alpha (rasterise follow-up)
+  if (clamp(num(b.opacity, 100), 0, 100) !== 100) return true; // boxCss emits opacity:<1 - the flat deck element carries no alpha (rasterise follow-up)
   if (b.grad != null && String(b.grad).trim() !== '') return true;
   if (num(b.blur, 0) > 0 || num(b.bgBlur, 0) > 0) return true;
   if (Object.prototype.hasOwnProperty.call(BLENDS, String(b.blend))) return true;
@@ -1835,7 +1835,7 @@ function deckInexpressible(b, byId) {
 // One non-frame member box → one deck element at frame-LOCAL (lx, ly), or null to
 // emit nothing native (a skipped kind/effect). RAW numbers + css colours only.
 function deckElementFor(cb, byId, lx, ly) {
-  // An audio box is invisible and has no picture, so it lowers to NOTHING native — never
+  // An audio box is invisible and has no picture, so it lowers to NOTHING native - never
   // the fallback deck rect below (which would print a stray rectangle where the bed sits).
   // A .pptx has no audio track in this model, so a music bed simply isn't in the deck.
   // A camera marker is invisible for the same reason, and a deck has no camera either.
@@ -1866,7 +1866,7 @@ function deckElementFor(cb, byId, lx, ly) {
   }
   if (kind === 'image') {
     // Asset refs are resolved by the runtime BEFORE this hook, so cb.image already
-    // carries { type, url } — the same shape mediaHtmlFor reads. STILL images only:
+    // carries { type, url } - the same shape mediaHtmlFor reads. STILL images only:
     // a lottie/video source is skipped (rasterise-to-image FOLLOW-UP), reusing
     // mediaHtmlFor's own motion test so the deck's decision matches the canvas.
     var img = cb.image;
@@ -1895,7 +1895,7 @@ function deckElementFor(cb, byId, lx, ly) {
 // so slide order == page order; a pptx deck has ONE slide size, taken from the first
 // frame (matches export-pptx reading page 0's size). The slide bg uses a CONCRETE hex
 // fallback (#ffffff), never the var(--lolly-frame-surface,…) CSS string the page
-// render uses — deckColor parses only hex/rgb.
+// render uses - deckColor parses only hex/rgb.
 function deckModelFor(boxes, byId) {
   var frameEntries = [];
   for (var f = 0; f < boxes.length; f++) {
@@ -1929,11 +1929,11 @@ function deckModelFor(boxes, byId) {
   return { size: size, slides: slides };
 }
 
-// Doc-level Custom CSS (plan 112 M4). Sanitise ONLY — the shell's scopeTemplateStyles
+// Doc-level Custom CSS (plan 112 M4). Sanitise ONLY - the shell's scopeTemplateStyles
 // scopes the emitted <style> to the canvas (handling top-level @keyframes), and the
 // present-mode conductor re-scopes it onto its clones. Two breakouts are neutralised:
 // `</style` (the one HTML escape out of the <style> element) and `@import` (an external
-// fetch — this tool is offline-first). Everything else is inert data: the hook never
+// fetch - this tool is offline-first). Everything else is inert data: the hook never
 // eval()s or fetches it, so a hostile value is at worst a broken rule. No wrapping scope
 // here (unlike deck-builder) so real @keyframes can live at the top level; CLI emits the
 // same sanitised (unscoped) <style>.
@@ -1946,15 +1946,15 @@ function buildUserCss(v) {
 function compute(model) {
   var inp = inputsFrom(model);
   var boxes = Array.isArray(inp.boxes) ? inp.boxes : [];
-  // plan 96 P4 — any plan-90 `connectors` edge becomes a bound path box before anything
+  // plan 96 P4 - any plan-90 `connectors` edge becomes a bound path box before anything
   // else reads `boxes`, so every surface below (the per-box arrays, the frame groups, the
   // deck model, the committed line layer) sees ONE model with no edges in it.
   var transparent = inp.transparentBg === true;
   var byId = {};
   boxes.forEach(function (b) { if (b && b.id != null && b.id !== '') byId[String(b.id)] = b; });
   // An audio box or a camera marker renders NOTHING visible: no fill (boxCss), no media
-  // (mediaHtmlFor emits a display:none marker), no text, and — the part that is easy to
-  // miss — no shadow, no clip and no blur either. `shadow`/`blur` are plain sidebar fields
+  // (mediaHtmlFor emits a display:none marker), no text, and - the part that is easy to
+  // miss - no shadow, no clip and no blur either. `shadow`/`blur` are plain sidebar fields
   // with no showFor restriction, so a bare box can carry one, and box-shadow/drop-shadow/
   // blur paint OUTSIDE the (transparent) box: without this they would print a stray
   // rectangle of colour exactly where the music bed or the camera sits, which is the one
@@ -1981,9 +1981,9 @@ function compute(model) {
   // Per-box CSS class names (plan 112 M4, the slides.com "per-block class" affordance):
   // the author's own hook for Custom CSS, so a rule can say `.callout { … }` instead of
   // addressing a ULID. Emitted as EXTRA class tokens on .lolly-box, so it styles the
-  // editor, every export and presentation alike — one document, one truth.
+  // editor, every export and presentation alike - one document, one truth.
   var boxCls = boxes.map(function (b) { return classTokens(b && b.cls); });
-  // Time model (phase 1 — inert data; nothing reads these attributes yet, the
+  // Time model (phase 1 - inert data; nothing reads these attributes yet, the
   // phase-2 panel does). timeAttrs is index-aligned with boxStyle/boxFit/etc.
   var timeAttrs = boxes.map(function (b) { return timeAttrsFor(b || {}); });
   var seqMs = seqDurationMs(boxes);
@@ -2024,11 +2024,11 @@ function compute(model) {
     userCss: buildUserCss(inp.customCss),
   };
   // The migration's INPUT patch (plan 96 P4). `boxes` and `connectors` are declared input
-  // ids, so the runtime WRITES them rather than treating them as extras — which is what
+  // ids, so the runtime WRITES them rather than treating them as extras - which is what
   // makes this a one-time conversion: the next compute() sees no edges and adds neither
   // key. The keys are ASSIGNED, never set to undefined: the runtime's patch merge keys off
   // key PRESENCE, so `{ boxes: undefined }` does not mean "no opinion", it blanks the
-  // input — and a hook that blanks `boxes` on every render empties the whole document.
+  // input - and a hook that blanks `boxes` on every render empties the whole document.
   return out;
 }
 

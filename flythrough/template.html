@@ -18,7 +18,7 @@
   var POSES = (cfg.poses && cfg.poses.length) ? cfg.poses : [{}];
   // Sample the pose timeline at eased progress s ∈ [0,1]: find the segment and lerp between
   // the two adjacent poses. Fewer than two → held static. The N-keyframe generalisation of
-  // the old Start→End tween — every animatable channel reads through here.
+  // the old Start→End tween - every animatable channel reads through here.
   function poseAt(s) {
     var n = POSES.length;
     if (n < 2) return POSES[0] || {};
@@ -94,7 +94,7 @@
     scene.add(stackGroup);
 
     // ── Studio floor: a soft showroom shadow pooled at the BASE of the stack. Anchor mode:
-    //    OBJECT (default) parents it to the stackGroup so it's a rigid part of the diorama —
+    //    OBJECT (default) parents it to the stackGroup so it's a rigid part of the diorama -
     //    tilts / rotates / scales WITH the subject, giving the camera a fixed ground reference
     //    so a flight reads as the CAMERA moving. VIEWPORT parents it to the world so it stays
     //    a fixed horizontal ground and the subject tilts above it. A radial-gradient blob laid
@@ -121,7 +121,7 @@
       else stackGroup.add(floorMesh);                   // rigid with the objects
     }
 
-    // Offscreen measuring SVG — the browser computes exact path geometry (getBBox +
+    // Offscreen measuring SVG - the browser computes exact path geometry (getBBox +
     // getPointAtLength) so we never hand-parse a `d` string. Reused for every path.
     var SVGNS = 'http://www.w3.org/2000/svg';
     var measSvg = document.createElementNS(SVGNS, 'svg');
@@ -136,11 +136,11 @@
     // against z-fighting between the layers and their extruded solids. Still closer than the
     // deepest dive gets to a layer, so nothing clips.
     // Projection is a TOGGLE, not a flight: Isometric = a real ORTHOGRAPHIC camera (parallel
-    // projection — no perspective convergence), the textbook way to get a true iso look once
+    // projection - no perspective convergence), the textbook way to get a true iso look once
     // the stack is tilted/rotated to the iso angle. FOV is meaningless without perspective,
     // so the FOV sliders are hidden when this is on (showIf in the manifest). A perspective
     // camera keeps the animatable FOV. The toggle re-mounts the tool, so the type is fixed
-    // per render — no runtime swap needed.
+    // per render - no runtime swap needed.
     var isOrtho = !!cfg.iso;
     var camAspect = W / H;
     var REF_FOV = (POSES[0] && POSES[0].fov) || 42;
@@ -165,8 +165,8 @@
 
     // Per-shot cache (window-scoped, survives the WebGL re-inits the shell fires on every
     // input change): the parsed solid SHAPES and the rasterised layer CANVASES depend only on
-    // the SHOT, not the pose — so a pose-slider drag (shot unchanged) reuses them instead of
-    // re-sampling every path (a main-thread stall — hundreds of getPointAtLength) and
+    // the SHOT, not the pose - so a pose-slider drag (shot unchanged) reuses them instead of
+    // re-sampling every path (a main-thread stall - hundreds of getPointAtLength) and
     // re-rasterising every SVG (an async reload flicker) each frame, which is what made the
     // sliders stall. Reset when the shot changes so a new picture never renders with the old
     // one's geometry or pixels.
@@ -178,7 +178,7 @@
 
     // ── real extrusion: parse the BIG solid shapes out of a layer's SVG and build 3D
     //    solids (front/back caps + side walls) coloured by fill. Small shapes, text-as-
-    //    paths, gradient/image fills and complex paths stay FLAT on the textured plane —
+    //    paths, gradient/image fills and complex paths stay FLAT on the textured plane -
     //    only cards / panels / buttons get true thickness, which keeps the poly count low. ──
     function buildSolids(svgText, aspect, layerKey) {
       var out = [];
@@ -192,7 +192,7 @@
         return mesh;
       };
       var cd = cache.solids[ck];
-      if (cd) {   // cache hit — reuse the parsed shapes; no DOM parse, no path sampling
+      if (cd) {   // cache hit - reuse the parsed shapes; no DOM parse, no path sampling
         for (var ci = 0; ci < cd.length; ci++) out.push(meshFromDesc(cd[ci].shape, cd[ci].color, ci));
         return out;
       }
@@ -207,7 +207,7 @@
       var ly = function (y) { return (0.5 - y / vbH) * ph; };          // SVG y-down → three y-up
       var minArea = 0.015 * vbW * vbH;   // skip anything under ~1.5% of the frame (text, tiny icons)
       // A shape is skipped as a BACKPLATE only when it is essentially edge-to-edge (fills
-      // ≥94% of BOTH axes) — a true background whose extruded slab would z-fight its own
+      // ≥94% of BOTH axes) - a true background whose extruded slab would z-fight its own
       // texture. A large HERO shape (a logo, a gear, a chameleon body) is NOT a backplate
       // just because it's big: it has margins on at least one axis, so it still extrudes.
       // (The old 0.6-of-area cap wrongly filtered every hero logo out of the extrusion.)
@@ -248,7 +248,7 @@
       }
       // Record the shape+colour into the per-shot cache AND build its mesh now. FrontSide,
       // not DoubleSide: a closed opaque solid only needs its outward faces (DoubleSide's
-      // interior back-walls z-fought on thin shapes — the green cracks + duplicate "copies").
+      // interior back-walls z-fought on thin shapes - the green cracks + duplicate "copies").
       // meshFromDesc smooths the wall normals (no banding); it flips to DoubleSide only when
       // x-ray/ghosted (updateStack). On a later re-init the cache hit above skips this parse.
       function extrude(shape, color) {
@@ -287,7 +287,7 @@
         extrude(es, efl);
       }
       // Compose the transform chain (self + every ancestor <g transform>) into one matrix,
-      // so a path that carries — or sits under — a transform still lands on the picture. The
+      // so a path that carries - or sits under - a transform still lands on the picture. The
       // shared measPath ignores transforms (getBBox/getPointAtLength are local), so we bake
       // the CTM into each sampled point ourselves instead of hand-multiplying matrices.
       function pathCtm(node) {
@@ -308,7 +308,7 @@
       // PATHS (the icon's whole body). The browser computes the geometry: getTotalLength +
       // getPointAtLength sample the outline into a polyline; subpaths (holes) are detected as
       // big jumps between samples and split into ShapePath subpaths, so ShapePath.toShapes
-      // carves the holes correctly. Area is gated in TRANSFORMED viewBox units — tiny (text
+      // carves the holes correctly. Area is gated in TRANSFORMED viewBox units - tiny (text
       // glyphs) and near-full-frame (backgrounds) both stay flat on the texture.
       var paths = doc.getElementsByTagName('path');
       for (i = 0; i < paths.length; i++) {
@@ -370,7 +370,7 @@
     function rasterTex(url, aspect, texW, cb, texKey) {
       var cache = flyCache(), tk = (texKey || 't') + '|' + Math.round(texW);
       var hit = cache.tex[tk];
-      if (hit) { cb(texFromCanvas(hit.cv), hit.a); return; }   // cache hit — no Image reload
+      if (hit) { cb(texFromCanvas(hit.cv), hit.a); return; }   // cache hit - no Image reload
       var img = new Image();
       img.crossOrigin = 'anonymous';
       img.onload = function () {
@@ -387,7 +387,7 @@
       img.src = url;
     }
 
-    // An SVG with only a viewBox (no width/height — the common case) rasterises at its tiny
+    // An SVG with only a viewBox (no width/height - the common case) rasterises at its tiny
     // intrinsic size and then upscales, which is what aliases a dive-in. Force an explicit
     // high-res width/height into the root so the browser rasterises the VECTOR at that size.
     function sizedSvgDataUrl(markup, texW, texH) {
@@ -424,7 +424,7 @@
       var aspect = (vb && vb.h > 0) ? (vb.w / vb.h) : (W / H);
       var N = layers.length;
       // Supersampled, shrinking as the layer count grows so many layers don't exhaust GPU
-      // memory — but never below the export size, so edges stay crisp on a dive-in.
+      // memory - but never below the export size, so edges stay crisp on a dive-in.
       var texW = Math.max(1024, Math.min(2048, Math.round(baseW * 2.4 / Math.sqrt(N))));
       for (var i = 0; i < N; i++) {
         (function (i) {
@@ -445,7 +445,7 @@
         addLayer(tex, 0, a, singleSvg, 'single'); onLoaded();
       };
       var singleSvg = null;   // set to the SVG markup when the single shot is a vector (below)
-      // If the single shot is a vector (SVG — or any imported vector, which becomes SVG),
+      // If the single shot is a vector (SVG - or any imported vector, which becomes SVG),
       // fetch its markup and sample it at high res via its viewBox; a raster loads directly
       // (no wasteful text fetch).
       var maybeSvg = /\.svg(\?|#|$)/i.test(url) || /^data:image\/svg/i.test(url) || /^blob:/i.test(url);
@@ -467,9 +467,9 @@
       var extrude = ps.extrude || 0;
       var shadowK = cfg.shadow != null ? cfg.shadow : 0.35;
       // Studio floor sizing: wider than the base in x, elongated along the floor (z). Opacity
-      // tracks the slider directly. Two anchor modes: OBJECT (child of stackGroup — the group
+      // tracks the slider directly. Two anchor modes: OBJECT (child of stackGroup - the group
       // already applies the subject Scale/Tilt/Rotate, so only base-relative size is set here)
-      // vs VIEWPORT (child of the scene — a fixed horizontal ground, so the subject Scale is
+      // vs VIEWPORT (child of the scene - a fixed horizontal ground, so the subject Scale is
       // applied to the floor by hand and it never tilts).
       if (floorMesh) {
         floorMesh.material.opacity = Math.max(0, Math.min(1, cfg.floor));
@@ -497,13 +497,13 @@
             // the lens. scale.z is the animating thickness (unit geometry, no rebuild). The
             // solid stays OPAQUE (occludes the texture from behind) until Opacity < 1.
             // Front caps are STAGGERED by paint order (last-painted a hair in front) so a
-            // shape sitting ON another — a square on a card — never shares its cap plane and
+            // shape sitting ON another - a square on a card - never shares its cap plane and
             // z-fights. All stay behind the texture (topOrder → 0.006, earlier further back).
             var back = 0.008 + (L.solids.length - 1 - (sm.userData.order || 0)) * 0.0026;
             sm.scale.z = realDepth;
             sm.position.z = z - back - realDepth;
             var wantT = opacity < 0.999;
-            // Opaque solids cull back-faces (FrontSide — clean walls). A GHOSTED solid needs
+            // Opaque solids cull back-faces (FrontSide - clean walls). A GHOSTED solid needs
             // its back walls drawn or it reads as a hollow shell, so x-ray flips to DoubleSide.
             var wantSide = wantT ? THREE.DoubleSide : THREE.FrontSide;
             if (sm.material.transparent !== wantT || sm.material.side !== wantSide) {
@@ -516,8 +516,8 @@
         L.shadow.visible = showEx && shadowK > 0.001;
         if (L.shadow.visible) { L.shadow.position.set(realDepth * 0.5, -realDepth * 0.5, z - Math.max(realDepth + 0.008, gap * 0.9)); L.shadow.material.opacity = shadowK * opacity; }
       }
-      // FOV animates only under a PERSPECTIVE camera. Orthographic (Isometric) has no FOV —
-      // its apparent size is driven by dollyOrtho()'s zoom instead — so leave it alone.
+      // FOV animates only under a PERSPECTIVE camera. Orthographic (Isometric) has no FOV -
+      // its apparent size is driven by dollyOrtho()'s zoom instead - so leave it alone.
       if (!isOrtho) {
         var fov = ps.fov || 42;
         if (Math.abs(camera.fov - fov) > 0.01) { camera.fov = fov; camera.updateProjectionMatrix(); }
@@ -530,9 +530,9 @@
     //    the exact angle on all three axes (ortho + tilt = a true isometric). Presets move
     //    the lens; a Dive adds its own lie-back on X on top of the user's Tilt X. ──
     function placeCamera(p, s, ps) {
-      var txR = d2r(ps.tiltX || 0);   // pitch — lie the stack back toward a horizon
-      var tyR = d2r(ps.tiltY || 0);   // yaw — turn it left / right
-      var tzR = d2r(ps.tiltZ || 0);   // roll — bank it in its own plane
+      var txR = d2r(ps.tiltX || 0);   // pitch - lie the stack back toward a horizon
+      var tyR = d2r(ps.tiltY || 0);   // yaw - turn it left / right
+      var tzR = d2r(ps.tiltZ || 0);   // roll - bank it in its own plane
       var scl = ps.scale != null ? ps.scale : 1;
       var presetTiltR = 0;   // a preset (Dive) adds its OWN lie-back on top of the user's
       camera.up.set(0, 1, 0);
@@ -587,7 +587,7 @@
     function animS(p) { return cfg.loop ? pingpong(p) : Math.max(0, Math.min(1, p)); }
     function renderFrame(p) {
       // "Still" is a single-pose configurator: it HOLDS the first pose (the Start card) and
-      // never tweens — s pinned to 0 — so people can dial one pose in without keeping Start
+      // never tweens - s pinned to 0 - so people can dial one pose in without keeping Start
       // and End in sync. (Same result a single-pose Custom scene gives.) Every other flight
       // eases across the pose timeline.
       var s = (cfg.move === 'still' || dragPin) ? 0 : easeInOut(animS(p));
@@ -615,7 +615,7 @@
     // ── Drag to articulate: click-drag the canvas to orbit the subject, like handling a real
     //    object in 3D. Plain drag = Tilt Y (yaw, horizontal) + Tilt X (pitch, vertical). Hold
     //    ⌘ / Ctrl and horizontal drag = Tilt Z (ROLL) instead. The preview is pinned to the
-    //    FIRST pose while dragging (instant, local — no re-render); on RELEASE the changed
+    //    FIRST pose while dragging (instant, local - no re-render); on RELEASE the changed
     //    axes are written back to that pose's Tilt sliders through the sidebar DOM (the
     //    supported input-write path: set the control + fire 'input'), so URL / undo / save all
     //    come for free. Commit is deferred to release because a mid-drag commit re-hydrates the
@@ -628,7 +628,7 @@
       var clampOff = function (v) { return Math.max(-3, Math.min(3, v)); };
       var pose0 = function () { return (cfg.poses && cfg.poses[0]) ? cfg.poses[0] : null; };
       // Gesture mode from the held modifier: Shift = pan (translate), ⌘/Ctrl = roll, none =
-      // orbit (pitch + yaw). Shift wins if both are down. No wheel handler at all — scrolling
+      // orbit (pitch + yaw). Shift wins if both are down. No wheel handler at all - scrolling
       // stays the page's / canvas's own, so nothing fights the core scroll.
       var modeOf = function (e) { return e.shiftKey ? 'pan' : (e.metaKey || e.ctrlKey) ? 'roll' : 'rot'; };
       var commitAxis = function (fieldId, value) {
@@ -694,7 +694,7 @@
           if (dg.chR) pending.push(['tiltZ', Math.round(dg.rz)]);
           if (dg.chOX) pending.push(['offsetX', Math.round(dg.ox * 100) / 100]);
           if (dg.chOY) pending.push(['offsetY', Math.round(dg.oy * 100) / 100]);
-          var flush = function (i) {   // one field per frame — each reads the freshly-committed model
+          var flush = function (i) {   // one field per frame - each reads the freshly-committed model
             if (i >= pending.length) return;
             commitAxis(pending[i][0], pending[i][1]);
             requestAnimationFrame(function () { flush(i + 1); });

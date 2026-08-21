@@ -3,7 +3,7 @@
   "description": "Peta blok jalan vektor yang kemas untuk sebarang bandar. Berfungsi luar talian.",
   "a11yLabel": "Peta jalan berpusat di {{city}}",
   "inputs.city.label": "Bandar",
-  "inputs.city.help": "Tambah lebih banyak bandar secara luar talian menggunakan scripts/build-street-clips.ts — tiada API semasa proses render.",
+  "inputs.city.help": "Tambah lebih banyak bandar secara luar talian menggunakan scripts/build-street-clips.ts - tiada API semasa proses render.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Athens",
   "inputs.city.options.bangkok": "Bangkok",

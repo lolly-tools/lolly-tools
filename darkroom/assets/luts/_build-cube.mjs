@@ -3,19 +3,19 @@
 //
 // Source: sguyader/FilmSim (https://github.com/sguyader/FilmSim), commit
 // 1453b2b55c48d99a889b1e455f91f6898ba2db41, dedicated to the public domain under
-// CC0 1.0. Each source is a HaldCLUT .tif — a 144³ LUT (level 12) encoded in a
+// CC0 1.0. Each source is a HaldCLUT .tif - a 144³ LUT (level 12) encoded in a
 // 1728×1728 8-bit RGB image, row-major, red-fastest, so a grid node (r,g,b) sits
 // at raw offset (r + g·144 + b·144²)·3.
 //
 // This resamples each 144³ source to a 33³ Adobe/IRIDAS .cube (the industry
 // default, and Bitmap Studio's own bake default) with trilinear interpolation,
-// and names the outputs DESCRIPTIVELY — the upstream stock names (Acros, Provia,
+// and names the outputs DESCRIPTIVELY - the upstream stock names (Acros, Provia,
 // Velvia, Classic Chrome) are Fujifilm trademarks, so the UI never brands them;
 // their factual origin lives only in the # provenance comment + NOTICE.md.
 //
 // Regenerate (needs ImageMagick `magick` + the source .tif checked out):
 //   node _build-cube.mjs /path/to/FilmSim
-// Reproducibility (source .tif are NOT committed — 36 MB — verify by SHA256):
+// Reproducibility (source .tif are NOT committed - 36 MB - verify by SHA256):
 //   Acros.tif           d4c9f720c1588531b7f748e13505e11f392af663415e625bda0ff3455b41c7a5
 //   Classic_Chrome.tif  cc303723b76205aedf970dc814dbecd6d9795955411aa2d6b265873864de7a66
 //   Provia_Std.tif      acf26aee152dbce9fff685aa727a5550855d425aa90610dd63b3ff2f15be0fe7
@@ -30,7 +30,7 @@ const OUT = dirname(fileURLToPath(import.meta.url));
 const SRC = process.argv[2];
 if (!SRC) { console.error('usage: node _build-cube.mjs <FilmSim source dir>'); process.exit(1); }
 
-const N = 33;      // output grid (33³ — industry default)
+const N = 33;      // output grid (33³ - industry default)
 const EDGE = 144;  // Hald edge (12²); source image is 1728² = 12³²
 const WIDTH = 1728;
 
@@ -71,7 +71,7 @@ for (const { src, id, title } of MAP) {
     `TITLE "${title}"`,
     '# Preset LUT for Lolly Bitmap Studio.',
     `# Derived from sguyader/FilmSim "${src}" (CC0 1.0, https://github.com/sguyader/FilmSim),`,
-    '# resampled from the 144³ HaldCLUT to a 33³ .cube. Public domain — see NOTICE.md.',
+    '# resampled from the 144³ HaldCLUT to a 33³ .cube. Public domain - see NOTICE.md.',
     `LUT_3D_SIZE ${N}`,
     'DOMAIN_MIN 0.0 0.0 0.0',
     'DOMAIN_MAX 1.0 1.0 1.0',

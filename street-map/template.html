@@ -26,14 +26,14 @@
   /* Per-canvas commit channel + per-instance state live on the STABLE canvas
      element (it survives each paint's innerHTML swap), so N mounted maps never
      share one viewport / epoch / debounce timer. Absent offscreen and in older
-     shells — then the window fallback keeps the previous single-instance path.
+     shells - then the window fallback keeps the previous single-instance path.
      __smLoading/__smCities/__smClip below stay window-global on purpose: those
      are content caches every instance should share. */
   var canvasRoot = smRoot.closest('[data-lolly-canvas]');
   var commitFn = canvasRoot && canvasRoot.__lollyCommit;
   var stateStore = canvasRoot || window;
 
-  /* ── Epoch guard — a newer render of THIS map cancels its own stale draws ───── */
+  /* ── Epoch guard - a newer render of THIS map cancels its own stale draws ───── */
   stateStore.__smEpoch = (stateStore.__smEpoch || 0) + 1;
   var _ep = stateStore.__smEpoch;
   function alive() { return stateStore.__smEpoch === _ep && document.contains(mapEl); }
@@ -110,7 +110,7 @@
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .style('width', '100%').style('height', '100%');
 
-    /* Background rect — first child, outside the panned group, so every export
+    /* Background rect - first child, outside the panned group, so every export
        format carries the theme background. */
     svg.append('rect').attr('x', 0).attr('y', 0).attr('width', W).attr('height', H)
       .attr('fill', pal.bg);
@@ -164,14 +164,14 @@
         .attr('d', path);
     }
 
-    /* Roads — one path per weight tier, thinnest first so majors sit on top. */
+    /* Roads - one path per weight tier, thinnest first so majors sit on top. */
     var byTier = {};
     roads.forEach(function (f) {
       var t = f.properties.w == null ? 2 : f.properties.w;
       (byTier[t] = byTier[t] || []).push(f);
     });
     Object.keys(byTier).map(Number).sort(function (a, b) { return a - b; }).forEach(function (t) {
-      /* Tiers 0–2 are minor streets, 3+ are major roads — each scaled by its own slider. */
+      /* Tiers 0–2 are minor streets, 3+ are major roads - each scaled by its own slider. */
       var weight = t <= 2 ? minorWeight : majorWeight;
       gMap.append('path').datum(collection(byTier[t]))
         .attr('fill', 'none').attr('stroke', pal.road)
@@ -226,7 +226,7 @@
       _applying = false;
     }
 
-    /* Zoom buttons (scoped to this instance's own root — ids repeat across maps) */
+    /* Zoom buttons (scoped to this instance's own root - ids repeat across maps) */
     var zi = smRoot.querySelector('#sm-zi');
     var zo = smRoot.querySelector('#sm-zo');
     var zr = smRoot.querySelector('#sm-zr');

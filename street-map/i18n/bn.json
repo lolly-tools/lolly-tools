@@ -3,7 +3,7 @@
   "description": "যেকোনো শহরের পরিচ্ছন্ন ভেক্টর স্ট্রিট-ব্লক মানচিত্র। অফলাইনে কাজ করে।",
   "a11yLabel": "{{city}}-কে কেন্দ্র করে স্ট্রিট ম্যাপ",
   "inputs.city.label": "শহর",
-  "inputs.city.help": "scripts/build-street-clips.ts দিয়ে অফলাইনে আরও শহর যোগ করুন — রেন্ডারের সময় কোনো API লাগে না।",
+  "inputs.city.help": "scripts/build-street-clips.ts দিয়ে অফলাইনে আরও শহর যোগ করুন - রেন্ডারের সময় কোনো API লাগে না।",
   "inputs.city.options.amsterdam": "আমস্টারডাম",
   "inputs.city.options.athens": "এথেন্স",
   "inputs.city.options.bangkok": "ব্যাংকক",

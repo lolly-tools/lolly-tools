@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "3 kez oynat",
   "inputs.loop.options.once": "Bir kez oynat",
   "inputs.scenes.label": "Sahneler",
-  "inputs.scenes.help": "Her sahne dizinin bir bölümüdür — bir öncekinin üzerine, kendi döngüdeki Lottie animasyonuyla birlikte animasyonlu şekilde girer. Son sahne, dinlenme durumundaki bitiş kartıdır.",
+  "inputs.scenes.help": "Her sahne dizinin bir bölümüdür - bir öncekinin üzerine, kendi döngüdeki Lottie animasyonuyla birlikte animasyonlu şekilde girer. Son sahne, dinlenme durumundaki bitiş kartıdır.",
   "inputs.scenes.addMenu.label": "Sahne ekle",
   "inputs.scenes.fields.anim.label": "Animasyon",
   "inputs.scenes.fields.bgColor.label": "Arka plan",

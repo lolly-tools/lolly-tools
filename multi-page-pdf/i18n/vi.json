@@ -1,7 +1,7 @@
 {
   "name": "PDF nhiều trang",
   "description": "Tạo PDF nhiều trang - trang bìa, khối nội dung tự chảy, và trang cuối.",
-  "a11yLabel": "{{default coverTitle \"Untitled\"}} — tài liệu PDF nhiều trang",
+  "a11yLabel": "{{default coverTitle \"Untitled\"}} - tài liệu PDF nhiều trang",
   "featured.blurb": "PDF nhiều trang - bìa, nội dung, trang cuối",
   "inputs.pageSize.label": "Kích thước trang",
   "inputs.pageSize.help": "Đặt kích thước cho mọi trang và kích thước trang PDF khi xuất. Mỗi trang trong tài liệu được dựng đúng theo kích thước này.",
@@ -52,7 +52,7 @@
   "inputs.content.fields.heading.label": "Tiêu đề",
   "inputs.content.fields.heading.placeholder": "Tiêu đề (tùy chọn)",
   "inputs.content.fields.body.label": "Nội dung",
-  "inputs.content.fields.body.placeholder": "Nội dung văn bản — hỗ trợ tiêu đề #, **in đậm**, *in nghiêng*, gạch đầu dòng - và danh sách đánh số 1.",
+  "inputs.content.fields.body.placeholder": "Nội dung văn bản - hỗ trợ tiêu đề #, **in đậm**, *in nghiêng*, gạch đầu dòng - và danh sách đánh số 1.",
   "inputs.content.fields.image.label": "Ảnh",
   "inputs.content.fields.caption.label": "Chú thích",
   "inputs.content.fields.caption.placeholder": "Chú thích (tùy chọn)",

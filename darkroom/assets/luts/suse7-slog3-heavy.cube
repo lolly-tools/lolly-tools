@@ -1,7 +1,7 @@
 TITLE "SUSE7 S-Log3 (Heavy)"
-# Preset LUT for Lolly — a Sony S-Log3 "heavy" colour grade.
+# Preset LUT for Lolly - a Sony S-Log3 "heavy" colour grade.
 # Created by Peter Chamalian (Director of Photography & Editor), SUSE, September 2025.
-# © 2025 SUSE. Licensed CC BY 4.0 — https://creativecommons.org/licenses/by/4.0/
+# © 2025 SUSE. Licensed CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
 # Attribution required: credit "SUSE · Peter Chamalian". See NOTICE.md.
 # Built for Sony S-Log3 footage. Authored in DaVinci Resolve; 65³ Adobe/IRIDAS .cube.
 LUT_3D_SIZE 65

@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Fet",
   "inputs.weight.options.600": "Halvfet",
   "inputs.tracking.label": "Bokstavsavstånd",
-  "inputs.tracking.help": "Negativa värden drar ihop bokstäverna — avgörande för att få plats med 3–4 versaler i monospace inom en 16 px-ruta. Mono är bred, så gå gott och väl in på minussidan.",
+  "inputs.tracking.help": "Negativa värden drar ihop bokstäverna - avgörande för att få plats med 3–4 versaler i monospace inom en 16 px-ruta. Mono är bred, så gå gott och väl in på minussidan.",
   "inputs.labelScale.label": "Etikettstorlek",
   "inputs.labelScale.help": "Justera den automatiskt anpassade etikettstorleken upp eller ner (i procent).",
   "inputs.showGrid.label": "16 px-förhandsvisning",
-  "inputs.showGrid.help": "Visa ikonen i dess verkliga favicon-storlekar 16 och 32 px på ritytan så att du kan bedöma läsbarheten. Enbart ett hjälpmedel i redigeraren — tas aldrig med i exporter."
+  "inputs.showGrid.help": "Visa ikonen i dess verkliga favicon-storlekar 16 och 32 px på ritytan så att du kan bedöma läsbarheten. Enbart ett hjälpmedel i redigeraren - tas aldrig med i exporter."
 }

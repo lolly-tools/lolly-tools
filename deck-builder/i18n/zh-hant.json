@@ -295,5 +295,13 @@
   "inputs.footerText.help": "每張投影片底部的一行小頁尾(版權、機密聲明),位於標誌與投影片編號之間。",
   "inputs.footerText.placeholder": "© 2026 貴公司 · 機密",
   "inputs.deck.fields.layout.options.bignum": "大數字",
-  "inputs.deck.fields.layout.options.mainpoint": "重點"
+  "inputs.deck.fields.layout.options.mainpoint": "重點",
+  "inputs.deck.fields.text1.label": "版位 1 文字",
+  "inputs.deck.fields.text1.help": "未設定圖片或工具時,以文字卡片填滿版位。兩者皆有時以媒體為準。",
+  "inputs.deck.fields.text2.label": "版位 2 文字",
+  "inputs.deck.fields.text2.help": "未設定圖片或工具時,以文字卡片填滿版位。兩者皆有時以媒體為準。",
+  "inputs.deck.fields.text3.label": "版位 3 文字",
+  "inputs.deck.fields.text3.help": "未設定圖片或工具時,以文字卡片填滿版位。兩者皆有時以媒體為準。",
+  "inputs.deck.fields.text4.label": "版位 4 文字",
+  "inputs.deck.fields.text4.help": "未設定圖片或工具時,以文字卡片填滿版位。兩者皆有時以媒體為準。"
 }

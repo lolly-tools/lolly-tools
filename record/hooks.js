@@ -1,13 +1,13 @@
 /* global onInit, onInput, beforeExport, host */
 
 /**
- * Record — an editable intro/outro around a camera clip.
+ * Record - an editable intro/outro around a camera clip.
  *
  * A three-frame free-canvas filmstrip: an INTRO card, your CAMERA, and an OUTRO
  * card, side by side. Derived from Carousel Maker: each object is one row of the
  * `boxes` blocks input carrying flat GLOBAL geometry (x/y/w/h/rot) across the whole
  * strip. This hook buckets objects into their frame (nearest centre column), shifts
- * each into that frame's LOCAL space, and precomputes a CSS string per object — so
+ * each into that frame's LOCAL space, and precomputes a CSS string per object - so
  * Handlebars stays logic-less and a headless CLI/URL render matches the browser.
  *
  * Two things make it a recorder rather than a carousel:
@@ -30,22 +30,22 @@ function num(v, d) {
   var x = typeof v === 'number' ? v : parseFloat(v);
   return isFinite(x) ? x : d;
 }
-// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared clamp - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 
-// Only let a value through if it's a shape CSS colour can't be smuggled past — box
+// Only let a value through if it's a shape CSS colour can't be smuggled past - box
 // fill/text colour come from colour inputs, but a hand-edited URL could carry
 // anything, and these land inside a style="" attribute, so guard against
 // property-injection via a stray ';'.
-// === lolly:shared safeColor — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared safeColor - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function safeColor(v, fallback) {
   var s = String(v == null ? '' : v).trim();
   if (!s) return fallback;
   if (/^#[0-9a-fA-F]{3,8}$/.test(s)) return s;
   if (/^(rgb|rgba|hsl|hsla)\([0-9.,%\s/]+\)$/i.test(s)) return s;
   if (/^[a-zA-Z]+$/.test(s)) return s; // named colour (e.g. "transparent", "tomato")
-  // A brand-token CSS var with an OPTIONAL literal-colour fallback — the documented
+  // A brand-token CSS var with an OPTIONAL literal-colour fallback - the documented
   // brand-inheritance path (brand-vars.ts injects --brand-primary/… onto the canvas root,
   // so a template can carry var(--brand-primary, #hex)). Strict on purpose: a var name and
   // at most one hex / named / rgb / hsl fallback, so nothing (no ; " ' < > { } or a nested
@@ -64,7 +64,7 @@ function boolVal(v, dflt) {
   return dflt;
 }
 
-// === lolly:shared esc — generated from community/_shared/text.js; edit there and run npm run sync:shared ===
+// === lolly:shared esc - generated from community/_shared/text.js; edit there and run npm run sync:shared ===
 function esc(s) {
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -166,7 +166,7 @@ var EASINGS = {
 // cubic-bezier re-emitted from its own PARSED numbers rather than the user's string.
 // The x controls are TIME and must stay inside 0..1 or the curve is not a function of
 // progress (CSS refuses the same thing); y is unbounded, which is the overshoot family.
-// Anything else answers '' and the compositor keeps the transition's built-in curve —
+// Anything else answers '' and the compositor keeps the transition's built-in curve -
 // the same shape sequence-studio's timeAttrsFor uses, and the same vocabulary
 // shells/web/src/lib/transitions.ts re-validates on the way in.
 function easeOf(b) {
@@ -315,7 +315,7 @@ function textCss(b) {
 }
 
 // GAP between frames, in px. MUST match styles.css `.rec-strip { gap }` and
-// render.pages.gap in tool.json — the free-canvas overlay reads the frames' real DOM
+// render.pages.gap in tool.json - the free-canvas overlay reads the frames' real DOM
 // offsets, so it's immune to drift, but a mismatch here would render objects at the
 // wrong spot inside their frame.
 var GAP = 56;
@@ -344,7 +344,7 @@ function compute(model) {
   }
 
   // Empty buckets first so every frame renders (even with no objects on it). The
-  // middle frame (body) has no solid background — the camera / footage shows there.
+  // middle frame (body) has no solid background - the camera / footage shows there.
   var frames = [];
   for (var p = 0; p < count; p++) {
     var role = ROLES[p];
@@ -383,7 +383,7 @@ function compute(model) {
   var outroMs = Math.round(clamp(num(inp.outroMs, 2400), 300, 8000));
   var enterMs = Math.round(clamp(num(inp.enterMs, 650), 100, 3000));
 
-  // NOTE: the output key is `frames`, NOT `pages` — matching a declared input id
+  // NOTE: the output key is `frames`, NOT `pages` - matching a declared input id
   // (`frames` is our COUNT input) would clobber it via patch semantics. `framesOut`
   // sidesteps that; the template loops `framesOut`.
   return {

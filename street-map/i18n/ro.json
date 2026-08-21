@@ -3,7 +3,7 @@
   "description": "Hărți vectoriale clare, cu blocuri stradale, pentru orice oraș. Funcționează offline.",
   "a11yLabel": "Hartă stradală centrată pe {{city}}",
   "inputs.city.label": "Oraș",
-  "inputs.city.help": "Adaugă mai multe orașe offline cu scripts/build-street-clips.ts — fără API la momentul randării.",
+  "inputs.city.help": "Adaugă mai multe orașe offline cu scripts/build-street-clips.ts - fără API la momentul randării.",
   "inputs.city.options.athens": "Atena",
   "inputs.city.options.brussels": "Bruxelles",
   "inputs.city.options.budapest": "Budapesta",

@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "粗體",
   "inputs.weight.options.600": "半粗體",
   "inputs.tracking.label": "字距",
-  "inputs.tracking.help": "負值會讓字母排列更緊密——這對於在 16 px 的方塊中塞進 3 到 4 個等寬大寫字母至關重要。Mono 字體較寬，需要把數值調得更負一些。",
+  "inputs.tracking.help": "負值會讓字母排列更緊密--這對於在 16 px 的方塊中塞進 3 到 4 個等寬大寫字母至關重要。Mono 字體較寬，需要把數值調得更負一些。",
   "inputs.labelScale.label": "標籤大小",
   "inputs.labelScale.help": "微調自動配置後的標籤大小（百分比）。",
   "inputs.showGrid.label": "16 px 預覽",
-  "inputs.showGrid.help": "在畫布上以實際的 16 px 與 32 px favicon 尺寸顯示圖示，方便判斷清晰度。僅為編輯器輔助功能——不會包含在匯出檔案中。"
+  "inputs.showGrid.help": "在畫布上以實際的 16 px 與 32 px favicon 尺寸顯示圖示，方便判斷清晰度。僅為編輯器輔助功能--不會包含在匯出檔案中。"
 }

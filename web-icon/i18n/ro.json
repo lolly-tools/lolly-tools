@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Aldin",
   "inputs.weight.options.600": "Semi-aldin",
   "inputs.tracking.label": "Spațiere litere",
-  "inputs.tracking.help": "Valorile negative apropie literele între ele — esențial pentru a încadra 3–4 majuscule monospațiate într-o casetă de 16 px. Fontul Mono este lat, așa că împinge valoarea bine în negativ.",
+  "inputs.tracking.help": "Valorile negative apropie literele între ele - esențial pentru a încadra 3–4 majuscule monospațiate într-o casetă de 16 px. Fontul Mono este lat, așa că împinge valoarea bine în negativ.",
   "inputs.labelScale.label": "Dimensiune etichetă",
   "inputs.labelScale.help": "Ajustează ușor dimensiunea etichetei calculată automat, în sus sau în jos (procent).",
   "inputs.showGrid.label": "Previzualizare 16 px",
-  "inputs.showGrid.help": "Afișează iconița la dimensiunile reale de favicon, 16 și 32 px, pe canvas, ca să poți evalua lizibilitatea. Doar un ajutor pentru editare — nu este niciodată inclus în exporturi."
+  "inputs.showGrid.help": "Afișează iconița la dimensiunile reale de favicon, 16 și 32 px, pe canvas, ca să poți evalua lizibilitatea. Doar un ajutor pentru editare - nu este niciodată inclus în exporturi."
 }

@@ -3,7 +3,7 @@
   "description": "किसी भी शहर के साफ़ वेक्टर स्ट्रीट-ब्लॉक मैप। ऑफ़लाइन काम करता है।",
   "a11yLabel": "{{city}} पर केंद्रित स्ट्रीट मैप",
   "inputs.city.label": "शहर",
-  "inputs.city.help": "scripts/build-street-clips.ts से और शहर ऑफ़लाइन जोड़ें — रेंडर के समय कोई API नहीं।",
+  "inputs.city.help": "scripts/build-street-clips.ts से और शहर ऑफ़लाइन जोड़ें - रेंडर के समय कोई API नहीं।",
   "inputs.city.options.amsterdam": "एम्स्टर्डम",
   "inputs.city.options.athens": "एथेंस",
   "inputs.city.options.bangkok": "बैंकॉक",

@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Her slaydın altında, logo ile slayt numarası arasında küçük bir alt bilgi satırı (telif hakkı, gizlilik).",
   "inputs.footerText.placeholder": "© 2026 Şirketiniz · Gizli",
   "inputs.deck.fields.layout.options.bignum": "Büyük sayı",
-  "inputs.deck.fields.layout.options.mainpoint": "Ana fikir"
+  "inputs.deck.fields.layout.options.mainpoint": "Ana fikir",
+  "inputs.deck.fields.text1.label": "Yuva 1 metni",
+  "inputs.deck.fields.text1.help": "Görsel veya araç ayarlı değilse yuvayı bir metin kartıyla doldurur. İkisi de ayarlıysa medya öncelik alır.",
+  "inputs.deck.fields.text2.label": "Yuva 2 metni",
+  "inputs.deck.fields.text2.help": "Görsel veya araç ayarlı değilse yuvayı bir metin kartıyla doldurur. İkisi de ayarlıysa medya öncelik alır.",
+  "inputs.deck.fields.text3.label": "Yuva 3 metni",
+  "inputs.deck.fields.text3.help": "Görsel veya araç ayarlı değilse yuvayı bir metin kartıyla doldurur. İkisi de ayarlıysa medya öncelik alır.",
+  "inputs.deck.fields.text4.label": "Yuva 4 metni",
+  "inputs.deck.fields.text4.help": "Görsel veya araç ayarlı değilse yuvayı bir metin kartıyla doldurur. İkisi de ayarlıysa medya öncelik alır."
 }

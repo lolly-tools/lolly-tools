@@ -7,9 +7,9 @@
   "inputs.scrollDepth.label": "滚动深度",
   "inputs.scrollDepth.help": "截图前向下滚动的距离。0 = 顶部，1 = 底部。",
   "inputs.waitMs.label": "等待时间（毫秒）",
-  "inputs.waitMs.help": "加载（及滚动）完成后、截图前的等待时间——用于让字体、图片和动画稳定下来。",
+  "inputs.waitMs.help": "加载（及滚动）完成后、截图前的等待时间--用于让字体、图片和动画稳定下来。",
   "inputs.css.label": "自定义 CSS",
-  "inputs.css.help": "截图前注入页面的 CSS——例如隐藏 Cookie 提示栏（.cookie-bar { display: none }）或重新设置元素样式。",
+  "inputs.css.help": "截图前注入页面的 CSS--例如隐藏 Cookie 提示栏（.cookie-bar { display: none }）或重新设置元素样式。",
   "inputs.cropTop.label": "顶部裁剪",
   "inputs.cropTop.help": "从顶部边缘向内裁剪，取高度的 0–0.9 比例。仅适用于位图（png/jpg/svg）。",
   "inputs.cropRight.label": "右侧裁剪",
@@ -31,7 +31,7 @@
   "inputs.tintColor.label": "染色颜色",
   "inputs.tintColor.help": "当“重新着色”设为“染色”时，页面所染上的颜色。",
   "inputs.scrollTo.label": "滚动到（视频）",
-  "inputs.scrollTo.help": "仅视频导出：在片段中向下平移到此深度——即页面从“滚动深度”滚动到此处。设置为与“滚动深度”相同即可保持静止。图片格式将忽略此设置。",
+  "inputs.scrollTo.help": "仅视频导出：在片段中向下平移到此深度--即页面从“滚动深度”滚动到此处。设置为与“滚动深度”相同即可保持静止。图片格式将忽略此设置。",
   "inputs.zoom.label": "缩放",
-  "inputs.zoom.help": "浏览器缩放级别——在截图前放大页面（类似 Ctrl/Cmd +），因此即使是位图截图也会被放大且清晰，而非事后放大失真。1 = 100%。"
+  "inputs.zoom.help": "浏览器缩放级别--在截图前放大页面（类似 Ctrl/Cmd +），因此即使是位图截图也会被放大且清晰，而非事后放大失真。1 = 100%。"
 }

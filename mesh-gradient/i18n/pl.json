@@ -53,12 +53,12 @@
   "inputs.grainBlend.options.overlay": "Nakładka (chropowata)",
   "inputs.grainBlend.options.luminosity": "Jasność (klasyczna)",
   "inputs.animate.label": "Dryf",
-  "inputs.animate.help": "Wolny, zapętlony dryf punktów kolorów — eksportuj jako WebM/MP4, aby uzyskać żywe tło.",
+  "inputs.animate.help": "Wolny, zapętlony dryf punktów kolorów - eksportuj jako WebM/MP4, aby uzyskać żywe tło.",
   "inputs.animate.section": "Tekstura i ruch",
   "inputs.distance.label": "Zasięg unoszenia",
   "inputs.distance.help": "Jak daleko punkty kolorów odpływają od ustawionej pozycji. 100% to domyślny rozmiar orbity; 0% zamraża je w miejscu.",
   "inputs.distance.section": "Tekstura i ruch",
   "inputs.speed.label": "Prędkość unoszenia",
-  "inputs.speed.help": "Liczba sekund na pętlę dryfu — wyższa wartość oznacza wolniej. Eksport wideo przechwytuje jedną pętlę, o ile pozwala na to budżet klatek (długie pętle są skracane przy 60 fps).",
+  "inputs.speed.help": "Liczba sekund na pętlę dryfu - wyższa wartość oznacza wolniej. Eksport wideo przechwytuje jedną pętlę, o ile pozwala na to budżet klatek (długie pętle są skracane przy 60 fps).",
   "inputs.speed.section": "Tekstura i ruch"
 }

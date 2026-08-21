@@ -295,5 +295,13 @@
   "inputs.footerText.help": "每张幻灯片底部的一行小页脚(版权、保密声明),位于徽标与幻灯片编号之间。",
   "inputs.footerText.placeholder": "© 2026 贵公司 · 保密",
   "inputs.deck.fields.layout.options.bignum": "大数字",
-  "inputs.deck.fields.layout.options.mainpoint": "要点"
+  "inputs.deck.fields.layout.options.mainpoint": "要点",
+  "inputs.deck.fields.text1.label": "版位 1 文字",
+  "inputs.deck.fields.text1.help": "未设置图片或工具时,用文字卡片填充版位。两者都有时以媒体为准。",
+  "inputs.deck.fields.text2.label": "版位 2 文字",
+  "inputs.deck.fields.text2.help": "未设置图片或工具时,用文字卡片填充版位。两者都有时以媒体为准。",
+  "inputs.deck.fields.text3.label": "版位 3 文字",
+  "inputs.deck.fields.text3.help": "未设置图片或工具时,用文字卡片填充版位。两者都有时以媒体为准。",
+  "inputs.deck.fields.text4.label": "版位 4 文字",
+  "inputs.deck.fields.text4.help": "未设置图片或工具时,用文字卡片填充版位。两者都有时以媒体为准。"
 }

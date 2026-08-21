@@ -54,11 +54,11 @@
   "inputs.grainBlend.options.luminosity": "Luminositas (klasik)",
   "inputs.animate.label": "Mengambang",
   "inputs.animate.section": "Tekstur & Gerakan",
-  "inputs.animate.help": "Gerakan mengambang yang lambat dan berulang dari titik-titik warna — ekspor sebagai WebM/MP4 untuk latar belakang hidup.",
+  "inputs.animate.help": "Gerakan mengambang yang lambat dan berulang dari titik-titik warna - ekspor sebagai WebM/MP4 untuk latar belakang hidup.",
   "inputs.distance.label": "Jarak mengambang",
   "inputs.distance.section": "Tekstur & Gerakan",
   "inputs.distance.help": "Seberapa jauh titik-titik warna bergeser dari posisi yang ditetapkan. 100% adalah ukuran orbit default; 0% membekukannya di tempat.",
   "inputs.speed.label": "Kecepatan mengambang",
   "inputs.speed.section": "Tekstur & Gerakan",
-  "inputs.speed.help": "Detik per putaran mengambang — semakin tinggi semakin lambat. Ekspor video menangkap satu putaran penuh jika anggaran bingkai memungkinkan (putaran panjang dipersingkat pada 60 fps)."
+  "inputs.speed.help": "Detik per putaran mengambang - semakin tinggi semakin lambat. Ekspor video menangkap satu putaran penuh jika anggaran bingkai memungkinkan (putaran panjang dipersingkat pada 60 fps)."
 }

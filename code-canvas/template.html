@@ -63,7 +63,7 @@
 }
 
 /* ── Blinking caret (opt-in; off by default) ───────────────────────────
-   A terminal-style block caret after the code — a subtle "alive" cue in the
+   A terminal-style block caret after the code - a subtle "alive" cue in the
    live editor. Injected via ::after so the syntax highlighter's innerHTML can't
    clobber it; currentColor tracks the theme. Off by default (data-blink="off"),
    so a saved PNG/SVG is a clean still unless the author turns "Blink cursor" on. */
@@ -532,7 +532,7 @@
       leftCtl.appendChild(macDot('#ff5f56', IS));
       leftCtl.appendChild(macDot('#febc2e', IS));
       leftCtl.appendChild(macDot('#28c840', IS));
-    } else { // nuremberg — GNOME Adwaita (default)
+    } else { // nuremberg - GNOME Adwaita (default)
       radius = 14;
       header.style.padding = (12 * IS) + 'px ' + (14 * IS) + 'px';
       rightCtl.appendChild(adwClose(IS));
@@ -541,7 +541,7 @@
   }
 
   // ── Chrome sizing (slider scale only, not content-dependent) ─────────────
-  var IS = scale; // slider value: 0.7 – 2.0
+  var IS = scale; // slider value: 0.7 - 2.0
   buildChrome(IS);
   codeEl.style.paddingTop    = (20 * IS) + 'px';
   codeEl.style.paddingRight  = (24 * IS) + 'px';

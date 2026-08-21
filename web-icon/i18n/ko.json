@@ -23,7 +23,7 @@
   "inputs.weight.options.700": "볼드",
   "inputs.weight.options.600": "세미볼드",
   "inputs.tracking.label": "자간",
-  "inputs.tracking.help": "음수 값을 사용하면 글자가 서로 가까워져요 — 16px 타일에 3~4자의 고정폭 대문자를 담으려면 꼭 필요해요. Mono는 폭이 넓으니 마이너스 값을 충분히 크게 주세요.",
+  "inputs.tracking.help": "음수 값을 사용하면 글자가 서로 가까워져요 - 16px 타일에 3~4자의 고정폭 대문자를 담으려면 꼭 필요해요. Mono는 폭이 넓으니 마이너스 값을 충분히 크게 주세요.",
   "inputs.labelScale.label": "라벨 크기",
   "inputs.labelScale.help": "자동으로 맞춰진 라벨 크기를 퍼센트 단위로 위아래 조정해요.",
   "inputs.showGrid.label": "16px 미리보기",

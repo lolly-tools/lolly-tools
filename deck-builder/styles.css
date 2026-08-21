@@ -1,5 +1,5 @@
 /**
- * Slides — structural CSS.
+ * Slides - structural CSS.
  *
  * Auto-scoped to the tool canvas by the shell. The per-slide @keyframes and their
  * play bindings are NOT here: the timeline depends on the slide count, so the hook
@@ -10,7 +10,7 @@
 
 /* The deck root fills the (reshaped) canvas and is the ONE query container: every
    cq unit below resolves against it. Container-query units used ON a container
-   resolve against that container's ANCESTOR, never itself — so the per-slide
+   resolve against that container's ANCESTOR, never itself - so the per-slide
    padding and type must query the root, not `.sl-slide`. Every slide is inset:0 on
    the root, so "the root box" and "a slide box" are the same box anyway. */
 .slides {
@@ -28,12 +28,12 @@
 /* Every slide is a co-located, full-frame layer (the cover model): a later slide
    animates in OVER the one before it, so the deck never shows a blank gap.
    Stacking is safe for the paged exports because both walkers measure each
-   [data-pdf-page] against its OWN rect and descend only its own subtree — an
+   [data-pdf-page] against its OWN rect and descend only its own subtree - an
    overlapping sibling is not a descendant, so it can never contaminate a page.
    Stack with `inset`, NEVER a transform on the slide itself: the pptx walker
    derives every child box from this element's rect, so a transform here would skew
    the whole slide. (The transition transforms are stripped for the paged formats
-   by .sl-static — see beforeExport.) */
+   by .sl-static - see beforeExport.) */
 .sl-slide {
   position: absolute;
   inset: 0;
@@ -55,7 +55,7 @@
    (a .sl-slide, or a freeform .sl-box-text); the default of 1 makes the calc inert
    everywhere else, so a deck with fit off computes exactly what it always did.
    Why a multiplier and not a px size: the pass runs against the canvas at its CURRENT
-   size and the export bridge scales that same DOM up to the export size — a ratio
+   size and the export bridge scales that same DOM up to the export size - a ratio
    survives that, an absolute px size doesn't. See template.html. */
 
 /* ── Title band ─────────────────────────────────────────────────────────────── */
@@ -86,13 +86,13 @@
 }
 .sl-body > :first-child { margin-top: 0; }
 .sl-h { line-height: 1.12; font-weight: 700; overflow-wrap: anywhere; }
-/* A body #-heading (the 2nd+ heading; the first is lifted out as the title) — weight only,
+/* A body #-heading (the 2nd+ heading; the first is lifted out as the title) - weight only,
    its size stays the UA default it always had. */
 .sl-h1 { font-weight: var(--ds-h1-weight, 700); font-family: var(--ds-h1-family, inherit); }
 .sl-h2 { font-size: calc(clamp(14px, 4.2cqmin, 56px) * var(--fit, 1) * var(--ds-h2-scale, 1)); font-weight: var(--ds-h2-weight, 700); font-family: var(--ds-h2-family, inherit); margin-top: 2cqmin; }
 .sl-h3 { font-size: calc(clamp(13px, 3.4cqmin, 44px) * var(--fit, 1) * var(--ds-h3-scale, 1)); font-weight: var(--ds-h3-weight, 700); font-family: var(--ds-h3-family, inherit); margin-top: 1.6cqmin; opacity: 0.92; }
 .sl-p { margin-top: 1.4cqmin; opacity: 0.9; }
-/* Lists carry no size of their own — they inherit the body scale — so a per-list size
+/* Lists carry no size of their own - they inherit the body scale - so a per-list size
    override is `calc(1em * scale)` (1em = the inherited size), and the weight cascades to
    the items and their markers. */
 .sl-ul { margin-top: 1.4cqmin; padding-left: 3cqmin; list-style: none; font-size: calc(1em * var(--ds-ul-scale, 1)); font-weight: var(--ds-ul-weight, 400); font-family: var(--ds-ul-family, inherit); }
@@ -109,14 +109,14 @@
   border-radius: 50%;
   background: var(--accent, currentColor);
 }
-/* Ordered lists — native decimal markers (no dot). */
+/* Ordered lists - native decimal markers (no dot). */
 .sl-ol { margin-top: 1.4cqmin; padding-left: 4cqmin; font-size: calc(1em * var(--ds-ol-scale, 1)); font-weight: var(--ds-ol-weight, 400); font-family: var(--ds-ol-family, inherit); }
 .sl-ol > li { margin-top: 0.9cqmin; opacity: 0.9; }
 .sl-ol > li::marker { color: var(--accent, currentColor); font-weight: 700; }
 /* Nested lists tighten and drop the leading gap. */
 .sl-ul .sl-ul, .sl-ul .sl-ol, .sl-ol .sl-ol, .sl-ol .sl-ul { margin-top: 0.5cqmin; }
 
-/* Blockquote — an accent rule down the side, sized off the inherited body size so a
+/* Blockquote - an accent rule down the side, sized off the inherited body size so a
    per-quote scale/weight override applies exactly like the lists. */
 .sl-quote {
   margin-top: 1.4cqmin;
@@ -130,7 +130,7 @@
 }
 .sl-quote > :first-child { margin-top: 0; }
 
-/* Fenced code block — a monospace panel that wraps (never scrolls the slide). Shares the
+/* Fenced code block - a monospace panel that wraps (never scrolls the slide). Shares the
    --ds-code-* overrides with the inline code below; the inner <code> resets the inline
    pill styling so it isn't drawn twice. */
 .sl-pre {
@@ -153,9 +153,9 @@
   border-radius: 0;
 }
 
-/* Pipe tables — capped to the slide, long cells wrap, so a wide table never makes
+/* Pipe tables - capped to the slide, long cells wrap, so a wide table never makes
    the slide scroll. Cell borders + header rule are derived from the slide ink
-   (currentColor) via color-mix — the same pattern as .sl-slot; the slide sets
+   (currentColor) via color-mix - the same pattern as .sl-slot; the slide sets
    --ink/--accent, not an --edge, so the edge tint comes from the ink. */
 .sl-table {
   border-collapse: collapse;
@@ -193,7 +193,7 @@
 .sl-body strong { font-weight: 700; }
 .sl-body em { font-style: italic; }
 
-/* ── Slot grid — fills whatever the title band leaves ────────────────────────── */
+/* ── Slot grid - fills whatever the title band leaves ────────────────────────── */
 .sl-grid { flex: 1 1 auto; min-height: 0; display: grid; gap: 3cqmin; }
 .sl-slot {
   position: relative;
@@ -207,14 +207,33 @@
 .sl-slot:not(.is-filled) { background: color-mix(in oklab, currentColor 10%, transparent); }
 .sl-fill { width: 100%; height: 100%; object-fit: contain; display: block; }
 
+/* A TEXT slot - the brand-template card well: fog panel, ink text. The inner
+   .sl-slot-text mirrors the freeform text box's measured-child shape so the fit
+   pass can shrink overflowing copy (see template.html). */
+.sl-slot.is-text { background: var(--sl-card, #efefef); color: var(--sl-card-ink, #172029); }
+.sl-slot-text {
+  position: absolute;
+  inset: 0;
+  padding: 2.6cqmin 3cqmin;
+  display: flex;
+  flex-direction: column;
+  font-size: calc(clamp(11px, 2.7cqmin, 36px) * var(--fit, 1));
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  overflow: hidden;
+}
+.sl-slot-text h1, .sl-slot-text h2, .sl-slot-text h3 { margin: 0 0 0.4em; line-height: 1.15; }
+.sl-slot-text p, .sl-slot-text ul, .sl-slot-text ol { margin: 0 0 0.5em; }
+.sl-slot-text ul, .sl-slot-text ol { padding-left: 1.2em; }
+
 /* ── Layout presets ─────────────────────────────────────────────────────────── */
-/* title (0 slots) — the head + body are the whole slide, centred. */
+/* title (0 slots) - the head + body are the whole slide, centred. */
 .sl-l-title { justify-content: center; align-items: center; text-align: center; }
 .sl-l-title .sl-title { font-size: calc(clamp(20px, 10cqmin, 132px) * var(--fit, 1) * var(--ds-h1-scale, 1)); }
 .sl-l-title .sl-body { font-size: calc(clamp(12px, 3.6cqmin, 48px) * var(--fit, 1)); max-width: 78%; }
 .sl-l-title .sl-ul { display: inline-block; text-align: left; }
 
-/* full (1) — media covers the frame, title overlaid on a scrim at the foot. */
+/* full (1) - media covers the frame, title overlaid on a scrim at the foot. */
 .sl-l-full { padding: 0; gap: 0; }
 .sl-l-full .sl-grid { grid-template-columns: 1fr; }
 .sl-l-full .sl-slot { border-radius: 0; }
@@ -231,13 +250,13 @@
   background: linear-gradient(transparent, rgba(0, 0, 0, 0.55));
 }
 
-/* hero (1) — title band, then one media panel filling the rest. */
-/* Big number — a huge centred stat (the title) with its caption (the body) beneath. */
+/* hero (1) - title band, then one media panel filling the rest. */
+/* Big number - a huge centred stat (the title) with its caption (the body) beneath. */
 .sl-l-bignum { justify-content: center; align-items: center; text-align: center; }
 .sl-l-bignum .sl-title { font-size: calc(clamp(28px, 22cqmin, 300px) * var(--fit, 1) * var(--ds-h1-scale, 1)); }
 .sl-l-bignum .sl-body { font-size: calc(clamp(12px, 3.6cqmin, 48px) * var(--fit, 1)); max-width: 60%; }
 
-/* Main point — one big statement filling the left ~70%, vertically centred. */
+/* Main point - one big statement filling the left ~70%, vertically centred. */
 .sl-l-mainpoint { justify-content: center; }
 .sl-l-mainpoint .sl-title { font-size: calc(clamp(20px, 9cqmin, 120px) * var(--fit, 1) * var(--ds-h1-scale, 1)); max-width: 74%; }
 .sl-l-mainpoint .sl-body { max-width: 74%; }
@@ -245,25 +264,25 @@
 .sl-l-hero .sl-grid { grid-template-columns: 1fr; }
 .sl-l-hero .sl-fill { object-fit: cover; }
 
-/* split (2) — side by side. */
+/* split (2) - side by side. */
 .sl-l-split .sl-grid { grid-template-columns: 1fr 1fr; }
 
-/* stack (2) — one over the other. */
+/* stack (2) - one over the other. */
 .sl-l-stack .sl-grid { grid-template-rows: 1fr 1fr; }
 
-/* golden (2) — the golden-ratio split. */
+/* golden (2) - the golden-ratio split. */
 .sl-l-golden .sl-grid { grid-template-columns: 1.618fr 1fr; }
 
-/* cols3 (3) — three columns. */
+/* cols3 (3) - three columns. */
 .sl-l-cols3 .sl-grid { grid-template-columns: repeat(3, 1fr); }
 
-/* grid4 (4) — 2 × 2. */
+/* grid4 (4) - 2 × 2. */
 .sl-l-grid4 .sl-grid { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
 
 /* ── Text fit + vertical position (LAYOUT slides) ────────────────────────────── */
 /* data-fit="slide": take flex-shrink OFF the text bands, so the column OVERRUNS the slide
    when the copy is too long instead of quietly absorbing it. That overrun is the whole
-   signal — the fit pass compares the column's natural height against the slide's content
+   signal - the fit pass compares the column's natural height against the slide's content
    box and shrinks --fit until it fits (see measure() in template.html).
    Do NOT be tempted to let the bands shrink-and-clip and measure the clip instead: a band
    is auto-height, so its box tracks its own text and it can never overflow itself. That
@@ -274,7 +293,7 @@
    squeezing the images to nothing. It's the part of the column that does NOT scale with
    --fit, which is why measure() accounts for it separately. Only layouts with slots have
    this element.
-   The floor is `flex-basis: 40cqh` — a DEFINITE main size — NOT `flex-shrink: 0`: with
+   The floor is `flex-basis: 40cqh` - a DEFINITE main size - NOT `flex-shrink: 0`: with
    shrink off the grid falls back to its content height, and `1fr` grid rows then have no
    definite track to resolve against, so each row blows out to its image's INTRINSIC height
    and the grid overruns the slide off the bottom. A definite basis lets the rows resolve, so
@@ -283,10 +302,10 @@
 .sl-slide[data-fit] .sl-grid { flex: 1 1 40cqh; min-height: 40cqh; }
 /* full-bleed is the exception: its caption band is absolutely positioned, so it sits
    outside the flex flow entirely and can't overrun a column that doesn't hold it. Give it
-   an explicit ceiling — there, a clip IS the overflow signal. */
+   an explicit ceiling - there, a clip IS the overflow signal. */
 .sl-slide[data-fit].sl-l-full .sl-head { max-height: 40cqh; overflow: hidden; }
 
-/* data-valign — where the text sits in the slide. Emitted ONLY for the `title` layout
+/* data-valign - where the text sits in the slide. Emitted ONLY for the `title` layout
    (see slideValign in hooks.js): it's the one layout with free space to move the text
    into. Everywhere else the slot grid grows to fill whatever the text doesn't take, so
    there IS no free space and this would be a control that visibly does nothing. Beats
@@ -295,7 +314,7 @@
 .sl-slide[data-valign="m"] { justify-content: center; }
 .sl-slide[data-valign="b"] { justify-content: flex-end; }
 
-/* ── Freeform canvas — hand-positioned boxes ─────────────────────────────────── */
+/* ── Freeform canvas - hand-positioned boxes ─────────────────────────────────── */
 /* mode:"freeform" replaces the flex layout with a full-frame canvas: boxes are
    absolutely placed as a % of the slide (the hook divides px on the 1920² native
    canvas by native W/H). The slide keeps its theme bg/ink + the logo/page-number
@@ -314,14 +333,14 @@
 .sl-box-img { width: 100%; height: 100%; object-fit: contain; display: block; }
 /* Shape box (kind:"box"): a plain filled div that fills the .sl-box wrapper. The base
    .sl-box carries no border/overflow (only .sl-box--image does), so the fill, its
-   border-radius (calc(cqw)/9999px/50%) and its cqw border are the shape's alone —
+   border-radius (calc(cqw)/9999px/50%) and its cqw border are the shape's alone -
    box-sizing:border-box keeps the border inside the box the geometry sized. */
 .sl-box-shape { width: 100%; height: 100%; box-sizing: border-box; }
 /* Text box: markdown rendered by mdBox() in the hook (plain h1-3/p/ul/li/strong/em,
    no slide classes). Sized in `em` off the box's own font-size so headings/bullets
    scale WITH the box, not the slide.
    The box is a FLEX COLUMN so `valign` can place the text within the rectangle the user
-   drew — a text box is almost never exactly as tall as its text, and without this the
+   drew - a text box is almost never exactly as tall as its text, and without this the
    text always hugged the top. Nothing in .sl-box-fit sets margin-bottom, so no margin
    collapsing is lost by making these flex items; spacing is unchanged. */
 .sl-box-text {
@@ -329,7 +348,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: flex-start;       /* data-valign="t" / absent — the historical default */
+  justify-content: flex-start;       /* data-valign="t" / absent - the historical default */
   font-size: calc(var(--fs, 3cqw) * var(--fit, 1));   /* --fs: the hook's per-box authored size */
   line-height: 1.22;
   overflow-wrap: anywhere;
@@ -339,7 +358,7 @@
 .sl-box-text[data-valign="b"] { justify-content: flex-end; }
 /* The measured child (see template.html): `flex: 0 0 auto` keeps it sized to its CONTENT
    even when that content is taller than the box, which is the only way to ask "did the
-   text overflow?" — the box itself is always exactly as tall as it was drawn. */
+   text overflow?" - the box itself is always exactly as tall as it was drawn. */
 .sl-box-fit { flex: 0 0 auto; width: 100%; min-height: 0; }
 .sl-box-fit > :first-child { margin-top: 0; }
 /* Freeform boxes take the SAME --ds-<el>-* overrides as the layout slides (the vars are
@@ -366,7 +385,7 @@
 .sl-box-text ol > li { margin-top: 0.32em; opacity: 0.92; }
 .sl-box-text ol > li::marker { color: var(--accent, currentColor); font-weight: 700; }
 .sl-box-text ul ul, .sl-box-text ul ol, .sl-box-text ol ol, .sl-box-text ol ul { margin-top: 0.25em; }
-/* Tables inside a freeform box — same cap-and-wrap discipline, sized in em. */
+/* Tables inside a freeform box - same cap-and-wrap discipline, sized in em. */
 .sl-box-text table {
   border-collapse: collapse;
   width: 100%;
@@ -394,7 +413,7 @@
   border-radius: 0.3em;
   background: color-mix(in oklab, currentColor 10%, transparent);
 }
-/* Blockquote + fenced code inside a freeform box — em-scaled counterparts of .sl-quote
+/* Blockquote + fenced code inside a freeform box - em-scaled counterparts of .sl-quote
    and .sl-pre, sharing the same --ds-* overrides. */
 .sl-box-text blockquote {
   margin-top: 0.5em;
@@ -427,10 +446,10 @@
 
 @container (max-aspect-ratio: 4/5) {
   /* Portrait decks (9:16): the wide type scale and the column layouts don't survive
-     a tall, narrow frame — turn the columns into rows and pull the titles back.
+     a tall, narrow frame - turn the columns into rows and pull the titles back.
      (This comment lives INSIDE the block on purpose: scopeCss decides an at-rule is
      an at-rule by trimming its prelude and testing for a leading "@", and trim()
-     doesn't strip comments — so a comment directly ABOVE an at-rule makes the shell
+     doesn't strip comments - so a comment directly ABOVE an at-rule makes the shell
      scope it as if it were a selector, producing `#tool-canvas @container (…)`,
      which matches nothing and leaves every rule inside it unscoped and leaking into
      the app. Verified against shells/web/src/lib/scope-css.ts.) */
@@ -441,9 +460,9 @@
   .sl-l-cols3 .sl-grid { grid-template-columns: 1fr; grid-template-rows: repeat(3, 1fr); }
 }
 
-/* ── State classes — the format reconciler (beforeExport swaps these) ────────── */
+/* ── State classes - the format reconciler (beforeExport swaps these) ────────── */
 /* pdf / pptx: EVERY stacked slide fully opaque and motionless. A slide left hidden
-   (display:none / visibility:hidden / opacity:0) is dropped by both walkers — and
+   (display:none / visibility:hidden / opacity:0) is dropped by both walkers - and
    pptx still emits the slide, blank. transform:none matters just as much: a
    transition transform on the page element would skew every box the pptx walker
    derives from its rect. */
@@ -454,9 +473,9 @@
 }
 
 /* Editor freeze: hold one slide still so it can be edited. animCss re-shows the
-   focused one — and re-arms its pointer-events.
+   focused one - and re-arms its pointer-events.
    pointer-events matters as much as opacity here: every slide is a full-frame layer at
-   `z-index: idx`, so the LAST slide sits over all the others and hit-tests first — an
+   `z-index: idx`, so the LAST slide sits over all the others and hit-tests first - an
    opacity:0 element still catches clicks. Without this, a click meant for the visible
    slide lands on whichever slide happens to be topmost, and on-canvas editing picks the
    wrong slide's text. Frozen is the editing state, so this is where it's needed. */
@@ -515,7 +534,7 @@
 }
 
 /* The segmented brand bar (mint | blue | orange | green), bleeding off the right
-   edge — the template's signature footer. Hard-stop gradient percentages are the
+   edge - the template's signature footer. Hard-stop gradient percentages are the
    template's segment widths within the bar's own 50.08cqw span. */
 .sl-brandbar {
   position: absolute;
@@ -532,14 +551,14 @@
   pointer-events: none;
 }
 
-/* Speaker notes never render — see the template for why they aren't
+/* Speaker notes never render - see the template for why they aren't
    [data-export-hide]. */
 .sl-notes { display: none; }
 
 /* The export frame clock (see hooks.js). It must not paint, must not lay out, and
-   must not become a shape — but it must stay findable by frameClockCanvas()'s
+   must not become a shape - but it must stay findable by frameClockCanvas()'s
    querySelectorAll('canvas'). Hence: out of flow and 0 × 0 (nothing to paint),
-   rather than display:none. The 0 × 0 bitmap is load-bearing — the DOM serialiser
+   rather than display:none. The 0 × 0 bitmap is load-bearing - the DOM serialiser
    copies every <canvas> by calling toDataURL() on it, and a zero-dimension bitmap
    returns "data:," which the serialiser drops outright; a sized canvas would
    instead cost an image decode on each of up to 600 captured frames. It also sits

@@ -1,22 +1,22 @@
 /**
- * Multi-Page PDF — hooks.
+ * Multi-Page PDF - hooks.
  *
  * The hook turns a cover + a flat list of content "blocks" + a back page into a
  * sequence of FIXED-SIZE page boxes. Each page box is exactly the export page
  * size (width/height come from the export bar, in CSS px), so the export bridge
- * can emit one true PDF page per box (it walks every [data-pdf-page] element —
+ * can emit one true PDF page per box (it walks every [data-pdf-page] element -
  * see shells/web/src/bridge/export.js renderMultiPagePdf). Keeping each page's
  * height locked to the export height is what makes the browser lay content into
  * discrete pages and what makes every PDF page come out the right size.
  *
  * Pagination is done HERE, not in CSS, because hooks run before the DOM exists
  * and can't measure rendered height. Each block is given an integer row-span on
- * a 12-row, 2-column grid — estimated from its text/image content, or pinned by
+ * a 12-row, 2-column grid - estimated from its text/image content, or pinned by
  * the block's Height control. Blocks are then packed column-by-column; when a
  * page fills, a new one is created. A block can be Column (one grid column) or
  * Wide (spans both). The result is a `pages` array the template renders verbatim.
  *
- * No client JS ships in the canvas — layout is plain CSS grid driven by the
+ * No client JS ships in the canvas - layout is plain CSS grid driven by the
  * per-cell grid-column/grid-row the packer computes, so the live preview and the
  * vector PDF render identically.
  */
@@ -26,7 +26,7 @@ var SIZE_ROWS = { short: 3, medium: 5, tall: 8, full: ROWS };
 // Multiplier applied to the cover / back logo box (its definite width AND height),
 // so object-fit:contain scales the mark up or down while staying aspect-preserved.
 // The template caps the box WIDTH at 100% (see .mpdf-cover-logo), so the larger
-// steps grow mainly by giving the mark more VERTICAL space — a wide lockup can't
+// steps grow mainly by giving the mark more VERTICAL space - a wide lockup can't
 // spill past the page, and a tall / square logo gets the extra height to fill.
 var LOGO_SCALE = { small: 0.72, medium: 1, large: 1.4, xlarge: 1.9, xxlarge: 2.5 };
 
@@ -38,7 +38,7 @@ function toInputs(model) {
   return o;
 }
 function num(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
-// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared clamp - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
 function str(v) { return (typeof v === 'string') ? v : (v == null ? '' : String(v)); }
@@ -105,7 +105,7 @@ async function compute(model) {
   var W = clamp(Math.round(num(inputs.width, 794)), 100, 8000);
   var H = clamp(Math.round(num(inputs.height, 1123)), 100, 8000);
 
-  // Derived layout — all proportional to the page so A4/A5/Letter all look right.
+  // Derived layout - all proportional to the page so A4/A5/Letter all look right.
   var marginX = Math.round(W * 0.085);
   var marginY = Math.round(H * 0.07);
   var footerH = Math.round(H * 0.035);
@@ -123,7 +123,7 @@ async function compute(model) {
   var coverSubSize   = clamp(Math.round(W * 0.030), 12, 54);
   var footerSize  = clamp(Math.round(W * 0.0135), 8, 20);
 
-  // Logo sizing — scales the definite logo box on the cover and back page.
+  // Logo sizing - scales the definite logo box on the cover and back page.
   var coverLogoScale = LOGO_SCALE[str(inputs.coverLogoSize)] || 1;
   var backLogoScale  = LOGO_SCALE[str(inputs.backLogoSize)] || 1;
 
@@ -136,7 +136,7 @@ async function compute(model) {
   var coverBg  = colour(inputs.coverBg, coverDark ? '#0c322c' : '#ffffff');
   var coverInk = coverDark ? '#ffffff' : '#0c322c';
 
-  // Content pages are always on white — the two-column grid is built for light paper.
+  // Content pages are always on white - the two-column grid is built for light paper.
   var ink   = '#10231f';
   var muted = '#5b6b66';
 
@@ -332,7 +332,7 @@ function mpdfMarkdown(inputs, blocks) {
     if (b.kind === 'image') {
       // Only a real remote URL is portable in the exported .md. A web blob: URL is
       // session-scoped (dead once the file leaves the tab) and a CLI data: URL bloats
-      // the file with base64 — for those, keep the caption instead of a bad link.
+      // the file with base64 - for those, keep the caption instead of a bad link.
       if (b.imageUrl && /^https?:\/\//i.test(b.imageUrl)) push('![' + (b.caption || '') + '](' + b.imageUrl + ')');
       else if (b.caption) push('*' + b.caption + '*');
     } else {

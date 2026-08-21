@@ -1,8 +1,8 @@
-# Bitmap Studio — preset LUTs
+# Bitmap Studio - preset LUTs
 
 These `.cube` files are **open LUTs** you can apply in Bitmap Studio and download
 for use in any editor. Most are public-domain (CC0) and need no attribution; one
-is contributed under **CC BY 4.0** and does ask for credit — see *Attributed
+is contributed under **CC BY 4.0** and does ask for credit - see *Attributed
 contributions* below.
 
 ## Attributed contributions (CC BY 4.0)
@@ -13,7 +13,7 @@ contributions* below.
 
 A cinema colour grade authored in DaVinci Resolve (September 2025) for **Sony
 S-Log3** footage (65³ Adobe/IRIDAS `.cube`). © 2025 SUSE; created by Peter
-Chamalian and released for reuse under CC BY 4.0. **Attribution is required** — credit *"SUSE · Peter
+Chamalian and released for reuse under CC BY 4.0. **Attribution is required** - credit *"SUSE · Peter
 Chamalian"*. When this look is applied to a video in Lolly, the credit is written
 into the output's C2PA `color_adjustments` action (creator, organisation and
 licence), so it travels with the file. Applying it to non-log (Rec.709) footage
@@ -30,7 +30,7 @@ Derived from **[sguyader/FilmSim](https://github.com/sguyader/FilmSim)** (commit
 dedicated to the public domain under **[CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/)**.
 The upstream sources are HaldCLUT `.tif` images (144³, level 12); each was
 resampled to a 33³ Adobe/IRIDAS `.cube` by `_build-cube.mjs` (trilinear). CC0
-imposes no attribution obligation — the credit here is a courtesy, and a record
+imposes no attribution obligation - the credit here is a courtesy, and a record
 so anyone can re-derive and verify these files.
 
 | Shipped file | Descriptive name | Upstream source | Source SHA-256 |

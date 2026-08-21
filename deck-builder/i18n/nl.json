@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Een kleine voettekstregel (copyright, vertrouwelijkheid) onderaan elke dia, tussen het logo en het dianummer.",
   "inputs.footerText.placeholder": "© 2026 Jouw bedrijf · Vertrouwelijk",
   "inputs.deck.fields.layout.options.bignum": "Groot getal",
-  "inputs.deck.fields.layout.options.mainpoint": "Kernboodschap"
+  "inputs.deck.fields.layout.options.mainpoint": "Kernboodschap",
+  "inputs.deck.fields.text1.label": "Tekst voor vak 1",
+  "inputs.deck.fields.text1.help": "Vult het vak met een tekstkaart als er geen afbeelding of tool is ingesteld. Zijn beide ingesteld, dan wint het medium.",
+  "inputs.deck.fields.text2.label": "Tekst voor vak 2",
+  "inputs.deck.fields.text2.help": "Vult het vak met een tekstkaart als er geen afbeelding of tool is ingesteld. Zijn beide ingesteld, dan wint het medium.",
+  "inputs.deck.fields.text3.label": "Tekst voor vak 3",
+  "inputs.deck.fields.text3.help": "Vult het vak met een tekstkaart als er geen afbeelding of tool is ingesteld. Zijn beide ingesteld, dan wint het medium.",
+  "inputs.deck.fields.text4.label": "Tekst voor vak 4",
+  "inputs.deck.fields.text4.help": "Vult het vak met een tekstkaart als er geen afbeelding of tool is ingesteld. Zijn beide ingesteld, dan wint het medium."
 }

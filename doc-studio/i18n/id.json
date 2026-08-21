@@ -1,7 +1,7 @@
 {
   "name": "Studio Dokumen",
   "description": "Tulis dokumen multihalaman di kanvas - teks kaya, judul, tabel dan render Lolly yang disisipkan mengalir ke halaman-halaman dan diekspor sebagai PDF.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — dokumen multi-halaman",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - dokumen multi-halaman",
   "inputs.pageSize.label": "Ukuran halaman",
   "inputs.pageSize.help": "Mengatur ukuran setiap halaman dan ukuran halaman PDF yang diekspor.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 kolom",
   "inputs.columns.options.3": "3 kolom",
   "inputs.content.label": "Dokumen",
-  "inputs.content.help": "Dokumen itu sendiri — disimpan sebagai JSON rich-text portabel (ProseMirror). Ditulis di kanvas dengan editor Studio Dokumen; engine merender JSON ini menjadi halaman untuk diekspor. Jika kosong, akan menggunakan dokumen awal sebagai default.",
+  "inputs.content.help": "Dokumen itu sendiri - disimpan sebagai JSON rich-text portabel (ProseMirror). Ditulis di kanvas dengan editor Studio Dokumen; engine merender JSON ini menjadi halaman untuk diekspor. Jika kosong, akan menggunakan dokumen awal sebagai default.",
   "inputs.width.label": "Lebar halaman",
   "inputs.height.label": "Tinggi halaman"
 }

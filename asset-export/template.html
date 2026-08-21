@@ -26,7 +26,7 @@
   if (canvas.__axFitKey === key) return;      // asset unchanged since mount / last snap → respect manual resize
   if (!key) { canvas.__axFitKey = ''; return; }
   var uEl = document.querySelector('[data-action="export-unit"]');
-  if (uEl && uEl.value && uEl.value !== 'px') return; // a deliberate mm/in page — don't override it
+  if (uEl && uEl.value && uEl.value !== 'px') return; // a deliberate mm/in page - don't override it
   var wEl = document.querySelector('[data-action="export-width"]');
   var hEl = document.querySelector('[data-action="export-height"]');
   if (!wEl || !hEl) return;

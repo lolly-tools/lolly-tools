@@ -1,7 +1,7 @@
 {
   "name": "Doc Studio",
   "description": "Scrivi un documento multipagina sul canvas - testo ricco, titoli, tabelle e render Lolly inseriti che scorrono sulle pagine ed esportano come PDF.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — documento multipagina",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - documento multipagina",
   "inputs.pageSize.label": "Formato pagina",
   "inputs.pageSize.help": "Imposta il formato di ogni pagina e il formato pagina del PDF esportato.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 colonne",
   "inputs.columns.options.3": "3 colonne",
   "inputs.content.label": "Documento",
-  "inputs.content.help": "Il documento stesso — memorizzato come rich text portabile (JSON ProseMirror). Scritto sulla tela con l'editor di Doc Studio; il motore trasforma questo JSON in pagine per l'export. Se vuoto, si ricorre a un documento di partenza.",
+  "inputs.content.help": "Il documento stesso - memorizzato come rich text portabile (JSON ProseMirror). Scritto sulla tela con l'editor di Doc Studio; il motore trasforma questo JSON in pagine per l'export. Se vuoto, si ricorre a un documento di partenza.",
   "inputs.width.label": "Larghezza pagina",
   "inputs.height.label": "Altezza pagina"
 }

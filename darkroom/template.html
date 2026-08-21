@@ -3,12 +3,12 @@
        preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block;">
     {{#if outSrc}}
     <!-- The whole composition (framed photo + colour pipeline + texture pass) is
-         baked into one bitmap by hooks.js — a deterministic canvas render so it
+         baked into one bitmap by hooks.js - a deterministic canvas render so it
          looks identical in every browser and every export path. The bitmap already
          carries the export aspect, so it maps 1:1 over the viewBox.
 
          Double-buffer: each render replaces this DOM wholesale, and the new
-         <image>'s data URL must decode before it paints — the previous bitmap
+         <image>'s data URL must decode before it paints - the previous bitmap
          (browser-cached → instant) sits underneath while that happens; the inline
          script below drops it once the top image has loaded. -->
     {{#if prevSrc}}<image href="{{prevSrc}}" data-bs-base="1" x="0" y="0" width="{{width}}" height="{{height}}" preserveAspectRatio="none"/>{{/if}}
@@ -89,7 +89,7 @@
 })();
 </script>
 <script>
-/* Auto-fit the canvas to a newly chosen image (native pixel dimensions) — the
+/* Auto-fit the canvas to a newly chosen image (native pixel dimensions) - the
    same convention as the community filter-* tools: the template stamps the
    user-picked image URL as data-img-key (empty for the demo scene); when the
    key CHANGES to a new image we snap the export Width/Height fields to the
@@ -138,7 +138,7 @@
 })();
 </script>
 <script>
-/* Before/after split controller — makes the divider draggable and rotatable.
+/* Before/after split controller - makes the divider draggable and rotatable.
    The graded result is the SVG's base artwork; when the split is on we lay the
    untouched "before" image over it, clipped to one side of a divider. The clip +
    seam live in the SVG so a raster export bakes the divider exactly as shown; the
@@ -240,14 +240,14 @@
 })();
 </script>
 <script>
-/* Histogram card — movable + resizable, screen only, and FREE-FLOATING over the
+/* Histogram card - movable + resizable, screen only, and FREE-FLOATING over the
    whole viewport (not trapped in the image box). #tool-canvas carries the
    content-fit transform + overflow:hidden, which both traps position:fixed and
-   clips it — so the card is PORTALED out to #tool-layout, the first ancestor with
+   clips it - so the card is PORTALED out to #tool-layout, the first ancestor with
    no transform/clip, where position:fixed resolves to the viewport. That layer is
    inside the tool view (torn down on unmount → no orphan; absent from the offscreen
    export stage → no flash) and OUTSIDE the exported canvas node (so exports never
-   include it — the "never rendered" guarantee holds). Geometry {x,y,w,h} in
+   include it - the "never rendered" guarantee holds). Geometry {x,y,w,h} in
    VIEWPORT px is stashed on the stable per-instance #tool-canvas so it survives
    each paint's DOM swap. IIFE + var: re-created + re-run every paint; scoped to
    THIS instance via document.currentScript. */
@@ -350,11 +350,11 @@
 })();
 </script>
 <script>
-/* HSL / Colour mixer — paint each band's slider with a Lightroom-style coloured
+/* HSL / Colour mixer - paint each band's slider with a Lightroom-style coloured
    gradient track. The sliders are ordinary declared inputs in the sidebar; a
    tool can't inject controls there and its styles.css is scoped to #tool-canvas,
    so we inject the track look ONCE, UNSCOPED, into <head> (head styles are never
-   re-scoped by the shell — same trick the histogram-float CSS uses). The rules
+   re-scoped by the shell - same trick the histogram-float CSS uses). The rules
    target the shell's own `.custom-slider .cs-track/.cs-fill/.cs-thumb` markup by
    [data-input-id], so they only ever dress THESE sliders and never touch the
    render (the SVG bitmap) or any export stage (which clones #tool-canvas, not the

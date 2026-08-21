@@ -1,7 +1,7 @@
 {
   "name": "文件工作室",
   "description": "在畫布上撰寫多頁文件 - 富文字、標題、表格與插入的 Lolly 渲染成果，自動分頁並匯出為 PDF。",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — 多頁文件",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - 多頁文件",
   "inputs.pageSize.label": "頁面尺寸",
   "inputs.pageSize.help": "設定每頁的尺寸,以及匯出 PDF 的頁面尺寸。",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 欄",
   "inputs.columns.options.3": "3 欄",
   "inputs.content.label": "文件",
-  "inputs.content.help": "文件本身——以可攜式富文本(ProseMirror)JSON 格式儲存,透過文件工作室編輯器在畫布上撰寫;引擎會將此 JSON 算繪成頁面以供匯出。留空則會使用起始文件範本。",
+  "inputs.content.help": "文件本身--以可攜式富文本(ProseMirror)JSON 格式儲存,透過文件工作室編輯器在畫布上撰寫;引擎會將此 JSON 算繪成頁面以供匯出。留空則會使用起始文件範本。",
   "inputs.width.label": "頁面寬度",
   "inputs.height.label": "頁面高度"
 }

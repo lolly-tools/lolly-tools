@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "3 keer afspelen",
   "inputs.loop.options.once": "Eén keer afspelen",
   "inputs.scenes.label": "Scènes",
-  "inputs.scenes.help": "Elke scène is één segment van de reeks — hij komt geanimeerd binnen over de vorige scène heen, met zijn eigen Lottie-animatie die er continu overheen blijft lopen. De laatste scène is de rustende eindkaart.",
+  "inputs.scenes.help": "Elke scène is één segment van de reeks - hij komt geanimeerd binnen over de vorige scène heen, met zijn eigen Lottie-animatie die er continu overheen blijft lopen. De laatste scène is de rustende eindkaart.",
   "inputs.scenes.addMenu.label": "Scène toevoegen",
   "inputs.scenes.fields.anim.label": "Animatie",
   "inputs.scenes.fields.bgColor.label": "Achtergrond",

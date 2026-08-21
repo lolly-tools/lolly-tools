@@ -7,9 +7,9 @@
   "inputs.scrollDepth.label": "Skrolldjup",
   "inputs.scrollDepth.help": "Hur långt ner på sidan att skrolla innan skärmdumpen tas. 0 = toppen, 1 = botten.",
   "inputs.waitMs.label": "Fördröjning innan fångst (ms)",
-  "inputs.waitMs.help": "Tid att vänta efter inläsning (och efter skrollning) innan skärmdumpen tas — låter typsnitt, bilder och animationer stabilisera sig.",
+  "inputs.waitMs.help": "Tid att vänta efter inläsning (och efter skrollning) innan skärmdumpen tas - låter typsnitt, bilder och animationer stabilisera sig.",
   "inputs.css.label": "Egen CSS",
-  "inputs.css.help": "CSS som injiceras i sidan innan skärmdumpen tas — t.ex. dölj en cookiebanner (.cookie-bar { display: none }) eller omstyla element.",
+  "inputs.css.help": "CSS som injiceras i sidan innan skärmdumpen tas - t.ex. dölj en cookiebanner (.cookie-bar { display: none }) eller omstyla element.",
   "inputs.cropTop.label": "Beskärning topp",
   "inputs.cropTop.help": "Beskär in från överkanten, en andel av höjden mellan 0 och 0.9. Endast raster (png/jpg/svg).",
   "inputs.cropRight.label": "Beskärning höger",
@@ -31,7 +31,7 @@
   "inputs.tintColor.label": "Tonfärg",
   "inputs.tintColor.help": "Färgen sidan tvättas i när Omfärgning är satt till 'Tona'.",
   "inputs.scrollTo.label": "Skrolla till (video)",
-  "inputs.scrollTo.help": "Endast videoexport: panorera NER till detta djup under klippet — en skrollning av sidan från 'Scrolldjup' till hit. Ange samma värde som 'Scrolldjup' för en stillbild. Ignoreras för bildformat.",
-  "inputs.zoom.help": "Webbläsarens zoomnivå — förstorar sidan innan bilden tas (som Ctrl/Cmd +), så att även en bitmapbild blir förstorad och skarp istället för uppskalad. 1 = 100%.",
+  "inputs.scrollTo.help": "Endast videoexport: panorera NER till detta djup under klippet - en skrollning av sidan från 'Scrolldjup' till hit. Ange samma värde som 'Scrolldjup' för en stillbild. Ignoreras för bildformat.",
+  "inputs.zoom.help": "Webbläsarens zoomnivå - förstorar sidan innan bilden tas (som Ctrl/Cmd +), så att även en bitmapbild blir förstorad och skarp istället för uppskalad. 1 = 100%.",
   "inputs.zoom.label": "Zooma"
 }

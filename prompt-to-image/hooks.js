@@ -1,18 +1,18 @@
-// Prompt to Image — lay text out so all of it fits inside one small image.
+// Prompt to Image - lay text out so all of it fits inside one small image.
 //
 // Two halves compute the layout, and they have to agree:
 //
-//   here      — splits the text into paragraphs and ESTIMATES a font size from
+//   here      - splits the text into paragraphs and ESTIMATES a font size from
 //               monospace geometry. Pure arithmetic, no DOM, so the CLI and any
 //               headless shell still render something correct-ish.
-//   template  — refines that estimate by binary-searching against real layout,
+//   template  - refines that estimate by binary-searching against real layout,
 //               which is the only way to account for wrap raggedness.
 //
 // The estimate is the initial paint (and the final word where there is no layout
-// engine), so keep GEO in sync with styles.css — the template reads the padding
+// engine), so keep GEO in sync with styles.css - the template reads the padding
 // and line-height back off the DOM, but ADVANCE/PACK only exist here.
 //
-// EVERY number here is in EXPORT pixels — the page the user asked for. The stage
+// EVERY number here is in EXPORT pixels - the page the user asked for. The stage
 // previews a page larger than the tool's native 1024 shrunk-to-fit and scales it
 // back up at capture, so the template converts to DOM px before it measures.
 
@@ -26,7 +26,7 @@ var GEO = {
   PACK: 0.82,
   // Legibility floor. Below this a vision model stops reading reliably, so we
   // clamp rather than shrink further and report the overflow instead. An absolute
-  // figure, not a proportional one — it's about the pixels that reach the model.
+  // figure, not a proportional one - it's about the pixels that reach the model.
   MIN: 6,
   MAX: 44
 };
@@ -38,7 +38,7 @@ var DEF = { W: 1024, H: 1024, PAD: 32, LINE: 1.35, PARA: 1 };
 
 // Anthropic's documented approximation for how many tokens an image costs a
 // Claude vision model. Other providers tile differently, so this is a guide to
-// the order of magnitude, not a universal price — the readout says so.
+// the order of magnitude, not a universal price - the readout says so.
 var PX_PER_IMAGE_TOKEN = 750;
 // The usual rough figure for English prose. Code and non-Latin scripts run denser.
 var CHARS_PER_TEXT_TOKEN = 4;
@@ -74,8 +74,8 @@ function group(n) {
   return String(n).replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 }
 
-// The trade the whole tool exists to make. An image is a FLAT price — w×h÷750,
-// whatever it holds — so the same page that saves a fortune on a long prompt is a
+// The trade the whole tool exists to make. An image is a FLAT price - w×h÷750,
+// whatever it holds - so the same page that saves a fortune on a long prompt is a
 // waste on a short one. Break-even at 1024² is ~5,600 characters. The user is the
 // only one who can resolve that, so state it plainly rather than pick for them.
 function verdictOf(textTokens, imageTokens) {
@@ -84,7 +84,7 @@ function verdictOf(textTokens, imageTokens) {
   var lo = Math.min(textTokens, imageTokens);
   var factor = Math.round((hi / lo) * 10) / 10;
   var delta = group(Math.abs(textTokens - imageTokens));
-  // A ratio that rounds to 1.0 is a tie in all but name — claiming "wins by 1×"
+  // A ratio that rounds to 1.0 is a tie in all but name - claiming "wins by 1×"
   // asserts a winner and denies there is one in the same breath. Report the
   // dead-heat instead, across the whole break-even neighbourhood (~5,330–5,880
   // chars at 1024²), not just the exact-equal point.
@@ -98,16 +98,16 @@ function compute(inputs) {
   var chars = text.trim().length;
 
   // The export bar owns width/height (they're `group: "export"`, so they have no
-  // sidebar control) and syncs them here in px on every size change — which is
+  // sidebar control) and syncs them here in px on every size change - which is
   // what makes the readout below track the page as it's dragged taller.
   //
-  // Use the value VERBATIM — do NOT clamp it to some inner ceiling. The token
+  // Use the value VERBATIM - do NOT clamp it to some inner ceiling. The token
   // readout is the whole point of the tool, and it has to describe the page that
   // is actually EXPORTED. If a hook ceiling (say 8192) were below the export bar's
   // range (1..100000), then dragging past it would leave the hook costing a
   // smaller page than the one rendered, and the verdict could flip to the wrong
   // answer in green. The only floor is sanity: a page is at least 1px. Absurd
-  // sizes just yield an honest, absurd token count — which is the correct signal.
+  // sizes just yield an honest, absurd token count - which is the correct signal.
   // (The manifest deliberately leaves width/height min/max UNSET for the same
   // reason: an input clamp narrower than the export bar would reintroduce exactly
   // this divergence via updateInput's constrain().)
@@ -136,7 +136,7 @@ function compute(inputs) {
     initialColumns: inputs.columns === 'auto' || !inputs.columns ? 1 : Number(inputs.columns),
     wrap: inputs.keepLines === false ? 'normal' : 'pre-wrap',
     // Geometry, echoed back for the template + CSS. Named so none of them collide
-    // with an input id — a returned key that matches one would write itself back
+    // with an input id - a returned key that matches one would write itself back
     // into that control on every keystroke.
     pageW: W,
     pageH: H,

@@ -1,10 +1,10 @@
 /* global onInit, onInput, exportFile */
 /**
- * Compress PDF — hooks.
+ * Compress PDF - hooks.
  *
  * A transform utility (file in → smaller file out). The actual compression lives
  * in the shell behind `host.pdf.compress` (pdf-lib + a browser canvas to re-encode
- * embedded images) — the hook sandbox has no PDF library and no `import`, so it
+ * embedded images) - the hook sandbox has no PDF library and no `import`, so it
  * just orchestrates: read the picked PDF's bytes, ask the host to compress them
  * with the chosen settings, and hand the result to the download flow.
  *
@@ -12,7 +12,7 @@
  * and the actual download (exportFile): a one-entry promise cache keyed on the
  * file + settings means the work runs once and the download reuses it. The preview
  * is bounded by a short inner budget so a huge PDF can't trip the runtime's 2s
- * onInput timeout — if it doesn't finish in time the card shows "ready" and the
+ * onInput timeout - if it doesn't finish in time the card shows "ready" and the
  * full job still completes on download (10s budget).
  *
  * Settings (`level`, `grayscale`) are ordinary declared inputs, so they travel
@@ -34,7 +34,7 @@ function inputsFrom(model) {
 }
 
 function isPdf(bytes) {
-  // "%PDF-" magic — tolerate a small leading BOM/garbage offset like real readers.
+  // "%PDF-" magic - tolerate a small leading BOM/garbage offset like real readers.
   if (!bytes || bytes.length < 5) return false;
   var limit = Math.min(bytes.length - 4, 1024);
   for (var i = 0; i <= limit; i++) {
@@ -101,7 +101,7 @@ async function compute(ctx) {
 
   // The template reflects the `level`/`grayscale` controls from the input values
   // directly (they're in the template context by id, updated synchronously on
-  // change), so we deliberately DON'T return those ids here — a hook key matching
+  // change), so we deliberately DON'T return those ids here - a hook key matching
   // an input id would write back to the model. Everything below is display-only.
   var base = {
     hasFile: false, supported: false, pdfUnavailable: false,
@@ -139,7 +139,7 @@ async function compute(ctx) {
   base.compressedSize = fmtBytes(res.after);
   if (saved > 0 && pct >= 1) {
     base.done = true;
-    base.savedText = pct + '% smaller — ' + fmtBytes(saved) + ' saved';
+    base.savedText = pct + '% smaller - ' + fmtBytes(saved) + ' saved';
     base.imagesText = res.images > 0
       ? (res.images + ' image' + (res.images > 1 ? 's' : '') + ' recompressed')
       : '';

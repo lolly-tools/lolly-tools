@@ -3,7 +3,7 @@
   "description": "Randează orice element din catalog - sau un link de instrument Lolly - în orice format și dimensiune.",
   "a11yLabel": "Activ exportat",
   "inputs.src.label": "Activ",
-  "inputs.src.help": "Activul de randat — un ID din catalog (vezi `lolly assets`) sau un link către un instrument lolly.tools lipit. Activele vectoriale rămân vectoriale în SVG/PDF; activele raster sunt încorporate ca imagini.",
+  "inputs.src.help": "Activul de randat - un ID din catalog (vezi `lolly assets`) sau un link către un instrument lolly.tools lipit. Activele vectoriale rămân vectoriale în SVG/PDF; activele raster sunt încorporate ca imagini.",
   "inputs.fit.label": "Încadrare",
   "inputs.fit.help": "Conține afișează întregul activ în interiorul cadrului; Acoperă umple cadrul și poate decupa marginile.",
   "inputs.fit.options.contain": "Conține (activul întreg, cu benzi negre)",

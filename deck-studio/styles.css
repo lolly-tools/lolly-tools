@@ -1,7 +1,7 @@
-/* Deck Studio — the canvas is a vertical stack of slides. Each slide is a
+/* Deck Studio - the canvas is a vertical stack of slides. Each slide is a
    container-query context so every child (positioned in %, sized in cqw) scales with
-   the slide's rendered width. The pptx export never reads this CSS — it uses the
-   authored model in <script data-pptx-deck> — so these styles are for the on-screen
+   the slide's rendered width. The pptx export never reads this CSS - it uses the
+   authored model in <script data-pptx-deck> - so these styles are for the on-screen
    preview and the PDF/PNG DOM-walk export only. */
 
 #ds-stage {
@@ -56,7 +56,7 @@
 }
 .ds-bullet { padding-left: 1.1em; }
 
-/* Numbered list — a per-text-block counter so the preview shows "1. 2. 3." to match
+/* Numbered list - a per-text-block counter so the preview shows "1. 2. 3." to match
    the .pptx (which renders real auto-numbering). */
 .ds-text { counter-reset: ds-num; }
 .ds-num { counter-increment: ds-num; padding-left: 1.6em; }

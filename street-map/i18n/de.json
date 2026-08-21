@@ -3,7 +3,7 @@
   "description": "Übersichtliche Vektor-Straßenkarten jeder Stadt. Funktioniert offline.",
   "a11yLabel": "Straßenkarte zentriert auf {{city}}",
   "inputs.city.label": "Stadt",
-  "inputs.city.help": "Weitere Städte offline mit scripts/build-street-clips.ts hinzufügen — keine API beim Rendern nötig.",
+  "inputs.city.help": "Weitere Städte offline mit scripts/build-street-clips.ts hinzufügen - keine API beim Rendern nötig.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Athen",
   "inputs.city.options.bangkok": "Bangkok",

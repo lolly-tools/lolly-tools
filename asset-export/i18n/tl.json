@@ -3,7 +3,7 @@
   "description": "I-render ang anumang asset sa katalogo - o link ng Lolly tool - sa anumang format at sukat.",
   "a11yLabel": "Na-export na asset",
   "inputs.src.label": "Asset",
-  "inputs.src.help": "Ang asset na i-render — isang catalog id (tingnan ang `lolly assets`) o isang na-paste na link ng lolly.tools tool. Nananatiling vector ang mga vector asset sa SVG/PDF; naka-embed bilang mga imahe ang mga raster asset.",
+  "inputs.src.help": "Ang asset na i-render - isang catalog id (tingnan ang `lolly assets`) o isang na-paste na link ng lolly.tools tool. Nananatiling vector ang mga vector asset sa SVG/PDF; naka-embed bilang mga imahe ang mga raster asset.",
   "inputs.fit.label": "Fit",
   "inputs.fit.help": "Ipinapakita ng Contain ang buong asset sa loob ng frame; pinupuno ng Cover ang frame at maaaring mag-crop sa mga gilid.",
   "inputs.fit.options.contain": "Contain (buong asset, may letterbox)",

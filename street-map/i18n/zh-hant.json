@@ -3,7 +3,7 @@
   "description": "任何城市的簡潔向量街廓地圖，離線也能使用。",
   "a11yLabel": "以 {{city}} 為中心的街道地圖",
   "inputs.city.label": "城市",
-  "inputs.city.help": "如需離線新增更多城市，請使用 scripts/build-street-clips.ts — 算繪時不會呼叫任何 API。",
+  "inputs.city.help": "如需離線新增更多城市，請使用 scripts/build-street-clips.ts - 算繪時不會呼叫任何 API。",
   "inputs.city.options.amsterdam": "阿姆斯特丹",
   "inputs.city.options.athens": "雅典",
   "inputs.city.options.bangkok": "曼谷",

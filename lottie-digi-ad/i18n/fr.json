@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Jouer 3 fois",
   "inputs.loop.options.once": "Jouer une fois",
   "inputs.scenes.label": "Scènes",
-  "inputs.scenes.help": "Chaque scène est un segment de la séquence — elle s'anime par-dessus la précédente, avec sa propre animation Lottie qui boucle par-dessus. La dernière scène est la carte de fin fixe.",
+  "inputs.scenes.help": "Chaque scène est un segment de la séquence - elle s'anime par-dessus la précédente, avec sa propre animation Lottie qui boucle par-dessus. La dernière scène est la carte de fin fixe.",
   "inputs.scenes.addMenu.label": "Ajouter une scène",
   "inputs.scenes.fields.anim.label": "Animation",
   "inputs.scenes.fields.bgColor.label": "Arrière-plan",

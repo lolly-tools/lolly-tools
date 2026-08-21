@@ -3,7 +3,7 @@
   "description": "Rene vektor-gatekart for enhver by. Fungerer offline.",
   "a11yLabel": "Gatekart sentrert på {{city}}",
   "inputs.city.label": "By",
-  "inputs.city.help": "Legg til flere byer offline med scripts/build-street-clips.ts – ingen API nødvendig ved rendering.",
+  "inputs.city.help": "Legg til flere byer offline med scripts/build-street-clips.ts - ingen API nødvendig ved rendering.",
   "inputs.city.options.amsterdam": "Amsterdam",
   "inputs.city.options.athens": "Athen",
   "inputs.city.options.bangkok": "Bangkok",

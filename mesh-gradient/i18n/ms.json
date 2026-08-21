@@ -54,11 +54,11 @@
   "inputs.grainBlend.options.luminosity": "Luminosity (klasik)",
   "inputs.animate.label": "Hanyut",
   "inputs.animate.section": "Tekstur & Gerakan",
-  "inputs.animate.help": "Hanyutan gelung perlahan titik warna — eksport sebagai WebM/MP4 untuk latar belakang hidup.",
+  "inputs.animate.help": "Hanyutan gelung perlahan titik warna - eksport sebagai WebM/MP4 untuk latar belakang hidup.",
   "inputs.distance.label": "Jarak hanyutan",
   "inputs.distance.section": "Tekstur & Gerakan",
   "inputs.distance.help": "Sejauh mana titik warna hanyut daripada kedudukan yang ditetapkan. 100% ialah saiz orbit lalai; 0% mengekalkannya tetap di tempatnya.",
   "inputs.speed.label": "Kelajuan hanyutan",
   "inputs.speed.section": "Tekstur & Gerakan",
-  "inputs.speed.help": "Saat setiap gelung hanyutan — semakin tinggi semakin perlahan. Eksport video merakam satu gelung apabila bajet bingkai mengizinkan (gelung panjang dipendekkan pada 60 fps)."
+  "inputs.speed.help": "Saat setiap gelung hanyutan - semakin tinggi semakin perlahan. Eksport video merakam satu gelung apabila bajet bingkai mengizinkan (gelung panjang dipendekkan pada 60 fps)."
 }

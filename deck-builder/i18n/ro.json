@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Un mic rând de subsol (copyright, confidențialitate) în partea de jos a fiecărui slide, între logo și numărul slide-ului.",
   "inputs.footerText.placeholder": "© 2026 Compania ta · Confidențial",
   "inputs.deck.fields.layout.options.bignum": "Număr mare",
-  "inputs.deck.fields.layout.options.mainpoint": "Ideea principală"
+  "inputs.deck.fields.layout.options.mainpoint": "Ideea principală",
+  "inputs.deck.fields.text1.label": "Text pentru slotul 1",
+  "inputs.deck.fields.text1.help": "Umple slotul cu un card de text când nu este setată nicio imagine sau unealtă. Dacă ambele sunt setate, media are prioritate.",
+  "inputs.deck.fields.text2.label": "Text pentru slotul 2",
+  "inputs.deck.fields.text2.help": "Umple slotul cu un card de text când nu este setată nicio imagine sau unealtă. Dacă ambele sunt setate, media are prioritate.",
+  "inputs.deck.fields.text3.label": "Text pentru slotul 3",
+  "inputs.deck.fields.text3.help": "Umple slotul cu un card de text când nu este setată nicio imagine sau unealtă. Dacă ambele sunt setate, media are prioritate.",
+  "inputs.deck.fields.text4.label": "Text pentru slotul 4",
+  "inputs.deck.fields.text4.help": "Umple slotul cu un card de text când nu este setată nicio imagine sau unealtă. Dacă ambele sunt setate, media are prioritate."
 }

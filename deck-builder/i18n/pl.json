@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Mała linia stopki (prawa autorskie, poufność) na dole każdego slajdu, między logo a numerem slajdu.",
   "inputs.footerText.placeholder": "© 2026 Twoja firma · Poufne",
   "inputs.deck.fields.layout.options.bignum": "Duża liczba",
-  "inputs.deck.fields.layout.options.mainpoint": "Główna myśl"
+  "inputs.deck.fields.layout.options.mainpoint": "Główna myśl",
+  "inputs.deck.fields.text1.label": "Tekst pola 1",
+  "inputs.deck.fields.text1.help": "Wypełnia pole kartą tekstową, gdy nie ustawiono obrazu ani narzędzia. Gdy są oba, wygrywa multimedia.",
+  "inputs.deck.fields.text2.label": "Tekst pola 2",
+  "inputs.deck.fields.text2.help": "Wypełnia pole kartą tekstową, gdy nie ustawiono obrazu ani narzędzia. Gdy są oba, wygrywa multimedia.",
+  "inputs.deck.fields.text3.label": "Tekst pola 3",
+  "inputs.deck.fields.text3.help": "Wypełnia pole kartą tekstową, gdy nie ustawiono obrazu ani narzędzia. Gdy są oba, wygrywa multimedia.",
+  "inputs.deck.fields.text4.label": "Tekst pola 4",
+  "inputs.deck.fields.text4.help": "Wypełnia pole kartą tekstową, gdy nie ustawiono obrazu ani narzędzia. Gdy są oba, wygrywa multimedia."
 }

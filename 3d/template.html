@@ -4,7 +4,7 @@
 <script type="application/json" id="lolly3d-state">{{{_state}}}</script>
 <script>
 (function () {
-  /* Idempotent per-paint IIFE — the template re-runs on EVERY paint (see the
+  /* Idempotent per-paint IIFE - the template re-runs on EVERY paint (see the
      'Template script IIFE required' invariant). An epoch guard drops stale async
      callbacks from a prior paint; the previous renderer is disposed so we never
      leak WebGL contexts (browsers cap ~16). Mirrors tools/d3/template.html. */
@@ -69,7 +69,7 @@
   function start(THREE) {
     var W = cfg.width, H = cfg.height;
 
-    // Renderer — preserveDrawingBuffer:true is LOAD-BEARING: the export path reads
+    // Renderer - preserveDrawingBuffer:true is LOAD-BEARING: the export path reads
     // the canvas via toDataURL() after the frame composites, so without it every
     // raster/video export comes out blank. alpha:true supports transparentBg.
     var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
@@ -83,7 +83,7 @@
     var scene = new THREE.Scene();
     var camera = new THREE.PerspectiveCamera(cfg.camera.fov, W / H, 0.01, 1000);
 
-    // Environment (image-based lighting) — RoomEnvironment is a built-in neutral
+    // Environment (image-based lighting) - RoomEnvironment is a built-in neutral
     // studio, so no external HDR file ships (offline + light). Rotatable + scaled.
     var pmrem = new THREE.PMREMGenerator(renderer);
     var envTex = pmrem.fromScene(new THREE.RoomEnvironment(), 0.04).texture;
@@ -139,7 +139,7 @@
       // pitch/yaw/tilt + scale act about the middle (not the floor). applyPose then
       // writes the current transform; a canvas drag re-drives it live (wired below).
       var pivot = new THREE.Group();
-      pivot.rotation.order = 'YXZ';          // yaw, then pitch, then tilt(roll) — intuitive posing
+      pivot.rotation.order = 'YXZ';          // yaw, then pitch, then tilt(roll) - intuitive posing
       model.position.y -= frame.center.y;    // model centre → pivot local origin (x/z already centred)
       pivot.add(model);
       scene.add(pivot);
@@ -160,14 +160,14 @@
       }
 
       // Model's own baked clip (independent of the camera move). Hidden gracefully
-      // when the model has none (sample-2/3) — the mixer just isn't created.
+      // when the model has none (sample-2/3) - the mixer just isn't created.
       if (cfg.playClip && gltf.animations && gltf.animations.length) {
         mixer = new THREE.AnimationMixer(model);
         var clip = gltf.animations[cfg.clipIndex % gltf.animations.length];
         if (clip) mixer.clipAction(clip).play();
       }
 
-      renderFrame(0);        // one SYNC frame now — headless/hidden-tab rAF may never fire
+      renderFrame(0);        // one SYNC frame now - headless/hidden-tab rAF may never fire
       fireReady();
       if (!disposed) loop();
     }, undefined, function (err) {
@@ -231,7 +231,7 @@
       if (resumeAfterDrive) { clock.getDelta(); resumeAfterDrive = false; }
       var dt = clock.getDelta();
       // While the user drags to pose the model, hold the camera (and model clip) at a
-      // frozen time so only the pivot moves — the articulation reads as handling the
+      // frozen time so only the pivot moves - the articulation reads as handling the
       // object, not fighting the turntable.
       if (mixer && dragFreezeT == null) mixer.update(dt);
       renderFrame(dragFreezeT != null ? dragFreezeT : clock.getElapsedTime());
@@ -256,7 +256,7 @@
     //    undo / save all come for free. Plain drag = orbit (pitch on Y, yaw on X);
     //    ⌘/Ctrl-drag = roll (tilt); Shift-drag = move (translate X/Y); Alt-drag =
     //    scale. Live feedback mutates the pivot directly (applyPose) with NO model
-    //    write — a mid-drag commit would re-hydrate the tool and kill the gesture — so
+    //    write - a mid-drag commit would re-hydrate the tool and kill the gesture - so
     //    the commit is deferred to release, one input group per frame (each re-queries
     //    the freshly-rebuilt sidebar). No wheel handler: scrolling stays the page's. ──
     (function wireDrag() {

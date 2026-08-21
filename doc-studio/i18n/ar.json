@@ -1,7 +1,7 @@
 {
   "name": "استوديو المستندات",
   "description": "اكتب مستنداً متعدد الصفحات على اللوحة - نص منسق، عناوين، جداول وعروض Lolly مدرجة تتدفق عبر الصفحات وتُصدَّر كملف PDF.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — مستند متعدد الصفحات",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - مستند متعدد الصفحات",
   "inputs.pageSize.label": "حجم الصفحة",
   "inputs.pageSize.help": "يحدد حجم كل صفحة وحجم صفحة ملف PDF المُصدَّر.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "عمودان",
   "inputs.columns.options.3": "3 أعمدة",
   "inputs.content.label": "المستند",
-  "inputs.content.help": "المستند نفسه — يُخزَّن كنص منسق قابل للنقل بصيغة JSON (ProseMirror). يُكتب على اللوحة باستخدام محرر استوديو المستندات؛ يُصيّر المحرك بيانات JSON هذه إلى صفحات عند التصدير. إذا تُرك فارغا، يُستخدم مستند ابتدائي بديل.",
+  "inputs.content.help": "المستند نفسه - يُخزَّن كنص منسق قابل للنقل بصيغة JSON (ProseMirror). يُكتب على اللوحة باستخدام محرر استوديو المستندات؛ يُصيّر المحرك بيانات JSON هذه إلى صفحات عند التصدير. إذا تُرك فارغا، يُستخدم مستند ابتدائي بديل.",
   "inputs.width.label": "عرض الصفحة",
   "inputs.height.label": "ارتفاع الصفحة"
 }

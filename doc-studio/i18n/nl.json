@@ -1,7 +1,7 @@
 {
   "name": "Documentstudio",
   "description": "Schrijf een meerpaginadocument op het canvas - opgemaakte tekst, koppen, tabellen en ingevoegde Lolly-renders die doorlopen over pagina's en als PDF exporteren.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — document met meerdere pagina's",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - document met meerdere pagina's",
   "inputs.pageSize.label": "Paginaformaat",
   "inputs.pageSize.help": "Bepaalt het formaat van elke pagina en van de geëxporteerde PDF.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 kolommen",
   "inputs.columns.options.3": "3 kolommen",
   "inputs.content.label": "Document",
-  "inputs.content.help": "Het document zelf — opgeslagen als overdraagbare rich-text (ProseMirror) JSON. Geschreven op het canvas met de Documentstudio-editor; de engine rendert deze JSON naar pagina's voor export. Leeg valt terug op een startdocument.",
+  "inputs.content.help": "Het document zelf - opgeslagen als overdraagbare rich-text (ProseMirror) JSON. Geschreven op het canvas met de Documentstudio-editor; de engine rendert deze JSON naar pagina's voor export. Leeg valt terug op een startdocument.",
   "inputs.width.label": "Paginabreedte",
   "inputs.height.label": "Paginahoogte"
 }

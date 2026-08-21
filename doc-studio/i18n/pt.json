@@ -1,7 +1,7 @@
 {
   "name": "Estúdio de Documentos",
   "description": "Escreva um documento multipágina no canvas - texto rico, títulos, tabelas e renderizações Lolly inseridas que fluem entre páginas e exportam como PDF.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — documento multipágina",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - documento multipágina",
   "inputs.pageSize.label": "Tamanho da página",
   "inputs.pageSize.help": "Define o tamanho de todas as páginas e o tamanho de página do PDF exportado.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 colunas",
   "inputs.columns.options.3": "3 colunas",
   "inputs.content.label": "Documento",
-  "inputs.content.help": "O próprio documento — armazenado como texto rico portátil (JSON do ProseMirror). Escrito na tela com o editor do Doc Studio; o mecanismo renderiza esse JSON em páginas para exportação. Vazio, volta a um documento inicial.",
+  "inputs.content.help": "O próprio documento - armazenado como texto rico portátil (JSON do ProseMirror). Escrito na tela com o editor do Doc Studio; o mecanismo renderiza esse JSON em páginas para exportação. Vazio, volta a um documento inicial.",
   "inputs.width.label": "Largura da página",
   "inputs.height.label": "Altura da página"
 }

@@ -3,7 +3,7 @@
   "name": "Deck Builder",
   "description": "Build a slide deck with a live on-canvas editor - edit text, colours and images directly on each slide.",
   "a11yLabel": "Slide deck with {{slideCount}} slides",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "engineVersion": "^1.3.0",
   "status": "community",
   "category": "designer",
@@ -1269,12 +1269,62 @@
           ]
         },
         {
+          "id": "text1",
+          "label": "Slot 1 text",
+          "type": "text",
+          "default": "",
+          "rows": 3,
+          "placeholder": "Markdown - ## heading, - bullets, **bold**",
+          "help": "Fills the slot with a text card when no image or tool is set. Media wins if both are set.",
+          "showFor": [
+            "full",
+            "hero",
+            "split",
+            "stack",
+            "golden",
+            "cols3",
+            "grid4"
+          ],
+          "multilineFor": [
+            "full",
+            "hero",
+            "split",
+            "stack",
+            "golden",
+            "cols3",
+            "grid4"
+          ]
+        },
+        {
           "id": "media2",
           "label": "Slot 2",
           "type": "asset",
           "assetType": "any",
           "allowUpload": true,
           "showFor": [
+            "split",
+            "stack",
+            "golden",
+            "cols3",
+            "grid4"
+          ]
+        },
+        {
+          "id": "text2",
+          "label": "Slot 2 text",
+          "type": "text",
+          "default": "",
+          "rows": 3,
+          "placeholder": "Markdown - ## heading, - bullets, **bold**",
+          "help": "Fills the slot with a text card when no image or tool is set. Media wins if both are set.",
+          "showFor": [
+            "split",
+            "stack",
+            "golden",
+            "cols3",
+            "grid4"
+          ],
+          "multilineFor": [
             "split",
             "stack",
             "golden",
@@ -1294,12 +1344,44 @@
           ]
         },
         {
+          "id": "text3",
+          "label": "Slot 3 text",
+          "type": "text",
+          "default": "",
+          "rows": 3,
+          "placeholder": "Markdown - ## heading, - bullets, **bold**",
+          "help": "Fills the slot with a text card when no image or tool is set. Media wins if both are set.",
+          "showFor": [
+            "cols3",
+            "grid4"
+          ],
+          "multilineFor": [
+            "cols3",
+            "grid4"
+          ]
+        },
+        {
           "id": "media4",
           "label": "Slot 4",
           "type": "asset",
           "assetType": "any",
           "allowUpload": true,
           "showFor": [
+            "grid4"
+          ]
+        },
+        {
+          "id": "text4",
+          "label": "Slot 4 text",
+          "type": "text",
+          "default": "",
+          "rows": 3,
+          "placeholder": "Markdown - ## heading, - bullets, **bold**",
+          "help": "Fills the slot with a text card when no image or tool is set. Media wins if both are set.",
+          "showFor": [
+            "grid4"
+          ],
+          "multilineFor": [
             "grid4"
           ]
         },

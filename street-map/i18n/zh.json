@@ -3,7 +3,7 @@
   "description": "生成任意城市的简洁矢量街区地图，支持离线使用。",
   "a11yLabel": "以 {{city}} 为中心的街道地图",
   "inputs.city.label": "城市",
-  "inputs.city.help": "使用 scripts/build-street-clips.ts 离线添加更多城市 — 渲染时不调用任何 API。",
+  "inputs.city.help": "使用 scripts/build-street-clips.ts 离线添加更多城市 - 渲染时不调用任何 API。",
   "inputs.city.options.amsterdam": "阿姆斯特丹",
   "inputs.city.options.athens": "雅典",
   "inputs.city.options.bangkok": "曼谷",

@@ -9,7 +9,7 @@
       <option value="ts">TypeScript</option>
       <option value="tsx">TSX (React + TS)</option>
     </select>
-    <!-- The real Lolly app theme switcher (light → dark → brand) — the shell injects
+    <!-- The real Lolly app theme switcher (light → dark → brand) - the shell injects
          createThemeToggle() here (tool.ts mountToolbarSlots). The tool palette follows
          --background/--primary, so this re-themes the whole editor. Syntax colours now
          follow the brand theme automatically (the old syntax-only dropdown was removed;
@@ -23,14 +23,14 @@
     <button class="rwc-btn rwc-ghost" type="button" data-rwc-fullscreen aria-label="Toggle fullscreen" aria-pressed="false" title="Fullscreen (whole browser window)">⛶</button>
     <!-- Full-page mode: hide all chrome, the live preview takes over the whole viewport
          (deep-linkable via ?full). A floating top-right control returns to the split view. -->
-    <button class="rwc-btn rwc-ghost rwc-svgbtn" type="button" data-rwc-fullpage aria-pressed="false" aria-label="Full page — preview only" title="Full page — the preview fills the whole window (shareable with ?full)">
+    <button class="rwc-btn rwc-ghost rwc-svgbtn" type="button" data-rwc-fullpage aria-pressed="false" aria-label="Full page - preview only" title="Full page - the preview fills the whole window (shareable with ?full)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2"/><path d="M6.5 9.3h11"/></svg>
     </button>
     <div class="rwc-sess" data-rwc-sess>
       <span class="rwc-sess-name" data-rwc-sess-name hidden></span>
       <button class="rwc-btn rwc-ghost" type="button" data-rwc-save title="Save the current code (updates the open session, or names a new one)">Save</button>
       <!-- Opens the docked sessions drawer (below, in the body) for quick-switching. -->
-      <button class="rwc-btn rwc-ghost" type="button" data-rwc-sess-open aria-haspopup="true" aria-expanded="false" aria-controls="rwc-sessbar" title="Saved sessions — a quick-switch panel">Sessions</button>
+      <button class="rwc-btn rwc-ghost" type="button" data-rwc-sess-open aria-haspopup="true" aria-expanded="false" aria-controls="rwc-sessbar" title="Saved sessions - a quick-switch panel">Sessions</button>
     </div>
     <button class="rwc-btn rwc-ghost" type="button" data-rwc-reset title="Load the starter example">Reset</button>
     <!-- The shell relocates its render/export pill here (tool.ts placeActions →
@@ -40,7 +40,7 @@
   </header>
 
   <div class="rwc-body" data-rwc-body data-export-hide>
-    <!-- Optional docked sessions panel — an overlay drawer for quick-switching
+    <!-- Optional docked sessions panel - an overlay drawer for quick-switching
          between saved pens. Toggled by the header "Sessions" button; absolutely
          positioned so it never disturbs the editor/preview split math. -->
     <aside class="rwc-sessbar" id="rwc-sessbar" data-rwc-sessbar hidden aria-label="Saved sessions">
@@ -64,14 +64,14 @@
         <button class="rwc-tab" type="button" role="tab" aria-selected="false" data-pane="js"><span data-js-label>JS</span><span class="rwc-tab-dot" data-dot="js" hidden></span></button>
         <span class="rwc-saved" data-rwc-saved role="status" aria-live="polite"></span>
         <span class="rwc-tabs-gap"></span>
-        <button class="rwc-tab rwc-tab-head" type="button" role="tab" aria-selected="false" data-pane="head" title="Persistent <head> — added to every preview, and travels with a saved or shared pen">Head<span class="rwc-tab-dot" data-dot="head" hidden></span></button>
-        <button class="rwc-collapse" type="button" data-rwc-collapse="editor" aria-label="Collapse code editor" title="Collapse editor — give the preview the full width">⟨</button>
+        <button class="rwc-tab rwc-tab-head" type="button" role="tab" aria-selected="false" data-pane="head" title="Persistent <head> - added to every preview, and travels with a saved or shared pen">Head<span class="rwc-tab-dot" data-dot="head" hidden></span></button>
+        <button class="rwc-collapse" type="button" data-rwc-collapse="editor" aria-label="Collapse code editor" title="Collapse editor - give the preview the full width">⟨</button>
       </div>
       <div class="rwc-panes">
-        <textarea class="rwc-code is-active" data-pane="html" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Paste your HTML here — a full page or just a snippet…" aria-label="HTML"></textarea>
-        <textarea class="rwc-code" data-pane="css" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional CSS — or keep it inside your HTML…" aria-label="CSS"></textarea>
-        <textarea class="rwc-code" data-pane="js" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional JavaScript — or keep it inside your HTML…" aria-label="JavaScript"></textarea>
-        <textarea class="rwc-code" data-pane="head" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Persistent &lt;head&gt; — meta, fonts, base styles, library &lt;script&gt;/&lt;link&gt;. Added to every preview, and travels with a saved or shared pen." aria-label="Persistent head"></textarea>
+        <textarea class="rwc-code is-active" data-pane="html" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Paste your HTML here - a full page or just a snippet…" aria-label="HTML"></textarea>
+        <textarea class="rwc-code" data-pane="css" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional CSS - or keep it inside your HTML…" aria-label="CSS"></textarea>
+        <textarea class="rwc-code" data-pane="js" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Optional JavaScript - or keep it inside your HTML…" aria-label="JavaScript"></textarea>
+        <textarea class="rwc-code" data-pane="head" spellcheck="false" autocapitalize="off" autocomplete="off" autocorrect="off" wrap="off" placeholder="Persistent &lt;head&gt; - meta, fonts, base styles, library &lt;script&gt;/&lt;link&gt;. Added to every preview, and travels with a saved or shared pen." aria-label="Persistent head"></textarea>
       </div>
     </section>
 
@@ -87,7 +87,7 @@
         <span class="rwc-flex"></span>
         <button class="rwc-icbtn rwc-consbtn" type="button" data-rwc-console-vis aria-pressed="true" title="Show or hide the console" aria-label="Toggle console visibility">Console</button>
         <button class="rwc-icbtn" type="button" data-rwc-reload title="Reload preview" aria-label="Reload preview">⟳</button>
-        <button class="rwc-collapse" type="button" data-rwc-collapse="preview" aria-label="Collapse preview" title="Collapse preview — give the editor the full width">⟩</button>
+        <button class="rwc-collapse" type="button" data-rwc-collapse="preview" aria-label="Collapse preview" title="Collapse preview - give the editor the full width">⟩</button>
       </div>
 
       <div class="rwc-banner" data-rwc-banner hidden></div>
@@ -110,9 +110,9 @@
     </section>
   </div>
 
-  <!-- Full-page exit — floats top-right ONLY while .rwc.is-fullpage; a split-pane
+  <!-- Full-page exit - floats top-right ONLY while .rwc.is-fullpage; a split-pane
        glyph signalling "back to the editor + preview". Esc also exits. -->
-  <button class="rwc-fullpage-exit" type="button" data-rwc-fullpage-exit data-export-hide aria-label="Exit full page — back to split view" title="Back to split view (Esc)">
+  <button class="rwc-fullpage-exit" type="button" data-rwc-fullpage-exit data-export-hide aria-label="Exit full page - back to split view" title="Back to split view (Esc)">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2.5" y="4.5" width="19" height="15" rx="2"/><path d="M12 4.5v15"/></svg>
   </button>
 
@@ -124,12 +124,12 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="2.5" y="4" width="19" height="16" rx="2.5"/><path d="M2.5 8.5h19"/><path d="M9.8 11.4l4.4 2.6-4.4 2.6z"/></svg>
       </div>
       <h2 class="rwc-about-title" id="rwc-about-title">Run Web Code</h2>
-      <p class="rwc-about-desc" id="rwc-about-desc">Paste HTML, CSS and JavaScript — say, a snippet an AI assistant handed you — and see it run instantly.</p>
+      <p class="rwc-about-desc" id="rwc-about-desc">Paste HTML, CSS and JavaScript - say, a snippet an AI assistant handed you - and see it run instantly.</p>
       <ul class="rwc-about-points">
         <li><strong>Private &amp; offline.</strong> Your code runs in a locked-down sandbox right here in your browser. Nothing is uploaded, and it works with no connection.</li>
-        <li><strong>Isolated.</strong> The preview can't reach your saved work, this app, or your other tabs — it runs on its own throwaway origin.</li>
-        <li><strong>Frameworks.</strong> Switch the JS language to JSX, TypeScript or TSX and paste a component — it's transpiled and, for React, mounted into <code>#root</code> for you. React is bundled in, so it all works offline. Name your component <code>App</code> for auto-mounting, or render it yourself.</li>
-        <li><strong>External libraries.</strong> To keep things private and offline, scripts and styles loaded from the web are blocked by default. When your code references one, you can choose to <em>fetch &amp; inline</em> it — trusted sources like Google Fonts work out of the box; others may be blocked by the app's security policy.</li>
+        <li><strong>Isolated.</strong> The preview can't reach your saved work, this app, or your other tabs - it runs on its own throwaway origin.</li>
+        <li><strong>Frameworks.</strong> Switch the JS language to JSX, TypeScript or TSX and paste a component - it's transpiled and, for React, mounted into <code>#root</code> for you. React is bundled in, so it all works offline. Name your component <code>App</code> for auto-mounting, or render it yourself.</li>
+        <li><strong>External libraries.</strong> To keep things private and offline, scripts and styles loaded from the web are blocked by default. When your code references one, you can choose to <em>fetch &amp; inline</em> it - trusted sources like Google Fonts work out of the box; others may be blocked by the app's security policy.</li>
       </ul>
     </div>
   </div>
@@ -166,7 +166,7 @@
 .rwc * { box-sizing: border-box; }
 .rwc-flex { flex: 1 1 auto; }
 /* Fill the whole browser window. The web shell pins the mount host (#tool-content)
-   to the manifest render size (1280×800 — kept, since the snapshot mirror export
+   to the manifest render size (1280×800 - kept, since the snapshot mirror export
    reads it), which would leave this full-bleed IDE floating in dead space on a wider
    screen. The style scoper (shells/web scope-css.ts) maps a bare :root / html / body
    selector onto the mount root, so this resolves to `#tool-content { … }`; !important
@@ -230,7 +230,7 @@
    The shell drops its real theme toggle into [data-shell-slot="theme"] and its
    render/export pill into [data-shell-slot="export"] (tool.ts mountToolbarSlots /
    placeActions). Restyle both to sit in this toolbar as ghost buttons matching
-   .rwc-btn — same border, same --radius from the theme — rather than the HUD
+   .rwc-btn - same border, same --radius from the theme - rather than the HUD
    icon / floating green pill they wear elsewhere. Scoped under #tool-content at
    build time, so these beat the shell's own .stage-nav-btn / .render-pill rules. */
 .rwc-theme-slot, .rwc-export-slot { display: inline-flex; align-items: center; flex: 0 0 auto; }
@@ -273,7 +273,7 @@
 /* ── Editor ──────────────────────────────────────────────────────────────── */
 .rwc-tabs { display: flex; align-items: center; gap: 2px; flex: 0 0 auto; padding: 8px 10px 0; background: hsl(var(--rwc-card)); border-bottom: 1px solid hsl(var(--rwc-bd)); }
 .rwc-tabs-gap { flex: 1 1 auto; }
-/* The persistent-head tab is global config, not per-pen content — set it apart. */
+/* The persistent-head tab is global config, not per-pen content - set it apart. */
 .rwc-tab-head { color: hsl(var(--rwc-muted) / .8); font-weight: 600; }
 .rwc-tab-head::before { content: '⚙'; margin-right: 5px; font-size: 11px; opacity: .8; }
 .rwc-saved { font-size: 11px; font-weight: 700; color: hsl(var(--rwc-ok)); opacity: 0; transition: opacity .2s; align-self: center; padding: 0 6px; white-space: nowrap; }
@@ -299,7 +299,7 @@
 .rwc-code::placeholder { color: hsl(var(--rwc-muted) / .65); }
 /* Syntax highlight overlay: a coloured <pre> behind each transparent <textarea>.
    The transparent-text rule is GATED on .rwc-hl-on (added by JS only after the
-   overlay mounts) so a script failure can never hide the code — it just stays
+   overlay mounts) so a script failure can never hide the code - it just stays
    plainly coloured. Token colours are CSS vars the theme select swaps. */
 .rwc-panes {
   --rwc-ed-bg: hsl(var(--rwc-bg)); --rwc-ed-fg: hsl(var(--rwc-fg)); --rwc-ed-sel: hsl(var(--rwc-brand) / .28);
@@ -391,14 +391,14 @@
 .rwc-console-empty { padding: 12px 14px; color: hsl(var(--rwc-muted) / .7); font-size: 11.5px; font-style: italic; }
 
 /* ── About dialog ────────────────────────────────────────────────────────── */
-/* Same-origin mirror of the sandbox preview — the shell export walker rasterises
+/* Same-origin mirror of the sandbox preview - the shell export walker rasterises
    THIS (it carries data-export-root) since it can't read the opaque-origin iframe.
    Lives OFF-SCREEN: as a later absolutely-positioned sibling it painted a white box
    OVER the editor (not behind it), so park it out of view. It stays laid out with a
-   real px size (set by JS in mountShot) so the walker still gets true geometry —
+   real px size (set by JS in mountShot) so the walker still gets true geometry -
    the shell's standard hidden-export-stage approach. Click-through, hidden from AT. */
 /* No background here: a transparent WebGL/canvas pen (alpha:true) exports with its
-   alpha intact — a far more usable asset. A pen that wants a solid backdrop sets its
+   alpha intact - a far more usable asset. A pen that wants a solid backdrop sets its
    own html/body background (re-scoped onto .rwc-shot-body); a text snippet keeps the
    reset's white body. So the export honours whatever the pen actually renders. */
 .rwc-shot { position: absolute; left: -100000px; top: 0; width: 1px; height: 1px; overflow: hidden; pointer-events: none; }
@@ -410,11 +410,11 @@
 .rwc-sess-name::before { content: ''; width: 7px; height: 7px; border-radius: 999px; background: hsl(var(--rwc-ok)); flex: 0 0 auto; }
 .rwc-sess-name.is-dirty { color: hsl(var(--rwc-fg)); }
 .rwc-sess-name.is-dirty::before { background: hsl(38 92% 50%); }
-/* Docked sessions drawer — an absolutely-positioned overlay on the RIGHT of the
+/* Docked sessions drawer - an absolutely-positioned overlay on the RIGHT of the
    body (nearer the "Sessions" toolbar button), so it never perturbs the
    editor/preview flex split. Stays open for quick-switching (click a row to load
    without closing). It overlays the live preview, so the panel is slightly
-   translucent with a backdrop blur — the running content stays sensed behind it
+   translucent with a backdrop blur - the running content stays sensed behind it
    while the session list keeps its contrast. */
 .rwc-sessbar {
   position: absolute; right: 0; top: 0; bottom: 0; z-index: 40; width: min(280px, 82%);
@@ -505,7 +505,7 @@
 .rwc-body.is-stack .rwc-rail, .rwc-body.is-narrow .rwc-rail { flex: 0 0 auto; padding: 11px 0; }
 .rwc-body.is-stack .rwc-rail-label, .rwc-body.is-narrow .rwc-rail-label { writing-mode: horizontal-tb; transform: none; }
 
-/* Console visibility — a full show/hide toggle in the preview head, distinct from
+/* Console visibility - a full show/hide toggle in the preview head, distinct from
    the console header's collapse/peek. Hidden → the preview stage fills the panel
    (the "full page, no console" view). */
 .rwc-consbtn {
@@ -524,7 +524,7 @@
 
 /* ── Full-page mode ──────────────────────────────────────────────────────────
    Preview-only, chrome-free, filling the whole viewport (the tool root already
-   spans the window — see the :root width rule up top). Deep-linkable via ?full;
+   spans the window - see the :root width rule up top). Deep-linkable via ?full;
    Esc or the floating top-right control returns to the split view. */
 .rwc.is-fullpage .rwc-bar,
 .rwc.is-fullpage .rwc-editor,
@@ -600,7 +600,7 @@
   var STARTER = {
     html: [
       '<h1>Hello 👋</h1>',
-      '<p>Paste your code here —</p>',
+      '<p>Paste your code here -</p>',
       '<p>it runs live on the right.</p>',
       '<ul>',
       '  <li>HTML in this tab</li>',
@@ -621,7 +621,7 @@
   var SHIM = [
     '(function(){',
     // Force preserveDrawingBuffer on WebGL contexts so a canvas can still be read back
-    // (toDataURL) at snapshot time for export — otherwise the drawing buffer is cleared
+    // (toDataURL) at snapshot time for export - otherwise the drawing buffer is cleared
     // after compositing and exports come out blank. Runs before any pen code, so it
     // catches the context at creation. Tiny perf cost, worth it for a preview tool.
     'try{var _gc=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(t,a){if(typeof t==="string"&&/webgl/i.test(t)){a=a||{};try{if(a.preserveDrawingBuffer!==true)a.preserveDrawingBuffer=true;}catch(_){}}return _gc.call(this,t,a);};}catch(e){}',
@@ -638,7 +638,7 @@
     'parent.postMessage({__rwc:1,level:"__ready__"},"*");',
     // Snapshot the live preview for export. Canvas pixels do NOT survive DOM
     // serialisation, so each <canvas> is baked to an <img> of its toDataURL in a CLONE
-    // of the document (the live preview is left untouched). Wholly guarded — any failure
+    // of the document (the live preview is left untouched). Wholly guarded - any failure
     // (a tainted/cross-origin canvas throws on toDataURL) falls back to the plain HTML.
     'function snap(){try{var d=document,de=d.documentElement,b=d.body;var w=Math.max(de.scrollWidth,b?b.scrollWidth:0)||de.clientWidth||1280;var h=Math.max(de.scrollHeight,b?b.scrollHeight:0)||de.clientHeight||800;var html;try{var src=d.getElementsByTagName("canvas");if(src&&src.length){var clone=de.cloneNode(true);var cc=clone.getElementsByTagName("canvas");for(var i=0;i<src.length&&i<cc.length;i++){try{var u=src[i].toDataURL("image/png");if(u&&u.slice(0,10)==="data:image"){var im=d.createElement("img");im.src=u;var st=src[i].getAttribute("style");if(st)im.setAttribute("style",st);var cw=src[i].width,ch=src[i].height;if(cw)im.setAttribute("width",cw);if(ch)im.setAttribute("height",ch);if(cc[i].parentNode)cc[i].parentNode.replaceChild(im,cc[i]);}}catch(_){}}html=clone.outerHTML;}else{html=de.outerHTML;}}catch(_){html=de.outerHTML;}parent.postMessage({__rwc:1,level:"__snapshot__",html:"<!doctype html>"+html,w:w,h:h},"*");}catch(e){}}',
     'window.addEventListener("message",function(e){try{if(e.source===parent&&e.data&&e.data.__rwcCmd==="snap")snap();}catch(_){}});',
@@ -677,7 +677,7 @@
     var jsTag = js.trim() ? '<script>' + guardScript(js) + '\n<\/script>' : '';
     if (isFullDoc(html)) {
       var doc = injectAfterHeadOpen(html, shimTag);
-      // Inject in reverse-of-desired order — each lands right before </head>, so the
+      // Inject in reverse-of-desired order - each lands right before </head>, so the
       // last inserted sits closest to </head>: head config, then the pen's own CSS.
       if (headExtra) doc = injectBeforeHeadClose(doc, headExtra);
       if (styleTag) doc = injectBeforeHeadClose(doc, styleTag);
@@ -686,7 +686,7 @@
     }
     // The default preview is a neutral WHITE page (dark text). Pin color-scheme to
     // light + an explicit white background so the canvas never darkens under the OS
-    // dark preference — otherwise `color-scheme:light dark` + the dark `color:#111`
+    // dark preference - otherwise `color-scheme:light dark` + the dark `color:#111`
     // gives dark-text-on-dark-canvas (unreadable), which Safari hits by rendering the
     // sandboxed iframe's canvas dark in the app's LIGHT mode. A pen can still opt into
     // dark by setting its own background / color-scheme (its CSS comes after this reset).
@@ -701,7 +701,7 @@
   function pathOf(u) { try { var p = new URL(u); return p.pathname + p.search; } catch (e) { return ''; } }
   // Hosts whose external resources may be fetched & inlined without the "external" warning.
   // Google Fonts: exact hosts (CSS API + its font-file CDN). SUSE: apex or any subdomain of
-  // suse.com/.de/.cz — SUSE-owned, under full IT oversight, so a www./cdn./static. host counts too.
+  // suse.com/.de/.cz - SUSE-owned, under full IT oversight, so a www./cdn./static. host counts too.
   var TRUSTED_HOSTS = { 'fonts.googleapis.com': 1, 'fonts.gstatic.com': 1 };
   var TRUSTED_DOMAINS = ['suse.com', 'suse.de', 'suse.cz'];
   function isTrusted(u) {
@@ -853,7 +853,7 @@
   var LIB = '/tools/run-web-code/lib/';
   var REACT_URL = LIB + 'react.production.min.js';
   var REACTDOM_URL = LIB + 'react-dom.production.min.js';
-  // Runs in the sandbox after the user's component code — auto-mounts an `App`
+  // Runs in the sandbox after the user's component code - auto-mounts an `App`
   // (or `Main`) into #root, unless the user already rendered into it themselves.
   var MOUNT_SHIM = [
     ';(function(){',
@@ -868,7 +868,7 @@
   ].join('\n');
 
   // Babel Standalone loads once into THIS page (not the sandbox), so the 2.5 MB
-  // compiler is never re-parsed per preview — only its small output is injected.
+  // compiler is never re-parsed per preview - only its small output is injected.
   function loadBabel() {
     if (window.Babel && window.Babel.transform) return Promise.resolve(window.Babel);
     window.__rwcBabel = window.__rwcBabel || new Promise(function (res, rej) {
@@ -968,7 +968,7 @@
       bannerEl.classList.toggle('is-warn', nNo > 0);
       html = '<div class="rwc-banner-row"><div class="rwc-banner-txt">'
         + '<b>External resources inlined into the sandbox.</b> '
-        + (nNo === 0 ? 'All fetched and embedded — this now runs offline too.'
+        + (nNo === 0 ? 'All fetched and embedded - this now runs offline too.'
                      : nOk + ' embedded, ' + nNo + ' could not be reached (they stay unavailable in the private sandbox).')
         + '<ul class="rwc-banner-list">' + items + '</ul>'
         + '</div><div class="rwc-banner-actions">'
@@ -1027,7 +1027,7 @@
   // ── On-device persistence (IndexedDB) ───────────────────────────────────────
   // The persistent <head> and a draft of the current pen, so nothing is lost on
   // reload. Fully guarded: a missing/blocked IndexedDB just means it runs
-  // ephemerally. (Deliberately NOT host.state — this tool is self-contained and
+  // ephemerally. (Deliberately NOT host.state - this tool is self-contained and
   // browser-only, so it stores directly. See the tool's README/notes.)
   var savedEl = $('[data-rwc-saved]');
   var _db = null, _dbTry = null;
@@ -1073,7 +1073,7 @@
     if (persistTimer) clearTimeout(persistTimer);
     persistTimer = setTimeout(function () {
       var f = readFiles();
-      // The draft now carries `head` too — head travels with the pen (per-pen/shareable),
+      // The draft now carries `head` too - head travels with the pen (per-pen/shareable),
       // not per-device. The separate 'head' key is kept as a one-time migration source for
       // pens saved before this change (and for an older shell that still reads it).
       idbSet('draft', { html: f.html, css: f.css, js: f.js, head: f.head, mode: modeSel ? modeSel.value : 'none' }).catch(function () {});
@@ -1105,7 +1105,7 @@
   // watches the preview update as one edits), while THIS IIFE stays the sole owner of
   // the <textarea> editor DOM. The template deliberately never references the inputs,
   // so the shell's hydrated output is byte-constant and paint() skips its innerHTML
-  // rebuild on every commit — the editor + sandbox iframe survive untouched. The web
+  // rebuild on every commit - the editor + sandbox iframe survive untouched. The web
   // shell attaches the per-canvas channel (attachCanvasCommit) on the stable
   // [data-lolly-canvas] container; when it is absent (CLI / an older shell) everything
   // here no-ops and the tool falls back to its own IndexedDB persistence below.
@@ -1118,7 +1118,7 @@
     try {
       var el = root.closest && root.closest('[data-lolly-canvas]');
       if (el && (el.__lollyModel || el.__lollyCommit)) _chan = el;
-    } catch (e) { /* no channel — degrade to IDB */ }
+    } catch (e) { /* no channel - degrade to IDB */ }
     return _chan;
   }
   function hasModelChannel() { var c = chan(); return !!(c && c.__lollyModel && c.__lollyCommit); }
@@ -1130,7 +1130,7 @@
   }
   // coarse=true → __lollyCommit (wrapped setInput: broadcasts to collab peers AND is the
   // undo checkpoint). coarse=false → __lollyCommitQuiet (setInputNoHistory: updates the
-  // model + URL only, no undo entry, no broadcast) — used for per-keystroke liveness and
+  // model + URL only, no undo entry, no broadcast) - used for per-keystroke liveness and
   // for the boot seed (a joining peer must not overwrite the shared doc with its restore).
   function commit(id, value, coarse) {
     var c = chan(); if (!c) return;
@@ -1168,7 +1168,7 @@
     if (quietTimers[pane]) { clearTimeout(quietTimers[pane]); quietTimers[pane] = 0; }
     flushCoarse(pane);
   }
-  // Force every pending commit to land NOW — called atop the beforeExport hook (via
+  // Force every pending commit to land NOW - called atop the beforeExport hook (via
   // root.__rwcFlush) so an export always captures the fully-committed model state.
   root.__rwcFlush = function () {
     PANES.forEach(flushPane);
@@ -1184,7 +1184,7 @@
   function applyRemotePane(pane, v) {
     var ta = codeEls[pane];
     ta.value = v;
-    lastCommitted[pane] = v;   // adopt as baseline — never re-broadcast a value we received
+    lastCommitted[pane] = v;   // adopt as baseline - never re-broadcast a value we received
     if (typeof hl !== 'undefined' && hl) hl.paint(pane);
     updateDots();
     schedulePersist();
@@ -1217,7 +1217,7 @@
     // Skip the synchronous on-subscribe fire: we have just seeded + pushed the model, so it
     // would only re-assert what the editor already shows.
     try { c.__lollySubscribe(function (state) { if (first) { first = false; return; } reconcile(state); }); }
-    catch (e) { /* subscribe unavailable — no live reconcile, editing still works */ }
+    catch (e) { /* subscribe unavailable - no live reconcile, editing still works */ }
   }
 
   // ── Wire up ─────────────────────────────────────────────────────────────────
@@ -1237,7 +1237,7 @@
     });
     codeEls[k].addEventListener('focus', function () { editedWhileFocused[k] = false; });
     codeEls[k].addEventListener('blur', function () {
-      // Local-wins LWW: if you touched this pane while focused your edit is the latest —
+      // Local-wins LWW: if you touched this pane while focused your edit is the latest -
       // flush it (broadcast + undo). If you did NOT touch it but a remote edit arrived
       // while the caret sat here, adopt that deferred value now.
       if (editedWhileFocused[k]) { flushCoarse(k); delete pendingRemote[k]; }
@@ -1253,7 +1253,7 @@
   });
 
   // An explicit Run gesture also lands any pending commits at once (broadcast + undo
-  // checkpoint), so a collaborator sees the running pen the instant you hit Run — even
+  // checkpoint), so a collaborator sees the running pen the instant you hit Run - even
   // mid-typing, before the pause timer would have fired. run() itself stays free of
   // commit side-effects so the boot seed / auto-run / remote-reconcile paths never
   // broadcast.
@@ -1389,9 +1389,9 @@
     hl.ensure(); hl.applyTheme('auto');
     if (themeSel) themeSel.addEventListener('change', function(){ hl.applyTheme(themeSel.value); idbSet('theme', themeSel.value).catch(function(){}); });
     idbGet('theme').then(function(v){ if(v){ if(themeSel) themeSel.value=v; hl.applyTheme(v); } }, function(){});
-  } catch (e) { /* highlighting is progressive enhancement — the plain textareas still work */ }
+  } catch (e) { /* highlighting is progressive enhancement - the plain textareas still work */ }
 
-  // Reset — two-click confirm to avoid clobbering pasted work.
+  // Reset - two-click confirm to avoid clobbering pasted work.
   var resetBtn = $('[data-rwc-reset]'), resetArmed = false, resetTimer = null;
   resetBtn.addEventListener('click', function () {
     if (!resetArmed) {
@@ -1402,7 +1402,7 @@
     clearTimeout(resetTimer); resetArmed = false; resetBtn.textContent = 'Reset';
     codeEls.html.value = STARTER.html; codeEls.css.value = STARTER.css; codeEls.js.value = STARTER.js;
     if (modeSel) modeSel.value = 'none'; relabelJs();
-    commitAll(true);   // push the starter into the model — one undo checkpoint + broadcast
+    commitAll(true);   // push the starter into the model - one undo checkpoint + broadcast
     idbSet('draft', null).catch(function () {});   // forget the saved pen; the persistent <head> stays
     bannerDismissed = false; updateDots(); selectTab('html'); run();
     openSessionId = null; openSessionName = ''; openSessionSig = null; updateSessBadge();
@@ -1412,7 +1412,7 @@
   // Layout toggle (side-by-side / stacked).
   $('[data-rwc-layout]').addEventListener('click', function () { body.classList.toggle('is-stack'); saveUi(); });
 
-  // Console collapse (peek — hides the log body, keeps the header strip).
+  // Console collapse (peek - hides the log body, keeps the header strip).
   var consoleHead = $('[data-rwc-console-toggle]');
   function toggleConsole() {
     var collapsed = consoleEl.classList.toggle('is-collapsed');
@@ -1424,7 +1424,7 @@
 
   // ── Collapsible panels + console visibility ─────────────────────────────────
   // Collapse the editor OR the preview to a slim rail so the other fills the space
-  // — collapse the editor + hide the console for a full-page preview. Mutually
+  // - collapse the editor + hide the console for a full-page preview. Mutually
   // exclusive (only one side collapses at a time). Delegated so the rails (added
   // to the DOM up front) and the header chevrons share one handler.
   var previewSection = $('.rwc-preview');
@@ -1450,7 +1450,7 @@
   });
 
   // Persist the layout prefs (collapse side, console visibility, stacked) on-device
-  // in the same IDB 'kv' store as the draft/head/sessions. Guarded — a blocked IDB
+  // in the same IDB 'kv' store as the draft/head/sessions. Guarded - a blocked IDB
   // just means the layout resets to the default on reload.
   function currentUi() {
     return {
@@ -1501,7 +1501,7 @@
   split.addEventListener('pointerup', endDrag);
   split.addEventListener('pointercancel', endDrag);
 
-  // Console height resize — drag the grip on the console's top border.
+  // Console height resize - drag the grip on the console's top border.
   var cgrip = $('[data-rwc-console-grip]');
   var previewEl = consoleEl.parentNode;
   var cDrag = false;
@@ -1516,7 +1516,7 @@
   cgrip.addEventListener('pointerup', cEnd);
   cgrip.addEventListener('pointercancel', cEnd);
 
-  // Fullscreen — the tool root becomes the fullscreen element.
+  // Fullscreen - the tool root becomes the fullscreen element.
   var fsBtn = $('[data-rwc-fullscreen]');
   function fsActive() { return (document.fullscreenElement || document.webkitFullscreenElement) === root; }
   fsBtn.addEventListener('click', function () {
@@ -1524,7 +1524,7 @@
       if (fsActive()) { (document.exitFullscreen || document.webkitExitFullscreen).call(document); }
       else if (root.requestFullscreen) { root.requestFullscreen(); }
       else if (root.webkitRequestFullscreen) { root.webkitRequestFullscreen(); }
-    } catch (e) { /* fullscreen may be blocked by policy — ignore */ }
+    } catch (e) { /* fullscreen may be blocked by policy - ignore */ }
   });
   function syncFs() { var on = fsActive(); fsBtn.classList.toggle('is-on', on); fsBtn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
   document.addEventListener('fullscreenchange', syncFs);
@@ -1535,7 +1535,7 @@
   // live preview fills the whole viewport. The mode lives in the URL as ?full so a
   // pen can be shared "running only"; ?edit (or no param) is the split view.
   // The shell reads ?full too ("collapse chrome to the bare preview"), which is
-  // inert for this sidebar-less tool — so reusing it just aligns the vocabulary.
+  // inert for this sidebar-less tool - so reusing it just aligns the vocabulary.
   var fpBtn = $('[data-rwc-fullpage]');
   var fpExit = $('[data-rwc-fullpage-exit]');
   // Does a URL (search OR hash query) carry ?full?
@@ -1549,7 +1549,7 @@
   }
   // Did we BOOT with ?full? Check the live location (covers SPA internal nav, and the
   // instant before the shell's boot syncUrl() cleans the bar) AND the ORIGINAL navigation
-  // URL from the Performance timeline — history.replaceState never mutates that, so a
+  // URL from the Performance timeline - history.replaceState never mutates that, so a
   // direct load / refresh / shared link to /t/<id>?full still reads true after the strip.
   function bootHadFull() {
     if (urlHasFull(location.href)) return true;
@@ -1568,7 +1568,7 @@
       var parts = []; sp.forEach(function (v, k) { parts.push(v ? k + '=' + encodeURIComponent(v) : k); });
       var q = parts.join('&');
       history.replaceState(null, '', location.pathname + (q ? '?' + q : ''));
-    } catch (e) { /* history may be restricted — the visual mode still applies */ }
+    } catch (e) { /* history may be restricted - the visual mode still applies */ }
   }
   function setFullPage(on, skipUrl) {
     root.classList.toggle('is-fullpage', on);
@@ -1583,14 +1583,14 @@
   });
   // Honour the deep link at boot. The tool IIFE runs BEFORE the shell's boot syncUrl()
   // strips unknown params, so enter the mode now, then re-assert ?full on the next
-  // frame so it survives that strip (nothing re-runs syncUrl afterwards — no inputs,
+  // frame so it survives that strip (nothing re-runs syncUrl afterwards - no inputs,
   // and the export panel that would is hidden in full-page).
   (function () {
     try {
       if (bootHadFull()) {
         setFullPage(true, true);
         // Re-assert ?full in the bar AFTER the boot syncUrl() cleaned it (rAF), and again
-        // shortly after in case a second boot paint re-runs syncUrl — guarded so it never
+        // shortly after in case a second boot paint re-runs syncUrl - guarded so it never
         // re-adds the flag once the user has exited. Nothing re-runs syncUrl in full-page
         // (no inputs; the export panel that would is hidden), so this settles.
         var reassert = function () { if (root.classList.contains('is-fullpage')) setUrlFull(true); };
@@ -1598,7 +1598,7 @@
         setTimeout(reassert, 400);
       }
       // ?edit (or nothing) → split view: the default, nothing to do.
-    } catch (e) { /* no URL access — default split view */ }
+    } catch (e) { /* no URL access - default split view */ }
   })();
 
   // Narrow container -> stack (independent of viewport media query).
@@ -1628,10 +1628,10 @@
   // The export walker rasterises the off-screen .rwc-shot mirror. Size it to the
   // CHOSEN export dimensions (the shell's width/height fields, which live in this
   // tool's own toolbar slot; default 1280×800) rather than the preview's content
-  // box — so the walker renders the node 1:1 and the preview FILLS the exported
+  // box - so the walker renders the node 1:1 and the preview FILLS the exported
   // image with no crop or letterbox, whatever size/aspect is picked. Matching the
   // ASPECT is what does it: the walker scales the node uniformly to the target, so
-  // equal aspects can't letterbox — and physical units (mm/pt) work too, since only
+  // equal aspects can't letterbox - and physical units (mm/pt) work too, since only
   // the ratio of the two numbers matters here, not their unit.
   function exportMirrorDims() {
     var wIn = document.querySelector('[data-action="export-width"]');
@@ -1685,7 +1685,7 @@
   // frame can't be resized. So before the shell captures the export mirror, briefly
   // resize the preview iframe to the export box: its own window.innerWidth becomes the
   // export width, so the pen's `resize` handler / CSS viewport units re-lay-out at the
-  // export size — then we re-snapshot (the canvas re-bakes at that size) and restore.
+  // export size - then we re-snapshot (the canvas re-bakes at that size) and restore.
   // This is what lets someone on a small screen export a large render of their code.
   // The export shutter is closed over this, so the resize isn't seen. Awaited, within
   // the 5s beforeExport budget; falls back to the last preview-size snapshot on timeout.
@@ -1720,12 +1720,12 @@
     });
   };
 
-  // ── First paint — seed the editor, prefer the synced model over on-device draft ─
-  // Precedence: (1) if the model already carries a pen — a shared link (?html=…), a
-  // session/in-process seed, or a collab doc — the MODEL wins; (2) else the on-device
+  // ── First paint - seed the editor, prefer the synced model over on-device draft ─
+  // Precedence: (1) if the model already carries a pen - a shared link (?html=…), a
+  // session/in-process seed, or a collab doc - the MODEL wins; (2) else the on-device
   // IndexedDB draft (the plain-reload persistence); (3) else the starter. The model is
   // now the source of truth; IDB is demoted to a cold-start mirror. After seeding, the
-  // editor state is pushed into the model (quietly — a boot restore must not broadcast
+  // editor state is pushed into the model (quietly - a boot restore must not broadcast
   // over a peer's doc) and the reconcile subscription is opened.
   (function bootstrap() {
     var done = false;
@@ -1736,7 +1736,7 @@
       if (hasModelChannel() && modelHasContent) {
         // A deliberate seed. syncUrl drops any scalar over 150 chars, so on a plain reload
         // of a LARGE pen the URL-rehydrated model is missing those panes; back-fill them
-        // from the local draft — but ONLY when the draft is the SAME pen (every pane the two
+        // from the local draft - but ONLY when the draft is the SAME pen (every pane the two
         // share agrees), never merging a stranger's shared link with your local work.
         var samePen = !!draft && PANES.every(function (p) { return !mv[p] || !d[p] || mv[p] === d[p]; });
         codeEls.html.value = mv.html || (samePen ? str(d.html) : '');
@@ -1760,7 +1760,7 @@
       relabelJs();
       clearConsole(); updateDots(); run();
       if (typeof hl !== 'undefined' && hl) hl.paintAll();
-      // Make the model match the seeded editor (quiet), THEN open the reconcile — which
+      // Make the model match the seeded editor (quiet), THEN open the reconcile - which
       // skips its immediate on-subscribe fire, so nothing re-asserts over the fresh seed.
       commitAll(false);
       startReconcile();
@@ -1858,7 +1858,7 @@
       codeEls.js.value = s.js || ''; codeEls.head.value = s.head || '';
       if (modeSel) modeSel.value = s.mode || 'none';
       relabelJs();
-      commitAll(true);   // push the loaded session into the model — undo checkpoint + broadcast
+      commitAll(true);   // push the loaded session into the model - undo checkpoint + broadcast
       openSessionId = s.id; openSessionName = s.name; openSessionSig = sessSig();
       // Keep the drawer open so the user can keep quick-switching; just re-render
       // the list so the "· open" marker moves to the freshly loaded session.
@@ -1901,7 +1901,7 @@
     else if (t.hasAttribute('data-rwc-sess-rename')) renameSession(t.getAttribute('data-rwc-sess-rename'));
     else if (t.hasAttribute('data-rwc-sess-delete')) deleteSession(t.getAttribute('data-rwc-sess-delete'));
   });
-  // The docked drawer stays open for quick-switching — no outside-click auto-close.
+  // The docked drawer stays open for quick-switching - no outside-click auto-close.
   // Esc and the × button close it.
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && sessPanel && !sessPanel.hidden) closeSessPanel(); });
   ['input', 'change'].forEach(function (ev) { root.addEventListener(ev, function () { if (openSessionId) updateSessBadge(); }); });

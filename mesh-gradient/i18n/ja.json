@@ -54,7 +54,7 @@
   "inputs.grainBlend.options.luminosity": "輝度(クラシック)",
   "inputs.animate.label": "ドリフト",
   "inputs.animate.section": "テクスチャ & モーション",
-  "inputs.animate.help": "カラーポイントがゆっくりとループしながら漂います — WebM/MP4として書き出せば、動くバックグラウンドになります。",
+  "inputs.animate.help": "カラーポイントがゆっくりとループしながら漂います - WebM/MP4として書き出せば、動くバックグラウンドになります。",
   "inputs.distance.label": "ドリフト距離",
   "inputs.distance.section": "テクスチャ & モーション",
   "inputs.distance.help": "カラーポイントが設定位置からどれだけ離れて漂うかを設定します。100%が既定の軌道サイズ、0%にすると固定されます。",

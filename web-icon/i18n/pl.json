@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Pogrubiona",
   "inputs.weight.options.600": "Półgruba",
   "inputs.tracking.label": "Odstępy między literami",
-  "inputs.tracking.help": "Wartości ujemne zbliżają litery do siebie — niezbędne, by zmieścić 3–4 wielkie znaki monospace w kafelku 16 px. Mono jest szeroki, więc przesuń wartość znacznie w kierunku ujemnym.",
+  "inputs.tracking.help": "Wartości ujemne zbliżają litery do siebie - niezbędne, by zmieścić 3–4 wielkie znaki monospace w kafelku 16 px. Mono jest szeroki, więc przesuń wartość znacznie w kierunku ujemnym.",
   "inputs.labelScale.label": "Rozmiar etykiety",
   "inputs.labelScale.help": "Dostosuj rozmiar automatycznie dopasowanej etykiety w górę lub w dół (procenty).",
   "inputs.showGrid.label": "Podgląd 16 px",
-  "inputs.showGrid.help": "Pokaż ikonę w rzeczywistych rozmiarach favicon 16 i 32 px na canvasie, aby ocenić czytelność. Tylko pomoc edytora — nigdy nie jest uwzględniana w eksportach."
+  "inputs.showGrid.help": "Pokaż ikonę w rzeczywistych rozmiarach favicon 16 i 32 px na canvasie, aby ocenić czytelność. Tylko pomoc edytora - nigdy nie jest uwzględniana w eksportach."
 }

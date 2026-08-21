@@ -15,7 +15,7 @@
  * into palette-exchange files (engine >= 1.108): CSS variables/classes
  * (template.css), SCSS (template.scss), a GIMP palette (template.gpl) and a
  * binary Adobe .ase (via the exportStill hook). Parity with the catalog view's
- * Swatches download — all six formats from one seed. Older shells (no
+ * Swatches download - all six formats from one seed. Older shells (no
  * host.color.paletteExport) degrade to empty CSS/SCSS/GPL and decline .ase.
  */
 
@@ -31,7 +31,7 @@ var RAMP_X = 480;
 var RAMP_W = W - M - RAMP_X; // ramp strip ends on the right margin
 var CELL_GAP = 8;
 
-// Harmony table — ids/labels mirror the engine's SCHEME_KINDS (brand-schemes.ts);
+// Harmony table - ids/labels mirror the engine's SCHEME_KINDS (brand-schemes.ts);
 // the rotations are only the pre-1.60 fallback path, host.color.schemes() wins.
 var SCHEMES = {
   complement: { label: 'Complementary', rot: [180] },
@@ -43,7 +43,7 @@ var SCHEMES = {
   'free-4': { label: 'Free (4)', rot: [90, 180, 270] },
 };
 
-// Contrast-mode curves — each is a [lowLc, highLc] span that gets sampled to one
+// Contrast-mode curves - each is a [lowLc, highLc] span that gets sampled to one
 // target APCA Lc per ramp step (dark end … light end). 'even' spreads the whole
 // legibility range; 'text' keeps every step body-readable; 'ui' stays in the
 // non-text/large-text band for borders, fills and disabled states.
@@ -61,7 +61,7 @@ function _r1(n) { return Math.round(n * 10) / 10; }
 function _parseLc(s) {
   if (s == null) return [];
   // Trim + drop EMPTY entries before Number(): '' would coerce to 0, so a blank
-  // lcTargets (the default) must yield [] here — not [0] — or it would zero every
+  // lcTargets (the default) must yield [] here - not [0] - or it would zero every
   // target and shadow the contrastCurve preset. Also drops empties in '15,,45'.
   return String(s).split(',')
     .map(function (x) { return String(x).trim(); })
@@ -102,7 +102,7 @@ function _targets(curveKey, steps, custom) {
   return out;
 }
 
-// Colour values can arrive via URL params and land raw inside SVG attributes —
+// Colour values can arrive via URL params and land raw inside SVG attributes -
 // accept only a real hex form (an unresolved token alias flattens to '').
 function _hex(v, fb) {
   v = (v == null ? '' : String(v)).trim().toLowerCase();
@@ -118,7 +118,7 @@ function _toHex(r, g, b) {
   var s = function (v) { v = _clamp(Math.round(v), 0, 255).toString(16); return v.length === 1 ? '0' + v : v; };
   return '#' + s(r) + s(g) + s(b);
 }
-// sRGB mix — only used to derive ramp ENDPOINTS (near-black / near-white
+// sRGB mix - only used to derive ramp ENDPOINTS (near-black / near-white
 // anchors around a colour); the perceptual interpolation between them is
 // host.color.ramp's job.
 function _mix(a, b, t) {
@@ -126,7 +126,7 @@ function _mix(a, b, t) {
   return _toHex(x[0] + (y[0] - x[0]) * t, x[1] + (y[1] - x[1]) * t, x[2] + (y[2] - x[2]) * t);
 }
 
-// ── local fallbacks (host.color absent — engines < 1.40 / schemes < 1.60) ────
+// ── local fallbacks (host.color absent - engines < 1.40 / schemes < 1.60) ────
 
 function _lum(hex) {
   var c = _rgb(hex).map(function (v) {
@@ -199,7 +199,7 @@ function _apca(text, bg) {
     var r = c.apca(text, bg);
     if (Number.isFinite(r)) return r;
   }
-  return null; // no local APCA — the badge just omits Lc on old shells
+  return null; // no local APCA - the badge just omits Lc on old shells
 }
 // Read a colour's OKLCH axes (engine >= 1.69). Null on older shells / bad input;
 // callers supply their own neutral fallback so Contrast mode still degrades.
@@ -212,7 +212,7 @@ function _oklch(hex) {
 }
 // Inverse APCA (engine >= 1.107): the tone of a given hue/chroma that reads at
 // `targetLc` on `bg`. Returns the solver result ({ hex, lc, target, reachable })
-// or null when the host can't solve — the caller then falls back to _ramp.
+// or null when the host can't solve - the caller then falls back to _ramp.
 function _solve(hue, chroma, targetLc, bg) {
   var c = _api();
   if (c && c.solveApca) {
@@ -246,7 +246,7 @@ function _level(ratio) {
 
 var _memoKey = null;
 var _memoResult = null;
-// The last computed flat swatch list, stashed for the exportStill hook — whose
+// The last computed flat swatch list, stashed for the exportStill hook - whose
 // ctx carries { node, format, opts, host } but NOT the input model, so it can't
 // recompute. onInit/onInput always run before any export, so this is current.
 var _lastSwatches = [];
@@ -254,7 +254,7 @@ var _lastSwatches = [];
 function compute(model) {
   var a = Object.fromEntries(model.map(function (i) { return [i.id, i.value]; }));
 
-  // Neutral mid-blue fallback seed — an unresolved {color.semantic.primary}
+  // Neutral mid-blue fallback seed - an unresolved {color.semantic.primary}
   // alias flattens to '' on brands without tokens.
   var seed = _hex(a.seed, '#2d6bd8');
   var kind = SCHEMES[a.harmony] ? a.harmony : 'triad-3';
@@ -262,7 +262,7 @@ function compute(model) {
   var withNeutrals = !(a.neutrals === false || a.neutrals === 'false' || a.neutrals === 0);
 
   // Contrast mode: solve every ramp step to a target APCA Lc against `bg`. Only
-  // taken when the host actually carries the inverse solver (engine >= 1.107) —
+  // taken when the host actually carries the inverse solver (engine >= 1.107) -
   // older shells fall back to the perceptual OKLab ramp. `bg` defaults to white
   // when its {color.semantic.surface} token doesn't resolve (neutral brands).
   var contrast = (a.mode === 'contrast') && Boolean(_api() && _api().solveApca);
@@ -427,7 +427,7 @@ function compute(model) {
     ? 'Seed ' + seed + ' · ' + SCHEMES[kind].label + ' · Contrast (APCA) on ' + bg + ' · ' + steps + '-step'
     : 'Seed ' + seed + ' · ' + SCHEMES[kind].label + ' · ' + steps + '-step ' + (perceptual ? 'OKLab ramps' : 'ramps');
   tokenColors.ramp = tokenRamps;
-  var tokensJson = JSON.stringify({ $description: 'Palette Lab — ' + subtitle, color: tokenColors }, null, 2);
+  var tokensJson = JSON.stringify({ $description: 'Palette Lab - ' + subtitle, color: tokenColors }, null, 2);
 
   // Palette-exchange files, from the flat swatch list via host.color (engine
   // >= 1.108). css-vars vs css-classes follows the cssStyle input. Feature-

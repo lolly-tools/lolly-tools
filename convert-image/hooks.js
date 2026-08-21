@@ -1,10 +1,10 @@
 /* global onInit, onInput, exportFile */
 /**
- * Convert Image — hooks.
+ * Convert Image - hooks.
  *
  * A transform utility (file in → converted file out). The decode/re-encode work
  * lives in the shell behind `host.images` (native codecs + a bundled HEIC WASM
- * decoder + a browser canvas) — the hook sandbox has no image library and no
+ * decoder + a browser canvas) - the hook sandbox has no image library and no
  * `import`, so it just orchestrates: read the picked image's bytes, ask the host
  * to convert them with the chosen settings, and hand the result to the download
  * flow. Where the shell has no `host.images` (older shells, the node CLI), the
@@ -14,7 +14,7 @@
  * and the actual download (exportFile): a one-entry promise cache keyed on the
  * file + settings means the work runs once and the download reuses it. The
  * preview is bounded by a short inner budget so a huge photo can't trip the
- * runtime's 2s onInput timeout — if it doesn't finish in time the card shows
+ * runtime's 2s onInput timeout - if it doesn't finish in time the card shows
  * "ready" and the full job still completes on download (10s budget).
  *
  * Settings (`format`, `quality`, `maxEdge`) are ordinary declared inputs, so
@@ -83,7 +83,7 @@ function optsOf(inputs) {
 }
 
 // File extension for the ACTUAL output mime (the shell may fall back, e.g. PNG
-// where WebP encoding is unsupported — the honest name follows the bytes).
+// where WebP encoding is unsupported - the honest name follows the bytes).
 function extOf(mime) {
   return mime === 'image/jpeg' ? 'jpg' : mime === 'image/png' ? 'png' : 'webp';
 }
@@ -153,7 +153,7 @@ async function compute(ctx) {
   var f = inputs.source;
 
   // The template reflects the `format`/`quality`/`maxEdge` controls from the
-  // input values directly, so we deliberately DON'T return those ids here — a
+  // input values directly, so we deliberately DON'T return those ids here - a
   // hook key matching an input id would write back to the model. Everything
   // below is display-only.
   var base = {
@@ -200,11 +200,11 @@ async function compute(ctx) {
   base.outMeta = mimeLabel(res.mime) + ' · ' + res.width + '×' + res.height + ' px';
   var delta = f.size - res.bytes.length;
   var pct = f.size > 0 ? Math.round((Math.abs(delta) / f.size) * 100) : 0;
-  // Honest either way — a lossless PNG of a photo is usually LARGER than the
+  // Honest either way - a lossless PNG of a photo is usually LARGER than the
   // JPEG/HEIC it came from, and that's worth saying plainly.
   if (delta > 0 && pct >= 1) {
     base.saved = true;
-    base.deltaText = pct + '% smaller — ' + fmtBytes(delta) + ' saved';
+    base.deltaText = pct + '% smaller - ' + fmtBytes(delta) + ' saved';
   } else if (delta < 0 && pct >= 1) {
     base.grew = true;
     base.deltaText = pct + '% larger than the original';

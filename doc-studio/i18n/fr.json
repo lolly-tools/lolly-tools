@@ -1,7 +1,7 @@
 {
   "name": "Studio de Documents",
   "description": "Rédigez un document multi-pages sur le canevas - texte enrichi, titres, tableaux et rendus Lolly insérés qui s'écoulent sur les pages et s'exportent en PDF.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — document multipage",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - document multipage",
   "inputs.pageSize.label": "Format de page",
   "inputs.pageSize.help": "Définit le format de chaque page et le format de page du PDF exporté.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 colonnes",
   "inputs.columns.options.3": "3 colonnes",
   "inputs.content.label": "Document",
-  "inputs.content.help": "Le document lui-même — stocké en texte enrichi portable (JSON ProseMirror). Rédigé sur le canevas avec l'éditeur Doc Studio ; le moteur transforme ce JSON en pages pour l'export. Vide, il revient à un document de départ.",
+  "inputs.content.help": "Le document lui-même - stocké en texte enrichi portable (JSON ProseMirror). Rédigé sur le canevas avec l'éditeur Doc Studio ; le moteur transforme ce JSON en pages pour l'export. Vide, il revient à un document de départ.",
   "inputs.width.label": "Largeur de page",
   "inputs.height.label": "Hauteur de page"
 }

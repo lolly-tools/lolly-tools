@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Negrito",
   "inputs.weight.options.600": "Seminegrito",
   "inputs.tracking.label": "Espaçamento entre letras",
-  "inputs.tracking.help": "Valores negativos aproximam as letras — essencial para encaixar 3–4 maiúsculas monoespaçadas em um bloco de 16 px. A Mono é larga, então leve bem para os negativos.",
+  "inputs.tracking.help": "Valores negativos aproximam as letras - essencial para encaixar 3–4 maiúsculas monoespaçadas em um bloco de 16 px. A Mono é larga, então leve bem para os negativos.",
   "inputs.labelScale.label": "Tamanho do rótulo",
   "inputs.labelScale.help": "Ajusta para mais ou para menos o tamanho auto-ajustado do rótulo (em porcentagem).",
   "inputs.showGrid.label": "Pré-visualização de 16 px",
-  "inputs.showGrid.help": "Mostra o ícone em seus tamanhos reais de favicon (16 e 32 px) na tela para você avaliar a legibilidade. É apenas um auxílio do editor — nunca é incluído nas exportações."
+  "inputs.showGrid.help": "Mostra o ícone em seus tamanhos reais de favicon (16 e 32 px) na tela para você avaliar a legibilidade. É apenas um auxílio do editor - nunca é incluído nas exportações."
 }

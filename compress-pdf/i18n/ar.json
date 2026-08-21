@@ -6,9 +6,9 @@
   "inputs.source.help": "ملف PDF. يقرأ في متصفحك ولا يغادر جهازك أبدا.",
   "inputs.level.label": "الضغط",
   "inputs.level.help": "مدى قوة ضغط الصور المضمنة. الأقوى يعني ملفات أصغر وصورا أنعم.",
-  "inputs.level.options.light": "خفيف — حافظ على جودة عالية",
+  "inputs.level.options.light": "خفيف - حافظ على جودة عالية",
   "inputs.level.options.balanced": "متوازن",
-  "inputs.level.options.strong": "قوي — أصغر ملف",
+  "inputs.level.options.strong": "قوي - أصغر ملف",
   "inputs.grayscale.label": "تحويل الصور إلى تدرج رمادي",
-  "inputs.grayscale.help": "أزل الألوان من الصور لتوفير إضافي — مفيد للمستندات النصية الممسوحة ضوئيا."
+  "inputs.grayscale.help": "أزل الألوان من الصور لتوفير إضافي - مفيد للمستندات النصية الممسوحة ضوئيا."
 }

@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "3회 재생",
   "inputs.loop.options.once": "한 번 재생",
   "inputs.scenes.label": "씬",
-  "inputs.scenes.help": "각 씬은 시퀀스의 한 구간이에요 — 이전 씬 위로 애니메이션되며, 각자 고유한 Lottie 애니메이션이 그 위에서 반복 재생돼요. 마지막 씬은 정지 상태의 엔드 카드예요.",
+  "inputs.scenes.help": "각 씬은 시퀀스의 한 구간이에요 - 이전 씬 위로 애니메이션되며, 각자 고유한 Lottie 애니메이션이 그 위에서 반복 재생돼요. 마지막 씬은 정지 상태의 엔드 카드예요.",
   "inputs.scenes.addMenu.label": "씬 추가",
   "inputs.scenes.fields.anim.label": "애니메이션",
   "inputs.scenes.fields.bgColor.label": "배경",

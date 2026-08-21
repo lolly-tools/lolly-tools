@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "粗体",
   "inputs.weight.options.600": "半粗体",
   "inputs.tracking.label": "字间距",
-  "inputs.tracking.help": "负值会让字母更紧凑——这对于在 16 px 图块中容纳 3-4 个等宽大写字母至关重要。Mono 字体较宽,需要把数值调得更负一些。",
+  "inputs.tracking.help": "负值会让字母更紧凑--这对于在 16 px 图块中容纳 3-4 个等宽大写字母至关重要。Mono 字体较宽,需要把数值调得更负一些。",
   "inputs.labelScale.label": "标签大小",
   "inputs.labelScale.help": "微调自动适配的标签大小(百分比)。",
   "inputs.showGrid.label": "16 px 预览",
-  "inputs.showGrid.help": "在画布上以真实的 16 px 和 32 px favicon 尺寸显示图标,方便判断清晰度。仅为编辑辅助功能——不会包含在导出文件中。"
+  "inputs.showGrid.help": "在画布上以真实的 16 px 和 32 px favicon 尺寸显示图标,方便判断清晰度。仅为编辑辅助功能--不会包含在导出文件中。"
 }

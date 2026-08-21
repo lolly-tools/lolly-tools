@@ -7,9 +7,9 @@
   "inputs.scrollDepth.label": "Độ cuộn",
   "inputs.scrollDepth.help": "Cuộn trang xuống bao xa trước khi chụp. 0 = đầu trang, 1 = cuối trang.",
   "inputs.waitMs.label": "Thời gian chờ ổn định (ms)",
-  "inputs.waitMs.help": "Thời gian chờ sau khi tải trang (và sau khi cuộn) trước khi chụp — để font chữ, hình ảnh và hiệu ứng chuyển động kịp ổn định.",
+  "inputs.waitMs.help": "Thời gian chờ sau khi tải trang (và sau khi cuộn) trước khi chụp - để font chữ, hình ảnh và hiệu ứng chuyển động kịp ổn định.",
   "inputs.css.label": "CSS tùy chỉnh",
-  "inputs.css.help": "CSS được chèn vào trang trước khi chụp — ví dụ: ẩn banner cookie (.cookie-bar { display: none }) hoặc định kiểu lại các phần tử.",
+  "inputs.css.help": "CSS được chèn vào trang trước khi chụp - ví dụ: ẩn banner cookie (.cookie-bar { display: none }) hoặc định kiểu lại các phần tử.",
   "inputs.cropTop.label": "Cắt phía trên",
   "inputs.cropTop.help": "Cắt vào từ mép trên, theo tỷ lệ 0–0,9 của chiều cao. Chỉ áp dụng cho raster (png/jpg/svg).",
   "inputs.cropRight.label": "Cắt phía phải",
@@ -31,7 +31,7 @@
   "inputs.tintColor.label": "Màu nhuộm",
   "inputs.tintColor.help": "Màu mà trang được nhuộm vào khi Đổi màu là 'Nhuộm màu'.",
   "inputs.scrollTo.label": "Cuộn đến (video)",
-  "inputs.scrollTo.help": "Chỉ áp dụng khi xuất video: cuộn XUỐNG đến độ sâu này trong suốt đoạn clip — một lần cuộn trang từ 'Độ cuộn' đến đây. Đặt bằng 'Độ cuộn' để giữ hình tĩnh. Bị bỏ qua với các định dạng hình ảnh.",
+  "inputs.scrollTo.help": "Chỉ áp dụng khi xuất video: cuộn XUỐNG đến độ sâu này trong suốt đoạn clip - một lần cuộn trang từ 'Độ cuộn' đến đây. Đặt bằng 'Độ cuộn' để giữ hình tĩnh. Bị bỏ qua với các định dạng hình ảnh.",
   "inputs.zoom.label": "Thu phóng",
-  "inputs.zoom.help": "Mức thu phóng của trình duyệt — phóng to trang trước khi chụp (giống Ctrl/Cmd +), để ngay cả ảnh chụp bitmap cũng được phóng to và sắc nét thay vì bị nội suy. 1 = 100%."
+  "inputs.zoom.help": "Mức thu phóng của trình duyệt - phóng to trang trước khi chụp (giống Ctrl/Cmd +), để ngay cả ảnh chụp bitmap cũng được phóng to và sắc nét thay vì bị nội suy. 1 = 100%."
 }

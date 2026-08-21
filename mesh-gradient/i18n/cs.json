@@ -54,11 +54,11 @@
   "inputs.grainBlend.options.luminosity": "Světlost (klasická)",
   "inputs.animate.label": "Unášení",
   "inputs.animate.section": "Textura a pohyb",
-  "inputs.animate.help": "Pomalé, smyčkové unášení barevných bodů — exportuj jako WebM/MP4 pro živé pozadí.",
+  "inputs.animate.help": "Pomalé, smyčkové unášení barevných bodů - exportuj jako WebM/MP4 pro živé pozadí.",
   "inputs.distance.label": "Vzdálenost unášení",
   "inputs.distance.section": "Textura a pohyb",
   "inputs.distance.help": "Jak daleko se barevné body vzdálí od nastavené pozice. 100 % je výchozí velikost dráhy; 0 % je zafixuje na místě.",
   "inputs.speed.label": "Rychlost unášení",
   "inputs.speed.section": "Textura a pohyb",
-  "inputs.speed.help": "Sekundy na jednu smyčku unášení — vyšší hodnota znamená pomalejší pohyb. Export videa zachytí jednu smyčku, pokud to dovolí rozpočet snímků (dlouhé smyčky se zkrátí při 60 fps)."
+  "inputs.speed.help": "Sekundy na jednu smyčku unášení - vyšší hodnota znamená pomalejší pohyb. Export videa zachytí jednu smyčku, pokud to dovolí rozpočet snímků (dlouhé smyčky se zkrátí při 60 fps)."
 }

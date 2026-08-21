@@ -1,4 +1,4 @@
-/* Palette Lab — the sheet itself is a native <svg> coloured entirely from the
+/* Palette Lab - the sheet itself is a native <svg> coloured entirely from the
    seed, so the only styled DOM is the wrap and the data-export-hide DTCG
    panel. Brand-agnostic: --brand-* semantic vars with neutral fallbacks. */
 
@@ -23,7 +23,7 @@
   border-radius: 12px;
   background: var(--brand-surface, #fff);
   color: var(--brand-text, #17232b);
-  /* `--font-brand` (the brand's primary face), NOT `--brand-font-body` — that name is
+  /* `--font-brand` (the brand's primary face), NOT `--brand-font-body` - that name is
      defined nowhere, so this rendered in the system fallback regardless of brand. */
   font-family: var(--font-brand, ui-sans-serif, system-ui, sans-serif);
   font-size: 13px;

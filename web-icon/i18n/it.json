@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Grassetto",
   "inputs.weight.options.600": "Semigrassetto",
   "inputs.tracking.label": "Spaziatura lettere",
-  "inputs.tracking.help": "I valori negativi avvicinano le lettere tra loro — essenziale per far stare 3–4 maiuscole monospaziate in un riquadro di 16 px. Il Mono è largo, quindi spingi bene sui valori negativi.",
+  "inputs.tracking.help": "I valori negativi avvicinano le lettere tra loro - essenziale per far stare 3–4 maiuscole monospaziate in un riquadro di 16 px. Il Mono è largo, quindi spingi bene sui valori negativi.",
   "inputs.labelScale.label": "Dimensione etichetta",
   "inputs.labelScale.help": "Regola leggermente verso l'alto o verso il basso la dimensione dell'etichetta adattata automaticamente (percentuale).",
   "inputs.showGrid.label": "Anteprima 16 px",
-  "inputs.showGrid.help": "Mostra l'icona alle sue dimensioni reali di favicon, 16 e 32 px, sul canvas per valutarne la leggibilità. È solo un aiuto per l'editor — non viene mai incluso negli export."
+  "inputs.showGrid.help": "Mostra l'icona alle sue dimensioni reali di favicon, 16 e 32 px, sul canvas per valutarne la leggibilità. È solo un aiuto per l'editor - non viene mai incluso negli export."
 }

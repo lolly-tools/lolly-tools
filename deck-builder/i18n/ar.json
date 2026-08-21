@@ -295,5 +295,13 @@
   "inputs.footerText.help": "سطر تذييل صغير (حقوق النشر، السرية) أسفل كل شريحة، بين الشعار ورقم الشريحة.",
   "inputs.footerText.placeholder": "© 2026 شركتك · سرّي",
   "inputs.deck.fields.layout.options.bignum": "رقم كبير",
-  "inputs.deck.fields.layout.options.mainpoint": "فكرة رئيسية"
+  "inputs.deck.fields.layout.options.mainpoint": "فكرة رئيسية",
+  "inputs.deck.fields.text1.label": "نص الخانة 1",
+  "inputs.deck.fields.text1.help": "يملأ الخانة ببطاقة نصية عندما لا تكون هناك صورة أو أداة. عند تعيين الاثنين تُعرض الوسائط.",
+  "inputs.deck.fields.text2.label": "نص الخانة 2",
+  "inputs.deck.fields.text2.help": "يملأ الخانة ببطاقة نصية عندما لا تكون هناك صورة أو أداة. عند تعيين الاثنين تُعرض الوسائط.",
+  "inputs.deck.fields.text3.label": "نص الخانة 3",
+  "inputs.deck.fields.text3.help": "يملأ الخانة ببطاقة نصية عندما لا تكون هناك صورة أو أداة. عند تعيين الاثنين تُعرض الوسائط.",
+  "inputs.deck.fields.text4.label": "نص الخانة 4",
+  "inputs.deck.fields.text4.help": "يملأ الخانة ببطاقة نصية عندما لا تكون هناك صورة أو أداة. عند تعيين الاثنين تُعرض الوسائط."
 }

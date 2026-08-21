@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "3-mal abspielen",
   "inputs.loop.options.once": "Einmal abspielen",
   "inputs.scenes.label": "Szenen",
-  "inputs.scenes.help": "Jede Szene ist ein Abschnitt der Abfolge – sie wird über der vorherigen eingeblendet, mit einer eigenen, darüber liegenden Lottie-Animation in Dauerschleife. Die letzte Szene ist die ruhende Abschlusskarte.",
+  "inputs.scenes.help": "Jede Szene ist ein Abschnitt der Abfolge - sie wird über der vorherigen eingeblendet, mit einer eigenen, darüber liegenden Lottie-Animation in Dauerschleife. Die letzte Szene ist die ruhende Abschlusskarte.",
   "inputs.scenes.addMenu.label": "Szene hinzufügen",
   "inputs.scenes.fields.anim.label": "Animation",
   "inputs.scenes.fields.bgColor.label": "Hintergrund",

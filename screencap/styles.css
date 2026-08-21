@@ -1,6 +1,6 @@
 .sc-window {
   position: relative;
-  overflow: hidden;          /* THE crop — a clip, never a scale */
+  overflow: hidden;          /* THE crop - a clip, never a scale */
   width: 100%;
   height: 100%;
   background: var(--brand-surface, #f4f4f5);
@@ -25,7 +25,7 @@
   text-align: center;
   padding: 1rem;
   color: var(--brand-muted, #6b7280);
-  /* `--font-brand` (the brand's primary face), NOT `--brand-font-body` — that name is
+  /* `--font-brand` (the brand's primary face), NOT `--brand-font-body` - that name is
      defined nowhere, so this rendered in the system fallback regardless of brand. */
   font-family: var(--font-brand, ui-sans-serif, system-ui, sans-serif);
 }
@@ -37,7 +37,7 @@
 
 /* The empty state adapts to whether screen capture is actually usable. The shell
    control adds .has-record to #tool-stage ONLY when it mounts (getDisplayMedia is
-   present in a secure context) — where it doesn't, the Screenshot/Record buttons never
+   present in a secure context) - where it doesn't, the Screenshot/Record buttons never
    appear, so pointing at them would be a lie. Default to the upload instruction; show
    the capture instruction only under the class. The class lives on the stage (outside
    #tool-content), so it survives the per-paint template rebuild. */

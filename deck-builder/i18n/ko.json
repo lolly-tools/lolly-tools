@@ -295,5 +295,13 @@
   "inputs.footerText.help": "각 슬라이드 하단, 로고와 슬라이드 번호 사이에 들어가는 작은 바닥글 한 줄(저작권, 기밀 표시).",
   "inputs.footerText.placeholder": "© 2026 귀사 · 대외비",
   "inputs.deck.fields.layout.options.bignum": "큰 숫자",
-  "inputs.deck.fields.layout.options.mainpoint": "핵심 메시지"
+  "inputs.deck.fields.layout.options.mainpoint": "핵심 메시지",
+  "inputs.deck.fields.text1.label": "슬롯 1 텍스트",
+  "inputs.deck.fields.text1.help": "이미지나 도구가 없을 때 슬롯을 텍스트 카드로 채웁니다. 둘 다 있으면 미디어가 우선합니다.",
+  "inputs.deck.fields.text2.label": "슬롯 2 텍스트",
+  "inputs.deck.fields.text2.help": "이미지나 도구가 없을 때 슬롯을 텍스트 카드로 채웁니다. 둘 다 있으면 미디어가 우선합니다.",
+  "inputs.deck.fields.text3.label": "슬롯 3 텍스트",
+  "inputs.deck.fields.text3.help": "이미지나 도구가 없을 때 슬롯을 텍스트 카드로 채웁니다. 둘 다 있으면 미디어가 우선합니다.",
+  "inputs.deck.fields.text4.label": "슬롯 4 텍스트",
+  "inputs.deck.fields.text4.help": "이미지나 도구가 없을 때 슬롯을 텍스트 카드로 채웁니다. 둘 다 있으면 미디어가 우선합니다."
 }

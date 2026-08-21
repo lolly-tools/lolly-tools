@@ -1,13 +1,13 @@
-// Embed, Imprint & Track — hooks.js
+// Embed, Imprint & Track - hooks.js
 //
 // A transform tool (file in → stamped file out) for ANY media the artist already
 // has: images, PDF, video, audio. For each dropped file it:
 //   1. reads every C2PA manifest already inside it (its own + nested) so nothing is
-//      orphaned — host.c2pa.readIngredients,
+//      orphaned - host.c2pa.readIngredients,
 //   2. (raster only) layers the durable pixel Imprint, plus the imperceptible neural
-//      mark when asked — host.export.imprint,
+//      mark when asked - host.export.imprint,
 //   3. signs a fresh manifest asserting the artist's author / copyright / licence,
-//      carrying the read manifests forward as ingredients — host.c2pa.sign.
+//      carrying the read manifests forward as ingredients - host.c2pa.sign.
 // Nothing is uploaded; everything happens on the device. onInput builds the canvas
 // summary; exportFile does the work and returns one record per file (the shell zips
 // a batch).
@@ -76,7 +76,7 @@ function onInput(ctx) {
     // NB: this key is `fileList`, NOT `files`. A hook return key that matches a
     // declared input id OVERWRITES that input's value (hook-patch semantics); the
     // file input's id here IS `files`, so returning `files` replaced the real
-    // InputFile[] (with bytes) with this bytes-less summary — exportFile then read
+    // InputFile[] (with bytes) with this bytes-less summary - exportFile then read
     // empty bytes and produced a 0-byte download. `fileList` lands in `extras`
     // instead, leaving the `files` input value (the real bytes) untouched.
     fileList: list,
@@ -118,7 +118,7 @@ async function exportFile(ctx) {
     var bytes = (f.bytes instanceof Uint8Array) ? f.bytes : new Uint8Array(f.bytes || []);
     var fk = _formatKey(f.mime, f.name);
     var name = f.name || 'file';
-    // A format Lolly can't credential — hand it back untouched rather than drop it.
+    // A format Lolly can't credential - hand it back untouched rather than drop it.
     if (!fk) {
       out.push({ bytes: bytes, mime: f.mime || 'application/octet-stream', filename: name });
       continue;
@@ -145,7 +145,7 @@ async function exportFile(ctx) {
       var signed = await host.c2pa.sign(stamped, fk.key, opts);
       out.push({ bytes: signed, mime: fk.mime, filename: name });
     } catch (err) {
-      if (host.log) host.log('warn', 'Could not stamp "' + name + '" — ' + ((err && err.message) || err) + '; delivering it unchanged.');
+      if (host.log) host.log('warn', 'Could not stamp "' + name + '" - ' + ((err && err.message) || err) + '; delivering it unchanged.');
       out.push({ bytes: bytes, mime: f.mime || fk.mime, filename: name });
     }
   }

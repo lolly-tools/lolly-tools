@@ -1,5 +1,5 @@
 /**
- * Bitmap Studio — hooks.
+ * Bitmap Studio - hooks.
  *
  * A professional photo-grading darkroom in one deterministic canvas pipeline:
  *
@@ -9,7 +9,7 @@
  * film-look preset → third-party LUT → brand treatment) is never run per pixel
  * directly. Instead it is baked into a single 3D lookup table (33³ by default)
  * by evaluating the full stack over an identity grid, and that table is applied
- * to the pixels with tetrahedral interpolation — the same architecture a
+ * to the pixels with tetrahedral interpolation - the same architecture a
  * grading suite uses. Two payoffs: applying N stacked adjustments costs the
  * same as applying one, and the "Download look as .cube" bake IS the very
  * table the preview used, so what a user sees on canvas is byte-for-byte what
@@ -20,28 +20,28 @@
  * blue-fastest) are parsed from the `lutFile` file input entirely on-device.
  *
  * Film-look presets are ORIGINAL, procedural recipes (channel curves + split
- * tones + saturation moves defined as data below) — inspired by classic
+ * tones + saturation moves defined as data below) - inspired by classic
  * stocks but sampled from nothing, so they are licence-clean.
  *
  * Brand treatments (duotone / gradient map / split tone / wash) seed their
  * colours from host.tokens (the brand's DTCG palette): darkest swatch for
- * shadows, most chromatic for mids, lightest for highlights — each
+ * shadows, most chromatic for mids, lightest for highlights - each
  * overridable by a colour input. Mapping runs in OKLab so ramps stay
  * perceptually smooth (same maths as engine/src/brand-derive.ts; tools can't
  * import from the engine, so the matrices live here).
  *
  * The TEXTURE pass (sharpen, chromatic aberration, bloom, halation, grain,
- * dust & scratches, vignette) is spatial — it can't live in a LUT — and runs
+ * dust & scratches, vignette) is spatial - it can't live in a LUT - and runs
  * after colour, seeded by a mulberry32 PRNG so the same seed always renders
  * the same frame. Pixel work needs a real <canvas>; in a headless shell the
  * still path degrades to a note. The .cube BAKE itself is pure maths (no
  * canvas), but its delivery rides host.export.file, which the CLI bridge
- * deliberately stubs out — so baking is a web/Tauri affordance and a headless
+ * deliberately stubs out - so baking is a web/Tauri affordance and a headless
  * bake logs a clear warning instead of failing silently.
  *
- * The pipeline LUT is also PUBLISHED continuously as the `videoLook` extra — a
+ * The pipeline LUT is also PUBLISHED continuously as the `videoLook` extra - a
  * small JSON envelope carrying the preview's own 33³ table as .cube text, plus
- * an `on` flag saying whether the pipeline is anything but an identity — so a
+ * an `on` flag saying whether the pipeline is anything but an identity - so a
  * shell can hand this exact grade to something the tool never sees, notably
  * applying the look to a video clip frame by frame. It serialises the table the
  * still is graded through rather than baking a second one, so publishing costs
@@ -54,17 +54,17 @@
 
 /* global onInit, onInput, onFrame, host */
 
-var STILL_MAX = 1440; // working-canvas long edge for stills — snappy on slider drag
+var STILL_MAX = 1440; // working-canvas long edge for stills - snappy on slider drag
 var LIVE_MAX = 900;   // live camera frames trade a little size for frame rate
 var MAX_EDGE = 8000;
 var LUT_N = 33;       // grid size of the internal pipeline LUT (also the bake default)
 // Untrusted-input bounds (the lutFile bytes are user-supplied; fuzzed by
-// tests/fuzz — target 'lut-parse'). A grid of N costs N³ float triples, so the
+// tests/fuzz - target 'lut-parse'). A grid of N costs N³ float triples, so the
 // cap is what bounds parse memory: 129³·3 floats ≈ 25 MB, the practical
 // ceiling shipping .cube files use; .3dl grids top out at 64+1 in the wild.
 var CUBE_MAX_N = 129;
 var TDL_MAX_N = 65;
-// The shipped open preset LUTs — see assets/luts/NOTICE.md. The film-emulation
+// The shipped open preset LUTs - see assets/luts/NOTICE.md. The film-emulation
 // looks are CC0; suse7-slog3-heavy is CC BY 4.0 (© SUSE, by Peter Chamalian). Keys
 // are the served .cube basenames; this doubles as the whitelist for the untrusted
 // lutPreset select value (never interpolate an unvalidated id into the URL).
@@ -97,17 +97,17 @@ var _videoLookKey = null;                                   // colour identity o
 
 function inputsFrom(model) { var o = {}; model.forEach(function (i) { o[i.id] = i.value; }); return o; }
 function n(v, d) { var x = Number(v); return isFinite(x) ? x : d; }
-// === lolly:shared clamp — generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+// === lolly:shared clamp - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
 function clamp(v, a, b) { return v < a ? a : (v > b ? b : v); }
 // === /lolly:shared clamp ===
-// === lolly:shared canRaster — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+// === lolly:shared canRaster - generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function canRaster() {
   return !!(host.raster && host.raster.canRaster());
 }
 // === /lolly:shared canRaster ===
-// crossOrigin so the canvas isn't tainted — a tainted canvas makes both
+// crossOrigin so the canvas isn't tainted - a tainted canvas makes both
 // toDataURL (preview) and the export's canvas read throw.
-// === lolly:shared loadImage — generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
+// === lolly:shared loadImage - generated from community/_shared/raster.js; edit there and run npm run sync:shared ===
 function loadImage(url) {
   if (!host.raster) return Promise.reject(new Error('no raster'));
   return host.raster.decode(url);
@@ -122,7 +122,7 @@ function getImage(url) {
   return promise;
 }
 
-// ── Layered mode (plan 106 — the Layers fold) ────────────────────────────────
+// ── Layered mode (plan 106 - the Layers fold) ────────────────────────────────
 // A non-empty `layers` stack replaces the single image: the visible rows are
 // composited bottom-to-top at the document size, and the composite feeds the
 // grade pipeline like any other source. The stored blend values are CSS
@@ -183,7 +183,7 @@ function composeLayerStack(rows, W, H) {
       ctx.globalAlpha = clamp(n(r.o, 100), 0, 100) / 100;
       ctx.globalCompositeOperation = r.b || 'source-over';
       try { ctx.drawImage(img, Math.round(n(r.x, 0)), Math.round(n(r.y, 0))); drew = true; }
-      catch (e) { /* undecodable layer — skip */ }
+      catch (e) { /* undecodable layer - skip */ }
     }
     ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
     if (!drew) return null;
@@ -193,7 +193,7 @@ function composeLayerStack(rows, W, H) {
   });
 }
 
-// Deterministic PRNG — drives grain and dust so a seed always reproduces.
+// Deterministic PRNG - drives grain and dust so a seed always reproduces.
 function mulberry32(a) {
   return function () {
     a |= 0; a = (a + 0x6D2B79F5) | 0;
@@ -242,7 +242,7 @@ function hexToRgb01(hex) {
 }
 
 // OKLab (Björn Ottosson's reference matrices, ported like the sibling filter
-// tools do — tools never import from the engine).
+// tools do - tools never import from the engine).
 function rgb01ToOklab(r, g, b) {
   r = srgbToLinear(r); g = srgbToLinear(g); b = srgbToLinear(b);
   var l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
@@ -269,7 +269,7 @@ var LUM_R = 0.2126, LUM_G = 0.7152, LUM_B = 0.0722; // Rec.709 luma
 
 // ── HSL colour mixer (Lightroom-style per-hue-band Hue/Saturation/Luminance) ──
 // Eight named bands like the classic HSL panel. The weighting below is a smooth
-// partition of unity, so ANY centre set works — these uneven perceptual centres
+// partition of unity, so ANY centre set works - these uneven perceptual centres
 // or an evenly-spaced set (the door left open for a future "number of stops"
 // control). The order here is the manifest's band order and the swatch order the
 // injected sidebar CSS paints (template.html).
@@ -320,7 +320,7 @@ function hslBandWeights(H, centres) {
       return w;
     }
   }
-  return w; // segments cover the whole ring — unreached in practice
+  return w; // segments cover the whole ring - unreached in practice
 }
 
 // Monotone-cubic curve through control points [[x,y]…] (Fritsch–Carlson), the
@@ -385,7 +385,7 @@ var PRESETS = {
     sat: 1.08, mono: 0,
     split: { shadow: '#0e5e63', highlight: '#ff9b3d', amt: 0.28 },
   },
-  'bleach': { // bleach bypass: silver retained — desaturated, harsh
+  'bleach': { // bleach bypass: silver retained - desaturated, harsh
     l: [[0, 0], [0.25, 0.16], [0.5, 0.5], [0.75, 0.85], [1, 1]],
     r: ID, g: ID, b: ID,
     sat: 0.42, mono: 0,
@@ -484,7 +484,7 @@ function parseCube(text) {
 }
 
 // Autodesk .3dl: a mesh line of grid input levels, then size³ integer triples,
-// BLUE-fastest (red slowest — the opposite of .cube), on a 0..(2^depth − 1)
+// BLUE-fastest (red slowest - the opposite of .cube), on a 0..(2^depth − 1)
 // output scale detected from the data. Reordered here to red-fastest so one
 // sampler serves both formats.
 function parse3dl(text) {
@@ -543,7 +543,7 @@ function fetchText(url) {
 }
 
 // Load + parse a shipped preset .cube by id (whitelisted). Cached across renders;
-// one in-flight fetch is shared. A browser/Tauri affordance — a shell without
+// one in-flight fetch is shared. A browser/Tauri affordance - a shell without
 // fetch (headless CLI) rejects and the preset simply isn't applied, exactly like
 // the upload path needs a File. Returns a Promise<{ lut, error }>.
 function loadPresetLut(id) {
@@ -567,7 +567,7 @@ function loadPresetLut(id) {
 }
 
 // Deliver the raw shipped preset .cube to the user via the transform path
-// (host.export.file — never watermarked; the bytes are a public-domain LUT).
+// (host.export.file - never watermarked; the bytes are a public-domain LUT).
 function deliverPresetDownload(id) {
   if (_presetDlBusy || !PRESET_LUTS[id]) return Promise.resolve();
   _presetDlBusy = true;
@@ -578,11 +578,11 @@ function deliverPresetDownload(id) {
     if (host.export && host.export.download) return host.export.download(blob, name);
     return null;
   }).catch(function (e) {
-    if (host.log) host.log('warn', 'darkroom: preset LUT download needs a shell with export.file (web or desktop) — ' + String(e));
+    if (host.log) host.log('warn', 'darkroom: preset LUT download needs a shell with export.file (web or desktop) - ' + String(e));
   }).then(function () { _presetDlBusy = false; });
 }
 
-// Sample a parsed LUT at r,g,b (0..1). 3D uses tetrahedral interpolation —
+// Sample a parsed LUT at r,g,b (0..1). 3D uses tetrahedral interpolation -
 // the standard for grading (exact on the grid, best diagonal behaviour);
 // 1D interpolates each channel linearly. Returns [r,g,b].
 function sampleLut(lut, r, g, b) {
@@ -690,13 +690,13 @@ function paramsFrom(inputs) {
   if (lf && lf.bytes && lf.bytes.length) lutFileId = (lf.name || 'lut') + ':' + lf.size + ':' + fnvBytes(lf.bytes);
   var lutSource = ['none', 'preset', 'custom'].indexOf(inputs.lutSource) !== -1 ? inputs.lutSource : 'none';
   var lutPreset = PRESET_LUTS[inputs.lutPreset] ? inputs.lutPreset : 'slide-standard';
-  // One id for the active LUT — drives the pipeline-LUT cache + colour key,
+  // One id for the active LUT - drives the pipeline-LUT cache + colour key,
   // whichever source it comes from. null when no LUT is active.
   var lutId = lutSource === 'custom' ? lutFileId
     : lutSource === 'preset' ? 'preset:' + lutPreset
       : null;
   return {
-    // colour stages (baked into the pipeline LUT — also the .cube bake)
+    // colour stages (baked into the pipeline LUT - also the .cube bake)
     temperature: clamp(n(inputs.temperature, 0), -100, 100) / 100,
     tint: clamp(n(inputs.tint, 0), -100, 100) / 100,
     exposure: clamp(n(inputs.exposure, 0), -3, 3),
@@ -814,7 +814,7 @@ function makeColorFn(P, stops, userLut) {
       b = clamp(luma + (b - luma) * sat, 0, 1);
     }
 
-    // 3.5 HSL colour mixer — per-hue-band hue rotation, saturation and luminance.
+    // 3.5 HSL colour mixer - per-hue-band hue rotation, saturation and luminance.
     // Weighted across the bands the pixel's hue straddles and gated by its own
     // saturation, so near-greys (no meaningful hue) are left untouched.
     if (hslActive) {
@@ -941,7 +941,7 @@ function colorActive(P, userLut) {
 }
 
 // Apply the baked pipeline LUT to an ImageData in place (tetrahedral, inlined
-// flat math — this is the per-pixel hot loop).
+// flat math - this is the per-pixel hot loop).
 function applyPipelineLut(imageData, lut) {
   var d = imageData.data, tab = lut.data, N = lut.size, N1 = N - 1;
   for (var i = 0; i < d.length; i += 4) {
@@ -974,7 +974,7 @@ function f6(v) { return (Math.round(clamp(v, 0, 1) * 1e6) / 1e6).toFixed(6); }
 
 // Serialise an ALREADY-BUILT pipeline LUT as Adobe/IRIDAS .cube text.
 // Split out of bakeCubeText because the `videoLook` extra publishes the render's
-// own cached 33³ lattice rather than baking a second one — the two must agree
+// own cached 33³ lattice rather than baking a second one - the two must agree
 // down to the last digit, so they share this writer instead of each formatting
 // rows their own way.
 function cubeTextFromLut(lut, P) {
@@ -998,7 +998,7 @@ function bakeCubeText(P, stops, userLut, N) {
   return cubeTextFromLut(buildPipelineLut(P, stops, userLut, N), P);
 }
 
-// Deliver the baked .cube via the transform path (host.export.file — never
+// Deliver the baked .cube via the transform path (host.export.file - never
 // watermarked, no provenance; the bytes are the user's own look). The bake is
 // pure maths, but delivery needs a shell that implements export.file (web,
 // Tauri); the CLI's stub rejects, which lands in the catch below as a warning.
@@ -1017,13 +1017,13 @@ function deliverBake(P, stops, userLut) {
     else deliver = Promise.resolve();
   } catch (e) { deliver = Promise.resolve(); }
   return Promise.resolve(deliver).catch(function (e) {
-    if (host.log) host.log('warn', 'darkroom: LUT download needs a shell with export.file (web or desktop) — ' + String(e));
+    if (host.log) host.log('warn', 'darkroom: LUT download needs a shell with export.file (web or desktop) - ' + String(e));
   }).then(function () { _bakeBusy = false; });
 }
 
 // ── demo scene ───────────────────────────────────────────────────────────────
 
-// A deterministic, asset-free landscape drawn once at 1600² — full tonal range
+// A deterministic, asset-free landscape drawn once at 1600² - full tonal range
 // (bright sun → deep shadow), warm/cool hues and fine ridge detail, so every
 // preset, LUT and treatment has something honest to bite on.
 function makeDemoScene() {
@@ -1152,14 +1152,14 @@ function applyFringe(ctx, W, H, amt) {
   ctx.putImageData(img, 0, 0);
 }
 
-// Sharpen (unsharp mask), grain, dust and vignette — one combined ImageData
+// Sharpen (unsharp mask), grain, dust and vignette - one combined ImageData
 // pass where possible, canvas composites where cheaper.
 function applyTexture(out, P) {
   var W = out.width, H = out.height;
   var ctx = out.getContext('2d', { willReadFrequently: true });
   if (!ctx) return;
 
-  // Chromatic aberration first (a lens artefact — everything else sits on top).
+  // Chromatic aberration first (a lens artefact - everything else sits on top).
   if (P.fringe > 0) applyFringe(ctx, W, H, P.fringe);
 
   // Sharpen: out += (out − blur) · k
@@ -1178,7 +1178,7 @@ function applyTexture(out, P) {
           od[i + 2] += (od[i + 2] - bd[i + 2]) * k;
         }
         ctx.putImageData(oi, 0, 0);
-      } catch (e) { /* tainted — skip */ }
+      } catch (e) { /* tainted - skip */ }
     }
   }
 
@@ -1223,7 +1223,7 @@ function applyTexture(out, P) {
         }
         ctx.restore();
         ctx.globalAlpha = 1;
-      } catch (e) { /* tainted — skip */ }
+      } catch (e) { /* tainted - skip */ }
     }
   }
 
@@ -1233,7 +1233,7 @@ function applyTexture(out, P) {
       var gi = ctx.getImageData(0, 0, W, H);
       grainVignettePass(gi.data, W, H, P);
       ctx.putImageData(gi, 0, 0);
-    } catch (e) { /* tainted — skip */ }
+    } catch (e) { /* tainted - skip */ }
   }
 
   // Dust & scratches (shared with the float export path).
@@ -1347,11 +1347,11 @@ function drawDust(ctx, W, H, P) {
 // identical and the look matches), and are converted to linear light only at the
 // DeepFrame boundary. Deterministic PER SHELL: it renders at the full export W×H,
 // the noise is seeded, and the blur is the JS separable box (NEVER ctx.filter,
-// whose gaussian is platform-dependent) — so the same params + seed always yield
+// whose gaussian is platform-dependent) - so the same params + seed always yield
 // the same master on a given device. It is NOT byte-identical across shells: the
 // source draw (drawCover's ctx.drawImage resampling) and the dust layer (drawDust
 // rasterised on a canvas, then read back) still go through the platform canvas,
-// whose resampling/antialiasing differ — inherent, since this tool's pixels ARE a
+// whose resampling/antialiasing differ - inherent, since this tool's pixels ARE a
 // canvas artefact. So the canonical output is "a pure function of the params on
 // this device". The preview may differ further (accepted, per-device best effort);
 // the export is the canonical result.
@@ -1433,7 +1433,7 @@ function composeFloat(source, iw, ih, W, H, P, stops, userLut) {
   for (var i = 0; i < buf.length; i++) buf[i] = img.data[i];
 
   // Colour: a fine 65³ pipeline LUT (near-exact; negligible interp error) applied
-  // in float — this is where the deep bits are actually earned.
+  // in float - this is where the deep bits are actually earned.
   if (colorActive(P, userLut)) {
     var lut = buildPipelineLut(P, stops, userLut, 65);
     applyPipelineLutFloat(buf, lut);
@@ -1445,7 +1445,7 @@ function composeFloat(source, iw, ih, W, H, P, stops, userLut) {
 
 // Float port of the spatial texture pass (fringe → sharpen → bloom/halation →
 // grain/vignette → dust). Dust rides a canvas layer composited back (sparse
-// specks — 8-bit is imperceptible there and reuses the exact vector code).
+// specks - 8-bit is imperceptible there and reuses the exact vector code).
 function composeTextureFloat(buf, W, H, P) {
   // Chromatic aberration
   if (P.fringe > 0) {
@@ -1620,17 +1620,17 @@ function renderFrame(source, iw, ih, dims, P, stops, userLut) {
       var img = octx.getImageData(0, 0, dims.w, dims.h);
       applyPipelineLut(img, getPipelineLut(P, userLut));
       octx.putImageData(img, 0, 0);
-    } catch (e) { /* tainted canvas — leave uncoloured rather than blank */ }
+    } catch (e) { /* tainted canvas - leave uncoloured rather than blank */ }
   }
   if (textureActive(P)) applyTexture(out, P);
 
   // Hand the untouched framed source back on the canvas. The before/after split
   // is NOT baked into the bitmap any more: the still/live paths emit `framed` as
   // a separate "before" layer that the template composites in the SVG behind a
-  // drag/rotate-able divider (a screen-only overlay — see template.html). That
+  // drag/rotate-able divider (a screen-only overlay - see template.html). That
   // keeps `out` the full graded result (so the histogram and every non-split
   // export read the true grade) while the divider still rasterises "as shown".
-  try { out.__bsFramed = framed; } catch (e) { /* frozen canvas — split just skips */ }
+  try { out.__bsFramed = framed; } catch (e) { /* frozen canvas - split just skips */ }
   return out;
 }
 
@@ -1658,7 +1658,7 @@ async function compute(model) {
       + ' · ' + (lutRes.lut.kind === '1d' ? lutRes.lut.size + '-step 1D' : lutRes.lut.size + '³'))
     : null;
 
-  // The .cube bake is pure maths — it works even headless, and must run
+  // The .cube bake is pure maths - it works even headless, and must run
   // before the raster guard so the CLI can bake with --bakeLut=true.
   if (inputs.bakeLut) {
     await deliverBake(P, stops, lutRes.lut);
@@ -1671,14 +1671,14 @@ async function compute(model) {
 
   // The `videoLook` extra: the render's own colour pipeline, published rather
   // than downloaded. A shell reads it to apply THIS grade to something the tool
-  // itself never touches — the catalog's "Apply to video" runs the cube over a
-  // clip frame by frame — so the look travels as data instead of being
+  // itself never touches - the catalog's "Apply to video" runs the cube over a
+  // clip frame by frame - so the look travels as data instead of being
   // re-derived from the inputs by a second implementation that would drift. It
   // sits here, before the raster guard, for the bake's reason exactly: the maths
   // is canvas-free, so the CLI and any headless shell publish the look too.
   //
-  // It is the PREVIEW's lattice, taken from getPipelineLut — the same 33³ table
-  // the still is about to be graded through, cached under the same colour key —
+  // It is the PREVIEW's lattice, taken from getPipelineLut - the same 33³ table
+  // the still is about to be graded through, cached under the same colour key -
   // so what a shell replays over a clip is byte-for-byte what the user approved
   // on the canvas, and the marginal cost of publishing is the serialisation, not
   // a second bake. bakeSize is deliberately NOT part of this: that control is the
@@ -1693,11 +1693,11 @@ async function compute(model) {
   // already published stands untouched rather than being recomputed or cleared.
   // Every return below this point carries the local out, so a look change
   // followed by a failed image load cannot strand the extra at the old look (the
-  // key has already advanced — the retry would otherwise skip the bake).
+  // key has already advanced - the retry would otherwise skip the bake).
   //
   // `on` says whether the pipeline actually does anything. A neutral darkroom
   // still bakes a perfectly good identity cube, and a shell cannot tell that
-  // apart from a real grade by looking at the text — it would re-encode a clip
+  // apart from a real grade by looking at the text - it would re-encode a clip
   // through a table that changes nothing and stamp a colour-grade credential on
   // the result. So the answer travels with the look.
   var videoLook;
@@ -1780,13 +1780,13 @@ async function compute(model) {
   }
 
   // Stash everything the deep export needs to re-render at full resolution in
-  // float — exportStill's ctx carries no input model, so the last still render
+  // float - exportStill's ctx carries no input model, so the last still render
   // hands its resolved params/source forward (mirrors _memoResult's lifetime).
   _deepState = { P: P, source: source, iw: iw, ih: ih, stops: stops, userLut: lutRes.lut };
 
   var histSvg = P.histogram ? buildHistogramSvg(out) : '';
 
-  // "Before" layer for the split overlay — the framed source encoded losslessly,
+  // "Before" layer for the split overlay - the framed source encoded losslessly,
   // cached against the frame key so colour/texture drags don't re-encode it (only
   // a source/framing/size change does). Only produced while the split is on.
   var beforeSrc = null;
@@ -1817,18 +1817,18 @@ function onInit(ctx) { return compute(ctx.model); }
 function onInput(ctx) { return compute(ctx.model); }
 
 // Deep still export (engine 1.100 exportStill + host.codec): OWN the float
-// MASTER formats — OpenEXR and Radiance .hdr — by rendering the whole pipeline in
+// MASTER formats - OpenEXR and Radiance .hdr - by rendering the whole pipeline in
 // float at the full export size and encoding it directly, instead of letting the
 // shell rasterise the 8-bit preview DOM. These are the formats a grader actually
 // wants (DaVinci/Nuke read EXR), and neither carries a C2PA container, so
-// owning them costs no provenance. Decline (return null) for everything else —
-// including plain and 16-bit PNG — so those keep flowing through the shell's
+// owning them costs no provenance. Decline (return null) for everything else -
+// including plain and 16-bit PNG - so those keep flowing through the shell's
 // stamped raster path (a tool-owned PNG would silently shed the default-on
 // Content Credential; real-precision 16-bit PNG waits on a stamp-preserving
 // exportStill path). The float compose is DETERMINISTIC per shell: full-res,
 // seeded, and blurred with the JS box (never ctx.filter), so a given params+seed
 // always yields the same master on that device. It is NOT byte-identical across
-// shells — the source draw and the dust layer go through the platform canvas —
+// shells - the source draw and the dust layer go through the platform canvas -
 // and this tool's pixels are a browser-canvas artefact, so the CLI (no canvas)
 // declines here and the export is a web/desktop affordance.
 function exportStill(ctx) {
@@ -1932,14 +1932,14 @@ function layerPixels(ref) {
       var data = ctx.getImageData(0, 0, w, h).data;
       return { width: w, height: h, pixels: new Uint8Array(data.buffer.slice(0)) };
     } catch (e) {
-      return null; // tainted canvas or decode failure — skip this layer
+      return null; // tainted canvas or decode failure - skip this layer
     }
   });
 }
 
 /** Rebuild a layered Photoshop file from the rows via `host.layers.writePsd`
  *  (the engine's PSD writer behind a lazy bridge facade). Pixels come back from
- *  each row's stored asset — the import stored every layer as its own library
+ *  each row's stored asset - the import stored every layer as its own library
  *  PNG, so this is a decode of small per-layer images, not one giant buffer.
  *  Feature-detected: no host.layers, no button action. */
 async function exportFile(ctx) {
@@ -1956,7 +1956,7 @@ async function exportFile(ctx) {
   for (var i = 0; i < rows.length; i++) {
     var r = rows[i];
     var px = await layerPixels(r.img);
-    if (!px) continue; // no pixels, no PSD layer — the row stays a Lolly-side note
+    if (!px) continue; // no pixels, no PSD layer - the row stays a Lolly-side note
     layers.push({
       name: (r.n || r.g || 'Layer ' + (i + 1)) + '',
       x: Math.round(n(r.x, 0)),

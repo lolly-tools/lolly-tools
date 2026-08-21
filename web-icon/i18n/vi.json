@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Đậm",
   "inputs.weight.options.600": "Đậm vừa",
   "inputs.tracking.label": "Giãn cách chữ",
-  "inputs.tracking.help": "Giá trị âm sẽ kéo các chữ lại gần nhau hơn — điều cần thiết để vừa 3–4 chữ hoa đơn cách trong ô 16 px. Font Mono khá rộng, vì vậy hãy đẩy giá trị xuống âm sâu hơn.",
+  "inputs.tracking.help": "Giá trị âm sẽ kéo các chữ lại gần nhau hơn - điều cần thiết để vừa 3–4 chữ hoa đơn cách trong ô 16 px. Font Mono khá rộng, vì vậy hãy đẩy giá trị xuống âm sâu hơn.",
   "inputs.labelScale.label": "Kích thước nhãn",
   "inputs.labelScale.help": "Điều chỉnh tăng hoặc giảm kích thước nhãn đã tự động canh vừa (theo phần trăm).",
   "inputs.showGrid.label": "Xem trước 16 px",
-  "inputs.showGrid.help": "Hiển thị biểu tượng ở kích thước favicon thực tế 16 và 32 px trên khung vẽ để bạn đánh giá độ rõ nét. Đây chỉ là công cụ hỗ trợ trong trình chỉnh sửa — không bao giờ được đưa vào tệp xuất."
+  "inputs.showGrid.help": "Hiển thị biểu tượng ở kích thước favicon thực tế 16 và 32 px trên khung vẽ để bạn đánh giá độ rõ nét. Đây chỉ là công cụ hỗ trợ trong trình chỉnh sửa - không bao giờ được đưa vào tệp xuất."
 }

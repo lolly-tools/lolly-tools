@@ -1,7 +1,7 @@
 {
   "name": "Dokumentstudio",
   "description": "Skriv et flersides dokument på lerretet - rik tekst, overskrifter, tabeller og innsatte Lolly-gjengivelser som flyter over på sider og eksporteres som PDF.",
-  "a11yLabel": "{{default docTitle \"Untitled\"}} — flersidig dokument",
+  "a11yLabel": "{{default docTitle \"Untitled\"}} - flersidig dokument",
   "inputs.pageSize.label": "Sidestørrelse",
   "inputs.pageSize.help": "Angir størrelsen på hver side og sidestørrelsen på den eksporterte PDF-en.",
   "inputs.pageSize.options.a4": "A4 · 210 × 297 mm",
@@ -25,7 +25,7 @@
   "inputs.columns.options.2": "2 spalter",
   "inputs.columns.options.3": "3 spalter",
   "inputs.content.label": "Dokument",
-  "inputs.content.help": "Selve dokumentet — lagret som bærbar rik tekst (ProseMirror) i JSON. Skrevet på lerretet med Dokumentstudio-editoren; motoren gjengir denne JSON-en som sider ved eksport. Tomt faller tilbake til et startdokument.",
+  "inputs.content.help": "Selve dokumentet - lagret som bærbar rik tekst (ProseMirror) i JSON. Skrevet på lerretet med Dokumentstudio-editoren; motoren gjengir denne JSON-en som sider ved eksport. Tomt faller tilbake til et startdokument.",
   "inputs.width.label": "Sidebredde",
   "inputs.height.label": "Sidehøyde"
 }

@@ -295,5 +295,13 @@
   "inputs.footerText.help": "Uma pequena linha de rodapé (copyright, confidencialidade) na parte inferior de cada slide, entre o logo e o número do slide.",
   "inputs.footerText.placeholder": "© 2026 A sua empresa · Confidencial",
   "inputs.deck.fields.layout.options.bignum": "Número grande",
-  "inputs.deck.fields.layout.options.mainpoint": "Ponto principal"
+  "inputs.deck.fields.layout.options.mainpoint": "Ponto principal",
+  "inputs.deck.fields.text1.label": "Texto do espaço 1",
+  "inputs.deck.fields.text1.help": "Preenche o espaço com um cartão de texto quando não há imagem nem ferramenta. Se houver ambos, o media ganha.",
+  "inputs.deck.fields.text2.label": "Texto do espaço 2",
+  "inputs.deck.fields.text2.help": "Preenche o espaço com um cartão de texto quando não há imagem nem ferramenta. Se houver ambos, o media ganha.",
+  "inputs.deck.fields.text3.label": "Texto do espaço 3",
+  "inputs.deck.fields.text3.help": "Preenche o espaço com um cartão de texto quando não há imagem nem ferramenta. Se houver ambos, o media ganha.",
+  "inputs.deck.fields.text4.label": "Texto do espaço 4",
+  "inputs.deck.fields.text4.help": "Preenche o espaço com um cartão de texto quando não há imagem nem ferramenta. Se houver ambos, o media ganha."
 }

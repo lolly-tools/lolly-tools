@@ -48,7 +48,7 @@
   "inputs.loop.options.play3": "Phát 3 lần",
   "inputs.loop.options.once": "Phát một lần",
   "inputs.scenes.label": "Các cảnh",
-  "inputs.scenes.help": "Mỗi cảnh là một đoạn trong trình tự — nó chuyển động vào chồng lên cảnh trước, với hoạt ảnh Lottie riêng lặp lại bên trên. Cảnh cuối cùng là thẻ kết thúc đứng yên.",
+  "inputs.scenes.help": "Mỗi cảnh là một đoạn trong trình tự - nó chuyển động vào chồng lên cảnh trước, với hoạt ảnh Lottie riêng lặp lại bên trên. Cảnh cuối cùng là thẻ kết thúc đứng yên.",
   "inputs.scenes.addMenu.label": "Thêm cảnh",
   "inputs.scenes.fields.anim.label": "Hoạt ảnh",
   "inputs.scenes.fields.bgColor.label": "Nền",

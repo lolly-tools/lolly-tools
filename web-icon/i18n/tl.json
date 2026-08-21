@@ -23,9 +23,9 @@
   "inputs.weight.options.700": "Bold",
   "inputs.weight.options.600": "Semibold",
   "inputs.tracking.label": "Letter Spacing",
-  "inputs.tracking.help": "Ang negative values ay pinagsisiksik ang mga letra — kailangan ito para maka-fit ang 3–4 monospace caps sa isang 16 px tile. Malapad ang Mono, kaya itulak nang husto papunta sa negative.",
+  "inputs.tracking.help": "Ang negative values ay pinagsisiksik ang mga letra - kailangan ito para maka-fit ang 3–4 monospace caps sa isang 16 px tile. Malapad ang Mono, kaya itulak nang husto papunta sa negative.",
   "inputs.labelScale.label": "Laki ng Label",
   "inputs.labelScale.help": "I-adjust nang kaunti ang awtomatikong-fit na laki ng label, pataas o pababa (percent).",
   "inputs.showGrid.label": "16 px na Preview",
-  "inputs.showGrid.help": "Ipakita ang icon sa aktwal na 16 at 32 px na favicon sizes sa canvas para masuri mo ang linaw nito. Panuto lang ito sa editor — hindi kailanman kasama sa mga export."
+  "inputs.showGrid.help": "Ipakita ang icon sa aktwal na 16 at 32 px na favicon sizes sa canvas para masuri mo ang linaw nito. Panuto lang ito sa editor - hindi kailanman kasama sa mga export."
 }

@@ -295,5 +295,13 @@
   "inputs.footerText.help": "हर स्लाइड के नीचे, लोगो और स्लाइड नंबर के बीच एक छोटी फ़ुटर पंक्ति (कॉपीराइट, गोपनीयता)।",
   "inputs.footerText.placeholder": "© 2026 आपकी कंपनी · गोपनीय",
   "inputs.deck.fields.layout.options.bignum": "बड़ी संख्या",
-  "inputs.deck.fields.layout.options.mainpoint": "मुख्य बात"
+  "inputs.deck.fields.layout.options.mainpoint": "मुख्य बात",
+  "inputs.deck.fields.text1.label": "स्लॉट 1 टेक्स्ट",
+  "inputs.deck.fields.text1.help": "जब कोई छवि या टूल सेट न हो तो स्लॉट को टेक्स्ट कार्ड से भरता है। दोनों होने पर मीडिया दिखता है।",
+  "inputs.deck.fields.text2.label": "स्लॉट 2 टेक्स्ट",
+  "inputs.deck.fields.text2.help": "जब कोई छवि या टूल सेट न हो तो स्लॉट को टेक्स्ट कार्ड से भरता है। दोनों होने पर मीडिया दिखता है।",
+  "inputs.deck.fields.text3.label": "स्लॉट 3 टेक्स्ट",
+  "inputs.deck.fields.text3.help": "जब कोई छवि या टूल सेट न हो तो स्लॉट को टेक्स्ट कार्ड से भरता है। दोनों होने पर मीडिया दिखता है।",
+  "inputs.deck.fields.text4.label": "स्लॉट 4 टेक्स्ट",
+  "inputs.deck.fields.text4.help": "जब कोई छवि या टूल सेट न हो तो स्लॉट को टेक्स्ट कार्ड से भरता है। दोनों होने पर मीडिया दिखता है।"
 }
