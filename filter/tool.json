@@ -254,6 +254,7 @@
     {
       "id": "ht_gridSize",
       "label": "Grid size",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "default": 24,
@@ -268,6 +269,7 @@
     {
       "id": "ht_dotScale",
       "label": "Dot size",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "default": 1,
@@ -282,6 +284,7 @@
     {
       "id": "ht_shape",
       "label": "Dot shape",
+      "section": "Pattern",
       "type": "select",
       "default": "circle",
       "options": [
@@ -303,8 +306,53 @@
       }
     },
     {
+      "id": "ht_smoothing",
+      "label": "Smoothing",
+      "section": "Pattern",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 5,
+      "step": 0.5,
+      "help": "Softens the dot grid by blurring neighbouring cells. Tames noisy photos.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_dither",
+      "label": "Texture",
+      "section": "Pattern",
+      "type": "select",
+      "default": "none",
+      "options": [
+        {
+          "value": "none",
+          "label": "Smooth (none)"
+        },
+        {
+          "value": "floyd",
+          "label": "Diffused (Floyd–Steinberg)"
+        },
+        {
+          "value": "ordered",
+          "label": "Patterned (ordered)"
+        },
+        {
+          "value": "noise",
+          "label": "Grainy (noise)"
+        }
+      ],
+      "help": "Adds a newspaper-style 1-bit texture by snapping cells to full or empty dots.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
       "id": "ht_colorSource",
       "label": "Colour source",
+      "section": "Ink",
       "type": "select",
       "default": "image",
       "options": [
@@ -325,6 +373,7 @@
     {
       "id": "ht_colorLevels",
       "label": "Colour levels",
+      "section": "Ink",
       "type": "select",
       "default": "0",
       "showIf": {
@@ -362,6 +411,7 @@
     {
       "id": "ht_fgColor",
       "label": "Dot colour",
+      "section": "Ink",
       "type": "color",
       "default": "{color.semantic.text}",
       "showIf": {
@@ -373,6 +423,7 @@
     {
       "id": "ht_bgColor",
       "label": "Background",
+      "section": "Ink",
       "type": "color",
       "default": "{color.semantic.surface}",
       "help": "Fill behind the dots. Turn on “No BG” in the export options for a transparent background instead.",
@@ -383,6 +434,7 @@
     {
       "id": "ht_invert",
       "label": "Invert",
+      "section": "Ink",
       "type": "boolean",
       "default": false,
       "help": "Grow dots for the light areas instead of the dark - ideal for a light colour on a dark background.",
@@ -391,8 +443,38 @@
       }
     },
     {
+      "id": "ht_brightness",
+      "label": "Brightness",
+      "section": "Ink",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
+      "id": "ht_gamma",
+      "label": "Gamma",
+      "section": "Ink",
+      "type": "number",
+      "display": "slider",
+      "default": 1,
+      "min": 0.1,
+      "max": 3,
+      "step": 0.1,
+      "help": "Mid-tone weighting. Below 1 darkens mid-tones (denser dots); above 1 lightens them.",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
       "id": "ht_fit",
       "label": "Image fit",
+      "section": "Position",
       "type": "select",
       "default": "contain",
       "options": [
@@ -410,77 +492,9 @@
       }
     },
     {
-      "id": "ht_brightness",
-      "label": "Brightness",
-      "type": "number",
-      "display": "slider",
-      "default": 0,
-      "min": -100,
-      "max": 100,
-      "step": 1,
-      "showIf": {
-        "effect": "halftone"
-      }
-    },
-    {
-      "id": "ht_gamma",
-      "label": "Gamma",
-      "type": "number",
-      "display": "slider",
-      "default": 1,
-      "min": 0.1,
-      "max": 3,
-      "step": 0.1,
-      "help": "Mid-tone weighting. Below 1 darkens mid-tones (denser dots); above 1 lightens them.",
-      "showIf": {
-        "effect": "halftone"
-      }
-    },
-    {
-      "id": "ht_smoothing",
-      "label": "Smoothing",
-      "type": "number",
-      "display": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 5,
-      "step": 0.5,
-      "help": "Softens the dot grid by blurring neighbouring cells. Tames noisy photos.",
-      "showIf": {
-        "effect": "halftone"
-      }
-    },
-    {
-      "id": "ht_dither",
-      "label": "Texture",
-      "type": "select",
-      "default": "none",
-      "options": [
-        {
-          "value": "none",
-          "label": "Smooth (none)"
-        },
-        {
-          "value": "floyd",
-          "label": "Diffused (Floyd–Steinberg)"
-        },
-        {
-          "value": "ordered",
-          "label": "Patterned (ordered)"
-        },
-        {
-          "value": "noise",
-          "label": "Grainy (noise)"
-        }
-      ],
-      "help": "Adds a newspaper-style 1-bit texture by snapping cells to full or empty dots.",
-      "showIf": {
-        "effect": "halftone"
-      }
-    },
-    {
       "id": "sc_lineSize",
       "label": "Line height",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "default": 14,
@@ -495,6 +509,7 @@
     {
       "id": "sc_gapSize",
       "label": "Gap height",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "default": 12,
@@ -509,6 +524,7 @@
     {
       "id": "sc_separatePixels",
       "label": "Separate pixels",
+      "section": "Pattern",
       "type": "boolean",
       "default": false,
       "help": "Add a gap between cells too, so each one is a distinct square - an LED/pixel-matrix look instead of solid scanline bars.",
@@ -519,6 +535,7 @@
     {
       "id": "sc_everyLine",
       "label": "Fill every line",
+      "section": "Pattern",
       "type": "boolean",
       "default": false,
       "help": "Draw every line with no gaps - the same as setting the gap height to zero. Off = classic scanlines; on = a solid posterised image.",
@@ -527,8 +544,86 @@
       }
     },
     {
+      "id": "sc_highlight",
+      "label": "Highlight",
+      "section": "Ink",
+      "type": "color",
+      "default": "#ffffff",
+      "help": "Brightest tone.",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_light",
+      "label": "Light",
+      "section": "Ink",
+      "type": "color",
+      "default": "#bff1ea",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_mid",
+      "label": "Mid",
+      "section": "Ink",
+      "type": "color",
+      "default": "#008878",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_shade",
+      "label": "Shade",
+      "section": "Ink",
+      "type": "color",
+      "default": "#01564a",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_shadow",
+      "label": "Shadow",
+      "section": "Ink",
+      "type": "color",
+      "default": "#000000",
+      "help": "Darkest tone.",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_background",
+      "label": "Background",
+      "section": "Ink",
+      "type": "color",
+      "default": "",
+      "help": "Fills the blank lines and gaps. Leave empty for a transparent background (PNG/WebP/AVIF/SVG keep the transparency).",
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
+      "id": "sc_brightness",
+      "label": "Brightness",
+      "section": "Ink",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "showIf": {
+        "effect": "scanline"
+      }
+    },
+    {
       "id": "sc_fit",
       "label": "Image fit",
+      "section": "Position",
       "type": "select",
       "default": "cover",
       "options": [
@@ -546,78 +641,9 @@
       }
     },
     {
-      "id": "sc_highlight",
-      "label": "Highlight",
-      "type": "color",
-      "default": "#ffffff",
-      "help": "Brightest tone.",
-      "showIf": {
-        "effect": "scanline"
-      }
-    },
-    {
-      "id": "sc_light",
-      "label": "Light",
-      "type": "color",
-      "default": "#bff1ea",
-      "showIf": {
-        "effect": "scanline"
-      }
-    },
-    {
-      "id": "sc_mid",
-      "label": "Mid",
-      "type": "color",
-      "default": "#008878",
-      "showIf": {
-        "effect": "scanline"
-      }
-    },
-    {
-      "id": "sc_shade",
-      "label": "Shade",
-      "type": "color",
-      "default": "#01564a",
-      "showIf": {
-        "effect": "scanline"
-      }
-    },
-    {
-      "id": "sc_shadow",
-      "label": "Shadow",
-      "type": "color",
-      "default": "#000000",
-      "help": "Darkest tone.",
-      "showIf": {
-        "effect": "scanline"
-      }
-    },
-    {
-      "id": "sc_background",
-      "label": "Background",
-      "type": "color",
-      "default": "",
-      "help": "Fills the blank lines and gaps. Leave empty for a transparent background (PNG/WebP/AVIF/SVG keep the transparency).",
-      "showIf": {
-        "effect": "scanline"
-      }
-    },
-    {
-      "id": "sc_brightness",
-      "label": "Brightness",
-      "type": "number",
-      "display": "slider",
-      "default": 0,
-      "min": -100,
-      "max": 100,
-      "step": 1,
-      "showIf": {
-        "effect": "scanline"
-      }
-    },
-    {
       "id": "pz_steps",
       "label": "Colour steps",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "min": 2,
@@ -633,6 +659,7 @@
     {
       "id": "pz_threshold",
       "label": "Threshold (1 ink)",
+      "section": "Pattern",
       "type": "boolean",
       "default": false,
       "help": "Collapse the photo to a single ink over paper - one hard cut between dark and light instead of graded separations. Pair with Transparent background for ink on nothing.",
@@ -643,6 +670,7 @@
     {
       "id": "pz_thresholdLevel",
       "label": "Threshold level",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "min": 1,
@@ -656,22 +684,9 @@
       "help": "Where the cut between ink and paper falls. Higher turns more of the photo into ink; lower keeps only the deepest shadows."
     },
     {
-      "id": "pz_brightness",
-      "label": "Brightness",
-      "type": "number",
-      "display": "slider",
-      "min": -100,
-      "max": 100,
-      "step": 1,
-      "default": 0,
-      "help": "Lighten or darken the photo before it is separated - shifts every tone up or down, moving detail between the light and dark separations.",
-      "showIf": {
-        "effect": "posterize"
-      }
-    },
-    {
       "id": "pz_quality",
       "label": "Quality",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "min": 90,
@@ -686,6 +701,7 @@
     {
       "id": "pz_smoothing",
       "label": "Smoothing",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "min": 0,
@@ -698,8 +714,35 @@
       }
     },
     {
+      "id": "pz_resample",
+      "label": "Re-sample colours from photo",
+      "section": "Pattern",
+      "type": "boolean",
+      "default": false,
+      "help": "Discard manual edits and re-derive every separation colour from the current photo.",
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
+      "id": "pz_brightness",
+      "label": "Brightness",
+      "section": "Ink",
+      "type": "number",
+      "display": "slider",
+      "min": -100,
+      "max": 100,
+      "step": 1,
+      "default": 0,
+      "help": "Lighten or darken the photo before it is separated - shifts every tone up or down, moving detail between the light and dark separations.",
+      "showIf": {
+        "effect": "posterize"
+      }
+    },
+    {
       "id": "pz_invert",
       "label": "Invert tones",
+      "section": "Ink",
       "type": "boolean",
       "default": false,
       "help": "Trace from inverted tones - the photo's bright areas become the foreground separations (a tonal negative). Useful for a light subject on a dark background.",
@@ -710,6 +753,7 @@
     {
       "id": "pz_colors",
       "label": "Separation colours",
+      "section": "Ink",
       "type": "blocks",
       "labelledFields": true,
       "help": "One swatch per tone, darkest first and the lightest (paper) last. Auto-sampled from your photo - edit any swatch to recolour that separation.",
@@ -727,18 +771,9 @@
       }
     },
     {
-      "id": "pz_resample",
-      "label": "Re-sample colours from photo",
-      "type": "boolean",
-      "default": false,
-      "help": "Discard manual edits and re-derive every separation colour from the current photo.",
-      "showIf": {
-        "effect": "posterize"
-      }
-    },
-    {
       "id": "pz_transparentBg",
       "label": "Transparent background",
+      "section": "Ink",
       "type": "boolean",
       "default": false,
       "help": "Drop the lightest 'paper' separation so the background is transparent (PNG / SVG).",
@@ -749,6 +784,7 @@
     {
       "id": "pz_bgColor",
       "label": "Background",
+      "section": "Ink",
       "type": "color",
       "default": "",
       "help": "Paper colour behind the separations. Leave empty to use the lightest palette swatch.",
@@ -759,6 +795,7 @@
     {
       "id": "vo_cells",
       "label": "Cells",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "min": 10,
@@ -773,6 +810,7 @@
     {
       "id": "vo_jitter",
       "label": "Irregularity",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "min": 0,
@@ -787,6 +825,7 @@
     {
       "id": "vo_relax",
       "label": "Relax (even out)",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "min": 0,
@@ -801,6 +840,7 @@
     {
       "id": "vo_seed",
       "label": "Seed (reroll)",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "min": 1,
@@ -815,6 +855,7 @@
     {
       "id": "vo_edgeWidth",
       "label": "Edge width",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "min": 0,
@@ -829,6 +870,7 @@
     {
       "id": "vo_edgeColor",
       "label": "Edge colour",
+      "section": "Ink",
       "type": "color",
       "default": "{color.semantic.text}",
       "showIf": {
@@ -840,6 +882,7 @@
     {
       "id": "vo_transparentBg",
       "label": "Transparent background",
+      "section": "Ink",
       "type": "boolean",
       "default": false,
       "help": "Drop the background so any gaps / border are transparent (PNG / SVG).",
@@ -850,6 +893,7 @@
     {
       "id": "vo_bgColor",
       "label": "Background",
+      "section": "Ink",
       "type": "color",
       "default": "",
       "help": "The colour behind the mesh - the border and any export margins. Leave empty to follow the edge colour.",
@@ -966,6 +1010,7 @@
     {
       "id": "px_direction",
       "label": "Direction",
+      "section": "Pattern",
       "type": "select",
       "default": "right",
       "options": [
@@ -994,6 +1039,7 @@
     {
       "id": "px_threshold",
       "label": "Threshold start",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "default": 42,
@@ -1008,6 +1054,7 @@
     {
       "id": "px_spread",
       "label": "Spread",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "default": 100,
@@ -1022,6 +1069,7 @@
     {
       "id": "px_feather",
       "label": "Feather",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "default": 0,
@@ -1072,6 +1120,7 @@
     {
       "id": "im_preset",
       "label": "Press character",
+      "section": "Pattern",
       "type": "select",
       "default": "subtle",
       "options": [
@@ -1104,6 +1153,7 @@
     {
       "id": "im_strength",
       "label": "Strength",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "default": 100,
@@ -1118,6 +1168,7 @@
     {
       "id": "im_seed",
       "label": "Seed",
+      "section": "Pattern",
       "type": "number",
       "display": "slider",
       "default": 7,
@@ -1132,6 +1183,7 @@
     {
       "id": "im_ink1",
       "label": "Ink 1",
+      "section": "Ink",
       "type": "color",
       "default": "{color.semantic.primary}",
       "help": "First ink for the two-ink looks (the Risograph preset, or Custom with Two inks). Defaults to the brand's primary.",
@@ -1142,6 +1194,7 @@
     {
       "id": "im_ink2",
       "label": "Ink 2",
+      "section": "Ink",
       "type": "color",
       "default": "{color.semantic.secondary}",
       "help": "Second ink for the two-ink looks. Defaults to the brand's secondary.",
@@ -1152,6 +1205,7 @@
     {
       "id": "im_fit",
       "label": "Image fit",
+      "section": "Position",
       "type": "select",
       "default": "cover",
       "options": [
@@ -1284,8 +1338,42 @@
       }
     },
     {
+      "id": "di_algorithm",
+      "label": "Algorithm",
+      "section": "Pattern",
+      "urlKey": "dalg",
+      "type": "select",
+      "default": "floyd",
+      "options": [
+        { "value": "floyd", "label": "Diffused (Floyd–Steinberg)" },
+        { "value": "ordered", "label": "Patterned (ordered)" },
+        { "value": "noise", "label": "Grainy (noise)" }
+      ],
+      "help": "How each pixel's colour error is spread to its neighbours before the next match.",
+      "showIf": {
+        "effect": "dither"
+      }
+    },
+    {
+      "id": "di_scale",
+      "label": "Scale",
+      "section": "Pattern",
+      "urlKey": "dsc",
+      "type": "number",
+      "display": "slider",
+      "default": 6,
+      "min": 0.5,
+      "max": 40,
+      "step": 0.5,
+      "help": "Size of each virtual pixel. Smaller now keeps getting finer (a much larger cell budget), so the low end reads as crisp detail instead of plateauing; larger reads as a bolder, chunkier print.",
+      "showIf": {
+        "effect": "dither"
+      }
+    },
+    {
       "id": "di_palette",
       "label": "Palette",
+      "section": "Ink",
       "urlKey": "dpal",
       "type": "select",
       "default": "mono",
@@ -1306,6 +1394,7 @@
     {
       "id": "di_colorCount",
       "label": "Colour count",
+      "section": "Ink",
       "urlKey": "dcc",
       "type": "number",
       "display": "slider",
@@ -1320,39 +1409,9 @@
       }
     },
     {
-      "id": "di_algorithm",
-      "label": "Algorithm",
-      "urlKey": "dalg",
-      "type": "select",
-      "default": "floyd",
-      "options": [
-        { "value": "floyd", "label": "Diffused (Floyd–Steinberg)" },
-        { "value": "ordered", "label": "Patterned (ordered)" },
-        { "value": "noise", "label": "Grainy (noise)" }
-      ],
-      "help": "How each pixel's colour error is spread to its neighbours before the next match.",
-      "showIf": {
-        "effect": "dither"
-      }
-    },
-    {
-      "id": "di_scale",
-      "label": "Scale",
-      "urlKey": "dsc",
-      "type": "number",
-      "display": "slider",
-      "default": 6,
-      "min": 0.5,
-      "max": 40,
-      "step": 0.5,
-      "help": "Size of each virtual pixel. Smaller now keeps getting finer (a much larger cell budget), so the low end reads as crisp detail instead of plateauing; larger reads as a bolder, chunkier print.",
-      "showIf": {
-        "effect": "dither"
-      }
-    },
-    {
       "id": "di_fit",
       "label": "Image fit",
+      "section": "Position",
       "urlKey": "dfit",
       "type": "select",
       "default": "cover",
@@ -1367,6 +1426,7 @@
     {
       "id": "as_ramp",
       "label": "Character ramp",
+      "section": "Pattern",
       "urlKey": "arp",
       "type": "select",
       "default": "classic",
@@ -1383,6 +1443,7 @@
     {
       "id": "as_cellSize",
       "label": "Cell size",
+      "section": "Pattern",
       "urlKey": "acs",
       "type": "number",
       "display": "slider",
@@ -1396,58 +1457,9 @@
       }
     },
     {
-      "id": "as_colorMode",
-      "label": "Colour mode",
-      "urlKey": "acm",
-      "type": "select",
-      "default": "per-cell",
-      "options": [
-        { "value": "mono", "label": "Mono" },
-        { "value": "fg-bg", "label": "Foreground on background" },
-        { "value": "per-cell", "label": "Per-cell colour" }
-      ],
-      "help": "Mono draws every character in one ink; per-cell colours each character from the photo underneath.",
-      "showIf": {
-        "effect": "ascii"
-      }
-    },
-    {
-      "id": "as_fgColor",
-      "label": "Character colour",
-      "urlKey": "afg",
-      "type": "color",
-      "default": "{color.semantic.text}",
-      "help": "Ink colour when Colour mode is Mono or Foreground on background.",
-      "showIf": {
-        "effect": "ascii",
-        "as_colorMode": ["mono", "fg-bg"]
-      }
-    },
-    {
-      "id": "as_bgColor",
-      "label": "Background",
-      "urlKey": "abg",
-      "type": "color",
-      "default": "",
-      "help": "Fill behind the characters. Leave empty for a transparent background.",
-      "showIf": {
-        "effect": "ascii"
-      }
-    },
-    {
-      "id": "as_invert",
-      "label": "Invert",
-      "urlKey": "ainv",
-      "type": "boolean",
-      "default": false,
-      "help": "Swap the ramp - dense characters for light areas instead of dark.",
-      "showIf": {
-        "effect": "ascii"
-      }
-    },
-    {
       "id": "as_fontWeight",
       "label": "Character weight",
+      "section": "Pattern",
       "urlKey": "afw",
       "type": "select",
       "default": "400",
@@ -1465,6 +1477,7 @@
     {
       "id": "as_threshold",
       "label": "Threshold",
+      "section": "Pattern",
       "urlKey": "ath",
       "type": "number",
       "display": "slider",
@@ -1478,8 +1491,63 @@
       }
     },
     {
+      "id": "as_colorMode",
+      "label": "Colour mode",
+      "section": "Ink",
+      "urlKey": "acm",
+      "type": "select",
+      "default": "per-cell",
+      "options": [
+        { "value": "mono", "label": "Mono" },
+        { "value": "fg-bg", "label": "Foreground on background" },
+        { "value": "per-cell", "label": "Per-cell colour" }
+      ],
+      "help": "Mono draws every character in one ink; per-cell colours each character from the photo underneath.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "as_fgColor",
+      "label": "Character colour",
+      "section": "Ink",
+      "urlKey": "afg",
+      "type": "color",
+      "default": "{color.semantic.text}",
+      "help": "Ink colour when Colour mode is Mono or Foreground on background.",
+      "showIf": {
+        "effect": "ascii",
+        "as_colorMode": ["mono", "fg-bg"]
+      }
+    },
+    {
+      "id": "as_bgColor",
+      "label": "Background",
+      "section": "Ink",
+      "urlKey": "abg",
+      "type": "color",
+      "default": "",
+      "help": "Fill behind the characters. Leave empty for a transparent background.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
+      "id": "as_invert",
+      "label": "Invert",
+      "section": "Ink",
+      "urlKey": "ainv",
+      "type": "boolean",
+      "default": false,
+      "help": "Swap the ramp - dense characters for light areas instead of dark.",
+      "showIf": {
+        "effect": "ascii"
+      }
+    },
+    {
       "id": "as_fit",
       "label": "Image fit",
+      "section": "Position",
       "urlKey": "afit",
       "type": "select",
       "default": "cover",
@@ -1633,6 +1701,7 @@
     {
       "id": "gl_fit",
       "label": "Image fit",
+      "section": "Position",
       "urlKey": "gfit",
       "type": "select",
       "default": "cover",
@@ -2033,6 +2102,7 @@
     {
       "id": "liveRes",
       "label": "Camera resolution",
+      "section": "Output",
       "type": "number",
       "display": "slider",
       "min": 480,
@@ -2044,6 +2114,7 @@
     {
       "id": "width",
       "label": "Width",
+      "section": "Output",
       "type": "number",
       "default": 1000,
       "min": 1,
@@ -2053,6 +2124,7 @@
     {
       "id": "height",
       "label": "Height",
+      "section": "Output",
       "type": "number",
       "default": 1000,
       "min": 1,
