@@ -3,7 +3,7 @@
   "name": "Markdown Slides",
   "description": "Turn Markdown or a JSON spec into a native, editable PowerPoint deck - real text, bullets, tables and brand theme - in seconds. The fast text-first path to a deck; reach for the Design canvas when you want to lay slides out by hand or animate them. Charts and diagrams come from your other Lolly tools. Exports .pptx (editable), plus PDF and PNG.",
   "a11yLabel": "Presentation deck with {{_slideCount}} slides",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "engineVersion": "^1.56.0",
   "status": "community",
   "category": "designer",
@@ -80,6 +80,7 @@
       "rows": 4,
       "section": "Advanced",
       "placeholder": "# Title slide\n## Subtitle\n\n---\n\n## Bullets\n- point one\n- point two\n\n---\n\n## A table\n| Name | Value |\n| --- | --- |\n| A | 1 |",
+      "dataSource": {},
       "help": "Paste a whole deck as **Markdown** (`---` or headings split slides; pipe tables and `![](url)` images render natively) or as **JSON** (a `slides` array of `{ layout, title, subtitle, body, table, image, notes }`). When filled it drives the whole deck and the builder below is ignored. Leave it blank to use the builder."
     },
     {

@@ -264,8 +264,17 @@ function specToContent(slide) {
 }
 // One Markdown chunk (one slide) → slide-content. First heading = title, a second
 // heading = subtitle, the rest is the body (bullets + any table/image are pulled out).
+// A trailing `<!-- notes: … -->` comment (the Marp presenter-note convention, and what
+// the engine's deckToMarkdown writes) becomes the slide's speaker notes and is removed
+// from the body first, so it never shows up as a bullet.
 function mdChunkToContent(chunk) {
-  var lines = str(chunk).split('\n');
+  var notes = [];
+  var src = str(chunk).replace(/<!--\s*notes\s*:([\s\S]*?)-->/gi, function (m, body) {
+    var t = str(body).trim();
+    if (t) notes.push(t);
+    return '';
+  });
+  var lines = src.split('\n');
   var title = '', subtitle = '', bodyLines = [];
   for (var i = 0; i < lines.length; i++) {
     var l = lines[i], t = l.trim();
@@ -282,7 +291,7 @@ function mdChunkToContent(chunk) {
     layout: autoLayout('content', md, md.image),
     title: title, subtitle: subtitle,
     body: md.text, tableSrc: md.tableSrc, image: md.image,
-    accent: '', logo: 'auto', notes: '',
+    accent: '', logo: 'auto', notes: notes.join('\n'),
   };
 }
 // A whole Markdown deck → slides. Splits on `---` slide breaks (Marp) when present,

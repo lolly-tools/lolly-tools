@@ -647,6 +647,14 @@
           "label": "Full-bleed visual, text over"
         },
         {
+          "value": "overlay-top",
+          "label": "Full-bleed visual, text on top"
+        },
+        {
+          "value": "overlay-center",
+          "label": "Full-bleed visual, text centred"
+        },
+        {
           "value": "minimal",
           "label": "Visual only"
         }

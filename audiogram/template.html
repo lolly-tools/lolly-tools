@@ -32,17 +32,30 @@
 .ag-root.is-minimal .ag-meta { display: none; }
 .ag-root.is-minimal .ag-wavebox { position: absolute; inset: 0; }
 .ag-root.is-minimal .ag-credit { position: relative; margin: 0 7% 7%; text-shadow: 0 2px 18px rgb(0 0 0 / 45%); }
-/* Overlay: the visual fills the card edge to edge and the text sits on top, so
-   the padding comes off the wavebox and back onto the text alone. */
-.ag-root.is-overlay { padding: 0; justify-content: flex-end; }
-.ag-root.is-overlay .ag-wavebox { position: absolute; inset: 0; }
-.ag-root.is-overlay .ag-meta {
+/* Overlay family: the visual fills the card edge to edge and the text sits on it,
+   so the padding comes off the wavebox and back onto the text alone. Three text
+   positions - bottom (the original), top, and centred both ways. */
+.ag-root.is-overlay,
+.ag-root.is-overlay-top,
+.ag-root.is-overlay-center { padding: 0; }
+.ag-root.is-overlay { justify-content: flex-end; }
+.ag-root.is-overlay-top { justify-content: flex-start; }
+.ag-root.is-overlay-center { justify-content: center; }
+.ag-root.is-overlay .ag-wavebox,
+.ag-root.is-overlay-top .ag-wavebox,
+.ag-root.is-overlay-center .ag-wavebox { position: absolute; inset: 0; }
+.ag-root.is-overlay .ag-meta,
+.ag-root.is-overlay-top .ag-meta,
+.ag-root.is-overlay-center .ag-meta {
   position: relative;
   margin: 7%;
   /* A shadow, not a solid scrim: the visual has to stay visible behind the words
      while the words stay readable over whatever it happens to be doing. */
   text-shadow: 0 2px 18px rgb(0 0 0 / 45%);
 }
+/* Centred means both axes: the root centres the text block vertically, and the
+   badge + lines row centres itself and its copy horizontally. */
+.ag-root.is-overlay-center .ag-meta { justify-content: center; text-align: center; }
 
 .ag-wavebox { flex: 1 1 auto; min-height: 0; position: relative; }
 /* The export frame-clock anchor for captioned renders (the slides / filter-*
@@ -82,7 +95,9 @@
      can read is the same as no credit. */
   opacity: 0.75;
 }
-.ag-root.is-overlay .ag-credit { margin: 0 7% 7%; position: relative; text-shadow: 0 2px 18px rgb(0 0 0 / 45%); }
+.ag-root.is-overlay .ag-credit,
+.ag-root.is-overlay-top .ag-credit { margin: 0 7% 7%; position: relative; text-shadow: 0 2px 18px rgb(0 0 0 / 45%); }
+.ag-root.is-overlay-center .ag-credit { margin: 14px 7% 0; position: relative; text-align: center; text-shadow: 0 2px 18px rgb(0 0 0 / 45%); }
 .ag-title {
   /* The heading face where the brand declares a separate one, otherwise the primary
      face the root already set - the same `var(--font-display, var(--font-brand))`
