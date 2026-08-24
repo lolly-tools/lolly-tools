@@ -69,10 +69,22 @@
    canvas into (see lib/viz-tool-mount.ts) - the tool never holds the context itself. */
 .ag-viz { position: absolute; inset: 0; }
 .ag-wavebox canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
-/* The static fallback - what a script-less render shows (the gallery preview
-   pipeline, a CLI html render). The live script hides it as soon as the canvas
-   can draw, so it is never visible alongside the animation. */
+/* The still - the poster frame as real SVG, built in hooks.js from the same packed
+   bytes the canvas unpacks. It is the BASE layer: a script-less render (the gallery
+   preview pipeline, a CLI html render), a reduced-motion viewer and the moment
+   before the preview loop starts all show it.
+   #ag-wave carries the MOTION and is revealed only while it is painting one, so the
+   two are never on screen together. Keyed on `.is-live`, which the script adds when the
+   live loop or an export frame clock starts driving frames.
+   A capture that wants the still holds it with two rules of its own, which is exactly
+   what the docs screenshot recipes pass in `css=` (the shots pipeline's own advice for a
+   moving part in a vector shot - see build-docs-shots.ts's ineffectiveTolerance warning):
+   `#ag-wave{display:none!important}.ag-ph{display:block!important}`. Rules rather than a
+   self-correcting probe in the loop, because the probe cost a forced layout every frame
+   to serve one caller. */
 .ag-ph { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.ag-root:not(.is-live) #ag-wave { display: none; }
+.ag-root.is-live .ag-ph { display: none; }
 
 .ag-meta { flex: 0 0 auto; display: flex; align-items: flex-start; gap: 18px; }
 .ag-root.is-center .ag-meta { order: -1; }
@@ -142,6 +154,11 @@
   <canvas id="ag-clock" class="ag-clock" width="0" height="0" aria-hidden="true"></canvas>
   {{/if}}
   <div class="ag-wavebox">
+    {{!-- The still, FIRST so every live surface paints over it: hooks.js builds the
+          whole <svg class="ag-ph"> from the packed analysis and sanitises every
+          colour it writes into an attribute, hence the raw stache. Not a canvas, so
+          it never competes for the export frame clock. --}}
+    {{{agStill}}}
     {{#if agVizPreset}}
     {{!-- Before the fallback canvas on purpose: the export frame clock takes the FIRST
           canvas that registers a frame renderer, and the shell's canvas lands here. --}}
@@ -153,9 +170,6 @@
          data-viz-meta="{{agVizMeta}}"
          data-viz-wave="{{agWave}}"
          data-viz-fallback="#ag-wave"></div>
-    {{/if}}
-    {{#if agStatic}}
-    <svg class="ag-ph" viewBox="0 0 1000 400" preserveAspectRatio="none" aria-hidden="true"><path d="{{agStatic}}" fill="{{default accent "#5b8def"}}"/></svg>
     {{/if}}
     <canvas id="ag-wave" aria-hidden="true"></canvas>
     {{#if agCues}}
@@ -622,8 +636,14 @@
     return el && typeof el.__lollyFrameRender === 'function' ? el : null;
   }
 
-  var ph = root.querySelector('.ag-ph');
-  if (ph) ph.style.display = 'none'; // the canvas takes over from here
+  /**
+   * Reveal the canvas and put the still away. Called the moment something is
+   * actually going to paint a frame - the live preview loop, or an export frame
+   * clock - and never before, so everything that does NOT animate (a script-less
+   * render, prefers-reduced-motion, a capture that pins the still with its own
+   * CSS) keeps the vector poster hooks.js built.
+   */
+  function live() { if (!root.classList.contains('is-live')) root.classList.add('is-live'); }
 
   // Deterministic export frame clock (shared convention - see the slides tool and
   // bridge/export.ts): stills and every gif/webm/mp4/webp frame call this with the
@@ -635,21 +655,24 @@
   // the visualizer's own preview loop stands down while the export drives.
   if (captions) {
     clockEl.__lollyFrameRender = function (t, clipSec) {
+      live();
       var vc = vizCanvas();
       if (vc) { vc.__lollyFrameDriven = clockEl.__lollyFrameDriven; vc.__lollyFrameRender(t, clipSec); }
       else draw(t, t === 0);
       drawCaption(t === 0 ? (posterFrame + 0.5) / COUNT : t, clipSec);
     };
   } else {
-    canvas.__lollyFrameRender = function (t) { draw(t, t === 0); };
+    canvas.__lollyFrameRender = function (t) { live(); draw(t, t === 0); };
   }
 
   // Live preview loop. A repaint replaces the canvas (the loop dies via
   // isConnected); a script re-run on the SAME canvas (an export-size change) bumps
   // the generation token so the older loop stops. Bails while the export clock
-  // drives frames, and honours prefers-reduced-motion by holding the poster.
+  // drives frames, and honours prefers-reduced-motion by leaving the SVG still up.
   var gen = (canvas.__agGen = (canvas.__agGen || 0) + 1);
   var reduce = typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  // Paint the poster into the (still hidden) canvas up front, so the swap to it on
+  // the loop's first frame is a change of surface and not a flash of empty box.
   draw(0, true);
   drawCaption((posterFrame + 0.5) / COUNT);
   if (!reduce && typeof requestAnimationFrame === 'function') {
@@ -658,6 +681,10 @@
       if (!canvas.isConnected || canvas.__agGen !== gen) return;
       // The captioned clock anchor owns the driven flag when it exists.
       var driven = (captions ? clockEl : canvas).__lollyFrameDriven;
+      // Motion is about to happen, so the canvas takes the still's place. BEFORE the
+      // offsetParent tests below, not after: the canvas is display:none until
+      // `.is-live`, so waiting for it to be laid out would wait forever.
+      if (!driven) live();
       // offsetParent is null once the shell hides this canvas behind a mounted
       // visualizer - drawing a full frame into something nobody can see, alongside a
       // WebGL render, is pure waste. It keeps polling so it resumes if the viz goes.

@@ -52,6 +52,78 @@ QR8bitByte.prototype = {
   }
 };
 
+// QR alphanumeric mode (ISO/IEC 18004 8.4.3): a 45-char set stored as 2 chars
+// per 11 bits - 5.5 bits/char against byte mode's 8. This is what makes an
+// uppercase token (a packed `z=2…` share link, an ALL-CAPS URL) render as a
+// visibly smaller code.
+var ALNUM_CHARS = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ $%*+-./:';
+
+function QRAlphaNum(data) {
+  this.mode = QRMode.MODE_ALPHA_NUM;
+  this.data = data;
+}
+QRAlphaNum.prototype = {
+  getLength: function() { return this.data.length; },
+  write: function(buffer) {
+    var i = 0;
+    for (; i + 1 < this.data.length; i += 2) {
+      buffer.put(ALNUM_CHARS.indexOf(this.data[i]) * 45 + ALNUM_CHARS.indexOf(this.data[i + 1]), 11);
+    }
+    if (i < this.data.length) buffer.put(ALNUM_CHARS.indexOf(this.data[i]), 6);
+  }
+};
+
+// Split content into byte/alphanumeric segments. Every mode switch costs a
+// ~15-20 bit header, so only alphanumeric runs long enough to repay it get
+// their own segment; a fully-alphanumeric string always wins as one segment.
+// Multi-segment splitting is ASCII-only: QR8bitByte prepends a UTF-8 BOM to
+// any segment holding non-ASCII, and mid-stream BOMs would corrupt the payload.
+var ALNUM_RUN_MIN = 20;
+var ALNUM_RUN_RE = /[0-9A-Z $%*+\-./:]{20,}/g;  // keep the {20,} in sync with ALNUM_RUN_MIN
+var ALNUM_ONLY_RE = /^[0-9A-Z $%*+\-./:]+$/;
+
+function _segments(content) {
+  if (ALNUM_ONLY_RE.test(content)) return [new QRAlphaNum(content)];
+  if (/[^\x00-\x7f]/.test(content)) return [new QR8bitByte(content)];
+  var out = [];
+  var last = 0;
+  var m;
+  ALNUM_RUN_RE.lastIndex = 0;
+  while ((m = ALNUM_RUN_RE.exec(content))) {
+    if (m.index > last) out.push(new QR8bitByte(content.slice(last, m.index)));
+    out.push(new QRAlphaNum(m[0]));
+    last = m.index + m[0].length;
+  }
+  if (last < content.length) out.push(new QR8bitByte(content.slice(last)));
+  return out;
+}
+
+// Exact per-segment bit cost at a given version, incl. the mode+length headers.
+function _segmentBits(segments, typeNumber) {
+  var bits = 0;
+  for (var i = 0; i < segments.length; i++) {
+    var n = segments[i].getLength();
+    bits += 4 + QRUtil.getLengthInBits(segments[i].mode, typeNumber);
+    bits += segments[i].mode === QRMode.MODE_ALPHA_NUM ? 11 * (n >> 1) + 6 * (n % 2) : 8 * n;
+  }
+  return bits;
+}
+
+// Smallest version whose data capacity holds the segments - but never above the
+// byte-mode ceiling _getTypeNumber already chose, which stays the single
+// "Content too long" gate. Alphanumeric segments only ever need FEWER bits than
+// the all-byte encoding the ceiling was sized for, so this can only shrink the
+// code, never grow it.
+function _fitType(segments, ecl, ceiling) {
+  for (var t = 1; t < ceiling; t++) {
+    var blocks = QRRSBlock.getRSBlocks(t, ecl);
+    var capacity = 0;
+    for (var b = 0; b < blocks.length; b++) capacity += blocks[b].dataCount * 8;
+    if (_segmentBits(segments, t) <= capacity) return t;
+  }
+  return ceiling;
+}
+
 function QRCodeModel(typeNumber, errorCorrectLevel) {
   this.typeNumber = typeNumber;
   this.errorCorrectLevel = errorCorrectLevel;
@@ -79,7 +151,13 @@ function QRPolynomial(num,shift){if(num.length==undefined){throw new Error(num.l
 QRPolynomial.prototype={get:function(index){return this.num[index];},getLength:function(){return this.num.length;},multiply:function(e){var num=new Array(this.getLength()+e.getLength()-1);for(var i=0;i<this.getLength();i++){for(var j=0;j<e.getLength();j++){num[i+j]^=QRMath.gexp(QRMath.glog(this.get(i))+QRMath.glog(e.get(j)));}}return new QRPolynomial(num,0);},mod:function(e){if(this.getLength()-e.getLength()<0){return this;}var ratio=QRMath.glog(this.get(0))-QRMath.glog(e.get(0));var num=new Array(this.getLength());for(var i=0;i<this.getLength();i++){num[i]=this.get(i);}for(var i=0;i<e.getLength();i++){num[i]^=QRMath.gexp(QRMath.glog(e.get(i))+ratio);}return new QRPolynomial(num,0).mod(e);}};
 
 function QRRSBlock(totalCount,dataCount){this.totalCount=totalCount;this.dataCount=dataCount;}
-QRRSBlock.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]];
+// RS_BLOCK_TABLE repaired 2026-08-24 (v2.3.0): the originally vendored copy had a
+// 16-row duplication and a truncated v15-H row, so versions 15-H and 19..40 either
+// refused content ("code length overflow") or laid out structurally invalid codes.
+// This is the canonical table from kazuhikoarase/qrcode-generator@2.0.4 (MIT),
+// verified against the spec's per-version codeword totals; rows for v1..v15-Q are
+// byte-identical to what always shipped.
+QRRSBlock.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12,7,37,13],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]];
 QRRSBlock.getRSBlocks=function(typeNumber,errorCorrectLevel){var rsBlock=QRRSBlock.getRsBlockTable(typeNumber,errorCorrectLevel);if(rsBlock==undefined){throw new Error("bad rs block @ typeNumber:"+typeNumber+"/errorCorrectLevel:"+errorCorrectLevel);}var length=rsBlock.length/3;var list=[];for(var i=0;i<length;i++){var count=rsBlock[i*3+0];var totalCount=rsBlock[i*3+1];var dataCount=rsBlock[i*3+2];for(var j=0;j<count;j++){list.push(new QRRSBlock(totalCount,dataCount));}}return list;};
 QRRSBlock.getRsBlockTable=function(typeNumber,errorCorrectLevel){switch(errorCorrectLevel){case QRErrorCorrectLevel.L:return QRRSBlock.RS_BLOCK_TABLE[(typeNumber-1)*4+0];case QRErrorCorrectLevel.M:return QRRSBlock.RS_BLOCK_TABLE[(typeNumber-1)*4+1];case QRErrorCorrectLevel.Q:return QRRSBlock.RS_BLOCK_TABLE[(typeNumber-1)*4+2];case QRErrorCorrectLevel.H:return QRRSBlock.RS_BLOCK_TABLE[(typeNumber-1)*4+3];default:return undefined;}};
 
@@ -138,10 +216,14 @@ function QRCode(options) {
     return result.length + (result.length != content.length ? 3 : 0);
   }
   var content = this.options.content;
-  var type = _getTypeNumber(content, this.options.ecl);
+  // The byte-mode table stays the sizing ceiling and the "too long" gate; the
+  // segmenter can only shrink the version from there (alphanumeric runs need
+  // fewer bits than the all-byte encoding the ceiling assumed).
+  var ceiling = _getTypeNumber(content, this.options.ecl);
   var ecl = _getErrorCorrectLevel(this.options.ecl);
-  this.qrcode = new QRCodeModel(type, ecl);
-  this.qrcode.addData(content);
+  var segments = _segments(content);
+  this.qrcode = new QRCodeModel(_fitType(segments, ecl, ceiling), ecl);
+  for (var s = 0; s < segments.length; s++) this.qrcode.dataList.push(segments[s]);
   this.qrcode.make();
 }
 
@@ -233,6 +315,167 @@ function _errorSvg(note) {
     + '</svg>';
 }
 
+// ─── Payload builders ────────────────────────────────────────────────────────
+// One string per payload kind, in the wire format scanning apps expect. The
+// escaping mirrors the engine's own template helpers (rfcText / icsStamp in
+// engine/src/template.ts) so a vCard encoded here and a downloaded .vcf agree.
+// An empty return means "nothing to encode yet" and the caller shows a hint.
+
+var _KINDS = ['url', 'text', 'vcard', 'wifi', 'event', 'geo'];
+var CRLF = '\r\n';
+
+function _str(v) {
+  return v == null ? '' : String(v).trim();
+}
+
+// RFC 5545 / RFC 6350 text escaping: backslash, semicolon, comma, newline.
+function _rfc(v) {
+  return String(v == null ? '' : v)
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\r?\n/g, '\\n');
+}
+
+// "2026-09-15T14:30" -> "20260915T143000", "2026-09-15" -> "20260915", "" -> "".
+// Local time, no trailing Z: the event happens where the poster is.
+function _icsStamp(v) {
+  var s = _str(v);
+  if (!s) return '';
+  var parts = s.replace(/[-:]/g, '').split('T');
+  if (parts.length < 2) return parts[0];
+  return parts[0] + 'T' + (parts[1] + '0000').slice(0, 6);
+}
+
+// Join only the lines that have content, so an unfilled field leaves no record.
+function _lines(list) {
+  return list.filter(function(l) { return l; }).join(CRLF);
+}
+
+function _vcard(args) {
+  var first = _str(args.firstname);
+  var last = _str(args.lastname);
+  var full = (first + ' ' + last).trim();
+  // vCard 3.0 makes N and FN mandatory, so a nameless card is not a card -
+  // the caller shows the hint instead.
+  if (!full) return '';
+  // N's five components are separated by literal semicolons, so each component
+  // is escaped on its own before they are joined.
+  var body = _lines([
+    'N:' + _rfc(last) + ';' + _rfc(first) + ';;;',
+    'FN:' + _rfc(full),
+    _str(args.company) ? 'ORG:' + _rfc(_str(args.company)) : '',
+    _str(args.jobTitle) ? 'TITLE:' + _rfc(_str(args.jobTitle)) : '',
+    _str(args.phone) ? 'TEL;TYPE=CELL:' + _rfc(_str(args.phone)) : '',
+    _str(args.email) ? 'EMAIL:' + _rfc(_str(args.email)) : '',
+    _str(args.url) ? 'URL:' + _rfc(_str(args.url)) : '',
+  ]);
+  return _lines(['BEGIN:VCARD', 'VERSION:3.0', body, 'END:VCARD']);
+}
+
+// The WIFI: URI scheme escapes backslash, semicolon, comma, double quote and
+// colon inside a value, since ';' and ':' are its own separators.
+function _wifiEsc(v) {
+  return String(v == null ? '' : v).replace(/([\\;,":])/g, '\\$1');
+}
+
+function _wifi(args) {
+  var ssid = _str(args.ssid);
+  if (!ssid) return '';
+  var sec = (args.wifiSecurity === 'WEP' || args.wifiSecurity === 'nopass') ? args.wifiSecurity : 'WPA';
+  var key = _str(args.wifiKey);
+  var parts = ['T:' + sec, 'S:' + _wifiEsc(ssid)];
+  // An open network has no password field at all, and neither does a secured
+  // one the user has not typed a key into yet.
+  if (sec !== 'nopass' && key) parts.push('P:' + _wifiEsc(key));
+  if (args.wifiHidden === true || args.wifiHidden === 'true') parts.push('H:true');
+  return 'WIFI:' + parts.join(';') + ';;';
+}
+
+function _event(args) {
+  var name = _str(args.eventName);
+  var start = _icsStamp(args.eventStart);
+  // RFC 5545 makes DTSTART mandatory in a VEVENT and PRODID mandatory in the
+  // VCALENDAR around it. An event missing either is one a calendar is entitled
+  // to reject, so a missing start shows the hint instead of a code that only
+  // fails once someone has printed it. UID/DTSTAMP are deliberately left out:
+  // both need a clock, and a payload that changes between renders would break
+  // the memo, the byte-pinned tests, and any reprint of the same poster.
+  if (!name || !start) return '';
+  return _lines([
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Lolly//QR//EN',
+    'BEGIN:VEVENT',
+    'SUMMARY:' + _rfc(name),
+    'DTSTART:' + start,
+    _icsStamp(args.eventEnd) ? 'DTEND:' + _icsStamp(args.eventEnd) : '',
+    _str(args.eventLocation) ? 'LOCATION:' + _rfc(_str(args.eventLocation)) : '',
+    _str(args.eventDetails) ? 'DESCRIPTION:' + _rfc(_str(args.eventDetails)) : '',
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ]);
+}
+
+// A coordinate that is not a real in-range number gets no code at all: falling
+// back to 0 would encode a scannable pin off the coast of Africa, with nothing
+// on the code to say it is not the place the user typed.
+function _geo(args) {
+  var lat = Number(args.lat);
+  var lng = Number(args.lng);
+  if (!Number.isFinite(lat) || lat < -90 || lat > 90) return '';
+  if (!Number.isFinite(lng) || lng < -180 || lng > 180) return '';
+  return 'geo:' + lat + ',' + lng;
+}
+
+function _payloadFor(args, kind) {
+  if (kind === 'text') return _str(args.text);
+  if (kind === 'vcard') return _vcard(args);
+  if (kind === 'wifi') return _wifi(args);
+  if (kind === 'event') return _event(args);
+  if (kind === 'geo') return _geo(args);
+  // 'url' - unchanged since the tool shipped, fallback included.
+  return (typeof args.url === 'string' && args.url.trim()) ? args.url.trim() : 'https://www.suse.com';
+}
+
+var _KIND_HINT = {
+  text: 'Add the text this QR code should carry.',
+  vcard: 'Add a name to build a contact card.',
+  wifi: 'Add the network name to build a Wi-Fi code.',
+  event: 'Add an event name and a start time to build a calendar code.',
+  geo: 'Add a latitude from -90 to 90 and a longitude from -180 to 180.',
+};
+
+// The manifest's a11yLabel reads "QR code holding {{default qrSummary ...}}",
+// and Handlebars' `default` helper only fires on null/undefined - an empty
+// string would leave a screen reader with "QR code holding". So every failure
+// path carries its own words.
+var _NO_SUMMARY = 'nothing yet';
+
+function _fail(note, kind, content) {
+  return {
+    svgContent: _errorSvg(note),
+    qrError: note,
+    qrPayload: content || '',
+    qrKind: kind,
+    qrSummary: _NO_SUMMARY,
+  };
+}
+
+// A short human line for the accessible label. The payload itself can be a
+// whole multi-line vCard, which no one wants read out.
+function _summary(args, kind, content) {
+  if (kind === 'vcard') {
+    var full = (_str(args.firstname) + ' ' + _str(args.lastname)).trim();
+    return full ? 'a contact card for ' + full : 'a contact card';
+  }
+  if (kind === 'wifi') return 'Wi-Fi network ' + _str(args.ssid);
+  if (kind === 'event') return 'calendar event ' + _str(args.eventName);
+  if (kind === 'geo') return 'map location ' + content.slice(4);
+  if (kind === 'text') return content.length > 60 ? content.slice(0, 60) + '...' : content;
+  return content;
+}
+
 // One-entry memo: building the matrix + 8-pass mask search is O(n²)×8 per call,
 // so cache the last result keyed on the input JSON. An unchanged input (e.g. a
 // re-render that didn't touch any field) returns the cached SVG without rebuilding.
@@ -243,32 +486,48 @@ function compute(args) {
   var transparentBg = args.transparentBg;
   _transparentBg = Boolean(transparentBg);
 
+  // The key is the whole args object, so every payload input is covered by
+  // construction - there is no per-input list to keep in sync.
   var key = JSON.stringify(args);
   if (key === _memoKey) return _memoResult;
 
-  var content = (typeof args.url === 'string' && args.url.trim()) ? args.url.trim() : 'https://www.suse.com';
+  var kind = _KINDS.indexOf(args.payload) >= 0 ? args.payload : 'url';
+  var content = _payloadFor(args, kind);
 
   var result;
-  try {
-    var qr = new QRCode({
-      content:    content,
-      color:      args.color || '#111111',
-      background: _transparentBg ? 'none' : (args.background || '#ffffff'),
-      ecl:        args.ecl || 'M',
-      padding:    Number.isFinite(Number(args.padding)) ? Math.max(0, Math.round(Number(args.padding))) : 4,
-      join:       Boolean(args.join),
-      width:      600,
-      height:     600,
-      pretty:     false,
-    });
-    result = { svgContent: qr.svg({ container: 'svg-viewbox' }), qrError: '' };
-  } catch (err) {
-    var msg = (err && err.message) ? err.message : 'Could not generate QR code';
-    var note = /too long|overflow/i.test(msg)
-      ? 'Content is too long for a QR code - shorten the text or URL, or lower the error-correction level.'
-      : msg;
-    // qrError is surfaced to the template/UI; svgContent renders the note in-place.
-    result = { svgContent: _errorSvg(note), qrError: note };
+  if (!content) {
+    // Nothing to encode for this kind yet. Same visible placeholder as an
+    // encoder failure, with a hint about the field that is still empty.
+    var hint = _KIND_HINT[kind] || 'Add some content for the QR code.';
+    result = _fail(hint, kind, '');
+  } else {
+    try {
+      var qr = new QRCode({
+        content:    content,
+        color:      args.color || '#111111',
+        background: _transparentBg ? 'none' : (args.background || '#ffffff'),
+        ecl:        args.ecl || 'M',
+        padding:    Number.isFinite(Number(args.padding)) ? Math.max(0, Math.round(Number(args.padding))) : 4,
+        join:       Boolean(args.join),
+        width:      600,
+        height:     600,
+        pretty:     false,
+      });
+      result = {
+        svgContent: qr.svg({ container: 'svg-viewbox' }),
+        qrError: '',
+        qrPayload: content,
+        qrKind: kind,
+        qrSummary: _summary(args, kind, content),
+      };
+    } catch (err) {
+      var msg = (err && err.message) ? err.message : 'Could not generate QR code';
+      var note = /too long|overflow/i.test(msg)
+        ? 'Content is too long for a QR code - shorten the text or URL, or lower the error-correction level.'
+        : msg;
+      // qrError is surfaced to the template/UI; svgContent renders the note in-place.
+      result = _fail(note, kind, content);
+    }
   }
 
   _memoKey = key;
@@ -276,12 +535,24 @@ function compute(args) {
   return _memoResult;
 }
 
+// A throw in a payload builder must not reach the runtime: onInit/onInput
+// swallow errors, so the canvas would go blank with nothing to read.
+function _run(model) {
+  var args = Object.fromEntries(model.map(function(i) { return [i.id, i.value]; }));
+  try {
+    return compute(args);
+  } catch (err) {
+    var msg = (err && err.message) ? err.message : 'Could not generate QR code';
+    return _fail(msg, _KINDS.indexOf(args.payload) >= 0 ? args.payload : 'url', '');
+  }
+}
+
 function onInit({ model }) {
-  return compute(Object.fromEntries(model.map(function(i) { return [i.id, i.value]; })));
+  return _run(model);
 }
 
 function onInput({ model }) {
-  return compute(Object.fromEntries(model.map(function(i) { return [i.id, i.value]; })));
+  return _run(model);
 }
 
 function beforeExport({ format, opts }) {

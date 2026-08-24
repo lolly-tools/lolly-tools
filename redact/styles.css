@@ -502,6 +502,87 @@ svg.rd-img * {
   );
   pointer-events: none;
 }
+/* A SUGGESTED region: what the on-device reader thinks might be personal data,
+   offered for a person to accept. It is not a mark and must never be mistaken
+   for one, so it is the opposite of the bar in every respect - hollow rather
+   than opaque, dotted rather than solid, and in the theme's own brand tone
+   rather than the ink or the warm attention colour the partly-covered warning
+   owns. Dotted and not dashed on purpose: a dashed outline means a drop target
+   everywhere else in this app. A loose guess (.is-maybe) drops to a thinner,
+   quieter outline, and its chip carries a question mark. */
+.rd-sugg {
+  position: absolute;
+  border: 2px dotted hsl(var(--rd-brand));
+  border-radius: 3px;
+  background: hsl(var(--rd-brand) / 0.08);
+}
+.rd-sugg.is-maybe {
+  border-width: 1px;
+  background: hsl(var(--rd-brand) / 0.05);
+}
+/* Anchored below the region, so the chip never sits on the very pixels the
+   person is deciding about. */
+.rd-sugg-chip {
+  position: absolute;
+  top: 100%;
+  left: -2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-top: 3px;
+  padding: 1px 2px 1px 6px;
+  border: 1px solid hsl(var(--rd-brand) / 0.55);
+  border-radius: 6px;
+  background: hsl(var(--rd-card));
+  color: hsl(var(--rd-brand));
+  font-size: 10.5px;
+  font-weight: 700;
+  line-height: 1.6;
+  white-space: nowrap;
+}
+/* Near the bottom edge the frame would clip the chip, so it hangs above. */
+.rd-sugg-chip.is-above {
+  top: auto;
+  bottom: 100%;
+  margin: 0 0 3px;
+}
+.rd-sugg-name { padding-right: 2px; }
+.rd-sugg-ok,
+.rd-sugg-no {
+  width: 18px;
+  height: 18px;
+  padding: 0;
+  border: 1px solid hsl(var(--rd-bd));
+  border-radius: 5px;
+  background: hsl(var(--rd-card));
+  color: hsl(var(--rd-muted));
+  font: inherit;
+  font-size: 11px;
+  line-height: 1;
+  cursor: pointer;
+}
+.rd-sugg-ok:hover,
+.rd-sugg-ok:focus-visible {
+  border-color: hsl(var(--rd-brand));
+  color: hsl(var(--rd-brand));
+}
+.rd-sugg-no:hover,
+.rd-sugg-no:focus-visible {
+  border-color: hsl(var(--rd-fg) / 0.4);
+  color: hsl(var(--rd-fg));
+}
+/* Reading runs in the hook, so there is no global job toast for it: this button
+   is the whole busy state, and clicking it aborts the read. */
+.rd-rail-btn.is-busy {
+  color: hsl(var(--rd-brand));
+  cursor: progress;
+}
+.rd-rail-btn.is-busy svg { animation: rd-spin 1.1s linear infinite; }
+@keyframes rd-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .rd-rail-btn.is-busy svg { animation: none; }
+}
+
 .rd-stroke {
   position: absolute;
   inset: 0;

@@ -3,7 +3,7 @@
   "name": "URL Screenshot",
   "description": "Any web page, at any scroll-depth, with custom CSS",
   "a11yLabel": "Screenshot of {{default url \"(no URL set)\"}}",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "utility",
@@ -160,6 +160,40 @@
       "type": "color",
       "default": "{color.semantic.primary}",
       "help": "The colour the page is washed in when Recolor is 'Tint'."
+    },
+    {
+      "id": "compare",
+      "label": "Compare viewports",
+      "type": "select",
+      "default": "single",
+      "options": [
+        { "value": "single", "label": "Single frame" },
+        { "value": "side", "label": "Desktop and phone, side by side" },
+        { "value": "overlap", "label": "Phone over the desktop corner" }
+      ],
+      "help": "Capture the same page twice - once at the export size, once at the phone viewport below - and lay both out in one frame. Still formats only; a webm/mp4 scroll pan stays a single desktop frame."
+    },
+    {
+      "id": "mobileWidth",
+      "label": "Phone width",
+      "type": "number",
+      "default": 390,
+      "min": 200,
+      "max": 2000,
+      "step": 1,
+      "showIf": { "compare": ["side", "overlap"] },
+      "help": "Viewport width for the second capture, in px. 390 is a current iPhone / Pixel class device."
+    },
+    {
+      "id": "mobileHeight",
+      "label": "Phone height",
+      "type": "number",
+      "default": 844,
+      "min": 200,
+      "max": 4000,
+      "step": 1,
+      "showIf": { "compare": ["side", "overlap"] },
+      "help": "Viewport height for the second capture, in px. It also sets the phone frame's proportions."
     }
   ],
   "hooks": {

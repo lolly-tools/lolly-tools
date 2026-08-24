@@ -9,9 +9,14 @@
  *                    at an fps that adapts to its length), derives the brand
  *                    colour ramp from host.color, and hands both to the template
  *                    as a compact packed payload.
- *   template.html    decides how it LOOKS - a canvas draw function per style,
+ *   template.html    decides how it MOVES - a canvas draw function per style,
  *                    reading that payload. No fetching, no decoding, no colour
  *                    science, and (importantly) no async work during a repaint.
+ *
+ * The STILL is neither: it is drawn here, as SVG, from the same packed bytes (see
+ * stillSvg below). The canvas covers it only while it is painting motion, so a
+ * script-less render, a reduced-motion viewer and a docs screenshot all get real
+ * vector geometry instead of a snapshot of an animation mid-stride.
  *
  * Why the payload is packed bytes rather than JSON: a frame track is `count ×
  * bands` numbers, so an 8-second clip at 30fps over 48 bands is 11,520 values.
@@ -168,6 +173,217 @@ function groupCues(words) {
   return cues;
 }
 
+/**
+ * SRT / WebVTT parsing and serialising, shared with the captions tool so the two
+ * read the same files and write the same bytes. Used for the OTHER caption
+ * source: a clip with no word timings of its own, plus a transcript the shell's
+ * Transcribe button (or the user's own .srt file) put in the `transcript` input.
+ */
+// === lolly:shared cues - generated from community/_shared/captions.js; edit there and run npm run sync:shared ===
+function pad(n, w) { var s = String(n); while (s.length < w) s = '0' + s; return s; }
+function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+
+/** "00:00:01,500", "00:01.5" or "1:02:03.250" to seconds, or null. */
+function stampToSeconds(raw) {
+  var m = /^(?:(\d+):)?(\d{1,2}):(\d{1,2})[.,](\d{1,3})$/.exec(String(raw == null ? '' : raw).trim());
+  if (!m) return null;
+  var hours = m[1] ? Number(m[1]) : 0;
+  // One or two digits after the separator are tenths and hundredths, not
+  // milliseconds: "0.5" is half a second.
+  var frac = Number((m[4] + '00').slice(0, 3));
+  return hours * 3600 + Number(m[2]) * 60 + Number(m[3]) + frac / 1000;
+}
+
+/** Seconds to HH:MM:SS<sep>mmm. The engine's `stamp`, mirrored. */
+function fmtStamp(seconds, sep) {
+  var ms = Math.max(0, Math.round(seconds * 1000));
+  var h = Math.floor(ms / 3600000);
+  var m = Math.floor((ms % 3600000) / 60000);
+  var s = Math.floor((ms % 60000) / 1000);
+  return pad(h, 2) + ':' + pad(m, 2) + ':' + pad(s, 2) + sep + pad(ms % 1000, 3);
+}
+
+/** The five entities a subtitle file is allowed to carry. `&amp;` goes last, so
+ *  "&amp;lt;" decodes to "&lt;" and not to "<". */
+function decodeEntities(s) {
+  return s
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&quot;/g, '"')
+    .replace(/&amp;/g, '&');
+}
+
+/** Cue payload to one clean line: tags out, entities decoded, runs of
+ *  whitespace (line breaks included) collapsed to single spaces. */
+function cleanText(s) {
+  return decodeEntities(String(s).replace(/<[^>]*>/g, '')).replace(/\s+/g, ' ').trim();
+}
+
+/**
+ * Parse SRT or WebVTT into cues, plus the warnings worth telling the user about.
+ * Source order is kept: a file whose cues are out of order is reported, never
+ * quietly rewritten, because the person who owns the file should decide.
+ */
+function parseCues(raw) {
+  var warnings = [];
+  var cues = [];
+  var text = String(raw == null ? '' : raw)
+    .replace(/^\uFEFF/, '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]+\n/g, '\n');
+  if (!text.trim()) return { cues: cues, warnings: warnings };
+
+  var blocks = text.split(/\n{2,}/);
+  var malformed = 0;
+  for (var b = 0; b < blocks.length; b++) {
+    var block = blocks[b].trim();
+    if (!block) continue;
+    var lines = block.split('\n');
+    // WebVTT metadata blocks. A NOTE may hold anything, an arrow included.
+    if (/^(NOTE|STYLE|REGION)\b/.test(lines[0])) continue;
+    var at = -1;
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].indexOf('-->') >= 0) { at = i; break; }
+    }
+    // No timing line. The WEBVTT signature is the one block that is meant to
+    // look like this (matched on its own text rather than on being block zero,
+    // so a file that opens with blank lines still reads as a header). Anything
+    // else is words that will never reach the screen, so it is counted rather
+    // than dropped in silence - the whole point of the warnings.
+    if (at < 0) {
+      if (!/^WEBVTT/.test(block)) malformed++;
+      continue;
+    }
+    var parts = lines[at].split('-->');
+    var start = stampToSeconds(parts[0]);
+    // Cue settings (line:90%, align:start, …) trail the out-point on the same line.
+    var end = stampToSeconds(String(parts[1] == null ? '' : parts[1]).trim().split(/\s+/)[0]);
+    if (start === null || end === null) { malformed++; continue; }
+    // Lines before the timing are the optional cue id, which carries no meaning
+    // once the cues are renumbered on the way out.
+    var body = cleanText(lines.slice(at + 1).join(' '));
+    // Timed, but nothing left after the tags come out. Counted too: a cue that
+    // vanishes is exactly the kind of quiet loss the count exists to surface.
+    if (!body) { malformed++; continue; }
+    cues.push({ start: start, end: end, text: body });
+  }
+
+  if (!cues.length) {
+    warnings.push('No timed cues found. Paste SRT or WebVTT text, or transcribe the clip.');
+  }
+  if (malformed) {
+    warnings.push(plural(malformed,
+      'block was skipped: it is not a readable cue.',
+      'blocks were skipped: they are not readable cues.'));
+  }
+  var backwards = 0;
+  var overlaps = 0;
+  var unordered = 0;
+  for (var c = 0; c < cues.length; c++) {
+    if (cues[c].end <= cues[c].start) backwards++;
+    if (c > 0) {
+      if (cues[c].start < cues[c - 1].start) unordered++;
+      else if (cues[c].start < cues[c - 1].end) overlaps++;
+    }
+  }
+  if (backwards) warnings.push(plural(backwards, 'cue ends before it starts.', 'cues end before they start.'));
+  if (unordered) warnings.push(plural(unordered, 'cue starts before the one before it.', 'cues start before the ones before them.'));
+  if (overlaps) warnings.push(plural(overlaps, 'cue overlaps the one before it.', 'cues overlap the ones before them.'));
+  return { cues: cues, warnings: warnings };
+}
+
+/** SubRip: 1-based numbered blocks, comma milliseconds. Empty in, empty out -
+ *  never a file holding one lonely newline. */
+function toSrt(cues) {
+  if (!cues.length) return '';
+  var out = [];
+  for (var i = 0; i < cues.length; i++) {
+    out.push((i + 1) + '\n' + fmtStamp(cues[i].start, ',') + ' --> ' + fmtStamp(cues[i].end, ',') + '\n' + cues[i].text);
+  }
+  return out.join('\n\n') + '\n';
+}
+
+/**
+ * WebVTT cue text may not carry a bare `&` or `<` (the grammar reads them as an
+ * escape and a tag opener), so both go back out encoded. `decodeEntities` is the
+ * exact inverse, so re-importing our own file gives the same text back.
+ * SubRip has no such rule and plenty of players print an entity literally, so
+ * the .srt sidecar keeps the characters as the author wrote them.
+ */
+function vttEscape(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+
+/** WebVTT: header, dot milliseconds, no numbering. */
+function toVtt(cues) {
+  if (!cues.length) return '';
+  var out = [];
+  for (var i = 0; i < cues.length; i++) {
+    out.push(fmtStamp(cues[i].start, '.') + ' --> ' + fmtStamp(cues[i].end, '.') + '\n' + vttEscape(cues[i].text));
+  }
+  return 'WEBVTT\n\n' + out.join('\n\n') + '\n';
+}
+
+/** Index of the cue on screen at `t`, or -1 during silence. A cue covers
+ *  [start, end) - at exactly `end` it has left, the engine's `cueAt` rule.
+ *  Where cues overlap the earlier one wins, which is what a player does. */
+function cueIndexAt(cues, t) {
+  for (var i = 0; i < cues.length; i++) {
+    if (t >= cues[i].start && t < cues[i].end) return i;
+  }
+  return -1;
+}
+// === /lolly:shared cues ===
+
+/** Greedy split into pieces of at most `limit` characters, on word boundaries. */
+function splitText(text, limit) {
+  const words = text.split(' ');
+  const out = [];
+  let line = '';
+  for (const w of words) {
+    const next = line ? `${line} ${w}` : w;
+    if (line && next.length > limit) { out.push(line); line = w; }
+    else line = next;
+  }
+  if (line) out.push(line);
+  return out.length ? out : [text];
+}
+
+/**
+ * A pasted or transcribed transcript as the {t0,t1,text} cues the template draws,
+ * seconds relative to the analysed window. Cue times in the file are clip-absolute,
+ * so the in-point is subtracted and anything already finished before it is dropped -
+ * the same shift the word-timing path applies.
+ *
+ * The caption layer wraps to at most two lines and CUE_CHARS is what one line holds,
+ * so a cue longer than two lines is split at word boundaries into pieces that share
+ * its duration in proportion to their length. A transcript written by the shell's
+ * Transcribe button is grouped to the same ceiling already and passes through whole.
+ */
+function transcriptCues(raw, startSec) {
+  const LIMIT = CUE_CHARS * 2;
+  const out = [];
+  for (const c of parseCues(raw).cues) {
+    const t1 = c.end - startSec;
+    if (t1 <= 0) continue;
+    const t0 = Math.max(0, c.start - startSec);
+    if (t1 <= t0) continue;   // a backwards cue would draw for no time at all
+    const parts = c.text.length > LIMIT ? splitText(c.text, LIMIT) : [c.text];
+    const chars = parts.reduce((n, part) => n + part.length, 0) || 1;
+    let at = t0;
+    for (let i = 0; i < parts.length; i++) {
+      const span = (t1 - t0) * (parts[i].length / chars);
+      out.push({ t0: at, t1: i === parts.length - 1 ? t1 : at + span, text: parts[i] });
+      at += span;
+    }
+  }
+  return out;
+}
+
+/** The drawn cues in the shape the two serialisers take. */
+function cueFiles(cues) {
+  return cues.map((c) => ({ start: c.t0, end: c.t1, text: c.text }));
+}
+
 /** 0..1 → one byte. Values outside the range are clamped rather than wrapped. */
 function byte(v) {
   const n = Math.round((Number.isFinite(v) ? v : 0) * 255);
@@ -267,7 +483,9 @@ async function build(ctx) {
   };
 
   let packed = '';
-  let peaks = null;
+  // The packed payload before base64, kept so the still can be drawn from exactly
+  // the bytes the canvas will unpack rather than from the float analysis.
+  let rawBytes = null;
   let beats = [];
   let cues = [];
   // The visualizer's payload, kept OUT of agData: the shell decodes these windows
@@ -320,7 +538,7 @@ async function build(ctx) {
         for (let i = 0; i < f.count * scopeLen; i++) bytes[at++] = f.wave[i];
       }
       packed = b64(bytes);
-      peaks = a.peaks;
+      rawBytes = bytes;
       meta.count = f.count;
       meta.scope = wantScope ? scopeLen : 0;
       meta.bpm = a.bpm;
@@ -366,6 +584,17 @@ async function build(ctx) {
     }
   }
 
+  /**
+   * The other caption source. Word timings win when the clip has them (a Script-audio
+   * asset), so scripted audio is untouched by this; anything else falls back to the
+   * `transcript` input - filled by the shell's Transcribe button (render.transcribe),
+   * by dropping in an .srt/.vtt file, or by hand. Still nothing is transcribed HERE:
+   * the hook only reads text that is already in the model.
+   */
+  if (!cues.length && v.captions !== false && String(v.transcript || '').trim()) {
+    cues = transcriptCues(v.transcript, start);
+  }
+
   if (!meta.real) {
     const count = FPS * PLACEHOLDER_SEC;
     const { rms, mag } = synthTrack(count, BANDS);
@@ -376,15 +605,13 @@ async function build(ctx) {
     // with the bars above them.
     for (let t = 0; t < 6; t++) for (let i = 0; i < count; i++) bytes[at++] = byte(rms[i]);
     for (let i = 0; i < count * BANDS; i++) bytes[at++] = byte(mag[i]);
-    // Keep the overview the placeholder writes, so the script-less fallback below
-    // draws the SAME envelope the canvas animates rather than nothing at all.
-    const overview = new Float32Array(BUCKETS);
+    // Keep the overview the placeholder writes, so the still below draws the SAME
+    // envelope the canvas animates rather than nothing at all.
     for (let i = 0; i < BUCKETS; i++) {
-      overview[i] = rms[Math.min(count - 1, Math.floor((i / BUCKETS) * count))];
-      bytes[at++] = byte(overview[i]);
+      bytes[at++] = byte(rms[Math.min(count - 1, Math.floor((i / BUCKETS) * count))]);
     }
     packed = b64(bytes);
-    peaks = overview;
+    rawBytes = bytes;
     meta.count = count;
   }
 
@@ -424,10 +651,16 @@ async function build(ctx) {
     // it for. Empty (and the template's caption markup absent) for any clip
     // without word timings.
     agCues: cues.length ? JSON.stringify(cues) : '',
-    // The static fallback path (see template.html): a polyline over the overview
-    // peaks, so a script-less render is the clip's real envelope rather than a
-    // stand-in. Built here because hooks are where the numbers already are.
-    agStatic: staticPath(peaks, BUCKETS),
+    // The .srt / .vtt sidecars (template.srt / template.vtt): exactly the cues on
+    // screen, so the subtitle file and the exported video agree by construction -
+    // both are window-relative, both start at the in-point.
+    agSrt: toSrt(cueFiles(cues)),
+    agVtt: toVtt(cueFiles(cues)),
+    // The still (see template.html): the poster frame of the chosen style as real
+    // SVG, drawn from the packed bytes above. It is the base layer of the card -
+    // what a script-less render, a reduced-motion viewer and the moment before the
+    // preview loop starts all show - and the canvas paints motion over it.
+    agStill: stillSvg(rawBytes, meta, style, colors, accent, beats),
     // The MilkDrop half. All four are empty unless the visualizer will actually run,
     // and the template keys its placeholder off agVizPreset - so every other shell
     // renders the ordinary `bars` card with no dead markup and no dead payload.
@@ -453,24 +686,332 @@ function loudest(rms, count) {
   return best;
 }
 
-/**
- * The overview envelope as an SVG path over a 1000×400 box, mirrored about the
- * centre line. Used by the script-less fallback - the gallery preview pipeline, a
- * CLI `html` render, and the moment before the canvas takes over.
+/* ── The still ───────────────────────────────────────────────────────────────
+ *
+ * The card's STILL is real SVG: the poster frame of the chosen style drawn as
+ * rects, paths and circles rather than as pixels in a canvas. The canvas keeps
+ * the MOTION (the live preview loop and every video frame) - see template.html,
+ * which reveals it only while it is painting.
+ *
+ * The geometry is built from the SAME packed bytes the canvas unpacks, with the
+ * same helpers (at / band / kick / posterFrame) and the same constants, so the
+ * two agree by construction instead of by two sets of maths staying in step.
+ * Read one, change both; tests/audiogram-still-svg.test.ts decodes agData itself
+ * and compares the emitted rects against it.
+ *
+ * Why it was a canvas at all: nothing here needs pixels. plans/69 section 16
+ * called the audiogram raster "by implementation, not necessity", and the docs
+ * screenshots proved it - they shipped the analysis as an embedded bitmap that
+ * changed on every capture because the preview loop was mid-animation.
  */
-function staticPath(peaks, buckets) {
-  if (!peaks) return '';
-  const n = Math.min(buckets, peaks.length);
-  const step = 1000 / Math.max(1, n - 1);
-  let top = '';
-  let bottom = '';
-  for (let i = 0; i < n; i++) {
-    const x = (i * step).toFixed(1);
-    const amp = Math.max(2, peaks[i] * 190);
-    top += `${i ? 'L' : 'M'}${x} ${(200 - amp).toFixed(1)}`;
-    bottom = `L${x} ${(200 + amp).toFixed(1)}` + bottom;
-  }
-  return `${top}${bottom}Z`;
+
+/** The still's own coordinate space. Square, because the card is not: the SVG is
+ *  fitted to the wavebox at render time and the fit is what carries the aspect. */
+const STILL_W = 1000;
+const STILL_H = 1000;
+
+/**
+ * Styles whose geometry is a fraction of the width and a fraction of the height,
+ * independently - bars across the box, heights up from a baseline. Stretching the
+ * viewBox to the wavebox ("none") is exactly what the canvas does for these.
+ *
+ * The rest (ring, blob) size from min(W,H) and centre on the box, which is what
+ * "xMidYMid meet" is. `dots` is the one compromise: its grid stretches like a bar
+ * chart but its dot radius is min(cell width, cell height), so on a non-square
+ * card the still's dots come out slightly oval where the canvas keeps them round.
+ * Expressing both at once needs the box size, which a hook does not have.
+ */
+const STILL_STRETCH = { bars: 1, mirror: 1, spectrum: 1, wave: 1, scope: 1, ridge: 1, dots: 1 };
+
+/** One COORDINATE, one decimal, no trailing ".0" - the still is re-emitted on
+ *  every repaint, so in a 1000-unit box the digits nobody can see are worth
+ *  leaving out. Not for opacity: see op(). */
+function fmt(v) {
+  const n = Math.round((Number.isFinite(v) ? v : 0) * 10) / 10;
+  return String(n);
+}
+
+/** One OPACITY. fmt's 0.1 step is a tenth of a pixel in the coordinate space and
+ *  a tenth of the WHOLE range here, which turned ridge's 18-row fade into eight
+ *  visible bands where the canvas draws a smooth ramp. */
+function op(v) {
+  const n = Math.round((Number.isFinite(v) ? v : 0) * 1000) / 1000;
+  return String(n);
+}
+
+/**
+ * A colour value safe to write into an SVG attribute. The still is rendered raw
+ * ({{{agStill}}}), and `accent` / `ink` / `bg` are user input, so every colour
+ * goes through the shared whitelist below - hex, a bare keyword, an rgb/hsl
+ * function, or a brand var() - and anything else falls back. A blacklist was
+ * tried first and is the wrong instrument: stripping the quotes out of
+ * `#f00" onload="…` leaves a fill value with the word `onload` still in it,
+ * which is only harmless by luck.
+ */
+function col(c) { return safeColor(c, '#5b8def'); }
+
+// === lolly:shared safeColor - generated from community/_shared/math.js; edit there and run npm run sync:shared ===
+function safeColor(v, fallback) {
+  var s = String(v == null ? '' : v).trim();
+  if (!s) return fallback;
+  if (/^#[0-9a-fA-F]{3,8}$/.test(s)) return s;
+  if (/^(rgb|rgba|hsl|hsla)\([0-9.,%\s/]+\)$/i.test(s)) return s;
+  if (/^[a-zA-Z]+$/.test(s)) return s; // named colour (e.g. "transparent", "tomato")
+  // A brand-token CSS var with an OPTIONAL literal-colour fallback - the documented
+  // brand-inheritance path (brand-vars.ts injects --brand-primary/… onto the canvas root,
+  // so a template can carry var(--brand-primary, #hex)). Strict on purpose: a var name and
+  // at most one hex / named / rgb / hsl fallback, so nothing (no ; " ' < > { } or a nested
+  // function) can break out of the style="…" property this value is interpolated into.
+  if (/^var\(\s*--[a-zA-Z0-9-]+\s*(,\s*(#[0-9a-fA-F]{3,8}|[a-zA-Z]+|(?:rgb|rgba|hsl|hsla)\([0-9.,%\s/]+\)))?\s*\)$/.test(s)) return s;
+  return fallback;
+}
+// === /lolly:shared safeColor ===
+
+/**
+ * Short stable id salt, so two audiograms composed into one document (print-sheet,
+ * host.compose) cannot share a gradient or clip-path id. djb2, base 36.
+ *
+ * The PAYLOAD is folded in as well as the string, because style and brand accent
+ * are exactly what two cards in one document do share - two episodes of the same
+ * podcast collide on every text input there is. The wave style's clip path is the
+ * playhead, so a collision put the first card's progress on the second card.
+ */
+function salt(s, bytes) {
+  let h = 5381;
+  for (let i = 0; i < s.length; i++) h = ((h * 33) ^ s.charCodeAt(i)) >>> 0;
+  for (let i = 0; bytes && i < bytes.length; i++) h = ((h * 33) ^ bytes[i]) >>> 0;
+  return h.toString(36);
+}
+
+/**
+ * The poster frame as an SVG element, or '' when there is nothing to draw.
+ *
+ * `raw` is the packed payload in the section order build() writes and the template
+ * unpacks: rms, peak, bass, mid, treb, flux (COUNT bytes each), then the spectrum
+ * rows (COUNT x BANDS), the overview (BUCKETS), and the scope rows when present.
+ */
+function stillSvg(raw, meta, style, colors, accent, beatFrames) {
+  const COUNT = meta.count | 0;
+  const SCOPE_N = meta.scope | 0;
+  const need = COUNT * 6 + COUNT * BANDS + BUCKETS + COUNT * SCOPE_N;
+  if (!raw || !COUNT || raw.length < need) return '';
+
+  let off = 0;
+  const take = (n) => { const s = raw.subarray(off, off + n); off += n; return s; };
+  const RMS = take(COUNT);
+  take(COUNT);                                  // peak
+  const BASS = take(COUNT);
+  take(COUNT); take(COUNT); take(COUNT);        // mid, treb, flux
+  const MAG = take(COUNT * BANDS);
+  const OVER = take(BUCKETS);
+  const WAVE = SCOPE_N ? take(COUNT * SCOPE_N) : null;
+
+  const W = STILL_W;
+  const H = STILL_H;
+  const COLORS = colors && colors.length ? colors : [accent];
+  const BEATS = {};
+  for (const b of beatFrames || []) BEATS[b | 0] = 1;
+
+  const at = (track, i) => track[i < 0 ? 0 : i >= COUNT ? COUNT - 1 : i] / 255;
+  const band = (fr, b, n) => {
+    const lo = Math.floor((b / n) * BANDS);
+    const hi = Math.max(lo + 1, Math.floor(((b + 1) / n) * BANDS));
+    let m = 0;
+    for (let i = lo; i < hi && i < BANDS; i++) { const v = MAG[fr * BANDS + i]; if (v > m) m = v; }
+    return m / 255;
+  };
+  const kick = (fr) => {
+    for (let d = 0; d < 5; d++) if (BEATS[fr - d]) return (1 - d / 5) * 0.35;
+    return 0;
+  };
+
+  const f = loudest(RMS, COUNT);
+  const p = (f + 0.5) / COUNT;
+  const k = kick(f);
+
+  const defs = [];
+  const uid = 'ags' + salt(style + '|' + accent + '|' + COLORS.join(','), raw);
+  let seq = 0;
+  const grad = (x0, y0, x1, y1) => {
+    const id = uid + (seq++);
+    let stops = '';
+    for (let i = 0; i < COLORS.length; i++) {
+      stops += `<stop offset="${fmt((i / Math.max(1, COLORS.length - 1)) * 100)}%" stop-color="${col(COLORS[i])}"/>`;
+    }
+    defs.push(`<linearGradient id="${id}" gradientUnits="userSpaceOnUse"`
+      + ` x1="${fmt(x0)}" y1="${fmt(y0)}" x2="${fmt(x1)}" y2="${fmt(y1)}">${stops}</linearGradient>`);
+    return `url(#${id})`;
+  };
+  const rect = (x, y, w, h, r, opacity) =>
+    `<rect x="${fmt(x)}" y="${fmt(y)}" width="${fmt(w)}" height="${fmt(h)}"`
+    + (r ? ` rx="${fmt(r)}" ry="${fmt(r)}"` : '')
+    + (opacity == null ? '' : ` fill-opacity="${opacity}"`) + '/>';
+
+  const drawBars = (mirror) => {
+    const N = 40;
+    const slot = W / N;
+    const gap = slot * 0.42;
+    const bw = slot - gap;
+    let s = `<g fill="${grad(0, H, 0, 0)}">`;
+    for (let i = 0; i < N; i++) {
+      const v = Math.min(1, band(f, i, N) * (1 + k));
+      const h = Math.max(H * 0.015, v * H * (mirror ? 0.46 : 0.9));
+      const x = i * slot + gap / 2;
+      if (mirror) {
+        s += rect(x, H / 2 - h, bw, h, bw / 2, null);
+        // Faint below the centre line, so it reads as a baseline and not as an
+        // axis of symmetry - the canvas's globalAlpha 0.45.
+        s += rect(x, H / 2, bw, h, bw / 2, 0.45);
+      } else {
+        s += rect(x, (H - h) / 2, bw, h, bw / 2, null);
+      }
+    }
+    return `${s}</g>`;
+  };
+
+  const drawSpectrum = () => {
+    const N = BANDS;
+    const slot = W / N;
+    let d = `M0 ${H}`;
+    for (let i = 0; i < N; i++) {
+      const y = H - Math.max(2, Math.min(1, band(f, i, N) * (1 + k)) * H * 0.92);
+      d += `L${fmt(i * slot)} ${fmt(y)}L${fmt((i + 1) * slot)} ${fmt(y)}`;
+    }
+    return `<path d="${d}L${W} ${H}Z" fill="${grad(0, H, 0, H * 0.1)}"/>`;
+  };
+
+  const wavePath = () => {
+    const mid = H / 2;
+    const step = W / Math.max(1, BUCKETS - 1);
+    let d = `M0 ${fmt(mid - (OVER[0] / 255) * H * 0.42)}`;
+    for (let q = 1; q < BUCKETS; q++) d += `L${fmt(q * step)} ${fmt(mid - (OVER[q] / 255) * H * 0.42)}`;
+    for (let r = BUCKETS - 1; r >= 0; r--) d += `L${fmt(r * step)} ${fmt(mid + (OVER[r] / 255) * H * 0.42)}`;
+    return `${d}Z`;
+  };
+
+  const drawWave = () => {
+    const d = wavePath();
+    const clip = `${uid}c`;
+    defs.push(`<clipPath id="${clip}"><rect x="0" y="0" width="${fmt(W * p)}" height="${H}"/></clipPath>`);
+    const head = Math.max(0, W * p - Math.max(1, W * 0.002));
+    return `<path d="${d}" fill="${col(accent)}" fill-opacity="0.38"/>`
+      + `<path d="${d}" fill="${grad(0, H, 0, 0)}" clip-path="url(#${clip})"/>`
+      + `<rect x="${fmt(head)}" y="${fmt(H * 0.06)}" width="${fmt(Math.max(2, W * 0.004))}"`
+      + ` height="${fmt(H * 0.88)}" fill="${col(COLORS[COLORS.length - 1] || accent)}" fill-opacity="0.85"/>`;
+  };
+
+  const drawScope = () => {
+    if (!WAVE) return drawWave();
+    const mid = H / 2;
+    const step = W / (SCOPE_N - 1);
+    const base = f * SCOPE_N;
+    let d = '';
+    for (let i = 0; i < SCOPE_N; i++) {
+      const y = mid - ((WAVE[base + i] - 128) / 128) * H * 0.44;
+      d += `${i ? 'L' : 'M'}${fmt(i * step)} ${fmt(y)}`;
+    }
+    return `<path d="${d}" fill="none" stroke="${grad(0, 0, W, 0)}"`
+      + ` stroke-width="${fmt(Math.max(2, H * 0.012))}" stroke-linejoin="round"/>`;
+  };
+
+  const drawRing = () => {
+    const N = 72;
+    const cx = W / 2;
+    const cy = H / 2;
+    const R = Math.min(W, H) * 0.27;
+    let d = '';
+    for (let i = 0; i < N; i++) {
+      const a = (i / N) * 2 * Math.PI - Math.PI / 2;
+      const v = Math.min(1, band(f, i, N) * (1 + k));
+      const len = Math.min(W, H) * (0.03 + v * 0.19);
+      d += `M${fmt(cx + Math.cos(a) * R)} ${fmt(cy + Math.sin(a) * R)}`
+        + `L${fmt(cx + Math.cos(a) * (R + len))} ${fmt(cy + Math.sin(a) * (R + len))}`;
+    }
+    return `<path d="${d}" fill="none" stroke="${grad(0, cy - R, 0, cy + R)}"`
+      + ` stroke-width="${fmt(Math.max(2, ((2 * Math.PI * R) / N) * 0.45))}" stroke-linecap="round"/>`
+      + `<circle cx="${cx}" cy="${cy}" r="${fmt(R * (0.8 + at(RMS, f) * 0.08 + k * 0.1))}"`
+      + ` fill="none" stroke="${col(accent)}" stroke-opacity="0.35" stroke-width="${fmt(Math.max(2, R * 0.02))}"/>`;
+  };
+
+  const drawBlob = () => {
+    const N = 160;
+    const cx = W / 2;
+    const cy = H / 2;
+    const R = Math.min(W, H) * (0.19 + at(BASS, f) * 0.09 + k * 0.05);
+    const HARM = [[2, 0.13, 0.0], [3, 0.10, 1.1], [5, 0.07, 2.3], [7, 0.05, 0.6], [11, 0.03, 1.9]];
+    let d = '';
+    for (let i = 0; i <= N; i++) {
+      const a = (i / N) * 2 * Math.PI - Math.PI / 2;
+      let r = 1;
+      for (let hi = 0; hi < HARM.length; hi++) {
+        r += band(f, hi, HARM.length) * HARM[hi][1] * Math.sin(HARM[hi][0] * a + HARM[hi][2]);
+      }
+      d += `${i ? 'L' : 'M'}${fmt(cx + Math.cos(a) * R * r)} ${fmt(cy + Math.sin(a) * R * r)}`;
+    }
+    return `<path d="${d}Z" fill="${grad(0, cy - R, 0, cy + R)}"/>`;
+  };
+
+  const drawRidge = () => {
+    const ROWS = 18;
+    const N = 34;
+    let s = '';
+    for (let r = ROWS - 1; r >= 0; r--) {
+      const src = f - r * 2;
+      if (src < 0) continue;
+      const depth = r / ROWS;
+      const y = H * (0.92 - depth * 0.72);
+      const amp = H * 0.16 * (1 - depth * 0.55);
+      let d = `M0 ${fmt(y)}`;
+      for (let i = 0; i < N; i++) {
+        const v = Math.min(1, band(src, i, N) * (1 + (r === 0 ? k : 0)));
+        d += `L${fmt((i / (N - 1)) * W)} ${fmt(y - v * amp)}`;
+      }
+      const fill = COLORS[Math.min(COLORS.length - 1, Math.round(depth * (COLORS.length - 1)))];
+      s += `<path d="${d}L${W} ${fmt(y)}Z" fill="${col(fill)}" fill-opacity="${op(0.9 - depth * 0.75)}"/>`;
+    }
+    return s;
+  };
+
+  const drawDots = () => {
+    const COLS = 24;
+    const ROWS = 12;
+    const cw = W / COLS;
+    const ch = H / ROWS;
+    const rad = Math.min(cw, ch) * 0.28;
+    let s = '';
+    for (let c = 0; c < COLS; c++) {
+      const lit = Math.min(1, band(f, c, COLS) * (1 + k)) * ROWS;
+      for (let r = 0; r < ROWS; r++) {
+        const on = lit - r;
+        const fill = on <= 0 ? accent : COLORS[Math.min(COLORS.length - 1, Math.round((r / ROWS) * (COLORS.length - 1)))];
+        s += `<circle cx="${fmt(c * cw + cw / 2)}" cy="${fmt(H - (r * ch + ch / 2))}" r="${fmt(rad)}"`
+          + ` fill="${col(fill)}" fill-opacity="${op(on <= 0 ? 0.1 : Math.min(1, 0.35 + on))}"/>`;
+      }
+    }
+    return s;
+  };
+
+  // MilkDrop has no vector equivalent, and neither does an unknown style: both
+  // fall through to bars, exactly as the canvas does.
+  const BY_STYLE = {
+    bars: () => drawBars(false),
+    mirror: () => drawBars(true),
+    spectrum: drawSpectrum,
+    wave: drawWave,
+    scope: drawScope,
+    ring: drawRing,
+    blob: drawBlob,
+    ridge: drawRidge,
+    dots: drawDots,
+  };
+  // Resolve the style BEFORE choosing the fit, or milkdrop (which draws as bars)
+  // would be fitted as though it were one of the round ones.
+  const drawn = BY_STYLE[style] ? style : 'bars';
+  const body = BY_STYLE[drawn]();
+  const fit = STILL_STRETCH[drawn] ? 'none' : 'xMidYMid meet';
+  return `<svg class="ag-ph" viewBox="0 0 ${W} ${H}" preserveAspectRatio="${fit}" aria-hidden="true">`
+    + (defs.length ? `<defs>${defs.join('')}</defs>` : '')
+    + `${body}</svg>`;
 }
 
 async function onInit(ctx) {

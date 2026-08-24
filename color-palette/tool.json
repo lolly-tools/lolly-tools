@@ -2,7 +2,7 @@
   "id": "color-palette",
   "name": "Palette Lab",
   "description": "Grow a palette from one seed colour - harmony accents, perceptual OKLab ramps and WCAG/APCA readability badges, with DTCG tokens and CSV export.",
-  "version": "2.2.0",
+  "version": "2.3.1",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "utility",
@@ -11,7 +11,9 @@
     "palette",
     "tokens",
     "contrast",
-    "brand"
+    "brand",
+    "accessibility",
+    "colour-blind"
   ],
   "render": {
     "width": 1600,
@@ -175,6 +177,44 @@
           "label": "Utility classes"
         }
       ]
+    },
+    {
+      "id": "vision",
+      "urlKey": "v",
+      "label": "Colour vision",
+      "type": "select",
+      "default": "normal",
+      "help": "Repaints the whole sheet as another viewer sees it. Every label keeps the real hex, and the reported ratios still describe your actual palette.",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal vision"
+        },
+        {
+          "value": "protan",
+          "label": "Protanopia"
+        },
+        {
+          "value": "deutan",
+          "label": "Deuteranopia"
+        },
+        {
+          "value": "tritan",
+          "label": "Tritanopia"
+        },
+        {
+          "value": "gray",
+          "label": "Greyscale"
+        }
+      ]
+    },
+    {
+      "id": "grid",
+      "urlKey": "g",
+      "label": "Contrast grid",
+      "type": "boolean",
+      "default": false,
+      "help": "Adds a matrix under the ramps: every base colour as text on every base colour as a background, with its WCAG ratio and level."
     }
   ],
   "examples": [
@@ -203,24 +243,6 @@
         "harmony": "tetrad-4",
         "steps": 7,
         "neutrals": false
-      }
-    },
-    {
-      "label": "Violet adjacents",
-      "values": {
-        "seed": "#7c3aed",
-        "harmony": "adjacent-3",
-        "steps": 5,
-        "neutrals": true
-      }
-    },
-    {
-      "label": "Coral free four",
-      "values": {
-        "seed": "#ff6b6b",
-        "harmony": "free-4",
-        "steps": 11,
-        "neutrals": true
       }
     },
     {
@@ -257,6 +279,26 @@
         "mode": "contrast",
         "bg": "#f8fafc",
         "lcTargets": "15,30,45,60,75,90"
+      }
+    },
+    {
+      "label": "Contrast grid",
+      "values": {
+        "seed": "#2563eb",
+        "harmony": "triad-3",
+        "steps": 6,
+        "neutrals": true,
+        "grid": true
+      }
+    },
+    {
+      "label": "Deuteranopia preview",
+      "values": {
+        "seed": "#c2410c",
+        "harmony": "triad-3",
+        "steps": 7,
+        "neutrals": true,
+        "vision": "deutan"
       }
     }
   ]

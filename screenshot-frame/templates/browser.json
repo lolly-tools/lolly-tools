@@ -1,0 +1,34 @@
+{
+  "id": "browser",
+  "name": "Browser window",
+  "category": "Screenshot",
+  "description": "A web page in a desktop window on a soft brand gradient.",
+  "values": {
+    "frame": "browser",
+    "windowStyle": "nuremberg",
+    "url": "https://lolly.tools",
+    "title": "",
+    "backdrop": "gradient",
+    "background": "{color.semantic.primary}",
+    "color2": "{color.semantic.secondary}",
+    "padding": 72,
+    "scale": 78,
+    "radius": 16,
+    "shadow": 55,
+    "dark": false
+  },
+  "presets": [
+    {
+      "id": "light",
+      "name": "Light chrome",
+      "description": "Pale window on a two-colour brand wash.",
+      "values": { "dark": false, "windowStyle": "nuremberg" }
+    },
+    {
+      "id": "night",
+      "name": "Dark chrome",
+      "description": "Dark window on a deep, calm ground.",
+      "values": { "dark": true, "windowStyle": "cupertino", "backdrop": "solid", "background": "#1b2233" }
+    }
+  ]
+}

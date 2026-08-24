@@ -5,6 +5,7 @@
     <button class="sm-zoom-btn" id="sm-zo" type="button" aria-label="Zoom out">&minus;</button>
     <button class="sm-zoom-btn" id="sm-zr" type="button" aria-label="Reset view">&#8962;</button>
   </div>
+  <p class="sm-route-warn" role="status" data-export-hide>{{routeWarning}}</p>
 </div>
 
 <script>
@@ -50,16 +51,35 @@
   var waterColor = '{{_waterColor}}';
   var bgColor    = '{{_background}}';
   var viewIn     = '{{_view}}';
+  var routeColor = '{{_routeColor}}';
+  var routeWidth = parseFloat('{{_routeWidth}}') || 3;
+  var routeFit   = '{{_routeFit}}' === 'yes';
 
   /* ── Palette (set as SVG attributes so colors survive vector export) ───────── */
   var PALETTES = {
-    light: { bg: '#f5f2ec', road: '#2e2c29', water: '#bcd6e8', waterLine: '#8fb8d4' },
-    dark:  { bg: '#10131a', road: '#d7dde4', water: '#16323f', waterLine: '#2c5870' },
+    light: { bg: '#f5f2ec', road: '#2e2c29', water: '#bcd6e8', waterLine: '#8fb8d4', route: '#d9480f' },
+    dark:  { bg: '#10131a', road: '#d7dde4', water: '#16323f', waterLine: '#2c5870', route: '#ff922b' },
   };
   var pal = PALETTES[theme] || PALETTES.light;
   if (roadColor)  pal = Object.assign({}, pal, { road: roadColor });
   if (waterColor) pal = Object.assign({}, pal, { water: waterColor, waterLine: waterColor });
   if (bgColor)    pal = Object.assign({}, pal, { bg: bgColor });
+  if (routeColor) pal = Object.assign({}, pal, { route: routeColor });
+
+  /* ── GPX route, parsed in hooks.js and handed over as flat "lon,lat" lists ─── */
+  function decodePts(s) {
+    if (!s) return [];
+    var out = [];
+    s.split(';').forEach(function (pair) {
+      var xy = pair.split(',');
+      var lon = parseFloat(xy[0]), lat = parseFloat(xy[1]);
+      if (isFinite(lon) && isFinite(lat)) out.push([lon, lat]);
+    });
+    return out;
+  }
+  var routeLines = '{{_routeSegs}}'.split('|').map(decodePts)
+    .filter(function (line) { return line.length > 1; });
+  var routeDots = decodePts('{{_routeDots}}');
 
   /* Stroke width (px) per road tier, before the roadWeight multiplier. */
   var TIER_W = { 0: 0.4, 1: 0.6, 2: 1.0, 3: 1.5, 4: 2.0, 5: 2.6 };
@@ -181,10 +201,77 @@
         .attr('d', path);
     });
 
+    /* ── Route overlay - above the roads, drawn with the SAME `path` (and its
+       `proj`) as every road and river, so the two can never disagree about
+       where a coordinate sits. There is no second projection in this file. ──── */
+    if (routeLines.length) {
+      gMap.append('path').datum(collection(routeLines.map(function (pts) {
+        return { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: pts } };
+      })))
+        .attr('class', 'sm-route')
+        .attr('fill', 'none').attr('stroke', pal.route)
+        .attr('stroke-width', routeWidth)
+        .attr('vector-effect', 'non-scaling-stroke')
+        .attr('stroke-linecap', 'round').attr('stroke-linejoin', 'round')
+        .attr('d', path);
+    }
+
+    /* Marker radii are screen sizes, like every stroke on this map
+       (non-scaling-stroke). A circle's `r` does ride the zoom transform though,
+       so each dot remembers its base radius and sizeDots divides by the live
+       scale. Without that, auto-fitting a small loop (up to 8x) swells the start
+       dot until it covers the route it is marking. */
+    var dots = [];
+    function dot(lonlat, r, fill, stroke) {
+      var p = proj(lonlat);
+      if (!p || !isFinite(p[0]) || !isFinite(p[1])) return;
+      var c = gMap.append('circle').attr('class', 'sm-route-dot')
+        .attr('cx', p[0].toFixed(1)).attr('cy', p[1].toFixed(1)).attr('r', r).attr('fill', fill);
+      if (stroke) {
+        c.attr('stroke', stroke).attr('stroke-width', routeWidth)
+          .attr('vector-effect', 'non-scaling-stroke');
+      }
+      dots.push({ el: c, r: r });
+    }
+    function sizeDots(k) {
+      dots.forEach(function (d) { d.el.attr('r', d.r / k); });
+    }
+    routeDots.forEach(function (p) { dot(p, routeWidth * 1.1, pal.route); });
+    if (routeLines.length) {
+      var lastLine = routeLines[routeLines.length - 1];
+      dot(routeLines[0][0], routeWidth * 1.7, pal.route);                 /* start: solid */
+      dot(lastLine[lastLine.length - 1], routeWidth * 1.7, pal.bg, pal.route); /* end: ring */
+    }
+
+    /* Frame the route's bounding box. Same `proj`, so the box is measured in the
+       canvas coordinates the zoom transform works in. */
+    function fitToRoute() {
+      var pts = routeDots.slice();
+      routeLines.forEach(function (line) { pts = pts.concat(line); });
+      var x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      pts.forEach(function (ll) {
+        var p = proj(ll);
+        if (!p || !isFinite(p[0]) || !isFinite(p[1])) return;
+        if (p[0] < x0) x0 = p[0];
+        if (p[0] > x1) x1 = p[0];
+        if (p[1] < y0) y0 = p[1];
+        if (p[1] > y1) y1 = p[1];
+      });
+      if (!isFinite(x0) || !isFinite(y0)) return null;
+      /* A single-point route has no extent - 1px keeps the scale finite and the
+         clamp below (d3.zoom's own scaleExtent) does the rest. */
+      var k = 0.85 * Math.min(W / Math.max(x1 - x0, 1), H / Math.max(y1 - y0, 1));
+      k = Math.max(0.3, Math.min(8, k));
+      return window.d3.zoomIdentity
+        .translate(W / 2 - k * (x0 + x1) / 2, H / 2 - k * (y0 + y1) / 2)
+        .scale(k);
+    }
+
     /* ── Pan + zoom ───────────────────────────────────────────────────────────── */
     var _applying = false;
     var zoomFn = window.d3.zoom().scaleExtent([0.3, 8]).on('zoom', function (event) {
       gMap.attr('transform', event.transform);
+      sizeDots(event.transform.k);
       stateStore.__smView = event.transform;
       if (_applying) return;
       /* Debounce-save the viewport to the `view` input so it survives reload and
@@ -220,6 +307,11 @@
       return (p.length === 3 && p[0] > 0 && p.every(isFinite))
         ? window.d3.zoomIdentity.translate(p[1], p[2]).scale(p[0]) : null;
     })();
+    /* Auto-fit a dropped route, but only while the viewport is an untouched
+       default (the hook decides that, via _routeFit). It is applied under the
+       _applying guard, so it never writes `view` - the moment the user pans or
+       zoom does, their framing is saved and wins from then on. */
+    if (!restore && routeFit) restore = fitToRoute();
     if (restore) {
       _applying = true;
       svg.call(zoomFn.transform, restore);

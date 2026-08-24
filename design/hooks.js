@@ -182,6 +182,11 @@ var FONTS = {
   'sans': "var(--font-brand, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)",
 };
 function fontFamily(v) {
+  // An absent font is the brand face, not the literal family 'undefined' - a
+  // box row with no `font` field used to emit font-family:'undefined', which
+  // every browser skipped over to the var() fallback anyway, so this changes
+  // the emitted CSS but not a rendered pixel.
+  if (v == null || v === '') return FONTS.sans;
   var key = String(v);
   // Own-property, not bare truthiness - the SHADOW_TARGETS rule, applied to every enum
   // whitelist in this file: `font=constructor` from a hand-edited URL would otherwise

@@ -92,9 +92,38 @@
 .tok-function { color: var(--tok-function); }
 .tok-type     { color: var(--tok-type); }
 .tok-operator { color: var(--tok-operator); }
+
+/* ── Comment callouts (opt-in via calloutMode) ──────────────────────────────
+   A trailing end-of-line comment rendered as a pill pointing back at its line
+   instead of dim inline text. In-flow inline-block so it sits on the same line
+   as the code (arrow points left, at the code). max-height is clamped by JS to
+   one code line-height (--cc-ca-max) so a 2-line pill never grows the row and
+   the separate line-number gutter stays aligned; overflow clips a 3rd line.
+   inline-block box + block text child + inline <svg> arrow all survive the
+   SVG/PDF vector walker (each is an own-box the walker visits). */
+.cc-callout {
+  position: relative;
+  display: inline-block; vertical-align: middle;
+  margin-left: 0.9em;
+  padding: 0.12em 0.6em 0.12em 1.5em;
+  border-radius: 999px;
+  border: 1px solid var(--cc-ca-bd, currentColor);
+  background: var(--cc-ca-bg, transparent);
+  color: var(--cc-ca-fg, currentColor);
+  font-family: var(--cc-ca-font, inherit);
+  font-size: 0.66em; font-weight: 600; line-height: 1.12;
+  white-space: normal; text-align: left;
+  max-width: 22em;
+  max-height: var(--cc-ca-max, 2.4em); overflow: hidden;
+}
+/* Arrow keeps the mono glyph regardless of the text font, so it always reads as an arrow. */
+.cc-callout-arrow { position: absolute; left: 0.55em; top: calc(50% - 0.5em); line-height: 1; font-size: 1.05em; font-weight: 700; font-style: normal; font-family: var(--font-mono, 'SUSE Mono', monospace); color: var(--cc-ca-arrow, currentColor); }
+.cc-callout-text  { display: inline; font-style: var(--cc-ca-style, normal); }
+.cc-callout-text strong { font-weight: 800; }
+.cc-callout-text em     { font-style: italic; }
 </style>
 
-<div class="cc-root" id="cc-root" data-code="{{code}}" data-language="{{language}}" data-theme="{{theme}}" data-window-style="{{windowStyle}}" data-line-numbers="{{lineNumbers}}" data-show-window="{{showWindow}}" data-scale="{{scale}}" data-transparent-bg="{{transparentBg}}" data-blink="{{#if blinkCursor}}on{{else}}off{{/if}}">
+<div class="cc-root" id="cc-root" data-code="{{code}}" data-language="{{language}}" data-theme="{{theme}}" data-window-style="{{windowStyle}}" data-line-numbers="{{lineNumbers}}" data-show-window="{{showWindow}}" data-scale="{{scale}}" data-title-scale="{{titleScale}}" data-icon-scale="{{iconScale}}" data-line-height="{{lineHeight}}" data-callout-mode="{{calloutMode}}" data-callout-prefix="{{calloutPrefix}}" data-callout-font="{{calloutFont}}" data-transparent-bg="{{transparentBg}}" data-blink="{{#if blinkCursor}}on{{else}}off{{/if}}">
   <div class="cc-window" id="cc-window">
     <div class="cc-header" id="cc-header">
       <div class="cc-controls cc-controls-left" id="cc-controls-left"></div>
@@ -150,6 +179,15 @@
   var lineNums = root.dataset.lineNumbers !== 'false';
   var showWindow = root.dataset.showWindow !== 'false';
   var scale = parseFloat(root.dataset.scale || '100') / 100;
+  var titleScale = parseFloat(root.dataset.titleScale || '100') / 100;
+  var iconScale = parseFloat(root.dataset.iconScale || '100') / 100;
+  var lineHeight = parseFloat(root.dataset.lineHeight || '1.7');
+  if (isNaN(lineHeight)) lineHeight = 1.7;
+  var calloutMode = root.dataset.calloutMode || 'off';
+  var calloutPrefixes = (root.dataset.calloutPrefix || '').split(',')
+    .map(function (s) { return s.trim().toLowerCase(); })
+    .filter(function (s) { return s.length > 0; });
+  var calloutFont = root.dataset.calloutFont || 'mono';
   var transparentBg = root.dataset.transparentBg === 'true';
   var windowStyle = root.dataset.windowStyle || 'nuremberg';
 
@@ -240,7 +278,13 @@
   var cssVars = '--tok-keyword:' + t.keyword + ';--tok-string:' + t.string +
     ';--tok-comment:' + t.comment + ';--tok-number:' + t.number +
     ';--tok-function:' + t.fn + ';--tok-type:' + t.type +
-    ';--tok-operator:' + t.operator;
+    ';--tok-operator:' + t.operator +
+    ';--cc-ca-fg:' + t.fg + ';--cc-ca-bg:' + rgba(t.fg, 0.07) +
+    ';--cc-ca-bd:' + rgba(t.number, 0.55) + ';--cc-ca-arrow:' + t.number +
+    ';--cc-ca-font:' + (calloutFont.indexOf('brand') === 0
+      ? "var(--font-brand, 'SUSE', ui-sans-serif, sans-serif)"
+      : "var(--font-mono, 'SUSE Mono', 'Roboto Mono', ui-monospace, monospace)") +
+    ';--cc-ca-style:' + (/italic/.test(calloutFont) ? 'italic' : 'normal');
   root.setAttribute('style', root.getAttribute('style') + ';' + cssVars);
 
   // ── Window chrome ────────────────────────────────────────────────────────
@@ -266,6 +310,53 @@
 
   function esc(s) {
     return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ── Comment callouts ──────────────────────────────────────────────────────
+  // A "trailing" comment (code before it on the line) can be lifted out of the
+  // dim comment flow into a pill callout. The tokenizer emits the whole pill
+  // (arrow <svg> + esc()'d text) inline in the highlighted markup, so it is
+  // complete after innerHTML with no post-render DOM step.
+  var TAG_RE = /^(TODO|FIXME|FIX|NOTE|HACK|XXX|BUG|WIP|WARNING|WARN|OPTIMIZE|REVIEW|DEPRECATED)\b/i;
+  function commentText(raw, marker) { return raw.slice(marker).replace(/^\s+/, ''); }
+  function calloutMatch(text) {
+    if (calloutMode === 'all')  return true;
+    if (calloutMode === 'tags') return TAG_RE.test(text);
+    if (calloutMode === 'custom') {
+      var lc = text.toLowerCase();
+      for (var p = 0; p < calloutPrefixes.length; p++) {
+        if (lc.indexOf(calloutPrefixes[p]) === 0) return true;
+      }
+    }
+    return false;
+  }
+  function lineHasCodeBefore(src, i) {          // trailing comment vs full-line
+    for (var k = i - 1; k >= 0 && src[k] !== '\n'; k--) {
+      if (src[k] !== ' ' && src[k] !== '\t') return true;
+    }
+    return false;
+  }
+  // The arrow is the real U+2190 glyph from the brand mono font (SUSE Mono),
+  // inherited from .cc-root, so it matches the code's own arrows; the comment text
+  // is esc()'d straight in, so the callout is complete after innerHTML.
+  // Tiny inline markdown for callout text, run AFTER esc() so the input can never
+  // inject markup: bold before italic; the `_` forms need a boundary so snake_case
+  // is left alone (`my_var` stays literal, `_note_` becomes emphasis).
+  function mdInline(s) {
+    return s
+      .replace(/\*\*([^*]+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/(^|[^\w*])__([^_]+?)__(?![\w])/g, '$1<strong>$2</strong>')
+      .replace(/\*([^*]+?)\*/g, '<em>$1</em>')
+      .replace(/(^|[^\w*])_([^_]+?)_(?![\w])/g, '$1<em>$2</em>');
+  }
+  function calloutSpan(text) {
+    return '<span class="cc-callout"><span class="cc-callout-arrow">←</span>' +
+      '<span class="cc-callout-text">' + mdInline(esc(text)) + '</span></span>';
+  }
+  function maybeCallout(src, i, j, marker) {    // returns placeholder or null
+    if (calloutMode === 'off' || !lineHasCodeBefore(src, i)) return null;
+    var text = commentText(src.slice(i, j), marker);
+    return calloutMatch(text) ? calloutSpan(text) : null;
   }
 
   function tokenize(src, lang) {
@@ -305,7 +396,7 @@
       if (c === '/' && peek(1) === '/' && lang !== 'css') {
         var j = i;
         while (j < n && src[j] !== '\n') j++;
-        out += span('comment', src.slice(i, j));
+        out += maybeCallout(src, i, j, 2) || span('comment', src.slice(i, j));
         i = j; continue;
       }
 
@@ -313,7 +404,7 @@
       if (c === '#' && (lang === 'python' || lang === 'bash' || lang === 'dockerfile')) {
         var j = i;
         while (j < n && src[j] !== '\n') j++;
-        out += span('comment', src.slice(i, j));
+        out += maybeCallout(src, i, j, 1) || span('comment', src.slice(i, j));
         i = j; continue;
       }
 
@@ -515,7 +606,7 @@
     filenameEl.style.margin     = '0 auto';
     filenameEl.style.opacity    = '1';
     filenameEl.style.fontWeight = '700';
-    filenameEl.style.fontSize   = (14 * IS) + 'px';
+    filenameEl.style.fontSize   = (14 * IS * titleScale) + 'px';
 
     var radius;
     if (windowStyle === 'redmond') {
@@ -547,6 +638,17 @@
   // ── Chrome sizing (slider scale only, not content-dependent) ─────────────
   var IS = scale; // slider value: 0.7 - 2.0
   buildChrome(IS);
+
+  // Title-bar icon scale: em-based so it tracks the (already title-scaled) filename
+  // font-size; iconScale is an extra multiplier on top of that.
+  var iconEl = filenameEl.querySelector('.cc-icon');
+  if (iconEl) iconEl.style.height = (1.15 * iconScale) + 'em';
+
+  // Line height applies to code + gutter alike so line numbers stay aligned. Set
+  // before fit() so the binary search measures the real rendered height.
+  codeEl.style.lineHeight = String(lineHeight);
+  gutter.style.lineHeight = String(lineHeight);
+
   codeEl.style.paddingTop    = (20 * IS) + 'px';
   codeEl.style.paddingRight  = (24 * IS) + 'px';
   codeEl.style.paddingBottom = (20 * IS) + 'px';
@@ -561,6 +663,9 @@
   function applyFs(fs) {
     codeEl.style.fontSize  = fs + 'px';
     gutter.style.fontSize  = fs + 'px';
+    // Cap callout pills to one code line so a 2-line pill can't grow the row and
+    // drift the separate gutter. Tracks the fitted size on every fit() path.
+    codeEl.style.setProperty('--cc-ca-max', (fs * lineHeight) + 'px');
   }
 
   function fit() {

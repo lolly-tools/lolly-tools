@@ -1,0 +1,36 @@
+{
+  "id": "retail",
+  "name": "Retail barcode",
+  "category": "Product",
+  "description": "The barcode on a pack or shelf label - EAN-13, EAN-8 or UPC-A, digits printed between the guard bars.",
+  "values": {
+    "value": "4006381333931",
+    "symbology": "ean13",
+    "showText": true,
+    "moduleWidth": 3,
+    "barHeight": 160,
+    "quiet": 11,
+    "color": "#1a1a2e",
+    "background": "#faf7f2"
+  },
+  "presets": [
+    {
+      "id": "ean13",
+      "name": "EAN-13",
+      "description": "The 13-digit European article number.",
+      "values": { "value": "4006381333931", "symbology": "ean13" }
+    },
+    {
+      "id": "ean8",
+      "name": "EAN-8",
+      "description": "The short code for a small pack.",
+      "values": { "value": "96385074", "symbology": "ean8", "moduleWidth": 4, "barHeight": 120 }
+    },
+    {
+      "id": "upca",
+      "name": "UPC-A",
+      "description": "The 12-digit North American code, first and last digit outside the guards.",
+      "values": { "value": "036000291452", "symbology": "upca" }
+    }
+  ]
+}

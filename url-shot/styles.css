@@ -31,6 +31,112 @@
   display: none;
 }
 
+/* ── Compare: the same page at two viewports in one frame ──────────────────
+   Both layouts are pure CSS on the root modifier the hook sets, so single mode
+   matches no rule below and renders exactly as it always did. The phone bezel is
+   a lighter cousin of screenshot-frame's: a thin dark surround, a rounded screen
+   and a notch pill, no side buttons - this tool's subject is the page, not the
+   device. ── */
+
+/* Side by side: desktop left, phone right, both centred on the frame. */
+.url-shot--side {
+  flex-direction: row;
+  gap: 4%;
+  padding: 4%;
+  box-sizing: border-box;
+}
+.url-shot--side .shot {
+  flex: 1 1 auto;
+  min-width: 0;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: 8px;
+  box-shadow: 0 6px 22px rgba(12, 24, 34, 0.18);
+}
+.url-shot--side .placeholder {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.url-shot--side .cmp-phone {
+  flex: 0 0 auto;
+  height: 92%;
+  display: flex;
+  align-items: center;
+}
+
+/* Overlap: the phone tucks over the desktop's lower right corner. The desktop
+   keeps the whole frame, so the two reads as one composition rather than a row. */
+.url-shot--overlap .cmp-phone {
+  position: absolute;
+  right: 4%;
+  bottom: 4%;
+  height: 64%;
+  z-index: 4;
+}
+
+.url-shot .cmp-phone-body {
+  position: relative;
+  height: 100%;
+  max-width: 100%;
+  overflow: hidden;
+  border-radius: 22px;
+  padding: 5px;
+  box-sizing: border-box;
+  background: var(--brand-text, #1c1f26);
+  box-shadow: 0 8px 26px rgba(12, 24, 34, 0.28);
+}
+.url-shot .cmp-phone-shot {
+  display: block;
+  width: 100%;
+  height: 100%;
+  /* contain, not cover, for the same reason the desktop frame uses it: a crop
+     inset shrinks the capture but not the bezel, and letterboxing the whole shot
+     beats silently trimming its edges. */
+  object-fit: contain;
+  border-radius: 18px;
+  background: var(--brand-surface, #efefef);
+}
+/* No mobile capture yet: the phone shows the same "which page" line the main
+   placeholder does, so an uncaptured compare frame reads as two waiting frames
+   rather than one frame and an empty slab. */
+.url-shot .cmp-phone-shot:not([src]) {
+  display: none;
+}
+.url-shot .cmp-phone-ph {
+  position: absolute;
+  inset: 5px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  padding: 1.2rem 0.9rem;
+  border-radius: 18px;
+  background: var(--brand-surface, #efefef);
+  color: var(--brand-text, #111);
+  font-family: var(--font-brand, 'SUSE', ui-sans-serif, system-ui, sans-serif);
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  word-break: break-all;
+  overflow: hidden;
+}
+.url-shot .cmp-phone-notch {
+  position: absolute;
+  left: 50%;
+  top: 12px;
+  transform: translateX(-50%);
+  width: 30%;
+  max-width: 74px;
+  height: 12px;
+  border-radius: 999px;
+  background: #101319;
+  z-index: 2;
+}
+.url-shot .cmp-phone[hidden] {
+  display: none;
+}
+
 /* Live-preview placeholder (capture only happens at export). */
 .url-shot .placeholder {
   text-align: center;

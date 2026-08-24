@@ -77,7 +77,18 @@
   padding: 10px;
   border-radius: 8px;
   background: color-mix(in oklab, var(--brand-text, #17232b) 6%, transparent);
-  font-family: var(--font-mono, ui-monospace, Menlo, Consolas, monospace);
+  font-family: var(--font-mono, 'SUSE Mono', ui-monospace, Menlo, Consolas, monospace);
   font-size: 11px;
   line-height: 1.5;
+}
+
+/* Type follows the ACTIVE BRAND: the chrome vars are derived from the brand's
+   font tokens (brand-vars.ts), so under any profile the sheet renders and
+   exports in that brand's faces. The font-family attributes inside the SVG
+   stay as the fallback for a standalone file with no stylesheet. */
+.pl-svg text {
+  font-family: var(--font-brand, 'SUSE', ui-sans-serif, system-ui, sans-serif);
+}
+.pl-svg text.pl-mono {
+  font-family: var(--font-mono, 'SUSE Mono', ui-monospace, monospace);
 }

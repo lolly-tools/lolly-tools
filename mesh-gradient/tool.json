@@ -1,9 +1,9 @@
 {
   "id": "mesh-gradient",
   "name": "Mesh Gradient",
-  "description": "Soft mesh-style gradients from your brand swatches. Drag the colour points right on the canvas.",
+  "description": "Soft mesh-style gradients from your brand swatches. Drag the colour points right on the canvas, or turn on Drift and export the loop as WebM, MP4 or GIF.",
   "a11yLabel": "Mesh gradient blending {{count}} colours",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "everyone",
@@ -13,14 +13,15 @@
     { "label": "Aurora night", "values": { "count": 4, "color1": "#22d3ee", "color2": "#a78bfa", "color3": "#10b981", "color4": "#0b1021", "blend": "screen", "spread": 110, "blur": 8, "grain": 60 } },
     { "label": "Deep sea", "values": { "count": 3, "color1": "#0ea5e9", "color2": "#1e3a8a", "color3": "#0f766e", "blend": "normal", "spread": 80, "blur": 14, "grain": 20 } },
     { "label": "Paper grain", "values": { "count": 2, "color1": "#f5efe6", "color2": "#e2e8f0", "blend": "normal", "spread": 140, "blur": 20, "grain": 100, "grainBlend": "overlay" } },
-    { "label": "Candy pop", "values": { "count": 5, "color1": "#f472b6", "color2": "#60a5fa", "color3": "#facc15", "color4": "#34d399", "color5": "#f97316", "blend": "hard-light", "spread": 130, "blur": 2, "grain": 0 } }
+    { "label": "Candy pop", "values": { "count": 5, "color1": "#f472b6", "color2": "#60a5fa", "color3": "#facc15", "color4": "#34d399", "color5": "#f97316", "blend": "hard-light", "spread": 130, "blur": 2, "grain": 0 } },
+    { "label": "Live backdrop", "values": { "count": 4, "color1": "#eef2f7", "color2": "#cfe0f5", "color3": "#dcd6f7", "color4": "#f7e6d8", "blend": "normal", "spread": 110, "blur": 16, "grain": 25, "animate": true, "speed": 16, "distance": 80 } }
   ],
   "render": {
     "width": 1600,
     "height": 900,
-    "formats": ["svg", "png", "jpg", "webp", "avif", "webm", "mp4"],
+    "formats": ["svg", "png", "jpg", "webp", "avif", "webm", "mp4", "gif"],
     "actions": ["copy", "download", "save"],
-    "video": { "wait": 0, "duration": 6 }
+    "video": { "wait": 0, "duration": 12 }
   },
   "inputs": [
     {
@@ -203,7 +204,7 @@
       "section": "Texture & Motion",
       "type": "boolean",
       "default": false,
-      "help": "Slow, looping drift of the colour points - export as WebM/MP4 for a live background."
+      "help": "Slow, looping drift of the colour points. Export as WebM, MP4 or GIF for a live meeting background."
     },
     {
       "id": "distance",
@@ -229,7 +230,7 @@
       "max": 24,
       "step": 1,
       "showIf": { "animate": true },
-      "help": "Seconds per drift loop - higher is slower. Video exports capture one loop where the frame budget allows (long loops are shortened at 60 fps)."
+      "help": "Seconds per drift loop - higher is slower. A WebM, MP4 or GIF export captures one whole loop, unless you type your own length in the export bar. A very long loop is trimmed to what the export can hold."
     }
   ],
   "hooks": {

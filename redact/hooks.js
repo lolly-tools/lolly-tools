@@ -2020,6 +2020,342 @@ function pdfByteFindings(bytes) {
   return findings;
 }
 
+// ─── personal-data classifiers (shared) ──────────────────────────────────────
+// === lolly:shared pii - generated from community/_shared/pii.js; edit there and run npm run sync:shared ===
+// Plain regular expressions over ONE line of text. Everything here is a GUESS
+// offered to a person, never a decision: the caller shows what was found and
+// the person confirms it. Nothing in this region acts on its own.
+//
+// Matchers run in order and CLAIM the characters they match, so a later, looser
+// pattern cannot re-read a span a stricter one already explained. Two entries
+// claim without reporting: a URL and a version string are digit runs that would
+// otherwise read as a phone number.
+//
+// `maybe: true` marks a pattern loose enough to be wrong on ordinary text (a
+// capitalised word pair, a five-digit number). The caller has to present those
+// as questions rather than findings.
+//
+// Deliberately NOT here: a national identity number, a passport number or a
+// medical code. Their formats differ per country and a wrong guess about one of
+// those is a worse failure than missing it, so they stay a manual mark.
+
+function piiDigits(s) {
+  return String(s).replace(/[^0-9]/g, '');
+}
+
+// The check digit every payment card carries. Cheap, and it turns "a long run
+// of digits" into something specific enough to name: an order number, a serial
+// or a phone number written without spaces almost never passes.
+function luhnOk(digits) {
+  if (digits.length < 13 || digits.length > 19) return false;
+  var sum = 0;
+  var alt = false;
+  for (var i = digits.length - 1; i >= 0; i--) {
+    var d = digits.charCodeAt(i) - 48;
+    if (d < 0 || d > 9) return false;
+    if (alt) { d *= 2; if (d > 9) d -= 9; }
+    sum += d;
+    alt = !alt;
+  }
+  return sum % 10 === 0;
+}
+
+// Words that start a capitalised pair without a person being anywhere near it.
+// Short on purpose: the name matcher is already flagged `maybe`, so the list
+// only has to catch the pairs common enough to be noise on every document.
+var PII_STOP = {
+  january: 1, february: 1, march: 1, april: 1, may: 1, june: 1, july: 1,
+  august: 1, september: 1, october: 1, november: 1, december: 1,
+  monday: 1, tuesday: 1, wednesday: 1, thursday: 1, friday: 1, saturday: 1,
+  sunday: 1, the: 1, this: 1, that: 1, dear: 1, from: 1, sent: 1, page: 1,
+  total: 1, invoice: 1, receipt: 1, account: 1, date: 1, name: 1, address: 1,
+  phone: 1, email: 1, subject: 1, note: 1, notes: 1, terms: 1, please: 1,
+  thank: 1, thanks: 1, best: 1, kind: 1, yours: 1, new: 1, united: 1,
+  north: 1, south: 1, east: 1, west: 1, all: 1, rights: 1, reserved: 1,
+  copyright: 1, content: 1, credentials: 1, general: 1, public: 1, private: 1,
+};
+
+var PII_MONTH = '(?:January|February|March|April|September|October|November|December|'
+  + 'Jan|Feb|Mar|Apr|May|June|Jun|July|Jul|Aug|Sept|Sep|Oct|Nov|Dec)\\.?';
+
+function piiNameOk(m) {
+  var parts = String(m).split(/\s+/);
+  for (var i = 0; i < parts.length; i++) {
+    var w = parts[i].replace(/[^A-Za-z]/g, '').toLowerCase();
+    if (w && Object.prototype.hasOwnProperty.call(PII_STOP, w)) return false;
+  }
+  return true;
+}
+
+function piiPhoneOk(m) {
+  var d = piiDigits(m);
+  return d.length >= 7 && d.length <= 15;
+}
+
+var PII_MATCHERS = [
+  // Claim-only, kind '': a URL and a version string are digit runs with
+  // separators, which is exactly what the phone matchers look for.
+  { kind: '', re: /\bhttps?:\/\/\S+/g },
+  {
+    kind: '', re: /\bv?\d+\.\d+(?:\.\d+)+/g,
+    // 12.03.1980 is a version string by shape and a date of birth in most of
+    // Europe. Three dotted numbers whose last part is a 2-to-4 digit year are
+    // left unclaimed so the date matcher below reports them; a real version
+    // (v1.77.0, 1.149.0, 10.15.7.2024) does not fit that shape and is claimed.
+    test: function (m) { return !/^\d{1,4}\.\d{1,2}\.\d{2,4}$/.test(m); },
+  },
+
+  { kind: 'email', label: 'Email address', re: /[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g },
+
+  {
+    kind: 'iban', label: 'Bank account (IBAN)',
+    re: /\b[A-Z]{2}\d{2}(?:\s?[A-Z0-9]{4}){2,7}(?:\s?[A-Z0-9]{1,3})?\b/g,
+    test: function (m) { var n = m.replace(/\s/g, '').length; return n >= 15 && n <= 34; },
+  },
+  {
+    kind: 'card', label: 'Card number',
+    re: /\b\d[\d\s-]{11,21}\d\b/g,
+    test: function (m) { return luhnOk(piiDigits(m)); },
+  },
+
+  // Dates before phones: 12.03.1980 is seven digits with separators.
+  { kind: 'date', label: 'Date', maybe: true, re: /\b\d{1,4}[/.-]\d{1,2}[/.-]\d{2,4}\b/g },
+  {
+    kind: 'date', label: 'Date', maybe: true,
+    re: new RegExp('\\b\\d{1,2}(?:st|nd|rd|th)?\\s+' + PII_MONTH + '\\s+(?:19|20)\\d{2}\\b', 'g'),
+  },
+  {
+    kind: 'date', label: 'Date', maybe: true,
+    re: new RegExp('\\b' + PII_MONTH + '\\s+\\d{1,2}(?:st|nd|rd|th)?,?\\s+(?:19|20)\\d{2}\\b', 'g'),
+  },
+
+  {
+    kind: 'phone', label: 'Phone number',
+    re: /\+\d[\d\s().-]{5,18}\d/g,
+    test: piiPhoneOk,
+  },
+  {
+    kind: 'phone', label: 'Phone number', maybe: true,
+    re: /\(?\b0?\d[\d\s().-]{5,18}\d\b/g,
+    test: piiPhoneOk,
+  },
+
+  {
+    kind: 'address', label: 'Street address',
+    re: /\b\d{1,5}[A-Za-z]?\s+(?:[A-Z][A-Za-z.'-]+\s+){1,4}(?:Street|St|Road|Rd|Avenue|Ave|Lane|Ln|Drive|Dr|Boulevard|Blvd|Highway|Hwy|Way|Close|Court|Ct|Place|Pl|Terrace|Parade|Crescent|Square|Sq|Strasse|Straße)\b\.?/g,
+  },
+  { kind: 'postcode', label: 'Postcode', re: /\b[A-Z]{1,2}\d[A-Z\d]?\s?\d[A-Z]{2}\b/g },
+  { kind: 'postcode', label: 'Postcode', maybe: true, re: /\b\d{5}(?:-\d{4})?\b/g },
+
+  {
+    kind: 'name', label: 'Name', maybe: true,
+    re: /\b[A-Z][a-z]{1,15}\s+(?:[A-Z][a-z]?\.?\s+)?[A-Z][a-z]{1,15}\b/g,
+    test: piiNameOk,
+  },
+];
+
+// Every classified span in `text`, in reading order:
+// [{ kind, label, text, maybe, start, end }]. Claim-only matches report
+// nothing; a span already claimed is skipped rather than re-read.
+function piiFindings(text) {
+  var s = String(text == null ? '' : text);
+  if (!s) return [];
+  var claimed = [];
+  var out = [];
+  function free(a, b) {
+    for (var c = 0; c < claimed.length; c++) {
+      if (a < claimed[c][1] && claimed[c][0] < b) return false;
+    }
+    return true;
+  }
+  for (var i = 0; i < PII_MATCHERS.length; i++) {
+    var spec = PII_MATCHERS[i];
+    var re = spec.re;
+    re.lastIndex = 0;
+    var m;
+    while ((m = re.exec(s))) {
+      var hit = m[0];
+      if (!hit) { re.lastIndex++; continue; }
+      var a = m.index;
+      var b = a + hit.length;
+      if (!free(a, b)) continue;
+      if (spec.test && !spec.test(hit)) continue;
+      claimed.push([a, b]);
+      if (!spec.kind) continue;
+      out.push({
+        kind: spec.kind, label: spec.label, text: hit,
+        maybe: spec.maybe === true, start: a, end: b,
+      });
+    }
+  }
+  out.sort(function (x, y) { return x.start - y.start; });
+  return out;
+}
+// === /lolly:shared pii ===
+
+// ─── OCR suggestions ─────────────────────────────────────────────────────────
+//
+// THE M7 PATTERN (plans/147), written out here because redact is the first tool
+// to use it and annotate and url-shot are meant to copy it verbatim:
+//
+//   1. The hook feature-detects `host.ocr`. Absent (the CLI, any shell without
+//      the WASM reader) means the affordance is simply not published, so the
+//      headless render path is byte-identical to what it was before.
+//   2. A canvas control asks for a run by writing a nonce into a data-only
+//      input. The hook never starts a read on its own: reading is the user's
+//      request, and on a first run it may need a staged model. The nonce
+//      outlives the file that produced it (it is an input value, and it goes
+//      into a shared link), so a request is BOUND to the file it was made on -
+//      see ocrRequestOwns. Copy that part too; without it the second picture
+//      someone drops gets read without them asking.
+//   3. The read happens in a JOB keyed to the file plus that nonce, exactly
+//      like the PDF page previews above - the patch publishes `pending` and the
+//      canvas polls, rather than the hook awaiting past its 2000ms box.
+//   4. The result is turned into PROPOSED regions in `extras`. A proposal is
+//      never applied: the canvas draws each one as an outline the person
+//      accepts or dismisses, and accepting writes an ordinary bar through the
+//      ordinary commit path, so undo, URL mode and save all behave as usual.
+//
+// Two limits, stated rather than hidden. A hook cannot reach the shell's
+// job queue (lib/jobs.ts), so a long read shows a busy state on the canvas
+// instead of riding the global job toast; cancel is a real AbortSignal, which
+// is what makes that acceptable. And the reader produces LINE boxes, not word
+// boxes, so a proposed region is the whole line a match sits on - over-
+// inclusive, which is the safe direction for a redaction and the same direction
+// the vector deletion policy already errs in.
+//
+// Reading text embeds nothing and signs nothing: `host.ocr` produces no pixels,
+// no asset and no provenance.
+
+// Longest edge handed to the reader. Text on a document scan is legible well
+// below the sensor's own resolution, and a 6000px photo is mostly a memory
+// bill; boxes are scaled back to source pixels, which is the space bars live in
+// for a raster frame.
+const OCR_MAX_EDGE = 2000;
+// Long enough to pick up a warm, already-staged read inside the same pass on a
+// small image, short enough to leave the 2000ms onInput box alone when it is
+// not. Anything slower publishes `ocrPending` and the canvas polls.
+const OCR_BUDGET_MS = 400;
+
+let _ocrJob = { key: '', promise: null, result: null, error: '', abort: null };
+
+function cancelOcrJob() {
+  if (_ocrJob.abort) { try { _ocrJob.abort.abort(); } catch (e) { /* already settled */ } }
+  _ocrJob = { key: '', promise: null, result: null, error: '', abort: null };
+}
+
+// Line boxes from a read, mapped into the frame's own pixel space and paired
+// with what made each line interesting. Pure, so the mapping is testable
+// without a reader: `scale` undoes the working-size downscale, W/H clamp to the
+// source frame.
+//
+// ONE region per line, not one per match: every match on a line shares that
+// line's box, so a second proposal for the same rectangle would only be a
+// second thing to click. The kinds are collected instead.
+function suggestionsFrom(res, scale, W, H) {
+  const lines = res && Array.isArray(res.lines) ? res.lines : [];
+  const k = isFinite(scale) && scale > 0 ? scale : 1;
+  const out = [];
+  for (const ln of lines) {
+    if (!ln || !ln.box) continue;
+    const hits = piiFindings(ln.text);
+    if (!hits.length) continue;
+    const x = Math.max(0, ln.box.x * k);
+    const y = Math.max(0, ln.box.y * k);
+    const w = Math.min(W - x, ln.box.w * k);
+    const h = Math.min(H - y, ln.box.h * k);
+    if (!(w > 0) || !(h > 0)) continue;
+    const kinds = [];
+    const texts = [];
+    let maybe = true;
+    for (const hit of hits) {
+      if (kinds.indexOf(hit.kind) === -1) kinds.push(hit.kind);
+      if (texts.indexOf(hit.text) === -1) texts.push(hit.text);
+      if (!hit.maybe) maybe = false;
+    }
+    // The chip names ONE of the hits, and it has to be the one that earns the
+    // confidence the chip shows. `maybe` is false as soon as any hit is
+    // definite, so heading the region with whatever came first in reading order
+    // stated a guess as a fact: "Jane Doe jane@x.com" read as a flat "Name"
+    // when the email is the definite half. Head with the first definite hit
+    // where there is one, otherwise with the first guess.
+    const lead = hits.find((hit) => !hit.maybe) || hits[0];
+    out.push({
+      page: 1,
+      x: Math.round(x), y: Math.round(y),
+      w: Math.round(w), h: Math.round(h),
+      kind: lead.kind,
+      kinds,
+      label: lead.label,
+      maybe,
+      text: texts.join(', '),
+      confidence: Math.round((Number(ln.confidence) || 0) * 100) / 100,
+    });
+  }
+  return out;
+}
+
+// Decode, downscale to a working size the device will accept, read, classify.
+// Rejects with a sentence the canvas can show as-is.
+async function readSuggestions(host, f, kind, signal) {
+  if (!host || !host.ocr || typeof host.ocr.run !== 'function') {
+    throw new Error('Reading the text in a picture is not available in this app.');
+  }
+  if (!canRaster()) throw new Error(HEADLESS_MSG);
+  const img = await decodeImage(f.bytes, OUT_MIME[kind] || f.mime || 'image/png');
+  const W = img.width || img.naturalWidth;
+  const H = img.height || img.naturalHeight;
+  if (!(W > 0) || !(H > 0)) throw new Error('That file could not be decoded as an image.');
+
+  let maxEdge = OCR_MAX_EDGE;
+  if (typeof host.ocr.canRun === 'function') {
+    const fit = await host.ocr.canRun({ width: W, height: H });
+    if (fit && fit.ok === false) {
+      if (fit.suggestedMaxEdge > 0) maxEdge = Math.min(maxEdge, fit.suggestedMaxEdge);
+      else throw new Error(fit.message || 'This picture is too large for this device to read.');
+    }
+  }
+  const k = Math.min(1, maxEdge / Math.max(W, H));
+  const rw = Math.max(1, Math.round(W * k));
+  const rh = Math.max(1, Math.round(H * k));
+  const canvas = document.createElement('canvas');
+  canvas.width = rw;
+  canvas.height = rh;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error(HEADLESS_MSG);
+  ctx.drawImage(img, 0, 0, rw, rh);
+  const frame = { width: rw, height: rh, data: ctx.getImageData(0, 0, rw, rh).data };
+  const res = await host.ocr.run(frame, { signal });
+  return suggestionsFrom(res, rw > 0 ? W / rw : 1, W, H);
+}
+
+// Which file a request nonce was made on. A fresh nonce claims whatever file is
+// loaded when it first arrives; the same nonce seen later against a DIFFERENT
+// file is a leftover, not a request. Returns true when this request owns this
+// file, and is the one place that decides a read may start.
+let _ocrReq = { req: '', file: '' };
+
+function ocrRequestOwns(req, fileKey) {
+  if (_ocrReq.req !== req) _ocrReq = { req, file: fileKey };
+  return _ocrReq.file === fileKey;
+}
+
+// One job per (file, request nonce), settled state readable synchronously - the
+// same shape the analyze and pages jobs use, for the same reason: the canvas
+// poll has to be able to pick up a finished run without another await race.
+function ocrJobFor(host, f, key, kind) {
+  if (_ocrJob.key === key && _ocrJob.promise) return _ocrJob;
+  cancelOcrJob();
+  const job = { key, promise: null, result: null, error: '', abort: null };
+  if (typeof AbortController === 'function') job.abort = new AbortController();
+  job.promise = Promise.resolve()
+    .then(() => readSuggestions(host, f, kind, job.abort ? job.abort.signal : undefined))
+    .then((list) => { job.result = list; })
+    .catch((e) => { job.error = (e && e.message) ? String(e.message) : 'The text in this picture could not be read.'; });
+  _ocrJob = job;
+  return job;
+}
+
 // ─── lifecycle: analysis + live mark feedback ────────────────────────────────
 
 async function patch(ctx) {
@@ -2039,7 +2375,9 @@ async function patch(ctx) {
   // file they do not apply to. showIf can only compare input VALUES, and the
   // file's type is not one - so the hook has to publish it. Every other key here
   // must NOT match an input id (source, bars, quantise, grayscale, svgVector,
-  // resign, style, stampLabel), or it would silently overwrite what the user set.
+  // resign, style, stampLabel, ocr), or it would silently overwrite what the
+  // user set - `ocr` especially, since that one is a request the canvas made
+  // and this pass is the answer to it.
   const blank = {
     fileKind: '',
     hasFile: false, supported: false, pdfUnavailable: false, pdfRedactUnavailable: false,
@@ -2063,6 +2401,13 @@ async function patch(ctx) {
     pageBars: [], hasPageBars: false, resignUnavailable: false,
     pdfPages: [], hasPdfPages: false, pagesPending: false, pagesError: '', pagesTruncated: false,
     toastKey: '', toastText: '',
+    // OCR suggestions (M7). `ocrAvailable` publishes the canvas affordance and
+    // is false wherever the reader is (a shell without host.ocr, a PDF, an
+    // SVG), so those paths render exactly as they did before. NOTE the naming:
+    // the request channel is the `ocr` INPUT, and nothing here may be called
+    // `ocr` or the patch would overwrite the request it is answering.
+    ocrAvailable: false, ocrPending: false, ocrError: '', ocrRead: false,
+    suggestions: [], suggestJson: '[]', suggestCount: 0, suggestPlural: false, hasSuggestions: false,
     // Can this frame's elements be measured at all? Snap-to-cover, the partial
     // -coverage warning and vector deletion all need real painted bounds, which
     // exist only on an INLINE page or SVG. A raster source has none, and neither
@@ -2257,6 +2602,53 @@ async function patch(ctx) {
   // from an earlier file, and the raster copy must not flip on a JPEG.
   base.vectorMode = base.isSvg && Boolean(inputs.svgVector);
 
+  const rasterKey = `${f.url || ''}|${f.name}|${f.size}`;
+
+  // OCR suggestions, raster frames only. An SVG's text is already readable as
+  // text (analyzeSvg reports it) and vector mode deletes ELEMENTS by address,
+  // so a box derived from pixels would be the wrong unit there; a PDF page
+  // previews as an interpreted SVG and has no pixels here at all.
+  base.ocrAvailable = base.isRaster
+    && Boolean(host && host.ocr && typeof host.ocr.run === 'function')
+    && (typeof host.ocr.isAvailable !== 'function' || host.ocr.isAvailable() === true)
+    && canRaster();
+  if (base.ocrAvailable) {
+    const req = String(inputs.ocr == null ? '' : inputs.ocr).trim();
+    if (req === 'off' || !req) {
+      // 'off' is the canvas cancel: abort a read in flight and forget it. No
+      // request at all means a fresh mount or a file with nothing asked of it.
+      if (req === 'off') cancelOcrJob();
+    } else if (!ocrRequestOwns(req, rasterKey)) {
+      // The nonce lives on an input, so it survives the file that produced it:
+      // load a second picture and the same request would still be sitting there,
+      // and the tool would read that one without anyone asking. A request
+      // belongs to the file it was made on. The Suggest button is still right
+      // there for the new picture, which is the point - a read can want a model
+      // download, and that is never something to start on someone's behalf.
+      cancelOcrJob();
+    } else {
+      const job = ocrJobFor(host, f, `${rasterKey}|${req}`, info.kind);
+      // A warm, staged read of a small picture can finish inside this pass; a
+      // first run (or a big scan) cannot, and the canvas polls for it rather
+      // than this hook overrunning its 2000ms box.
+      if (!job.result && !job.error) await withBudget(job.promise, OCR_BUDGET_MS);
+      if (job.result) {
+        base.ocrRead = true;
+        base.suggestions = job.result;
+        base.suggestJson = JSON.stringify(job.result);
+        base.suggestCount = job.result.length;
+        base.suggestPlural = job.result.length > 1;
+        base.hasSuggestions = job.result.length > 0;
+      } else if (job.error) {
+        base.ocrError = job.error;
+      } else {
+        base.ocrPending = true;
+      }
+    }
+  } else {
+    cancelOcrJob();
+  }
+
   let findings = [];
   try {
     if (info.kind === 'JPEG') findings = analyzeJpeg(f.bytes);
@@ -2313,7 +2705,7 @@ async function patch(ctx) {
     ? (inputs.svgVector ? 'Download redacted SVG' : 'Download redacted PNG')
     : `Download redacted ${info.kind}`;
 
-  const seen = adviceSeenFor(`${f.url || ''}|${f.name}|${f.size}`);
+  const seen = adviceSeenFor(rasterKey);
   const adv = advisoryFor({
     pagesFailed: [],
     pagesTruncated: false,

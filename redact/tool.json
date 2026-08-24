@@ -2,7 +2,7 @@
   "id": "redact",
   "name": "Redact",
   "description": "Black out sensitive content by rebuilding the file, then verify the output before it downloads, all on your device.",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "utility",
@@ -95,6 +95,15 @@
         { "id": "h", "label": "Height", "type": "number", "default": 0, "min": 0 },
         { "id": "n", "label": "Touched elements", "type": "text", "default": "" }
       ]
+    },
+    {
+      "id": "ocr",
+      "label": "Text read request",
+      "type": "text",
+      "default": "",
+      "maxLength": 24,
+      "showIf": { "fileKind": "__never-rendered" },
+      "help": "Written by the Suggest button on the canvas, never shown. A new value asks the tool to read the picture with the on-device text reader and propose redaction regions; \"off\" cancels a read in progress. Suggestions are only ever offered, a bar is added when you accept one."
     },
     {
       "id": "fileKind",

@@ -1,0 +1,21 @@
+<div class="jp-root jp-{{default style "buttons"}}" style="--jp-ink:{{inkColor}};--jp-paper:{{paperColor}};--jp-accent:{{accentColor}};--jp-on-accent:{{onAccentColor}};--jp-muted:{{mutedColor}};--jp-edge:{{edgeColor}};--jp-card:{{cardColor}}">
+
+  <header class="jp-head">
+    <h1 class="jp-heading">{{heading}}</h1>
+    {{#if subheading}}<p class="jp-sub">{{subheading}}</p>{{/if}}
+  </header>
+
+  {{#if error}}
+  <p class="jp-note">{{error}}</p>
+  {{else}}
+  <nav class="jp-list">
+    {{#each items}}
+    <a class="jp-link" href="{{href}}" rel="noopener">
+      <span class="jp-label">{{label}}</span>
+      <span class="jp-host">{{host}}</span>
+    </a>
+    {{/each}}
+  </nav>
+  {{/if}}
+
+</div>

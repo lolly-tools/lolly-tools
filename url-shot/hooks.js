@@ -20,11 +20,20 @@
  *   • webm/mp4      → a scroll PAN: capture a tall range strip (scrollDepth →
  *                     scrollTo), draw a moving window of it onto a <canvas> whose
  *                     __lollyFrameRender(t) the video export drives deterministically.
+ *
+ * `compare` adds a SECOND still capture at the phone viewport and lays both out in
+ * one frame (side by side, or the phone tucked over the desktop's lower right).
+ * It is a still-format feature: a video export stays the single desktop pan, since
+ * the pan canvas is one surface. Nothing is cached between runs - a capture only
+ * ever happens on an explicit preview/export, never on an input change, so
+ * switching layout costs nothing until the user asks for a new shot (and the
+ * re-capture button has to reach the live page, which a cache would defeat).
  */
 
 var _params = {
   url: '', scrollDepth: 0, scrollTo: 1, waitMs: 500, css: '',
   crop: { top: 0, right: 0, bottom: 0, left: 0 },
+  compare: 'single', mobile: { width: 390, height: 844 },
 };
 
 // Recolor pass → a CSS filter on <html>, appended to the injected stylesheet so it
@@ -61,10 +70,22 @@ var clamp01 = function (n) {
   var x = Number(n);
   return Number.isFinite(x) ? Math.min(1, Math.max(0, x)) : 0;
 };
+// A viewport edge: a whole number of px inside the manifest's own range. Junk
+// (empty, text, negative) falls back to the default rather than reaching the
+// capture spec or the frame's aspect-ratio.
+var clampPx = function (n, fallback, lo, hi) {
+  var x = Math.round(Number(n));
+  return Number.isFinite(x) && x >= lo && x <= hi ? x : fallback;
+};
 
 function stash(model) {
   var v = Object.fromEntries(model.map(function (i) { return [i.id, i.value]; }));
   var userCss = typeof v.css === 'string' ? v.css : '';
+  var compare = (v.compare === 'side' || v.compare === 'overlap') ? v.compare : 'single';
+  var mobile = {
+    width: clampPx(v.mobileWidth, 390, 200, 2000),
+    height: clampPx(v.mobileHeight, 844, 200, 4000),
+  };
   _params = {
     url: typeof v.url === 'string' ? v.url.trim() : '',
     scrollDepth: clamp01(v.scrollDepth),
@@ -75,8 +96,17 @@ function stash(model) {
       top: clampInset(v.cropTop), right: clampInset(v.cropRight),
       bottom: clampInset(v.cropBottom), left: clampInset(v.cropLeft),
     },
+    compare: compare, mobile: mobile,
   };
-  return {};
+  // Extras, not inputs: the layout modifier and the phone frame's proportions.
+  // `cmpClass` is empty in single mode so the root renders exactly the markup it
+  // always did, and the phone pane is a standalone {{#if}} block that leaves no
+  // whitespace behind - single stays byte-identical.
+  return {
+    cmpClass: compare === 'single' ? '' : ' url-shot--' + compare,
+    cmpPhone: compare !== 'single',
+    cmpAspect: mobile.width + ' / ' + mobile.height,
+  };
 }
 
 function onInit({ model }) { return stash(model); }
@@ -88,8 +118,25 @@ function reveal(node, which) {
   var img = node.querySelector('[data-capture]');
   var canvas = node.querySelector('[data-shot-canvas]');
   var placeholder = node.querySelector('[data-placeholder]');
+  var phone = node.querySelector('[data-cmp-phone]');
   if (img) img.hidden = which !== 'img';
   if (canvas) canvas.hidden = which !== 'canvas';
+  // The phone frame only accompanies a still. A video export pans one canvas the
+  // full width of the frame, so an empty bezel beside it would just be furniture -
+  // and with the bezel gone the compare LAYOUT has to go too, or the pan renders
+  // inset in a padded row instead of filling the frame the way single mode does.
+  if (phone) phone.hidden = which !== 'img';
+  if (root && root.classList && which !== 'img') {
+    root.classList.remove('url-shot--side', 'url-shot--overlap');
+  }
+  // The phone's own placeholder is absolutely positioned OVER its screen, so a
+  // capture painted behind it would never be seen. Take it down once the second
+  // shot has a src, exactly as the desktop placeholder is taken down below.
+  var phonePh = node.querySelector('[data-cmp-placeholder]');
+  var phoneImg = node.querySelector('[data-capture-mobile]');
+  if (phonePh) {
+    phonePh.style.display = (phoneImg && phoneImg.getAttribute('src')) ? 'none' : '';
+  }
   // Stale frame-clock hook off the canvas whenever it's not the video surface, so a
   // later still export's frame-clock scan can't repaint a hidden canvas.
   if (canvas && which !== 'canvas') { try { delete canvas.__lollyFrameRender; } catch (e) { canvas.__lollyFrameRender = null; } }
@@ -185,25 +232,34 @@ async function beforeExport({ node, format, opts, host }) {
     return;
   }
 
-  // ── Vector still: a true vector when the shell can print one ─────────────────
+  // ── Still: a true vector for svg/pdf where the shell can print one, a raster
+  //    otherwise (png/jpg/webp, and svg/pdf on a shell without capture.vector) ──
   var wantsVector = fmt === 'svg' || fmt === 'pdf';
-  if (wantsVector && typeof host.capture.vector === 'function') {
-    var vec = await host.capture.vector(Object.assign({}, baseSpec, { crop: _params.crop }));
-    if (img) {
-      img.setAttribute('src', vec.url);
-      img.setAttribute('width', String(vec.width || width));
-      img.setAttribute('height', String(vec.height || height));
-    }
-    reveal(node, 'img');
-    return;
+  var take = (wantsVector && typeof host.capture.vector === 'function')
+    ? function (spec) { return host.capture.vector(spec); }
+    : function (spec) { return host.capture.page(spec); };
+  var paint = function (el, ref, w, h) {
+    if (!el) return;
+    el.setAttribute('src', ref.url);
+    el.setAttribute('width', String(ref.width || w));
+    el.setAttribute('height', String(ref.height || h));
+  };
+
+  paint(img, await take(Object.assign({}, baseSpec, { crop: _params.crop })), width, height);
+
+  // Compare: the SAME page at the phone viewport, into the second frame. Serial,
+  // not parallel - two headless navigations at once is the shell's call to make,
+  // not a tool's. The crop insets are fractions of the framed viewport, so they
+  // mean the same trim on either device.
+  if (_params.compare !== 'single') {
+    var mobileSpec = Object.assign({}, baseSpec, {
+      width: _params.mobile.width,
+      height: _params.mobile.height,
+      crop: _params.crop,
+    });
+    paint(node.querySelector('[data-capture-mobile]'), await take(mobileSpec),
+      _params.mobile.width, _params.mobile.height);
   }
 
-  // ── Raster still (png/jpg/webp - and svg/pdf where no vector capture) ────────
-  var shot = await host.capture.page(Object.assign({}, baseSpec, { crop: _params.crop }));
-  if (img) {
-    img.setAttribute('src', shot.url);
-    img.setAttribute('width', String(shot.width || width));
-    img.setAttribute('height', String(shot.height || height));
-  }
   reveal(node, 'img');
 }

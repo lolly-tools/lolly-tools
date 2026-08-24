@@ -1,4 +1,4 @@
-<div class="url-shot" data-shot-root
+<div class="url-shot{{cmpClass}}" data-shot-root
      data-url="{{default url ''}}"
      data-css="{{default css ''}}"
      data-scroll="{{default scrollDepth 0}}"
@@ -21,6 +21,18 @@
     </div>
     <p class="hint">Captured live in a real browser - preview here, then Export to save. SVG gives a true vector; webm/mp4 pans a scroll of the page.</p>
   </div>
+{{#if cmpPhone}}
+  <!-- The phone frame follows the desktop one in the flow, so a row lays them out
+       desktop-left / phone-right whether the desktop shows a capture or is still
+       waiting as the placeholder. -->
+  <div class="cmp-phone" data-cmp-phone>
+    <div class="cmp-phone-body" style="aspect-ratio:{{cmpAspect}}">
+      <p class="cmp-phone-ph" data-cmp-placeholder>{{default url "No URL set"}}</p>
+      <img data-capture-mobile class="cmp-phone-shot" alt=""/>
+      <span class="cmp-phone-notch"></span>
+    </div>
+  </div>
+{{/if}}
   <button type="button" class="shot-compose" data-compose data-export-hide hidden aria-label="Compose visually" title="Compose visually">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 3h7v7H3z"/><path d="M14 14h7v7h-7z"/><path d="M14 3h7v7h-7z" opacity=".4"/><path d="M3 14h7v7H3z" opacity=".4"/></svg>
   </button>

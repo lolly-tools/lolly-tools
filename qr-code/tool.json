@@ -1,13 +1,13 @@
 {
   "id": "qr-code",
   "name": "QR Code Generator",
-  "description": "QR codes for any URL, with full color and style control.",
-  "a11yLabel": "QR code linking to {{default url \"(no URL set)\"}}",
-  "version": "2.1.0",
+  "description": "QR codes for a link, contact card, Wi-Fi network, calendar event, location or plain text.",
+  "a11yLabel": "QR code holding {{default qrSummary \"nothing yet\"}}",
+  "version": "2.3.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "everyone",
-  "tags": ["qr", "url", "link", "marketing"],
+  "tags": ["qr", "url", "link", "marketing", "vcard", "wifi"],
   "featured": {
     "order": 10,
     "blurb": "QR codes in any brand colour"
@@ -15,6 +15,8 @@
   "examples": [
     { "label": "Ink on paper", "values": { "url": "https://lolly.tools", "color": "#1a1a2e", "background": "#faf7f2" } },
     { "label": "Brand primary, joined modules", "values": { "url": "https://lolly.tools", "color": "{color.semantic.primary}", "background": "{color.semantic.surface}", "join": true } },
+    { "label": "Guest Wi-Fi card", "values": { "payload": "wifi", "ssid": "Studio Guest", "wifiKey": "welcome-2026", "wifiSecurity": "WPA", "color": "#134e4a", "background": "#f0fdfa", "ecl": "Q" } },
+    { "label": "Contact card", "values": { "payload": "vcard", "firstname": "Ana", "lastname": "Kovac", "company": "Northwind Studio", "jobTitle": "Creative Director", "email": "ana@example.com", "phone": "+61 400 000 000", "url": "https://example.com/ana", "color": "#3f3f46", "background": "#fafaf9", "ecl": "Q" } },
     { "label": "Night mode", "values": { "url": "https://lolly.tools/gallery", "color": "#93c5fd", "background": "#0b1021", "padding": 6 } },
     { "label": "High-redundancy seal", "values": { "url": "https://lolly.tools/#/valid", "ecl": "H", "padding": 2, "join": true, "color": "#0f766e", "background": "#ecfdf5" } }
   ],
@@ -23,16 +25,176 @@
     "height": 600,
     "formats": ["svg", "emf", "eps", "eps-cmyk", "dxf", "pdf", "pdf-cmyk", "cmyk-tiff", "tiff", "png", "jpeg", "webp", "avif" ],
     "actions": ["copy", "download", "save"],
-    "filenameFrom": ["url"],
+    "filenameFrom": ["url", "ssid", "eventName", "firstname"],
     "transparentBg": false
   },
   "inputs": [
+    {
+      "id": "payload",
+      "label": "Encodes",
+      "type": "select",
+      "urlKey": "p",
+      "default": "url",
+      "help": "What a scanner gets: a link to open, text to read, a contact to save, a network to join, an event to add, or a map pin.",
+      "options": [
+        { "value": "url", "label": "Link" },
+        { "value": "text", "label": "Plain text" },
+        { "value": "vcard", "label": "Contact card" },
+        { "value": "wifi", "label": "Wi-Fi network" },
+        { "value": "event", "label": "Calendar event" },
+        { "value": "geo", "label": "Location" }
+      ]
+    },
     {
       "id": "url",
       "label": "URL",
       "type": "url",
       "required": true,
-      "default": "https://lolly.tools"
+      "default": "https://lolly.tools",
+      "help": "The link a scanner opens. On a contact card it becomes the card's website line.",
+      "showIf": { "payload": ["url", "vcard"] }
+    },
+    {
+      "id": "text",
+      "label": "Text",
+      "type": "longtext",
+      "rows": 4,
+      "default": "",
+      "showIf": { "payload": "text" }
+    },
+    {
+      "id": "firstname",
+      "label": "First name",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "vcard" }
+    },
+    {
+      "id": "lastname",
+      "label": "Last name",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "vcard" }
+    },
+    {
+      "id": "company",
+      "label": "Company",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "vcard" }
+    },
+    {
+      "id": "jobTitle",
+      "label": "Job title",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "vcard" }
+    },
+    {
+      "id": "phone",
+      "label": "Phone",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "vcard" }
+    },
+    {
+      "id": "email",
+      "label": "Email",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "vcard" }
+    },
+    {
+      "id": "ssid",
+      "label": "Network name",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "wifi" },
+      "help": "The SSID exactly as it appears when joining, including capitals."
+    },
+    {
+      "id": "wifiKey",
+      "label": "Password",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "wifi" },
+      "help": "Printed into the code in the clear, the way every Wi-Fi QR works. Use it for guest networks, not for anything you would not put on a poster."
+    },
+    {
+      "id": "wifiSecurity",
+      "label": "Security",
+      "type": "select",
+      "default": "WPA",
+      "showIf": { "payload": "wifi" },
+      "options": [
+        { "value": "WPA", "label": "WPA / WPA2 / WPA3" },
+        { "value": "WEP", "label": "WEP" },
+        { "value": "nopass", "label": "Open, no password" }
+      ]
+    },
+    {
+      "id": "wifiHidden",
+      "label": "Hidden network",
+      "type": "boolean",
+      "default": false,
+      "showIf": { "payload": "wifi" },
+      "help": "Turn on when the network does not broadcast its name."
+    },
+    {
+      "id": "eventName",
+      "label": "Event name",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "event" }
+    },
+    {
+      "id": "eventStart",
+      "label": "Starts",
+      "type": "datetime-local",
+      "default": "",
+      "showIf": { "payload": "event" }
+    },
+    {
+      "id": "eventEnd",
+      "label": "Ends",
+      "type": "datetime-local",
+      "default": "",
+      "showIf": { "payload": "event" }
+    },
+    {
+      "id": "eventLocation",
+      "label": "Location",
+      "type": "text",
+      "default": "",
+      "showIf": { "payload": "event" }
+    },
+    {
+      "id": "eventDetails",
+      "label": "Details",
+      "type": "longtext",
+      "rows": 3,
+      "default": "",
+      "showIf": { "payload": "event" }
+    },
+    {
+      "id": "lat",
+      "label": "Latitude",
+      "type": "number",
+      "default": 0,
+      "min": -90,
+      "max": 90,
+      "step": 0.000001,
+      "showIf": { "payload": "geo" }
+    },
+    {
+      "id": "lng",
+      "label": "Longitude",
+      "type": "number",
+      "default": 0,
+      "min": -180,
+      "max": 180,
+      "step": 0.000001,
+      "showIf": { "payload": "geo" }
     },
     {
       "id": "color",

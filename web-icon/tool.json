@@ -1,17 +1,18 @@
 {
   "id": "web-icon",
   "name": "Web Icon Maker",
-  "description": "Favicon and app-icon maker - a multi-size .ico, plus PNG and SVG.",
+  "description": "Favicon and app-icon maker - a multi-size .ico, PNG and SVG, or the whole app kit as one zip.",
   "a11yLabel": "Web icon labelled {{default text \"untitled\"}}",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "everyone",
-  "tags": ["favicon", "icon", "ico", "app icon", "web", "logo"],
+  "tags": ["favicon", "icon", "ico", "app icon", "web", "logo", "pwa", "manifest"],
+  "capabilities": ["compose"],
   "render": {
     "width": 512,
     "height": 512,
-    "formats": ["ico", "png", "svg"],
+    "formats": ["ico", "png", "svg", "zip"],
     "actions": ["download", "copy", "save"],
     "transparentBg": false,
     "printMarks": false
@@ -124,6 +125,49 @@
       "help": "Nudge the auto-fitted label size up or down (percent)."
     },
     {
+      "id": "variant",
+      "label": "Show",
+      "type": "select",
+      "default": "icon",
+      "options": [
+        { "value": "icon", "label": "Icon" },
+        { "value": "maskable", "label": "Maskable" },
+        { "value": "monochrome", "label": "Monochrome" },
+        { "value": "og", "label": "Social card" }
+      ],
+      "help": "Which face of the kit the canvas shows. The zip always holds every face, so this is a preview switch - and a way to export one on its own. The social card exports at 1200x630."
+    },
+    {
+      "id": "appName",
+      "label": "App name",
+      "type": "text",
+      "default": "ICO Studio",
+      "maxLength": 60,
+      "help": "Full name for the PWA manifest and the social card."
+    },
+    {
+      "id": "appShortName",
+      "label": "Short name",
+      "type": "text",
+      "default": "ICO",
+      "maxLength": 24,
+      "help": "Home-screen label - kept short so a phone doesn't truncate it."
+    },
+    {
+      "id": "maskable",
+      "label": "Maskable icon",
+      "type": "boolean",
+      "default": true,
+      "help": "Add an Android adaptive icon to the kit: the art sits inside the safe zone on a full-bleed tile, so the launcher can crop it to any shape."
+    },
+    {
+      "id": "monochrome",
+      "label": "Monochrome icon",
+      "type": "boolean",
+      "default": true,
+      "help": "Add a flat single-colour silhouette to the kit, for notification badges and pinned tabs. Only its alpha is used, so the platform recolours it."
+    },
+    {
       "id": "showGrid",
       "label": "16 px preview",
       "type": "boolean",
@@ -135,6 +179,7 @@
   "hooks": {
     "onInit": true,
     "onInput": true,
-    "beforeExport": true
+    "beforeExport": true,
+    "exportStill": true
   }
 }

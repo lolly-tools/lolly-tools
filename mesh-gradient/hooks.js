@@ -205,9 +205,16 @@ function onInput(ctx) {
   return Object.assign({}, compute(ctx.model), { paletteJson: _paletteJson });
 }
 
-// Video formats play the drift; every other format freezes the base pose so a
-// mid-loop transform never bakes into a "static" SVG/PNG.
-var ANIMATED_FORMATS = { webm: 1, mp4: 1 };
+// Motion formats play the drift; every other format freezes the base pose so a
+// mid-loop transform never bakes into a "static" SVG/PNG. GIF samples the same
+// live DOM as webm/mp4, just through the raster frame path at a fixed rate.
+var ANIMATED_FORMATS = { webm: 1, mp4: 1, gif: 1 };
+// Seconds. The GIF encoder runs at a fixed 15 fps and ignores opts.fps, and its
+// frame ceiling is a function of device memory (as low as 200 frames on a small
+// phone), so a whole 24s loop would be truncated mid-clip with only a bridge
+// warning - and 1600x900 is a lot of pixels to quantise 360 times over. Same
+// bound the digi-ad tools put on their GIF exports.
+var GIF_CAP = 16;
 var _exportSvg = null;
 
 function beforeExport(ctx) {
@@ -220,23 +227,33 @@ function beforeExport(ctx) {
     // .mg-export lets the drift run during capture even under
     // prefers-reduced-motion (an explicit video export should move), then a
     // deterministic restart at t=0 (freeze → reflow → unfreeze) so the clip
-    // opens at the loop origin. 595 = the bridge's fps-aware frame ceiling
-    // (digi-ad precedent).
+    // opens at the loop origin.
     svg.classList.add('mg-export');
     svg.classList.add('mg-frozen'); void node.offsetWidth;
     svg.classList.remove('mg-frozen'); void node.offsetWidth;
     ctx.opts.wait = 0;
+    // A composed child (host.compose - the "paste this tool's link into another
+    // tool's picker" path) already has a length its caller chose and bounded,
+    // and its clip is inlined into the parent's export. Keep the drift, keep the
+    // caller's length: stretching it to a whole loop would embed a clip several
+    // times the size the parent asked for.
+    if (ctx.opts.thumbnail) return;
+    // A length the user typed in the export bar wins (durationUserSet is the
+    // shell's cross-agent flag for exactly that); otherwise the clip is one
+    // drift loop, so it plays seamlessly on repeat.
+    if (ctx.opts.durationUserSet) return;
+    // 595 = the bridge's fps-aware frame ceiling (digi-ad precedent); GIF is
+    // bounded in seconds instead, see GIF_CAP.
     var fps = ctx.opts.fps > 0 ? ctx.opts.fps : 24;
-    var cap = Math.floor(595 / fps);
+    var cap = ctx.format === 'gif' ? GIF_CAP : Math.floor(595 / fps);
     ctx.opts.duration = Math.min(_speed, cap);
-    if (cap < _speed && typeof host !== 'undefined' && host && host.log) {
-      // Frame budget can't fit a whole loop at this fps - say so instead of
-      // silently shipping a clip that pops at the seam.
+    // The export can't fit a whole loop - say so instead of silently shipping a
+    // clip that pops at the seam. host.log is a (level, msg) FUNCTION, not an
+    // object of level methods.
+    if (cap < _speed && typeof host !== 'undefined' && host && typeof host.log === 'function') {
       try {
-        (host.log.warn || host.log.info || function () {}).call(
-          host.log,
-          '[mesh-gradient] ' + _speed + 's loop shortened to ' + cap + 's at ' + fps + ' fps (frame budget) - the loop seam will jump; lower the fps or the loop length for a seamless clip.'
-        );
+        host.log('warn', 'mesh-gradient: ' + _speed + 's loop shortened to ' + cap
+          + 's (export frame budget) - the seam will jump; shorten the loop, or lower the frame rate, for a clip that repeats cleanly.');
       } catch (e) { /* logging must never break an export */ }
     }
   } else {
@@ -244,10 +261,19 @@ function beforeExport(ctx) {
   }
 }
 
-function afterExport() {
-  if (_exportSvg) {
-    _exportSvg.classList.remove('mg-frozen');
-    _exportSvg.classList.remove('mg-export');
-    _exportSvg = null;
-  }
+function afterExport(ctx) {
+  var svg = _exportSvg;
+  if (!svg) return;
+  _exportSvg = null;
+  svg.classList.remove('mg-export');
+  // Restart the drift on the way out rather than just unfreezing it. A motion
+  // capture PAUSES every CSS animation so it can scrub them frame by frame and
+  // never resumes them, so the live canvas would sit still after an export.
+  // Taking the animation property away across a reflow and putting it back
+  // cancels those paused animations and starts fresh ones (the same restart
+  // beforeExport uses), and clears the freeze a still export left behind.
+  svg.classList.add('mg-frozen');
+  if (ctx && ctx.node) void ctx.node.offsetWidth;
+  else if (svg.getBoundingClientRect) svg.getBoundingClientRect();
+  svg.classList.remove('mg-frozen');
 }

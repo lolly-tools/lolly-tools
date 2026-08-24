@@ -1,0 +1,46 @@
+{{!-- Print Sheet. The whole sheet is ONE native <svg> whose viewBox is in
+      MILLIMETRES, so every coordinate the hook emits is a real print
+      measurement and the vector export path (web walker and the DOM-free CLI
+      one) carries it through unchanged. The paper is deliberately white: this
+      is stock, not a brand surface. --}}
+<div class="ps-wrap">
+  <svg class="ps-svg" xmlns="http://www.w3.org/2000/svg"
+       viewBox="0 0 {{sheetW}} {{sheetH}}" width="{{sheetPxW}}" height="{{sheetPxH}}"
+       role="img" aria-label="Print sheet, {{default rowsOut rows}} rows by {{default colsOut cols}} columns">
+    <rect x="0" y="0" width="{{sheetW}}" height="{{sheetH}}" fill="#ffffff"/>
+
+    {{#if error}}
+    <text class="ps-text" x="12" y="20" font-family="system-ui, sans-serif" font-size="5" fill="#14171a">{{error}}</text>
+    {{else}}
+
+    {{#each cells}}
+    {{#if ../hasArt}}
+    <image href="{{asset ../image}}" x="{{x}}" y="{{y}}" width="{{w}}" height="{{h}}" preserveAspectRatio="xMidYMid meet"/>
+    {{else}}
+    <rect class="ps-empty" x="{{x}}" y="{{y}}" width="{{w}}" height="{{h}}" rx="{{rx}}"
+          fill="none" stroke="#14171a" stroke-opacity="0.18" stroke-width="0.2" stroke-dasharray="2 2"/>
+    {{/if}}
+    {{/each}}
+
+    {{#if isRound}}
+    {{!-- Die line: the rounded outline each sticker is cut on. Dashed so it
+          reads as a guide, not as printed artwork. --}}
+    {{#each cells}}
+    <rect class="ps-cut" x="{{x}}" y="{{y}}" width="{{w}}" height="{{h}}" rx="{{rx}}"
+          fill="none" stroke="#14171a" stroke-opacity="0.5" stroke-width="{{../hairline}}" stroke-dasharray="1.6 1.2"/>
+    {{/each}}
+    {{/if}}
+
+    {{#each ticks}}
+    <line class="ps-tick" x1="{{x1}}" y1="{{y1}}" x2="{{x2}}" y2="{{y2}}"
+          stroke="#14171a" stroke-width="{{../hairline}}"/>
+    {{/each}}
+
+    {{#unless hasArt}}
+    <text class="ps-text" x="{{hintX}}" y="{{hintY}}" text-anchor="middle"
+          font-family="system-ui, sans-serif" font-size="{{hintSize}}" fill="#14171a" fill-opacity="0.62">Paste a Lolly tool link, or pick an image, to fill every cell</text>
+    {{/unless}}
+
+    {{/if}}
+  </svg>
+</div>

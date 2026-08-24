@@ -3,7 +3,7 @@
   "name": "Street Map",
   "description": "Clean vector street-block maps of any city. Works offline.",
   "a11yLabel": "Street map centered on {{city}}",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -12,7 +12,8 @@
     { "label": "Paris in ink", "values": { "city": "paris", "roadColor": "#1a1a2e", "waterColor": "#93c5fd", "background": "#faf7f2" } },
     { "label": "Tokyo neon", "values": { "city": "tokyo", "theme": "dark", "roadColor": "#22d3ee", "waterColor": "#0e7490", "background": "#0b1021" } },
     { "label": "Amsterdam canals", "values": { "city": "amsterdam", "roadColor": "#94a3b8", "waterColor": "#0ea5e9", "waterWeight": 10, "background": "#ffffff" } },
-    { "label": "Brand-primary Berlin", "values": { "city": "berlin", "roadColor": "{color.semantic.primary}", "waterColor": "{color.semantic.secondary}", "background": "{color.semantic.surface}" } }
+    { "label": "Brand-primary Berlin", "values": { "city": "berlin", "roadColor": "{color.semantic.primary}", "waterColor": "{color.semantic.secondary}", "background": "{color.semantic.surface}" } },
+    { "label": "Nuremberg morning run", "values": { "city": "nuremberg", "theme": "light", "roadColor": "#cfc7ba", "waterColor": "#bcd6e8", "background": "#faf7f2", "routeColor": "{color.semantic.primary}", "routeWidth": 4, "route": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<gpx version=\"1.1\" creator=\"Lolly\" xmlns=\"http://www.topografix.com/GPX/1/1\">\n <trk><name>Altstadt loop</name><trkseg>\n  <trkpt lat=\"49.4530\" lon=\"11.0740\"/>\n  <trkpt lat=\"49.4538\" lon=\"11.0752\"/>\n  <trkpt lat=\"49.4547\" lon=\"11.0764\"/>\n  <trkpt lat=\"49.4553\" lon=\"11.0781\"/>\n  <trkpt lat=\"49.4547\" lon=\"11.0796\"/>\n  <trkpt lat=\"49.4536\" lon=\"11.0798\"/>\n  <trkpt lat=\"49.4527\" lon=\"11.0779\"/>\n  <trkpt lat=\"49.4529\" lon=\"11.0745\"/>\n </trkseg></trk>\n</gpx>" } }
   ],
   "render": {
     "width": 900,
@@ -157,6 +158,36 @@
       "type": "color",
       "default": "transparent",
       "help": "Leave empty to use the theme's default."
+    },
+    {
+      "id": "route",
+      "label": "Route (GPX)",
+      "type": "longtext",
+      "rows": 4,
+      "default": "",
+      "dataSource": {
+        "accept": ".gpx,application/gpx+xml,.txt"
+      },
+      "placeholder": "<gpx>…</gpx>",
+      "help": "Add a GPX file: the track draws over the map, waypoints become dots. The map frames it until you pan or zoom."
+    },
+    {
+      "id": "routeColor",
+      "label": "Route color",
+      "type": "color",
+      "default": "",
+      "help": "The track line and its start and end dots. Leave empty for the theme's route color, which stands out from the roads."
+    },
+    {
+      "id": "routeWidth",
+      "label": "Route weight",
+      "type": "number",
+      "display": "slider",
+      "default": 3,
+      "min": 0.5,
+      "max": 16,
+      "step": 0.1,
+      "help": "Stroke thickness of the route line."
     },
     {
       "id": "view",

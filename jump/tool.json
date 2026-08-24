@@ -1,0 +1,134 @@
+{
+  "id": "jump",
+  "name": "Jump Page",
+  "description": "A one-link landing page: up to ten links with a heading and your colours, and the whole page lives inside the link you share.",
+  "a11yLabel": "Jump page {{default heading \"Links\"}} holding {{default linkCount \"no\"}} links",
+  "version": "1.0.0",
+  "engineVersion": "^1.82.0",
+  "status": "community",
+  "category": "utility",
+  "tags": ["links", "landing", "linktree", "bio", "jump", "marketing", "share"],
+  "examples": [
+    {
+      "label": "Studio front door",
+      "values": {
+        "heading": "Northwind Studio",
+        "subheading": "Everything we make, one link.",
+        "style": "buttons",
+        "accent": "#2563eb",
+        "background": "#f6f8fc",
+        "color": "#16202b",
+        "links": [
+          { "label": "Portfolio", "url": "https://example.com/work" },
+          { "label": "Book a session", "url": "https://example.com/book" },
+          { "label": "Newsletter", "url": "https://example.com/news" },
+          { "label": "Contact", "url": "https://example.com/hello" }
+        ]
+      }
+    },
+    {
+      "label": "Conference talk",
+      "values": {
+        "heading": "Thanks for listening",
+        "subheading": "The slides, the paper and the demo from today's talk.",
+        "style": "cards",
+        "accent": "#0d7a5f",
+        "background": "#f5f7f4",
+        "color": "#132019",
+        "links": [
+          { "label": "Slides (PDF)", "url": "https://example.com/talk/slides" },
+          { "label": "The paper", "url": "https://example.com/talk/paper" },
+          { "label": "Live demo", "url": "https://example.com/talk/demo" }
+        ]
+      }
+    },
+    {
+      "label": "Quiet list",
+      "values": {
+        "heading": "Ana Kovac",
+        "subheading": "",
+        "style": "minimal",
+        "accent": "#7c3aed",
+        "background": "#faf9fd",
+        "color": "#1c1730",
+        "links": [
+          { "label": "Writing", "url": "https://example.com/essays" },
+          { "label": "Photography", "url": "https://example.com/photos" },
+          { "label": "Now", "url": "https://example.com/now" }
+        ]
+      }
+    }
+  ],
+  "render": {
+    "width": 900,
+    "height": 1400,
+    "formats": ["html"],
+    "export": false
+  },
+  "inputs": [
+    {
+      "id": "heading",
+      "label": "Heading",
+      "type": "text",
+      "default": "Find us everywhere",
+      "maxLength": 60
+    },
+    {
+      "id": "subheading",
+      "label": "Sub-heading",
+      "type": "text",
+      "default": "One link for all of it.",
+      "maxLength": 120
+    },
+    {
+      "id": "links",
+      "label": "Links",
+      "type": "blocks",
+      "urlKey": "l",
+      "help": "Up to ten. A label is optional - an empty one shows the site's own name. Share the page with the Share button: the whole page travels inside the link, so it works on any Lolly, offline, with nothing stored on a server. Add a password in the Share dialog and the page only opens for someone who knows it.",
+      "fields": [
+        { "id": "label", "label": "Label", "type": "text", "default": "" },
+        { "id": "url", "label": "Address", "type": "text", "default": "" }
+      ],
+      "default": [
+        { "label": "Website", "url": "https://example.com" },
+        { "label": "Newsletter", "url": "https://example.com/news" },
+        { "label": "Say hello", "url": "https://example.com/contact" }
+      ]
+    },
+    {
+      "id": "style",
+      "label": "Style",
+      "type": "select",
+      "default": "buttons",
+      "options": [
+        { "value": "buttons", "label": "Buttons" },
+        { "value": "cards", "label": "Cards" },
+        { "value": "minimal", "label": "Minimal" }
+      ]
+    },
+    {
+      "id": "color",
+      "label": "Text",
+      "type": "color",
+      "default": "{color.semantic.text}"
+    },
+    {
+      "id": "background",
+      "label": "Background",
+      "type": "color",
+      "default": "{color.semantic.surface}"
+    },
+    {
+      "id": "accent",
+      "label": "Accent",
+      "type": "color",
+      "default": "{color.semantic.primary}",
+      "help": "Colours the buttons and the link marks."
+    }
+  ],
+  "hooks": {
+    "onInit": true,
+    "onInput": true
+  }
+}

@@ -1,0 +1,131 @@
+/* Jump Page.
+   Every colour comes in as a custom property the template sets from the hook's
+   resolved palette, so a brand with no tokens still paints: the fallbacks below
+   are the same literals the hook falls back to. Brand-agnostic throughout. */
+
+.jp-root {
+  width: 100%;
+  height: 100%;
+  padding: 96px 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 56px;
+  box-sizing: border-box;
+  background: var(--jp-paper, #f7f8fa);
+  color: var(--jp-ink, #17232b);
+  font-family: var(--font-brand, ui-sans-serif, system-ui, sans-serif);
+  -webkit-font-smoothing: antialiased;
+}
+
+.jp-head {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  max-width: 560px;
+}
+
+.jp-heading {
+  margin: 0;
+  font-size: 54px;
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+}
+
+.jp-sub {
+  margin: 0;
+  font-size: 23px;
+  line-height: 1.4;
+  color: var(--jp-muted, rgba(0, 0, 0, 0.55));
+}
+
+.jp-note {
+  margin: auto 0;
+  font-size: 22px;
+  color: var(--jp-muted, rgba(0, 0, 0, 0.55));
+}
+
+.jp-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  max-width: 560px;
+}
+
+.jp-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 22px 32px;
+  border-radius: 999px;
+  text-decoration: none;
+  text-align: center;
+  color: inherit;
+}
+
+.jp-label {
+  font-size: 25px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.jp-host {
+  font-size: 16px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+/* Buttons: filled accent pills, the host folded into the pill. */
+
+.jp-buttons .jp-link {
+  background: var(--jp-accent, #2563eb);
+  color: var(--jp-on-accent, #ffffff);
+}
+
+.jp-buttons .jp-host {
+  opacity: 0.75;
+}
+
+/* Cards: quiet panels on the page colour, host as a second line. */
+
+.jp-cards .jp-link {
+  background: var(--jp-card, rgba(255, 255, 255, 0.72));
+  border: 1px solid var(--jp-edge, rgba(0, 0, 0, 0.12));
+  border-radius: 22px;
+  align-items: flex-start;
+  text-align: left;
+}
+
+.jp-cards .jp-host {
+  color: var(--jp-muted, rgba(0, 0, 0, 0.55));
+}
+
+/* Minimal: a text list, the accent as the underline and the host tucked after. */
+
+.jp-minimal .jp-list {
+  gap: 30px;
+}
+
+.jp-minimal .jp-link {
+  padding: 0;
+  border-radius: 0;
+  gap: 6px;
+}
+
+.jp-minimal .jp-label {
+  font-size: 30px;
+  text-decoration: underline;
+  text-decoration-color: var(--jp-accent, #2563eb);
+  text-decoration-thickness: 3px;
+  text-underline-offset: 8px;
+}
+
+.jp-minimal .jp-host {
+  color: var(--jp-muted, rgba(0, 0, 0, 0.55));
+}

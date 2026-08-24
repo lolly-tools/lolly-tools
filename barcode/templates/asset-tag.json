@@ -1,0 +1,36 @@
+{
+  "id": "asset-tag",
+  "name": "Asset tag",
+  "category": "Utility",
+  "description": "Code 128 for anything you label yourself - equipment, shelves, boxes, tickets. Letters, digits and punctuation all fit.",
+  "values": {
+    "value": "LOLLY-ASSET-00417",
+    "symbology": "code128",
+    "showText": true,
+    "moduleWidth": 3,
+    "barHeight": 120,
+    "quiet": 10,
+    "color": "#1f2937",
+    "background": "#f7f7f5"
+  },
+  "presets": [
+    {
+      "id": "equipment",
+      "name": "Equipment label",
+      "description": "A short alphanumeric tag, bars kept low for a narrow sticker.",
+      "values": { "value": "LOLLY-ASSET-00417", "barHeight": 100 }
+    },
+    {
+      "id": "serial",
+      "name": "Serial number",
+      "description": "A long digit run, which the encoder packs into code set C.",
+      "values": { "value": "9078451236007", "barHeight": 140 }
+    },
+    {
+      "id": "tracking",
+      "name": "Tracking number",
+      "description": "Letters around a digit block, the shape a parcel label takes.",
+      "values": { "value": "RI476394652CH", "barHeight": 140 }
+    }
+  ]
+}

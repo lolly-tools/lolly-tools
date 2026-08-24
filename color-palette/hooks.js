@@ -17,7 +17,91 @@
  * binary Adobe .ase (via the exportStill hook). Parity with the catalog view's
  * Swatches download - all six formats from one seed. Older shells (no
  * host.color.paletteExport) degrade to empty CSS/SCSS/GPL and decline .ase.
+ *
+ * Two review aids sit on top of that, both off by default so the plain sheet is
+ * unchanged: `vision` repaints every swatch, ramp cell and grid cell as a
+ * colour-blind or greyscale viewer sees it (labels keep the real hex), and
+ * `grid` appends a foreground-on-background contrast matrix of the base
+ * colours. Every REPORTED number - the row badges, the CSV, the DTCG tokens and
+ * the palette-exchange files - always describes the real palette: a simulation
+ * repaints, it never re-measures.
  */
+
+// === lolly:shared cvd - generated from community/_shared/vision.js; edit there and run npm run sync:shared ===
+// Colour-vision-deficiency simulation - Machado, Oliveira & Fernandes (2009),
+// "A Physiologically-based Model for Simulation of Color Vision Deficiency",
+// IEEE TVCG 15(6), pp. 1291-1298. Severity 1.0 only: protanopia, deuteranopia,
+// tritanopia. Plus a Rec.709 greyscale and the WCAG level namer.
+//
+// This mirrors engine/src/color-vision.ts and must stay numerically identical
+// to it. Two conventions carried over from there:
+//  - the matrix multiplies the GAMMA-ENCODED sRGB channels, with no
+//    linearisation, which is what the authors' own reference code does;
+//  - channels are clamped to [0,1] after the multiply and rounded to 8 bits.
+// Row-major 3x3, copied verbatim from the published table. Do not tidy them.
+var CVD_MATRICES = {
+  protan: [0.152286, 1.052583, -0.204868, 0.114503, 0.786281, 0.099216, -0.003882, -0.048116, 1.051998],
+  deutan: [0.367322, 0.860646, -0.227968, 0.280085, 0.672501, 0.047413, -0.01182, 0.04294, 0.968881],
+  tritan: [1.255528, -0.076749, -0.178779, -0.078411, 0.930809, 0.147602, 0.004733, 0.691367, 0.3039],
+};
+
+// '#abc' / '#aabbcc' / '#aabbccdd' (alpha dropped) -> [r,g,b] 0..255, or null.
+function cvdHexToRgb(hex) {
+  var s = String(hex == null ? '' : hex).trim();
+  var m3 = /^#?([0-9a-f])([0-9a-f])([0-9a-f])$/i.exec(s);
+  if (m3) s = '#' + m3[1] + m3[1] + m3[2] + m3[2] + m3[3] + m3[3];
+  var m6 = /^#?([0-9a-f]{6})(?:[0-9a-f]{2})?$/i.exec(s);
+  if (!m6) return null;
+  var n = parseInt(m6[1], 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+}
+
+function cvdRgbToHex(rgb) {
+  var out = '#';
+  for (var i = 0; i < 3; i++) {
+    var v = Math.round(rgb[i]);
+    v = v < 0 ? 0 : (v > 255 ? 255 : v);
+    out += (v < 16 ? '0' : '') + v.toString(16);
+  }
+  return out;
+}
+
+// Hex in, hex out. `type` is 'protan' | 'deutan' | 'tritan'. Null on bad input.
+function cvdSimulateHex(hex, type) {
+  var m = CVD_MATRICES[type];
+  var rgb = cvdHexToRgb(hex);
+  if (!m || !rgb) return null;
+  var r = rgb[0] / 255;
+  var g = rgb[1] / 255;
+  var b = rgb[2] / 255;
+  var ch = function (a, bb, c) {
+    var v = a * r + bb * g + c * b;
+    v = v < 0 ? 0 : (v > 1 ? 1 : v);
+    return Math.round(v * 255);
+  };
+  return cvdRgbToHex([ch(m[0], m[1], m[2]), ch(m[3], m[4], m[5]), ch(m[6], m[7], m[8])]);
+}
+
+// Rec.709 luma (0.2126 / 0.7152 / 0.0722) of the gamma-encoded channels.
+function cvdGreyscaleHex(hex) {
+  var rgb = cvdHexToRgb(hex);
+  if (!rgb) return null;
+  var y = (0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2]) / 255;
+  y = y < 0 ? 0 : (y > 1 ? 1 : y);
+  var v = Math.round(y * 255);
+  return cvdRgbToHex([v, v, v]);
+}
+
+// The best WCAG 2.1 level a ratio reaches. Normal text: AA 4.5, AAA 7. Large
+// text (18pt, or 14pt bold): AA 3, AAA 4.5. Below the AA bar for normal text,
+// 3:1 still carries UI components and graphical objects, reported as 'UI'.
+function cvdWcagLevel(ratio, large) {
+  if (!(ratio >= 1)) return 'Fail';
+  if (ratio >= (large ? 4.5 : 7)) return 'AAA';
+  if (ratio >= (large ? 3 : 4.5)) return 'AA';
+  return ratio >= 3 ? 'UI' : 'Fail';
+}
+// === /lolly:shared cvd ===
 
 // Sheet geometry (matches the template's fixed viewBox).
 var W = 1600;
@@ -52,6 +136,30 @@ var CURVES = {
   text: [45, 100],
   ui: [8, 66],
 };
+
+// Whole-sheet colour-vision preview. 'normal' is the real palette; the rest
+// repaint through the shared `cvd` region above.
+var VISIONS = {
+  protan: 'Protanopia',
+  deutan: 'Deuteranopia',
+  tritan: 'Tritanopia',
+  gray: 'Greyscale',
+};
+
+// Contrast grid geometry (the `grid` input). The sheet keeps its fixed 1600x1000
+// viewBox, so switching the grid on moves the ramp rows up instead of growing
+// the page - ROWS_BOTTOM_GRID is where the rows stop once the grid is there.
+var ROWS_BOTTOM_GRID = 620;
+var GRID_X = 300;      // cells start here; the gutter left of it carries row names
+var GRID_RIGHT = 1544;
+var GRID_TOP = 700;
+var GRID_BOTTOM = 952;
+var GRID_HEAD_Y = 666; // column-header chip top; its name sits on the 683 baseline
+
+// Pass/fail marks, drawn in the cell's foreground colour so the verdict is never
+// carried by colour alone (the level word says it too).
+var TICK = 'M3 9.5 L7 13.5 L15 4.5';
+var CROSS = 'M4 4 L14 14 M14 4 L4 14';
 
 function _num(v, d) { var n = Number(v); return Number.isFinite(n) ? n : d; }
 function _clamp(n, lo, hi) { return Math.min(hi, Math.max(lo, n)); }
@@ -244,6 +352,79 @@ function _level(ratio) {
   return ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : ratio >= 3 ? 'AA18' : 'Low';
 }
 
+// Paint one colour as the chosen viewer sees it. 'normal' and anything the
+// simulation cannot parse return the colour untouched, so a bad value degrades
+// to the real sheet rather than to a blank fill.
+function _see(hex, vision) {
+  if (!VISIONS[vision]) return hex;
+  var out = vision === 'gray' ? cvdGreyscaleHex(hex) : cvdSimulateHex(hex, vision);
+  return out || hex;
+}
+
+// The contrast grid: every base colour as a foreground row on every base colour
+// as a background column. Each cell states its own WCAG ratio, the level word
+// and a tick/cross. Ratios are measured on the REAL colours - the simulation
+// only repaints - and the diagonal is a colour on itself, so it reads 1.00:1
+// 'Low' and is deliberately invisible: that is the finding.
+function _grid(entries, vision) {
+  var n = entries.length;
+  var cellW = (GRID_RIGHT - GRID_X) / n;
+  var cellH = (GRID_BOTTOM - GRID_TOP) / n;
+  var rSize = _clamp(Math.min(cellW / 12, cellH / 3), 11, 20);
+  var lSize = _r1(_clamp(rSize * 0.8, 10.5, 16));
+  var cells = [];
+  var rowHeads = [];
+  var colHeads = [];
+
+  entries.forEach(function (col, j) {
+    colHeads.push({
+      name: col.name,
+      paint: _see(col.hex, vision),
+      x: _r1(GRID_X + j * cellW + 4),
+      y: GRID_HEAD_Y,
+      textX: _r1(GRID_X + j * cellW + 34),
+      textY: GRID_HEAD_Y + 17,
+    });
+  });
+
+  entries.forEach(function (row, i) {
+    var cy = GRID_TOP + i * cellH + cellH / 2;
+    rowHeads.push({
+      name: row.name,
+      paint: _see(row.hex, vision),
+      y: _r1(cy - 13),
+      textY: _r1(cy + 5),
+    });
+    entries.forEach(function (col, j) {
+      var x = GRID_X + j * cellW;
+      var ratio = _contrast(row.hex, col.hex);
+      var level = _level(ratio);
+      cells.push({
+        fg: row.hex,
+        bg: col.hex,
+        fgPaint: _see(row.hex, vision),
+        bgPaint: _see(col.hex, vision),
+        ratio: ratio.toFixed(2),
+        ratioText: ratio.toFixed(2) + ':1',
+        level: level,
+        mark: (level === 'AA' || level === 'AAA') ? TICK : CROSS,
+        x: _r1(x),
+        y: _r1(GRID_TOP + i * cellH),
+        w: _r1(cellW - 3),
+        h: _r1(cellH - 3),
+        markX: _r1(x + 14),
+        markY: _r1(cy - 9),
+        ratioX: _r1(x + 40),
+        levelX: _r1(x + cellW - 17),
+        textY: _r1(cy + rSize / 3),
+        rSize: _r1(rSize),
+        lSize: lSize,
+      });
+    });
+  });
+  return { cells: cells, rowHeads: rowHeads, colHeads: colHeads };
+}
+
 var _memoKey = null;
 var _memoResult = null;
 // The last computed flat swatch list, stashed for the exportStill hook - whose
@@ -273,8 +454,17 @@ function compute(model) {
   // 'classes' emits bg/text/border utility classes, else CSS custom properties.
   var cssStyle = a.cssStyle === 'classes' ? 'classes' : 'variables';
 
+  // Review aids. Both default off, and both only touch what is PAINTED.
+  var vision = VISIONS[a.vision] ? a.vision : 'normal';
+  // An allowlist, not a truthiness test: `grid` is default-off, and it arrives
+  // through URL params, so only an explicit yes turns it on.
+  var showGrid = a.grid === true || a.grid === 'true' || a.grid === 1 || a.grid === '1';
+  // The grid takes the bottom third of the fixed viewBox, so the ramp rows stop
+  // higher up and their three text lines close up to match.
+  var rowsBottom = showGrid ? ROWS_BOTTOM_GRID : ROWS_BOTTOM;
+
   // cssStyle is in the key so flipping variables↔classes re-emits the CSS export.
-  var key = JSON.stringify([seed, kind, steps, withNeutrals, contrast, bg, curveKey, lcCustom, cssStyle]);
+  var key = JSON.stringify([seed, kind, steps, withNeutrals, contrast, bg, curveKey, lcCustom, cssStyle, vision, showGrid]);
   if (key === _memoKey) return _memoResult;
 
   // Seed-tinted near-black / near-white anchors: paper & ink for the sheet
@@ -299,10 +489,17 @@ function compute(model) {
   }
 
   var rows = entries.length;
-  var rowH = Math.min(220, (ROWS_BOTTOM - ROWS_TOP - (rows - 1) * ROW_GAP) / rows);
+  var rowH = Math.min(220, (rowsBottom - ROWS_TOP - (rows - 1) * ROW_GAP) / rows);
   var blockH = rows * rowH + (rows - 1) * ROW_GAP;
-  var startY = ROWS_TOP + (ROWS_BOTTOM - ROWS_TOP - blockH) / 2;
+  var startY = ROWS_TOP + (rowsBottom - ROWS_TOP - blockH) / 2;
   var cellW = (RAMP_W - (steps - 1) * CELL_GAP) / steps;
+  // Name / hex / badge are three fixed-size lines. At the roomy offsets the hex
+  // sits on y+78 and the badge on y+rowH-24, so their clearance is rowH-102: the
+  // badge needs about 24px of it to stay off the hex descender, which puts the
+  // switch at 126, not 102. Below that they close up (clearance rowH-61). The
+  // shortest row the sheet can produce without the grid is 144, so the default
+  // geometry never reaches this.
+  var tight = rowH < 126;
 
   var perceptual = Boolean(_api() && _api().ramp);
   var swatches = [];
@@ -319,6 +516,10 @@ function compute(model) {
     var on = _pickOn(e.hex);
     var ratio = _contrast(e.hex, on);
     var lc = _apca(on, e.hex);
+    // `paint` is what the rect is filled with; `hex` stays the real colour the
+    // label prints. `onPaint` keeps that label legible against the paint.
+    var paint = _see(e.hex, vision);
+    var onPaint = _pickOn(paint);
 
     // Build this entry's ramp. Contrast mode reads the entry's hue+chroma and
     // solves each step to its target Lc against `bg` (recording achieved Lc + a
@@ -388,7 +589,8 @@ function compute(model) {
         reach: meta ? (meta.reachable ? 'yes' : 'no') : '',
       });
       paletteSwatches.push({ key: 'color.ramp.' + e.key + '.' + (j + 1) * 100, name: e.name + ' ' + (j + 1) * 100, group: e.name + ' ramp', hex: hx });
-      return { hex: hx, on: cOn, x: _r1(x), w: _r1(cellW), cx: _r1(x + cellW / 2) };
+      var cPaint = _see(hx, vision);
+      return { hex: hx, paint: cPaint, on: _pickOn(cPaint), x: _r1(x), w: _r1(cellW), cx: _r1(x + cellW / 2) };
     });
 
     tokenColors[e.key] = { $value: e.hex };
@@ -411,23 +613,44 @@ function compute(model) {
     swatches.push({
       name: e.name,
       hex: e.hex,
-      on: on,
+      paint: paint,
+      on: onPaint,
       badges: badges,
       y: _r1(y),
       h: _r1(rowH),
-      nameY: _r1(y + 44),
-      hexY: _r1(y + 78),
-      badgeY: _r1(y + rowH - 24),
+      nameY: _r1(y + (tight ? 28 : 44)),
+      hexY: _r1(y + (tight ? 52 : 78)),
+      badgeY: _r1(y + rowH - (tight ? 9 : 24)),
       cellLabelY: _r1(y + rowH / 2 + 5),
       ramp: cells,
     });
   });
 
-  var subtitle = contrast
+  // baseSubtitle describes the palette itself and is what the tokens document
+  // records; the sheet's own line adds the simulation note on top, so a preview
+  // never rewrites the exported tokens.
+  var baseSubtitle = contrast
     ? 'Seed ' + seed + ' · ' + SCHEMES[kind].label + ' · Contrast (APCA) on ' + bg + ' · ' + steps + '-step'
     : 'Seed ' + seed + ' · ' + SCHEMES[kind].label + ' · ' + steps + '-step ' + (perceptual ? 'OKLab ramps' : 'ramps');
+  var subtitle = baseSubtitle + (vision === 'normal' ? '' : ' · ' + VISIONS[vision] + ' preview, labels show the real hex');
   tokenColors.ramp = tokenRamps;
-  var tokensJson = JSON.stringify({ $description: 'Palette Lab - ' + subtitle, color: tokenColors }, null, 2);
+  var tokensJson = JSON.stringify({ $description: 'Palette Lab - ' + baseSubtitle, color: tokenColors }, null, 2);
+
+  // The grid runs over the BASE colours (seed, accents, neutral mid) plus the
+  // sheet's own paper and ink - a matrix over every ramp cell would be
+  // unreadable at this size. Paper and ink are in it because harmony accents all
+  // share a lightness by construction: a grid of accents alone is every-cell-Low
+  // for any seed, which teaches nothing. Against the palette's own near-white
+  // and near-black it answers the question people actually have - which of these
+  // colours can carry text, and on what.
+  var gridEntries = entries.concat([
+    { name: 'Paper', hex: paper },
+    { name: 'Ink', hex: ink },
+  ]);
+  var grid = showGrid ? _grid(gridEntries, vision) : { cells: [], rowHeads: [], colHeads: [] };
+  var gridCsvRows = grid.cells.map(function (c) {
+    return { fg: c.fg, bg: c.bg, ratio: c.ratio, level: c.level };
+  });
 
   // Palette-exchange files, from the flat swatch list via host.color (engine
   // >= 1.108). css-vars vs css-classes follows the cssStyle input. Feature-
@@ -454,6 +677,12 @@ function compute(model) {
     hairline: ink + '22',
     subtitle: subtitle,
     swatches: swatches,
+    gridOn: showGrid,
+    gridTitle: 'Contrast grid - ' + gridEntries.length + ' colours, foreground rows on background columns (WCAG 2.1)',
+    gridCells: grid.cells,
+    gridRowHeads: grid.rowHeads,
+    gridColHeads: grid.colHeads,
+    gridCsvRows: gridCsvRows,
     csvRows: csvRows,
     tokensJson: tokensJson,
     paletteSwatches: paletteSwatches,

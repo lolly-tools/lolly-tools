@@ -51,7 +51,7 @@
                CLI and MCP browser tiers click as soon as the button enables,
                and without this they burned bars exactly as supplied - the
                clipped-glyph leak snap-to-cover exists to close. -->
-          <div class="rd-stage" data-bars="{{barsJson}}" data-presets="{{presetsJson}}" data-geom="{{geomJson}}" data-mark="{{markJson}}"{{#if pagesPending}} data-pages-pending="1"{{/if}}{{#if exportWait}} data-export-wait="1"{{/if}}>
+          <div class="rd-stage" data-bars="{{barsJson}}" data-presets="{{presetsJson}}" data-geom="{{geomJson}}" data-mark="{{markJson}}" data-suggest="{{suggestJson}}" data-suggest-file="{{fileName}}|{{fileSize}}"{{#if pagesPending}} data-pages-pending="1"{{/if}}{{#if ocrPending}} data-ocr-pending="1"{{/if}}{{#if exportWait}} data-export-wait="1"{{/if}}>
 
             <!-- TOP DOCK: file identity + the marking toolbar. Docked to the top
                  of the stage and collapsible, so a long page can take the full
@@ -87,6 +87,33 @@
                 <button type="button" class="rd-rail-btn" data-preset="heading" aria-pressed="false" title="Heading tall">Heading</button>
                 <button type="button" class="rd-rail-btn" data-preset="block" aria-pressed="false" title="A paragraph block tall">Block</button>
               </div>
+              {{#if ocrAvailable}}
+                <!-- SUGGEST. The on-device reader looks at this picture's pixels
+                     and the tool proposes a region wherever a line reads like
+                     personal data. Nothing is applied: each proposal is an
+                     outline with an accept and a dismiss, and accepting adds an
+                     ordinary bar through the ordinary commit path. The group is
+                     rendered only where a reader exists, so the CLI and any
+                     shell without host.ocr are unchanged. -->
+                <div class="rd-rail-group rd-rail-ocr" data-ocr-group>
+                  {{#if ocrPending}}
+                    <button type="button" class="rd-rail-btn is-busy" data-ocr-cancel title="Stop reading this picture">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9"/></svg>
+                      <span>Reading…</span>
+                    </button>
+                  {{else}}
+                    <button type="button" class="rd-rail-btn" data-ocr-run title="Read the text in this picture on your device and propose bars over anything that looks personal">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v16"/></svg>
+                      <span>Suggest</span>
+                    </button>
+                  {{/if}}
+                  {{#if hasSuggestions}}
+                    <button type="button" class="rd-rail-btn" data-sugg-accept-all title="Turn every suggestion still showing into a bar">
+                      <span>Accept {{suggestCount}}</span>
+                    </button>
+                  {{/if}}
+                </div>
+              {{/if}}
               {{#if hasManyPages}}
                 <!-- Quiet page cue for the scrolling stack: which page you are on,
                      and two buttons that step the scroller. The buttons are not
@@ -299,6 +326,25 @@
                 <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
               </div>
             {{/if}}
+
+            {{#if ocrError}}
+              <div class="rd-toast rd-toast-keep" data-toast-key="ocrerr|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">{{ocrError}}</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
+            {{/if}}
+            {{#if hasSuggestions}}
+              <div class="rd-toast rd-toast-keep" data-toast-key="sugg|{{fileName}}|{{fileSize}}|{{suggestCount}}">
+                <span class="rd-toast-text">{{suggestCount}} suggested region{{#if suggestPlural}}s{{/if}} from reading this picture on your device. Each one is a guess offered for you to accept or dismiss, never a redaction: nothing is covered until you accept it. A suggestion covers the whole line a match sits on, and a reader misses text it cannot see, so keep marking by hand as well.</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
+            {{/if}}
+            {{#if ocrRead}}{{#unless hasSuggestions}}
+              <div class="rd-toast rd-toast-keep" data-toast-key="suggnone|{{fileName}}|{{fileSize}}">
+                <span class="rd-toast-text">Nothing in this picture read as personal data. That is not proof there is none: the reader only sees text it can recognise, and it does not know what matters to you.</span>
+                <button type="button" class="rd-toast-x" aria-label="Dismiss">&#215;</button>
+              </div>
+            {{/unless}}{{/if}}
 
             {{#if staleNote}}
               <div class="rd-toast rd-toast-keep" data-toast-key="stale|{{fileName}}|{{fileSize}}">
@@ -613,6 +659,51 @@
     if (typeof markCfg.label !== 'string') markCfg.label = '';
     if (typeof markCfg.radius !== 'number') markCfg.radius = 0;
     stage.style.setProperty('--rd-ink', markCfg.ink);
+
+    /* ── Suggested regions (M7) ─────────────────────────────────────────────
+       Proposals from the hook's OCR read: [{page,x,y,w,h,kind,label,maybe,text}]
+       in the frame's own units, exactly like a bar. They are NEVER bars. Each
+       one draws as an outline with an accept and a dismiss, and accepting adds
+       an ordinary bar through the same commit() every drawn bar goes through -
+       so undo, URL mode, save and the export gate all behave identically to a
+       mark the person drew by hand.
+
+       Dismissals ride the persistent canvas container: every commit repaints
+       via innerHTML, so a local would forget what the person just waved away
+       and put it straight back. They are therefore scoped to the FILE by hand -
+       a key is only geometry plus a kind, and two scans of the same form line
+       up exactly, so an unscoped list would silently withhold a suggestion on
+       the second document because it was waved away on the first. ── */
+    var suggs;
+    try { suggs = JSON.parse(stage.getAttribute('data-suggest') || '[]'); } catch (e5) { suggs = []; }
+    if (!Array.isArray(suggs)) suggs = [];
+    var suggFile = stage.getAttribute('data-suggest-file') || '';
+
+    function suggKey(s) {
+      return [s.page || 1, s.x, s.y, s.w, s.h, s.kind || ''].join(':');
+    }
+    function suggDismissed() {
+      var d = (canvasRoot && canvasRoot.dataset.rdSuggOff) || '';
+      var rows = d ? d.split('\n') : [];
+      /* Row 0 names the file the rest belong to. A different file starts over. */
+      if (!rows.length || rows[0] !== suggFile) return [];
+      return rows.slice(1);
+    }
+    function suggDismiss(keys) {
+      if (!canvasRoot) return;
+      var list = suggDismissed();
+      for (var i = 0; i < keys.length; i++) {
+        if (list.indexOf(keys[i]) === -1) list.push(keys[i]);
+      }
+      canvasRoot.dataset.rdSuggOff = [suggFile].concat(list).join('\n');
+    }
+    /* A suggestion becomes a bar with no node addresses ('n' absent): it was
+       measured against PIXELS, not against elements, and a raster frame has no
+       elements to name. Vector mode is never offered on a raster source, so
+       nothing downstream can mistake that for a measurement it can trust. */
+    function suggBar(s) {
+      return { page: s.page || 1, x: s.x, y: s.y, w: s.w, h: s.h, n: '' };
+    }
 
     /* @geom-mirror-start
        Pure geometry, mirrored from hooks.js (rectTouches / rectOverlaps /
@@ -1139,6 +1230,21 @@
       field.dispatchEvent(new Event('change', { bubbles: true }));
     }
 
+    /* Accepting is the ONLY way a suggestion becomes a bar, and it goes through
+       the same commit as a drawn one - one write of the whole array, on the
+       undo stack, in the URL, in the saved session. Accepted keys are dismissed
+       first so the repaint that follows the commit does not draw the proposal
+       again on top of the bar it just became. */
+    function acceptSuggestions(keys) {
+      var add = [];
+      for (var i = 0; i < suggs.length; i++) {
+        if (keys.indexOf(suggKey(suggs[i])) === -1) continue;
+        add.push(suggBar(suggs[i]));
+      }
+      suggDismiss(keys);
+      if (add.length) commit(bars.concat(add));
+    }
+
     /* While the shell renders the page previews, poll by re-running onInput with
        the bars input's CURRENT runtime value (the nudge channel: no history
        entry, no stale value). Without any channel nothing here can re-run
@@ -1177,6 +1283,52 @@
         if (b.hasAttribute('data-preset')) b.setAttribute('aria-pressed', b.getAttribute('data-preset') === preset ? 'true' : 'false');
       });
     }
+    /* ── Ask for a read, stop a read, take every suggestion ─────────────────
+       The request travels as a value on the `ocr` input, because a template
+       script has no host bridge: the hook owns host.ocr, and the only channel
+       from this canvas to the hook is the model. A nonce (not a flag) so a
+       second click asks for a second read; 'off' aborts one in flight.
+
+       Written through the history-free channel: asking to read is not an edit
+       to the document, and it must not sit on the undo stack in front of the
+       bars, which is what a person actually wants to take back. ── */
+    var ocrGroup = stage.querySelector('[data-ocr-group]');
+    if (ocrGroup) {
+      ocrGroup.addEventListener('click', function (e) {
+        if (!alive()) return;
+        var btn = e.target && e.target.closest ? e.target.closest('button') : null;
+        if (!btn) return;
+        if (btn.hasAttribute('data-ocr-run') && quietFn) quietFn('ocr', String(Date.now()));
+        else if (btn.hasAttribute('data-ocr-cancel') && quietFn) quietFn('ocr', 'off');
+        else if (btn.hasAttribute('data-sugg-accept-all')) {
+          var off = suggDismissed();
+          var keys = [];
+          for (var i = 0; i < suggs.length; i++) {
+            var key = suggKey(suggs[i]);
+            if (off.indexOf(key) === -1) keys.push(key);
+          }
+          acceptSuggestions(keys);
+        }
+      });
+    }
+
+    /* A read that outlives this pass publishes data-ocr-pending, and the canvas
+       polls the hook the same way it polls for page previews. A hook cannot
+       reach the shell's heavy-job queue, so there is no global toast for this
+       one: the rail button IS the busy state, and cancel is a real
+       AbortSignal on the far side. */
+    if (stage.hasAttribute('data-ocr-pending') && nudgeFn) {
+      var ocrPolls = 0;
+      var ocrTimer = setInterval(function () {
+        if (!alive() || !stage.hasAttribute('data-ocr-pending')) {
+          clearInterval(ocrTimer);
+          return;
+        }
+        if (++ocrPolls > 150) { clearInterval(ocrTimer); return; }
+        nudgeFn('ocr');
+      }, 700);
+    }
+
     var rail = stage.querySelector('.rd-rail');
     if (rail) {
       rail.addEventListener('click', function (e) {
@@ -1462,8 +1614,66 @@
           el.appendChild(del);
           marks.appendChild(el);
         });
+        renderSuggestions(sp);
         frame.__rdPartials = renderPartials(sp, nodes);
         reportPartials();
+      }
+
+      /* Proposals, drawn over the same frame as the bars. Dotted and in the
+         theme's own brand tone, deliberately unlike both the mark (opaque ink)
+         and the partly-covered warning (a solid warm hairline plus a hatch) -
+         and never dashed, which this app reserves for drop targets. The chip
+         names what was recognised and carries the two buttons; a suggestion
+         cannot turn into a bar without one of them being clicked. */
+      function renderSuggestions(sp) {
+        if (!suggs.length) return;
+        var off = suggDismissed();
+        for (var i = 0; i < suggs.length; i++) {
+          var s = suggs[i];
+          if ((s.page || 1) !== page) continue;
+          if (!(s.w > 0) || !(s.h > 0)) continue;
+          var key = suggKey(s);
+          if (off.indexOf(key) !== -1) continue;
+          var el = document.createElement('div');
+          el.className = 'rd-sugg' + (s.maybe ? ' is-maybe' : '');
+          el.setAttribute('data-sugg-key', key);
+          el.style.left = (s.x / sp.w * 100) + '%';
+          el.style.top = (s.y / sp.h * 100) + '%';
+          el.style.width = (s.w / sp.w * 100) + '%';
+          el.style.height = (s.h / sp.h * 100) + '%';
+          if (s.text) el.title = (s.label || 'Suggested') + ': ' + s.text;
+          var chip = document.createElement('span');
+          /* The chip hangs below the region so it never sits on the pixels the
+             person is deciding about - but the frame clips its overflow, so a
+             region near the bottom edge would have an accept button nobody can
+             reach. Those flip above instead. */
+          chip.className = 'rd-sugg-chip'
+            + ((s.y + s.h) / sp.h > 0.88 ? ' is-above' : '');
+          var name = document.createElement('span');
+          name.className = 'rd-sugg-name';
+          /* The question mark is the whole honesty of a loose match: a
+             capitalised word pair is a guess, and the chip says so. */
+          name.textContent = (s.label || 'Suggested') + (s.maybe ? '?' : '');
+          chip.appendChild(name);
+          var ok = document.createElement('button');
+          ok.type = 'button';
+          ok.className = 'rd-sugg-ok';
+          ok.setAttribute('data-sugg-accept', key);
+          ok.setAttribute('aria-label', 'Cover this suggested ' + (s.label || 'region') + ' with a bar');
+          ok.title = 'Cover it';
+          ok.textContent = '✓';
+          var no = document.createElement('button');
+          no.type = 'button';
+          no.className = 'rd-sugg-no';
+          no.setAttribute('data-sugg-dismiss', key);
+          no.setAttribute('aria-label', 'Dismiss this suggestion');
+          no.title = 'Dismiss';
+          no.textContent = '×';
+          chip.appendChild(ok);
+          chip.appendChild(no);
+          el.appendChild(chip);
+          marks.appendChild(el);
+        }
       }
       if (isVectorFrame || img.complete) renderBars();
       else img.addEventListener('load', renderBars);
@@ -1475,6 +1685,20 @@
 
       marks.addEventListener('click', function (e) {
         if (!alive()) return;
+        var t = e.target;
+        var ok = t && t.closest ? t.closest('[data-sugg-accept]') : null;
+        if (ok) {
+          e.preventDefault();
+          acceptSuggestions([ok.getAttribute('data-sugg-accept')]);
+          return;
+        }
+        var no = t && t.closest ? t.closest('[data-sugg-dismiss]') : null;
+        if (no) {
+          e.preventDefault();
+          suggDismiss([no.getAttribute('data-sugg-dismiss')]);
+          renderBars();
+          return;
+        }
         var del = e.target && e.target.closest ? e.target.closest('.rd-bar-del') : null;
         if (del) {
           e.preventDefault();
@@ -1503,7 +1727,10 @@
       var abortGesture = null;
       frame.addEventListener('pointerdown', function (e) {
         if (!alive() || mode === 'erase') return;
-        if (e.target && e.target.closest && e.target.closest('.rd-bar-del')) return;
+        /* The remove dot and a suggestion's accept/dismiss chip are controls
+           sitting on the drawing surface: a press on one is a click, never the
+           start of a bar. */
+        if (e.target && e.target.closest && e.target.closest('.rd-bar-del, .rd-sugg-chip')) return;
         if (e.button !== undefined && e.button !== 0) return;
         if (abortGesture) { abortGesture(); return; }   /* second finger: pinch, not a bar */
         if (e.isPrimary === false) return;

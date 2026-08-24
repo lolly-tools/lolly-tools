@@ -3,8 +3,8 @@
   "name": "Audiogram",
   "description": "Turn a voice clip or song into a branded video that actually moves with the sound - bars, spectrum, ring, ridgeline or scope, ready for social.",
   "a11yLabel": "Audiogram card for {{default title \"an audio clip\"}} with a waveform animated from the audio",
-  "version": "2.5.0",
-  "engineVersion": "^1.71.0",
+  "version": "2.7.1",
+  "engineVersion": ">=1.150.0 <2.0.0",
   "status": "community",
   "category": "everyone",
   "tags": [
@@ -32,6 +32,15 @@
         "title": "Slow is smooth, smooth is fast",
         "subtitle": "The Build Notes podcast · Ep. 41",
         "style": "bars"
+      }
+    },
+    {
+      "label": "Interview - captioned",
+      "values": {
+        "title": "In her own words",
+        "subtitle": "Field notes · episode 12",
+        "style": "wave",
+        "transcript": "1\n00:00:00,200 --> 00:00:03,400\nWe started with one question.\n\n2\n00:00:03,600 --> 00:00:07,000\nWhat would you build if nothing had to scale?\n"
       }
     },
     {
@@ -92,7 +101,9 @@
       "wav",
       "mp3",
       "m4a",
-      "opus"
+      "opus",
+      "srt",
+      "vtt"
     ],
     "actions": [
       "copy",
@@ -104,7 +115,13 @@
       "duration": 8
     },
     "capture": "audio",
-    "convertPaths": false
+    "convertPaths": false,
+    "transcribe": {
+      "source": "audio",
+      "target": "transcript",
+      "format": "srt",
+      "auto": "autoCaption"
+    }
   },
   "inputs": [
     {
@@ -712,7 +729,25 @@
       "label": "Captions",
       "type": "boolean",
       "default": true,
-      "help": "Shows subtitles when the audio was scripted in Lolly. The script's own word timings drive them, so nothing is transcribed or uploaded; other audio has no timings and shows none."
+      "help": "Shows subtitles when the audio was scripted in Lolly, or when a transcript is set below. The script's own word timings drive them where it has any; otherwise the transcript does."
+    },
+    {
+      "id": "transcript",
+      "label": "Transcript",
+      "type": "longtext",
+      "default": "",
+      "rows": 6,
+      "dataSource": {
+        "accept": ".srt,.vtt,text/plain,text/vtt"
+      },
+      "help": "Subtitles as SRT. Filled by Transcribe, or drop in your own file."
+    },
+    {
+      "id": "autoCaption",
+      "label": "Auto-caption",
+      "type": "boolean",
+      "default": false,
+      "help": "Transcribe a newly picked clip on the spot, with no click. Runs on your device; the first run downloads the speech model once."
     },
     {
       "id": "accent",
