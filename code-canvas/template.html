@@ -28,7 +28,10 @@
 .cc-controls { display: flex; align-items: center; flex-shrink: 0; }
 .cc-dot { border-radius: 50%; flex-shrink: 0; }
 .cc-cap { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.cc-filename { font-size: 14px; font-weight: 700; margin: 0 auto; }
+.cc-filename { font-size: 14px; font-weight: 700; margin: 0 auto; display: flex; align-items: center; gap: 0.5em; min-width: 0; }
+/* Title-bar icon: sized in `em` so it tracks the filename font-size the script scales. */
+.cc-icon { height: 1.15em; width: auto; flex-shrink: 0; display: block; border-radius: 3px; object-fit: contain; }
+.cc-filename-text { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 /* ── Code body ── */
 .cc-body {
@@ -95,7 +98,7 @@
   <div class="cc-window" id="cc-window">
     <div class="cc-header" id="cc-header">
       <div class="cc-controls cc-controls-left" id="cc-controls-left"></div>
-      <div class="cc-filename" id="cc-filename">{{filename}}</div>
+      <div class="cc-filename" id="cc-filename">{{#if titleIcon}}<img class="cc-icon" src="{{asset titleIcon}}" alt="">{{/if}}{{#if filename}}<span class="cc-filename-text">{{filename}}</span>{{/if}}</div>
       <div class="cc-controls cc-controls-right" id="cc-controls-right"></div>
     </div>
     <div class="cc-body" id="cc-body">
@@ -255,6 +258,7 @@
     go:         'func|var|const|type|struct|interface|return|if|else|for|range|switch|case|break|continue|default|import|package|go|chan|select|defer|fallthrough|map|make|new|nil|true|false|iota',
     css:        'important|media|keyframes|charset|import|supports|root|hover|focus|active|before|after|not|nth-child|first-child|last-child',
     bash:       'if|then|else|elif|fi|for|do|done|while|case|esac|in|function|return|exit|echo|export|local|source|readonly|set|unset|true|false',
+    dockerfile: 'FROM|AS|RUN|CMD|LABEL|MAINTAINER|EXPOSE|ENV|ADD|COPY|ENTRYPOINT|VOLUME|USER|WORKDIR|ARG|ONBUILD|STOPSIGNAL|HEALTHCHECK|SHELL',
     json:       '',
     html:       '',
     plain:      ''
@@ -305,8 +309,8 @@
         i = j; continue;
       }
 
-      // # comment (python, bash)
-      if (c === '#' && (lang === 'python' || lang === 'bash')) {
+      // # comment (python, bash, dockerfile)
+      if (c === '#' && (lang === 'python' || lang === 'bash' || lang === 'dockerfile')) {
         var j = i;
         while (j < n && src[j] !== '\n') j++;
         out += span('comment', src.slice(i, j));

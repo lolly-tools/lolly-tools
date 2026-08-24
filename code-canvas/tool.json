@@ -44,6 +44,14 @@
       "placeholder": "snippet.js"
     },
     {
+      "id": "titleIcon",
+      "label": "Title bar icon",
+      "type": "asset",
+      "assetType": "image",
+      "allowUpload": true,
+      "help": "Optional logo or glyph shown in the window title bar, before the filename. Drop in a brand mark to make the frame yours."
+    },
+    {
       "id": "language",
       "label": "Language",
       "type": "select",
@@ -58,6 +66,7 @@
         { "value": "css",        "label": "CSS" },
         { "value": "html",       "label": "HTML" },
         { "value": "bash",       "label": "Bash / Shell" },
+        { "value": "dockerfile", "label": "Dockerfile" },
         { "value": "json",       "label": "JSON" },
         { "value": "plain",      "label": "Plain Text" }
       ]

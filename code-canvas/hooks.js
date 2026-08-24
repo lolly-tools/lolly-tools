@@ -7,6 +7,7 @@ var EXT = {
 };
 
 function detectLang(code) {
+  if (/^\s*FROM\s+\S+/im.test(code)) return 'dockerfile';
   if (/^<(!DOCTYPE|html)/i.test(code.trim())) return 'html';
   if (/^\s*\{[\s\S]*\}\s*$/.test(code.trim()) && code.includes('"')) return 'json';
   if (/\bdef \w+\(|^import \w|^from \w+ import|:\s*$|\bprint\(/m.test(code)) return 'python';
