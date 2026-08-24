@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "스타터 템플릿",
   "inputs.deck.fields.layout.options.big-number": "큰 숫자",
   "inputs.deck.fields.layout.options.main-point": "핵심 메시지",
-  "inputs.deck.fields.layout.options.one-column": "1단"
+  "inputs.deck.fields.layout.options.one-column": "1단",
+  "inputs.sourceAuthor.label": "원작자",
+  "inputs.sourceAuthor.help": "가져온 덱의 작성자로, 파일 자체 속성에서 자동으로 채워집니다. 내보낸 파일에 사용자와 함께 표기됩니다. 제외하려면 지우세요."
 }

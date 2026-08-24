@@ -12,5 +12,7 @@
   "inputs.quality.label": "Kvalitet",
   "inputs.quality.help": "Kvalitet for lossy-formatene. Lavere betyr mindre fil og mykere detaljer. PNG ignorerer den.",
   "inputs.maxEdge.label": "Lengste kant (px)",
-  "inputs.maxEdge.help": "Skaler ned slik at den lengste kanten er høyst dette antallet piksler. 0 beholder originalstørrelsen. Skalerer aldri opp."
+  "inputs.maxEdge.help": "Skaler ned slik at den lengste kanten er høyst dette antallet piksler. 0 beholder originalstørrelsen. Skalerer aldri opp.",
+  "inputs.keepLocation.label": "Behold posisjon",
+  "inputs.keepLocation.help": "Tar med bildets GPS-posisjon i den konverterte filen. Av som standard - posisjon er en personlig opplysning. Bildets øvrige opplysninger (opphavsperson, copyright, opptaksdato) blir alltid med, og kortet viser nøyaktig hva som skjedde."
 }

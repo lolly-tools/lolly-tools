@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Startmall",
   "inputs.deck.fields.layout.options.big-number": "Stort tal",
   "inputs.deck.fields.layout.options.main-point": "Huvudbudskap",
-  "inputs.deck.fields.layout.options.one-column": "En kolumn"
+  "inputs.deck.fields.layout.options.one-column": "En kolumn",
+  "inputs.sourceAuthor.label": "Ursprunglig upphovsman",
+  "inputs.sourceAuthor.help": "Upphovspersonen till en importerad presentation, fylls i automatiskt från filens egna egenskaper. Den exporterade filen anger hen vid sidan av dig. Töm fältet för att utelämna."
 }

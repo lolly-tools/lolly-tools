@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Startsjabloon",
   "inputs.deck.fields.layout.options.big-number": "Groot getal",
   "inputs.deck.fields.layout.options.main-point": "Kernboodschap",
-  "inputs.deck.fields.layout.options.one-column": "Eén kolom"
+  "inputs.deck.fields.layout.options.one-column": "Eén kolom",
+  "inputs.sourceAuthor.label": "Oorspronkelijke auteur",
+  "inputs.sourceAuthor.help": "De auteur van een geïmporteerde presentatie, automatisch overgenomen uit de bestandseigenschappen. Het geëxporteerde bestand vermeldt deze naast u. Maak het veld leeg om weg te laten."
 }

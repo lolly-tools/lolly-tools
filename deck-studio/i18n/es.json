@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Plantilla inicial",
   "inputs.deck.fields.layout.options.big-number": "Número grande",
   "inputs.deck.fields.layout.options.main-point": "Idea principal",
-  "inputs.deck.fields.layout.options.one-column": "Una columna"
+  "inputs.deck.fields.layout.options.one-column": "Una columna",
+  "inputs.sourceAuthor.label": "Autor original",
+  "inputs.sourceAuthor.help": "El autor de un deck importado, rellenado automáticamente desde las propiedades del archivo. El archivo exportado le da crédito junto a usted. Bórrelo para omitirlo."
 }

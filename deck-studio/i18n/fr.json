@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Modèle de départ",
   "inputs.deck.fields.layout.options.big-number": "Grand nombre",
   "inputs.deck.fields.layout.options.main-point": "Idée clé",
-  "inputs.deck.fields.layout.options.one-column": "Une colonne"
+  "inputs.deck.fields.layout.options.one-column": "Une colonne",
+  "inputs.sourceAuthor.label": "Auteur d'origine",
+  "inputs.sourceAuthor.help": "L'auteur d'un deck importé, rempli automatiquement depuis les propriétés du fichier. Le fichier exporté le crédite à vos côtés. Effacez le champ pour l'omettre."
 }

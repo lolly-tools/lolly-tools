@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Templat permulaan",
   "inputs.deck.fields.layout.options.big-number": "Nombor besar",
   "inputs.deck.fields.layout.options.main-point": "Perkara utama",
-  "inputs.deck.fields.layout.options.one-column": "Satu lajur"
+  "inputs.deck.fields.layout.options.one-column": "Satu lajur",
+  "inputs.sourceAuthor.label": "Pengarang asal",
+  "inputs.sourceAuthor.help": "Pengarang dek yang diimport, diisi secara automatik daripada sifat fail. Fail yang dieksport memberi kredit kepadanya di samping anda. Kosongkan untuk meninggalkannya."
 }

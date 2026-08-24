@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "スターターテンプレート",
   "inputs.deck.fields.layout.options.big-number": "大きな数字",
   "inputs.deck.fields.layout.options.main-point": "メインポイント",
-  "inputs.deck.fields.layout.options.one-column": "1段組"
+  "inputs.deck.fields.layout.options.one-column": "1段組",
+  "inputs.sourceAuthor.label": "元の作成者",
+  "inputs.sourceAuthor.help": "インポートしたデッキの作成者。ファイル自身のプロパティから自動的に入力されます。書き出したファイルにはあなたと並んで記載されます。省くには空欄にしてください。"
 }

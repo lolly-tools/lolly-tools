@@ -27,5 +27,7 @@
   "inputs.content.label": "文档内容",
   "inputs.content.help": "文档本身--以可移植的富文本(ProseMirror)JSON 格式存储。通过文档工作室编辑器在画布上撰写;引擎会将该 JSON 渲染为多个页面用于导出。留空时会回退到一份初始文档。",
   "inputs.width.label": "页面宽度",
-  "inputs.height.label": "页面高度"
+  "inputs.height.label": "页面高度",
+  "inputs.sourceAuthor.label": "原始作者",
+  "inputs.sourceAuthor.help": "导入文档的作者,会从文件自身的属性自动填入。导出的文件会将其与您一同署名。清除该栏即可省略。"
 }

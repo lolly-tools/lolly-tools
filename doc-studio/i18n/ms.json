@@ -27,5 +27,7 @@
   "inputs.content.label": "Dokumen",
   "inputs.content.help": "Dokumen itu sendiri - disimpan sebagai teks kaya mudah alih (JSON ProseMirror). Ditulis pada kanvas dengan editor Doc Studio; enjin merender JSON ini menjadi muka surat untuk eksport. Jika kosong, kembali kepada dokumen permulaan lalai.",
   "inputs.width.label": "Lebar muka surat",
-  "inputs.height.label": "Tinggi muka surat"
+  "inputs.height.label": "Tinggi muka surat",
+  "inputs.sourceAuthor.label": "Pengarang asal",
+  "inputs.sourceAuthor.help": "Pengarang dokumen yang diimport, diisi secara automatik daripada sifat fail. Fail yang dieksport memberi kredit kepadanya di samping anda. Kosongkan untuk meninggalkannya."
 }

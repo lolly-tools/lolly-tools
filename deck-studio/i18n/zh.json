@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "入门模板",
   "inputs.deck.fields.layout.options.big-number": "大数字",
   "inputs.deck.fields.layout.options.main-point": "要点",
-  "inputs.deck.fields.layout.options.one-column": "单栏"
+  "inputs.deck.fields.layout.options.one-column": "单栏",
+  "inputs.sourceAuthor.label": "原始作者",
+  "inputs.sourceAuthor.help": "导入演示文稿的作者,会从文件自身的属性自动填入。导出的文件会将其与您一同署名。清除该栏即可省略。"
 }

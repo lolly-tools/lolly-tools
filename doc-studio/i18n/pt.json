@@ -27,5 +27,7 @@
   "inputs.content.label": "Documento",
   "inputs.content.help": "O próprio documento - armazenado como texto rico portátil (JSON do ProseMirror). Escrito na tela com o editor do Doc Studio; o mecanismo renderiza esse JSON em páginas para exportação. Vazio, volta a um documento inicial.",
   "inputs.width.label": "Largura da página",
-  "inputs.height.label": "Altura da página"
+  "inputs.height.label": "Altura da página",
+  "inputs.sourceAuthor.label": "Autor original",
+  "inputs.sourceAuthor.help": "O autor de um documento importado, preenchido automaticamente a partir das propriedades do ficheiro. O ficheiro exportado credita-o ao seu lado. Apague para o omitir."
 }

@@ -27,5 +27,7 @@
   "inputs.content.label": "Document",
   "inputs.content.help": "Het document zelf - opgeslagen als overdraagbare rich-text (ProseMirror) JSON. Geschreven op het canvas met de Documentstudio-editor; de engine rendert deze JSON naar pagina's voor export. Leeg valt terug op een startdocument.",
   "inputs.width.label": "Paginabreedte",
-  "inputs.height.label": "Paginahoogte"
+  "inputs.height.label": "Paginahoogte",
+  "inputs.sourceAuthor.label": "Oorspronkelijke auteur",
+  "inputs.sourceAuthor.help": "De auteur van een geïmporteerd document, automatisch overgenomen uit de bestandseigenschappen. Het geëxporteerde bestand vermeldt deze naast u. Maak het veld leeg om weg te laten."
 }

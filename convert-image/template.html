@@ -66,6 +66,11 @@
             <input id="cvt-maxedge" type="number" min="0" max="10000" step="1" inputmode="numeric" value="{{maxEdge}}" data-input-id="maxEdge">
             <span class="cvt-row-val">px · 0 = keep</span>
           </label>
+
+          <label class="cvt-row cvt-check" for="cvt-keeploc">
+            <input id="cvt-keeploc" type="checkbox" data-input-id="keepLocation" {{#if keepLocation}}checked{{/if}}>
+            <span>Keep location (GPS) if the photo has one</span>
+          </label>
         </fieldset>
 
         {{#if animatedNote}}
@@ -77,6 +82,7 @@
             <span class="cvt-result-size">{{fileSize}} → {{outSize}}</span>
             <span class="cvt-result-delta {{#if grew}}cvt-result-delta--grew{{/if}}">{{deltaText}}</span>
             {{#if outMeta}}<span class="cvt-result-meta">{{outMeta}}</span>{{/if}}
+            {{#if carriedLine}}<span class="cvt-result-carry">{{carriedLine}}</span>{{/if}}
           </div>
         {{/if}}
 
@@ -87,7 +93,7 @@
         {{/if}}
 
         <button type="button" class="cvt-download" data-export-file data-busy-label="Converting…">Download {{formatLabel}}</button>
-        <p class="cvt-note cvt-tail">Converted on your device - the file is decoded and re-encoded in your browser, never uploaded. Hidden metadata (EXIF, GPS) does not survive the re-encode.</p>
+        <p class="cvt-note cvt-tail">Converted on your device - the file is decoded and re-encoded in your browser, never uploaded. The photo's own details (author, copyright, capture date) carry into the new file; location is dropped unless you keep it.</p>
       {{/if}}
     </div>
   {{/if}}

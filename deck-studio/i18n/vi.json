@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Mẫu khởi đầu",
   "inputs.deck.fields.layout.options.big-number": "Con số lớn",
   "inputs.deck.fields.layout.options.main-point": "Ý chính",
-  "inputs.deck.fields.layout.options.one-column": "Một cột"
+  "inputs.deck.fields.layout.options.one-column": "Một cột",
+  "inputs.sourceAuthor.label": "Tác giả gốc",
+  "inputs.sourceAuthor.help": "Tác giả của bộ slide đã nhập, được điền tự động từ thuộc tính của tệp. Tệp xuất ra ghi công họ bên cạnh bạn. Xóa trường này để bỏ qua."
 }

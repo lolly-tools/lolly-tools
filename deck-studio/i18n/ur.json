@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "ابتدائی ٹیمپلیٹ",
   "inputs.deck.fields.layout.options.big-number": "بڑا عدد",
   "inputs.deck.fields.layout.options.main-point": "مرکزی نکتہ",
-  "inputs.deck.fields.layout.options.one-column": "ایک کالم"
+  "inputs.deck.fields.layout.options.one-column": "ایک کالم",
+  "inputs.sourceAuthor.label": "اصل مصنف",
+  "inputs.sourceAuthor.help": "درآمد شدہ ڈیک کا مصنف، فائل کی اپنی خصوصیات سے خود بخود بھر جاتا ہے۔ برآمد شدہ فائل میں آپ کے ساتھ اس کا نام بھی درج ہوتا ہے۔ خارج کرنے کے لیے صاف کریں۔"
 }

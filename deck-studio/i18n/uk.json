@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Стартовий шаблон",
   "inputs.deck.fields.layout.options.big-number": "Велике число",
   "inputs.deck.fields.layout.options.main-point": "Головна думка",
-  "inputs.deck.fields.layout.options.one-column": "Одна колонка"
+  "inputs.deck.fields.layout.options.one-column": "Одна колонка",
+  "inputs.sourceAuthor.label": "Початковий автор",
+  "inputs.sourceAuthor.help": "Автор імпортованого набору слайдів, заповнюється автоматично з властивостей файлу. Експортований файл вказує його поруч із вами. Очистіть поле, щоб не вказувати."
 }

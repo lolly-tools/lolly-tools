@@ -27,5 +27,7 @@
   "inputs.content.label": "Belge",
   "inputs.content.help": "Belgenin kendisi - taşınabilir zengin metin (ProseMirror) JSON'u olarak saklanır. Doc Studio düzenleyicisiyle kanvasta yazılır; motor bu JSON'u dışa aktarım için sayfalara dönüştürür. Boşsa başlangıç belgesine döner.",
   "inputs.width.label": "Sayfa genişliği",
-  "inputs.height.label": "Sayfa yüksekliği"
+  "inputs.height.label": "Sayfa yüksekliği",
+  "inputs.sourceAuthor.label": "Özgün yazar",
+  "inputs.sourceAuthor.help": "İçe aktarılan belge yazarı, dosyanın kendi özelliklerinden otomatik doldurulur. Dışa aktarılan dosya onu sizinle birlikte anar. Çıkarmak için alanı temizleyin."
 }

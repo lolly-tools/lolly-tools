@@ -12,5 +12,7 @@
   "inputs.quality.label": "품질",
   "inputs.quality.help": "손실 포맷의 품질이에요. 낮을수록 파일이 작아지고 디테일이 부드러워져요. PNG에는 적용되지 않아요.",
   "inputs.maxEdge.label": "긴 변 (px)",
-  "inputs.maxEdge.help": "긴 쪽 변이 최대 이 픽셀 수를 넘지 않도록 축소해요. 0이면 원본 크기를 유지해요. 확대는 하지 않아요."
+  "inputs.maxEdge.help": "긴 쪽 변이 최대 이 픽셀 수를 넘지 않도록 축소해요. 0이면 원본 크기를 유지해요. 확대는 하지 않아요.",
+  "inputs.keepLocation.label": "위치 정보 유지",
+  "inputs.keepLocation.help": "사진의 GPS 위치를 변환된 파일로 옮깁니다. 기본값은 꺼짐입니다 - 위치는 개인 정보입니다. 사진의 다른 정보(작성자, 저작권, 촬영 날짜)는 항상 옮겨지며, 카드에 정확히 무엇이 일어났는지 표시됩니다."
 }

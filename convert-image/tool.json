@@ -2,7 +2,7 @@
   "id": "convert-image",
   "name": "Convert Image",
   "description": "Turn HEIC, TIFF or any photo into WebP, JPEG or PNG - on your device.",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "utility",
@@ -64,6 +64,13 @@
       "max": 10000,
       "step": 1,
       "help": "Downscale so the longest edge is at most this many pixels. 0 keeps the original size. Never upscales."
+    },
+    {
+      "id": "keepLocation",
+      "label": "Keep location",
+      "type": "boolean",
+      "default": false,
+      "help": "Carry the photo's GPS position into the converted file. Off by default - location is personal data. The photo's other details (author, copyright, capture date) always carry over, and the card says exactly what happened."
     }
   ]
 }

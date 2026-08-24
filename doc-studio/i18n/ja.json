@@ -27,5 +27,7 @@
   "inputs.content.label": "文書内容",
   "inputs.content.help": "文書そのもの - 可搬性のあるリッチテキスト(ProseMirror)JSONとして保存されます。Doc Studioエディターでキャンバス上に書かれ、エンジンがこのJSONをページへとレンダリングして書き出します。空の場合はスターター文書にフォールバックします。",
   "inputs.width.label": "ページ幅",
-  "inputs.height.label": "ページ高さ"
+  "inputs.height.label": "ページ高さ",
+  "inputs.sourceAuthor.label": "元の作成者",
+  "inputs.sourceAuthor.help": "インポートしたドキュメントの作成者。ファイル自身のプロパティから自動的に入力されます。書き出したファイルにはあなたと並んで記載されます。省くには空欄にしてください。"
 }

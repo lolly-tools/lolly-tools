@@ -12,5 +12,7 @@
   "inputs.quality.label": "品質",
   "inputs.quality.help": "適用於破壞性格式的品質。數值越低,檔案越小、細節越柔和。PNG 會忽略此設定。",
   "inputs.maxEdge.label": "最長邊 (px)",
-  "inputs.maxEdge.help": "縮小圖片，讓最長邊不超過此像素數。0 表示保留原始大小。絕不放大。"
+  "inputs.maxEdge.help": "縮小圖片，讓最長邊不超過此像素數。0 表示保留原始大小。絕不放大。",
+  "inputs.keepLocation.label": "保留位置資訊",
+  "inputs.keepLocation.help": "將照片的 GPS 位置帶入轉換後的檔案。預設關閉 - 位置屬於個人資料。照片的其他資訊(作者、版權、拍攝日期)一律會帶入,卡片會準確顯示發生了什麼。"
 }

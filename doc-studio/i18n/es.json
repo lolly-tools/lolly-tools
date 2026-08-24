@@ -27,5 +27,7 @@
   "inputs.content.label": "Documento",
   "inputs.content.help": "El documento en sí, almacenado como texto enriquecido portátil (JSON de ProseMirror). Se escribe en el lienzo con el editor de Estudio de Documentos; el engine renderiza este JSON en páginas para la exportación. Si está vacío, se usa un documento inicial predeterminado.",
   "inputs.width.label": "Ancho de página",
-  "inputs.height.label": "Alto de página"
+  "inputs.height.label": "Alto de página",
+  "inputs.sourceAuthor.label": "Autor original",
+  "inputs.sourceAuthor.help": "El autor de un documento importado, rellenado automáticamente desde las propiedades del archivo. El archivo exportado le da crédito junto a usted. Bórrelo para omitirlo."
 }

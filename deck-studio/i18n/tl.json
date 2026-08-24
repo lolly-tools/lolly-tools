@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Panimulang template",
   "inputs.deck.fields.layout.options.big-number": "Malaking numero",
   "inputs.deck.fields.layout.options.main-point": "Pangunahing punto",
-  "inputs.deck.fields.layout.options.one-column": "Isang column"
+  "inputs.deck.fields.layout.options.one-column": "Isang column",
+  "inputs.sourceAuthor.label": "Orihinal na may-akda",
+  "inputs.sourceAuthor.help": "Ang may-akda ng in-import na deck, awtomatikong pinupunan mula sa sariling properties ng file. Kinikilala siya ng na-export na file kasama mo. Burahin para alisin."
 }

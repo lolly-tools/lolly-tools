@@ -12,5 +12,7 @@
   "inputs.quality.label": "Qualität",
   "inputs.quality.help": "Qualität für die verlustbehafteten Formate. Niedriger bedeutet eine kleinere Datei und weichere Details. PNG ignoriert dies.",
   "inputs.maxEdge.label": "Längste Kante (px)",
-  "inputs.maxEdge.help": "Verkleinert so, dass die längste Kante höchstens so viele Pixel misst. 0 behält die Originalgröße bei. Vergrößert nie."
+  "inputs.maxEdge.help": "Verkleinert so, dass die längste Kante höchstens so viele Pixel misst. 0 behält die Originalgröße bei. Vergrößert nie.",
+  "inputs.keepLocation.label": "Standort behalten",
+  "inputs.keepLocation.help": "Übernimmt die GPS-Position des Fotos in die konvertierte Datei. Standardmäßig aus - der Standort ist ein persönliches Datum. Die übrigen Angaben des Fotos (Autor, Copyright, Aufnahmedatum) werden immer übernommen, und die Karte zeigt genau, was passiert ist."
 }

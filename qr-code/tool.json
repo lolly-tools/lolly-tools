@@ -3,7 +3,7 @@
   "name": "QR Code Generator",
   "description": "QR codes for any URL, with full color and style control.",
   "a11yLabel": "QR code linking to {{default url \"(no URL set)\"}}",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "everyone",
@@ -23,6 +23,7 @@
     "height": 600,
     "formats": ["svg", "emf", "eps", "eps-cmyk", "dxf", "pdf", "pdf-cmyk", "cmyk-tiff", "tiff", "png", "jpeg", "webp", "avif" ],
     "actions": ["copy", "download", "save"],
+    "filenameFrom": ["url"],
     "transparentBg": false
   },
   "inputs": [

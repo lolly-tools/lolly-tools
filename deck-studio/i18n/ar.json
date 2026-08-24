@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "قالب البداية",
   "inputs.deck.fields.layout.options.big-number": "رقم كبير",
   "inputs.deck.fields.layout.options.main-point": "فكرة رئيسية",
-  "inputs.deck.fields.layout.options.one-column": "عمود واحد"
+  "inputs.deck.fields.layout.options.one-column": "عمود واحد",
+  "inputs.sourceAuthor.label": "المؤلف الأصلي",
+  "inputs.sourceAuthor.help": "مؤلف العرض التقديمي المستورد، يُملأ تلقائيًا من خصائص الملف نفسه. يُنسب إليه العمل المُصدَّر إلى جانبك. امسحه لاستبعاده."
 }

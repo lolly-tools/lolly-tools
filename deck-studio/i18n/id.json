@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Templat awal",
   "inputs.deck.fields.layout.options.big-number": "Angka besar",
   "inputs.deck.fields.layout.options.main-point": "Poin utama",
-  "inputs.deck.fields.layout.options.one-column": "Satu kolom"
+  "inputs.deck.fields.layout.options.one-column": "Satu kolom",
+  "inputs.sourceAuthor.label": "Penulis asli",
+  "inputs.sourceAuthor.help": "Penulis dek yang diimpor, diisi otomatis dari properti file. File hasil ekspor mencantumkan namanya di samping Anda. Kosongkan untuk menghilangkannya."
 }

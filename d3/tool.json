@@ -54,7 +54,7 @@
         "data": "Segment,Share\nEnterprise,38\nSMB,27\nPartner,20\nSelf-serve,15",
         "palette": "warm",
         "showValues": true,
-        "legendPosition": "right"
+        "legendPosition": "rc"
       }
     },
     {

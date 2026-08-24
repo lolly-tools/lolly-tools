@@ -12,5 +12,7 @@
   "inputs.quality.label": "Qualità",
   "inputs.quality.help": "Qualità per i formati con perdita di dati. Un valore più basso significa un file più piccolo e dettagli più sfumati. PNG lo ignora.",
   "inputs.maxEdge.label": "Lato più lungo (px)",
-  "inputs.maxEdge.help": "Riduci la risoluzione in modo che il lato più lungo non superi questo numero di pixel. 0 mantiene la dimensione originale. Non ingrandisce mai."
+  "inputs.maxEdge.help": "Riduci la risoluzione in modo che il lato più lungo non superi questo numero di pixel. 0 mantiene la dimensione originale. Non ingrandisce mai.",
+  "inputs.keepLocation.label": "Mantieni la posizione",
+  "inputs.keepLocation.help": "Riporta la posizione GPS della foto nel file convertito. Disattivato per impostazione predefinita - la posizione è un dato personale. Gli altri dati della foto (autore, copyright, data di scatto) vengono sempre riportati, e la scheda indica esattamente cosa è successo."
 }

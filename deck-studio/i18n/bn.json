@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "স্টার্টার টেমপ্লেট",
   "inputs.deck.fields.layout.options.big-number": "বড় সংখ্যা",
   "inputs.deck.fields.layout.options.main-point": "মূল বক্তব্য",
-  "inputs.deck.fields.layout.options.one-column": "এক কলাম"
+  "inputs.deck.fields.layout.options.one-column": "এক কলাম",
+  "inputs.sourceAuthor.label": "মূল লেখক",
+  "inputs.sourceAuthor.help": "আমদানি করা ডেক-এর লেখক, ফাইলের নিজস্ব বৈশিষ্ট্য থেকে স্বয়ংক্রিয়ভাবে পূরণ হয়। রপ্তানি করা ফাইলে আপনার পাশাপাশি তাঁকেও কৃতিত্ব দেওয়া হয়। বাদ দিতে মুছে ফেলুন।"
 }

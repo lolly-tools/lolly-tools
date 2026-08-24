@@ -12,5 +12,7 @@
   "inputs.quality.label": "Qualidade",
   "inputs.quality.help": "Qualidade para os formatos com perda. Menor significa um arquivo menor e detalhes mais suaves. O PNG ignora isso.",
   "inputs.maxEdge.label": "Lado mais longo (px)",
-  "inputs.maxEdge.help": "Reduza para que o lado mais longo tenha no máximo esta quantidade de pixels. 0 mantém o tamanho original. Nunca amplia."
+  "inputs.maxEdge.help": "Reduza para que o lado mais longo tenha no máximo esta quantidade de pixels. 0 mantém o tamanho original. Nunca amplia.",
+  "inputs.keepLocation.label": "Manter a localização",
+  "inputs.keepLocation.help": "Leva a posição GPS da foto para o ficheiro convertido. Desativado por predefinição - a localização é um dado pessoal. Os restantes dados da foto (autor, copyright, data de captura) são sempre levados, e o cartão indica exatamente o que aconteceu."
 }

@@ -1,7 +1,7 @@
 {
   "id": "booth-studio",
   "name": "Booth Studio",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "engineVersion": "^1.0.0",
   "status": "experimental",
   "category": "event",
@@ -74,7 +74,7 @@
       "label": "Frame finish",
       "section": "Booth",
       "type": "color",
-      "default": "#1c1f26",
+      "default": "#7d858e",
       "help": "The extrusion and counter body colour."
     },
     {
@@ -82,7 +82,7 @@
       "label": "Empty panel colour",
       "section": "Booth",
       "type": "color",
-      "default": "{color.semantic.primary}",
+      "default": "{color.semantic.muted}",
       "help": "Shown on panels with no artwork, and as the letterbox behind artwork set to Fit whole."
     },
     {
@@ -564,14 +564,14 @@
       "label": "Gradient top",
       "section": "Background",
       "type": "color",
-      "default": "#242c3a"
+      "default": "#cfd6dc"
     },
     {
       "id": "background",
       "label": "Background",
       "section": "Background",
       "type": "color",
-      "default": "#0d1014",
+      "default": "#eef1f4",
       "help": "The bottom of the backdrop. Deliberately neutral - the brand colour belongs on the panels, and a brand-coloured hall behind brand-coloured panels reads as mud."
     },
     {
@@ -579,7 +579,7 @@
       "label": "Transparent background",
       "section": "Background",
       "type": "boolean",
-      "default": false,
+      "default": true,
       "help": "Render on transparency (PNG/WebP keep the alpha). Overrides the background colour."
     },
     {

@@ -12,5 +12,7 @@
   "inputs.quality.label": "Kwaliteit",
   "inputs.quality.help": "Kwaliteit voor formaten met kwaliteitsverlies. Lager betekent een kleiner bestand en zachtere details. PNG negeert dit.",
   "inputs.maxEdge.label": "Langste zijde (px)",
-  "inputs.maxEdge.help": "Verklein zodat de langste zijde maximaal dit aantal pixels is. 0 behoudt de originele grootte. Vergroot nooit."
+  "inputs.maxEdge.help": "Verklein zodat de langste zijde maximaal dit aantal pixels is. 0 behoudt de originele grootte. Vergroot nooit.",
+  "inputs.keepLocation.label": "Locatie behouden",
+  "inputs.keepLocation.help": "Neemt de GPS-positie van de foto over in het geconverteerde bestand. Standaard uit - locatie is een persoonsgegeven. De overige gegevens van de foto (auteur, copyright, opnamedatum) worden altijd overgenomen, en de kaart toont precies wat er is gebeurd."
 }

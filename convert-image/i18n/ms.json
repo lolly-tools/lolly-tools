@@ -12,5 +12,7 @@
   "inputs.quality.label": "Kualiti",
   "inputs.quality.help": "Kualiti untuk format lossy. Lebih rendah bermakna fail lebih kecil dan perincian lebih lembut. PNG mengabaikannya.",
   "inputs.maxEdge.label": "Tepi terpanjang (px)",
-  "inputs.maxEdge.help": "Turunkan skala supaya tepi terpanjang paling banyak seberapa piksel ini. 0 mengekalkan saiz asal. Tidak pernah menaikkan skala."
+  "inputs.maxEdge.help": "Turunkan skala supaya tepi terpanjang paling banyak seberapa piksel ini. 0 mengekalkan saiz asal. Tidak pernah menaikkan skala.",
+  "inputs.keepLocation.label": "Kekalkan lokasi",
+  "inputs.keepLocation.help": "Membawa kedudukan GPS foto ke dalam fail yang ditukar. Dimatikan secara lalai - lokasi ialah data peribadi. Butiran foto yang lain (pengarang, hak cipta, tarikh tangkapan) sentiasa dibawa bersama, dan kad menunjukkan dengan tepat apa yang berlaku."
 }

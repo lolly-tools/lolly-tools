@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Начален шаблон",
   "inputs.deck.fields.layout.options.big-number": "Голямо число",
   "inputs.deck.fields.layout.options.main-point": "Основна идея",
-  "inputs.deck.fields.layout.options.one-column": "Една колона"
+  "inputs.deck.fields.layout.options.one-column": "Една колона",
+  "inputs.sourceAuthor.label": "Оригинален автор",
+  "inputs.sourceAuthor.help": "Авторът на импортирания набор от слайдове, попълва се автоматично от свойствата на файла. Експортираният файл го посочва редом с вас. Изчистете полето, за да го пропуснете."
 }

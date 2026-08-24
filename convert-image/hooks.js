@@ -79,7 +79,20 @@ function optsOf(inputs) {
     format: formatOf(inputs.format),
     quality: q / 100,
     maxEdge: isFinite(edge) && edge >= 1 ? edge : 0,
+    keepLocation: inputs.keepLocation === true || inputs.keepLocation === 'true',
   };
+}
+
+// One line saying what the metadata carry did - the disclosure that keeps a
+// drop from ever being silent. Empty when the source had nothing to carry.
+function carryLine(carried) {
+  if (!carried) return '';
+  var parts = [];
+  if (carried.carried && carried.carried.length) parts.push('Carried: ' + carried.carried.join(', '));
+  if (carried.dropped && carried.dropped.length) {
+    parts.push('Dropped: ' + carried.dropped.map(function (d) { return d.field + ' (' + d.why + ')'; }).join(', '));
+  }
+  return parts.join(' · ');
 }
 
 // File extension for the ACTUAL output mime (the shell may fall back, e.g. PNG
@@ -102,7 +115,7 @@ function outName(name, mime) {
 function jobKey(file, opts) {
   // Include the object URL (unique per pick) so two different images that happen
   // to share a name AND byte-size can't collide on the cached result.
-  return (file.url || '') + '|' + file.name + '|' + file.size + '|' + opts.format + '|' + opts.quality + '|' + opts.maxEdge;
+  return (file.url || '') + '|' + file.name + '|' + file.size + '|' + opts.format + '|' + opts.quality + '|' + opts.maxEdge + '|' + (opts.keepLocation ? 1 : 0);
 }
 
 // Return the shared convert promise for this (file, settings) key, starting it
@@ -110,10 +123,14 @@ function jobKey(file, opts) {
 // reusing the rejection.
 function jobFor(host, file, opts, key) {
   if (_job.key === key && _job.promise) return _job.promise;
+  // carryMetadata: the source's own EXIF/XMP details move into the converted
+  // file (engine 1.149+); location only when the user opted in. Older shells
+  // ignore the flag - the convert still works, just without the carry.
+  var carry = { gps: opts.keepLocation };
   var p = Promise.resolve().then(function () {
     return opts.maxEdge >= 1
-      ? host.images.resize(file.bytes, { maxEdge: opts.maxEdge, format: opts.format, quality: opts.quality })
-      : host.images.encode(file.bytes, { format: opts.format, quality: opts.quality });
+      ? host.images.resize(file.bytes, { maxEdge: opts.maxEdge, format: opts.format, quality: opts.quality, carryMetadata: carry })
+      : host.images.encode(file.bytes, { format: opts.format, quality: opts.quality, carryMetadata: carry });
   });
   _job = { key: key, promise: p };
   p.catch(function () { if (_job.key === key) _job = { key: '', promise: null }; });
@@ -161,6 +178,7 @@ async function compute(ctx) {
     fileName: '', fileSize: '', sourceMeta: '', animatedNote: false,
     done: false, pending: false,
     outSize: '', outMeta: '', deltaText: '', saved: false, grew: false,
+    carriedLine: '',
     formatLabel: labelOf(formatOf(inputs.format)),
   };
 
@@ -198,6 +216,7 @@ async function compute(ctx) {
   base.done = true;
   base.outSize = fmtBytes(res.bytes.length);
   base.outMeta = mimeLabel(res.mime) + ' · ' + res.width + '×' + res.height + ' px';
+  base.carriedLine = carryLine(res.carried);
   var delta = f.size - res.bytes.length;
   var pct = f.size > 0 ? Math.round((Math.abs(delta) / f.size) * 100) : 0;
   // Honest either way - a lossless PNG of a photo is usually LARGER than the
@@ -229,5 +248,9 @@ async function exportFile(ctx) {
 
   var opts = optsOf(inputs);
   var res = await jobFor(host, f, opts, jobKey(f, opts));
+  // Mirror the card's disclosure onto the log channel so a headless run (the
+  // CLI writes info logs to stderr) discloses the carry identically.
+  var line = carryLine(res.carried);
+  if (line && typeof host.log === 'function') host.log('info', line);
   return { bytes: res.bytes, mime: res.mime, filename: outName(f.name, res.mime) };
 }

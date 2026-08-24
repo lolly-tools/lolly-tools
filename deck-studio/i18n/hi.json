@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "स्टार्टर टेम्पलेट",
   "inputs.deck.fields.layout.options.big-number": "बड़ी संख्या",
   "inputs.deck.fields.layout.options.main-point": "मुख्य बात",
-  "inputs.deck.fields.layout.options.one-column": "एक कॉलम"
+  "inputs.deck.fields.layout.options.one-column": "एक कॉलम",
+  "inputs.sourceAuthor.label": "मूल लेखक",
+  "inputs.sourceAuthor.help": "आयात किए गए डेक के लेखक, फ़ाइल की अपनी प्रॉपर्टी से अपने आप भरा जाता है। निर्यात की गई फ़ाइल में आपके साथ उन्हें भी श्रेय मिलता है। हटाने के लिए खाली करें।"
 }

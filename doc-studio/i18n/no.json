@@ -27,5 +27,7 @@
   "inputs.content.label": "Dokument",
   "inputs.content.help": "Selve dokumentet - lagret som bærbar rik tekst (ProseMirror) i JSON. Skrevet på lerretet med Dokumentstudio-editoren; motoren gjengir denne JSON-en som sider ved eksport. Tomt faller tilbake til et startdokument.",
   "inputs.width.label": "Sidebredde",
-  "inputs.height.label": "Sidehøyde"
+  "inputs.height.label": "Sidehøyde",
+  "inputs.sourceAuthor.label": "Opprinnelig forfatter",
+  "inputs.sourceAuthor.help": "Forfatteren av et importert dokument, fylles inn automatisk fra filens egne egenskaper. Den eksporterte filen krediterer vedkommende ved siden av deg. Tøm feltet for å utelate."
 }

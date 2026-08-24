@@ -27,5 +27,7 @@
   "inputs.content.label": "Tài liệu",
   "inputs.content.help": "Bản thân tài liệu - được lưu dưới dạng JSON văn bản định dạng có thể chuyển đổi (ProseMirror). Được viết trên canvas bằng trình soạn thảo Doc Studio; engine render JSON này thành các trang để xuất. Nếu để trống sẽ dùng tài liệu mẫu khởi đầu.",
   "inputs.width.label": "Chiều rộng trang",
-  "inputs.height.label": "Chiều cao trang"
+  "inputs.height.label": "Chiều cao trang",
+  "inputs.sourceAuthor.label": "Tác giả gốc",
+  "inputs.sourceAuthor.help": "Tác giả của tài liệu đã nhập, được điền tự động từ thuộc tính của tệp. Tệp xuất ra ghi công họ bên cạnh bạn. Xóa trường này để bỏ qua."
 }

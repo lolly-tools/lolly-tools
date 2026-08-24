@@ -27,5 +27,7 @@
   "inputs.content.label": "Document",
   "inputs.content.help": "Le document lui-même - stocké en texte enrichi portable (JSON ProseMirror). Rédigé sur le canevas avec l'éditeur Doc Studio ; le moteur transforme ce JSON en pages pour l'export. Vide, il revient à un document de départ.",
   "inputs.width.label": "Largeur de page",
-  "inputs.height.label": "Hauteur de page"
+  "inputs.height.label": "Hauteur de page",
+  "inputs.sourceAuthor.label": "Auteur d'origine",
+  "inputs.sourceAuthor.help": "L'auteur d'un document importé, rempli automatiquement depuis les propriétés du fichier. Le fichier exporté le crédite à vos côtés. Effacez le champ pour l'omettre."
 }

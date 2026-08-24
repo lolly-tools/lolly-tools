@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Startvorlage",
   "inputs.deck.fields.layout.options.big-number": "Große Zahl",
   "inputs.deck.fields.layout.options.main-point": "Kernaussage",
-  "inputs.deck.fields.layout.options.one-column": "Eine Spalte"
+  "inputs.deck.fields.layout.options.one-column": "Eine Spalte",
+  "inputs.sourceAuthor.label": "Ursprünglicher Autor",
+  "inputs.sourceAuthor.help": "Der Autor eines importierten Foliensatzes, automatisch aus den Dateieigenschaften übernommen. Die exportierte Datei nennt ihn neben Ihnen. Leeren Sie das Feld, um ihn wegzulassen."
 }

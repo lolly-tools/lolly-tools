@@ -27,5 +27,7 @@
   "inputs.content.label": "文件",
   "inputs.content.help": "文件本身--以可攜式富文本(ProseMirror)JSON 格式儲存,透過文件工作室編輯器在畫布上撰寫;引擎會將此 JSON 算繪成頁面以供匯出。留空則會使用起始文件範本。",
   "inputs.width.label": "頁面寬度",
-  "inputs.height.label": "頁面高度"
+  "inputs.height.label": "頁面高度",
+  "inputs.sourceAuthor.label": "原始作者",
+  "inputs.sourceAuthor.help": "匯入文件的作者,會從檔案本身的屬性自動填入。匯出的檔案會將其與您一同署名。清除欄位即可省略。"
 }

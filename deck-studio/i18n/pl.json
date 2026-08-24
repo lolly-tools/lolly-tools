@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Szablon startowy",
   "inputs.deck.fields.layout.options.big-number": "Duża liczba",
   "inputs.deck.fields.layout.options.main-point": "Główna myśl",
-  "inputs.deck.fields.layout.options.one-column": "Jedna kolumna"
+  "inputs.deck.fields.layout.options.one-column": "Jedna kolumna",
+  "inputs.sourceAuthor.label": "Pierwotny autor",
+  "inputs.sourceAuthor.help": "Autor zaimportowanego zestawu slajdów, uzupełniany automatycznie z właściwości pliku. Wyeksportowany plik wymienia go obok Ciebie. Wyczyść pole, aby go pominąć."
 }

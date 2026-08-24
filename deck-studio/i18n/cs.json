@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Výchozí šablona",
   "inputs.deck.fields.layout.options.big-number": "Velké číslo",
   "inputs.deck.fields.layout.options.main-point": "Hlavní myšlenka",
-  "inputs.deck.fields.layout.options.one-column": "Jeden sloupec"
+  "inputs.deck.fields.layout.options.one-column": "Jeden sloupec",
+  "inputs.sourceAuthor.label": "Původní autor",
+  "inputs.sourceAuthor.help": "Autor importovaného balíčku snímků, vyplní se automaticky z vlastností souboru. Exportovaný soubor ho uvádí vedle vás. Smažte pole, pokud ho uvádět nechcete."
 }

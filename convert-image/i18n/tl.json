@@ -12,5 +12,7 @@
   "inputs.quality.label": "Kalidad",
   "inputs.quality.help": "Kalidad para sa mga lossy format. Mas mababa ang ibig sabihin ay mas maliit na file at mas malabo na detalye. Hindi ito pinapansin ng PNG.",
   "inputs.maxEdge.label": "Pinakamahabang gilid (px)",
-  "inputs.maxEdge.help": "I-downscale para ang pinakamahabang gilid ay hindi hihigit sa ganitong dami ng pixels. Pinapanatili ng 0 ang orihinal na sukat. Hindi kailanman nag-a-upscale."
+  "inputs.maxEdge.help": "I-downscale para ang pinakamahabang gilid ay hindi hihigit sa ganitong dami ng pixels. Pinapanatili ng 0 ang orihinal na sukat. Hindi kailanman nag-a-upscale.",
+  "inputs.keepLocation.label": "Panatilihin ang lokasyon",
+  "inputs.keepLocation.help": "Dinadala ang GPS na lokasyon ng larawan sa na-convert na file. Naka-off bilang default - personal na datos ang lokasyon. Ang iba pang detalye ng larawan (may-akda, copyright, petsa ng pagkuha) ay laging dinadala, at ipinapakita ng card kung ano mismo ang nangyari."
 }

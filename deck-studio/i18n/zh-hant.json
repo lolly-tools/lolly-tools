@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "入門範本",
   "inputs.deck.fields.layout.options.big-number": "大數字",
   "inputs.deck.fields.layout.options.main-point": "重點",
-  "inputs.deck.fields.layout.options.one-column": "單欄"
+  "inputs.deck.fields.layout.options.one-column": "單欄",
+  "inputs.sourceAuthor.label": "原始作者",
+  "inputs.sourceAuthor.help": "匯入簡報的作者,會從檔案本身的屬性自動填入。匯出的檔案會將其與您一同署名。清除欄位即可省略。"
 }

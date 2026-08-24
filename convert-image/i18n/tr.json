@@ -12,5 +12,7 @@
   "inputs.quality.label": "Kalite",
   "inputs.quality.help": "Kayıplı biçimler için kalite. Düşük değer daha küçük dosya ve daha yumuşak ayrıntı anlamına gelir. PNG bunu yok sayar.",
   "inputs.maxEdge.label": "En uzun kenar (px)",
-  "inputs.maxEdge.help": "En uzun kenarı en fazla bu kadar piksel olacak şekilde küçült. 0 orijinal boyutu korur. Asla büyütmez."
+  "inputs.maxEdge.help": "En uzun kenarı en fazla bu kadar piksel olacak şekilde küçült. 0 orijinal boyutu korur. Asla büyütmez.",
+  "inputs.keepLocation.label": "Konumu koru",
+  "inputs.keepLocation.help": "Fotoğrafın GPS konumunu dönüştürülen dosyaya taşır. Varsayılan olarak kapalı - konum kişisel bir veridir. Fotoğrafın diğer bilgileri (yazar, telif hakkı, çekim tarihi) her zaman taşınır ve kart tam olarak ne olduğunu gösterir."
 }

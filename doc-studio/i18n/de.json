@@ -27,5 +27,7 @@
   "inputs.content.label": "Dokument",
   "inputs.content.help": "Das Dokument selbst - gespeichert als portables Rich-Text-JSON (ProseMirror). Wird auf der Leinwand mit dem Dokumentstudio-Editor geschrieben; die Engine rendert dieses JSON für den Export in Seiten. Ist es leer, wird auf ein Startdokument zurückgegriffen.",
   "inputs.width.label": "Seitenbreite",
-  "inputs.height.label": "Seitenhöhe"
+  "inputs.height.label": "Seitenhöhe",
+  "inputs.sourceAuthor.label": "Ursprünglicher Autor",
+  "inputs.sourceAuthor.help": "Der Autor eines importierten Dokuments, automatisch aus den Dateieigenschaften übernommen. Die exportierte Datei nennt ihn neben Ihnen. Leeren Sie das Feld, um ihn wegzulassen."
 }

@@ -27,5 +27,7 @@
   "inputs.content.label": "Dokument",
   "inputs.content.help": "Sam dokument - przechowywany jako przenośny JSON tekstu sformatowanego (ProseMirror). Tworzony na płótnie w edytorze Doc Studio; silnik renderuje ten JSON na strony do eksportu. Pusty wraca do dokumentu startowego.",
   "inputs.width.label": "Szerokość strony",
-  "inputs.height.label": "Wysokość strony"
+  "inputs.height.label": "Wysokość strony",
+  "inputs.sourceAuthor.label": "Pierwotny autor",
+  "inputs.sourceAuthor.help": "Autor zaimportowanego dokumentu, uzupełniany automatycznie z właściwości pliku. Wyeksportowany plik wymienia go obok Ciebie. Wyczyść pole, aby go pominąć."
 }

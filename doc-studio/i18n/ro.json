@@ -27,5 +27,7 @@
   "inputs.content.label": "Document",
   "inputs.content.help": "Documentul propriu-zis - stocat ca JSON de tip text îmbogățit (rich-text) portabil (ProseMirror). Scris pe canava cu editorul Doc Studio; motorul randează acest JSON în pagini pentru export. Dacă este gol, se revine la un document de pornire.",
   "inputs.width.label": "Lățimea paginii",
-  "inputs.height.label": "Înălțimea paginii"
+  "inputs.height.label": "Înălțimea paginii",
+  "inputs.sourceAuthor.label": "Autor original",
+  "inputs.sourceAuthor.help": "Autorul unui document importat, completat automat din proprietățile fișierului. Fișierul exportat îl creditează alături de dvs. Ștergeți câmpul pentru a-l omite."
 }

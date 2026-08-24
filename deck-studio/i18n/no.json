@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Startmal",
   "inputs.deck.fields.layout.options.big-number": "Stort tall",
   "inputs.deck.fields.layout.options.main-point": "Hovedpoeng",
-  "inputs.deck.fields.layout.options.one-column": "Én kolonne"
+  "inputs.deck.fields.layout.options.one-column": "Én kolonne",
+  "inputs.sourceAuthor.label": "Opprinnelig forfatter",
+  "inputs.sourceAuthor.help": "Forfatteren av en importert presentasjon, fylles inn automatisk fra filens egne egenskaper. Den eksporterte filen krediterer vedkommende ved siden av deg. Tøm feltet for å utelate."
 }

@@ -1,7 +1,7 @@
 {
   "id": "3d",
   "name": "3D",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.0.0",
   "status": "experimental",
   "category": "designer",
@@ -63,9 +63,9 @@
     { "id": "envIntensity", "label": "Light intensity", "section": "Scene", "type": "number", "display": "slider", "default": 1, "min": 0, "max": 3, "step": 0.05 },
     { "id": "envRotation", "label": "Environment rotation", "section": "Scene", "type": "number", "display": "slider", "default": 0, "min": 0, "max": 360, "step": 1 },
 
-    { "id": "background", "label": "Background", "section": "Rendering", "type": "color", "default": "#0f1115" },
+    { "id": "background", "label": "Background", "section": "Rendering", "type": "color", "default": "#eef1f4" },
     { "id": "bgColor2", "label": "Gradient end", "section": "Rendering", "type": "color", "default": "{color.semantic.secondary}", "showIf": { "scene": "fun-gradient" } },
-    { "id": "transparentBg", "label": "Transparent background", "section": "Rendering", "type": "boolean", "default": false, "help": "Render on transparency (PNG/WebP keep the alpha)." },
+    { "id": "transparentBg", "label": "Transparent background", "section": "Rendering", "type": "boolean", "default": true, "help": "Render on transparency (PNG/WebP keep the alpha)." },
     { "id": "exposure", "label": "Exposure", "section": "Rendering", "type": "number", "display": "slider", "default": 1, "min": 0.1, "max": 3, "step": 0.05 },
     { "id": "shadows", "label": "Contact shadow", "section": "Rendering", "type": "boolean", "default": true },
 
@@ -77,7 +77,7 @@
       "help": "The base shot. A camera move (below) animates from here.",
       "fields": [
         { "id": "fov", "label": "Field of view", "symbol": "°", "min": 20, "max": 90, "step": 1, "default": 45 },
-        { "id": "rotation", "label": "Rotation", "symbol": "°", "min": 0, "max": 360, "step": 1, "default": 35 },
+        { "id": "rotation", "label": "Rotation", "symbol": "°", "min": 0, "max": 360, "step": 1, "default": 215 },
         { "id": "tilt", "label": "Tilt", "symbol": "°", "min": -10, "max": 80, "step": 1, "default": 12 },
         { "id": "zoom", "label": "Zoom", "symbol": "×", "min": 0.4, "max": 2.5, "step": 0.05, "default": 1 },
         { "id": "pan", "label": "Pan", "symbol": "", "min": -1, "max": 1, "step": 0.05, "default": 0 }

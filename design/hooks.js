@@ -2016,7 +2016,11 @@ function compute(model) {
     boxCls: boxCls,
     timeAttrs: timeAttrs,
     seqAttrs: seqAttrs,
-    bgStyle: [transparent ? 'transparent' : safeColor(inp.background, '#ffffff')],
+    // Frames mode: the root .artboard is just the PASTEBOARD - each page paints its
+    // own surface (fb.bg → --lolly-frame-surface), so a full-rect doc background here
+    // would render a phantom page behind the artboards (plans/141). No-frames docs
+    // keep the doc background on the root, byte-identical to before.
+    bgStyle: [frameGroups ? 'transparent' : (transparent ? 'transparent' : safeColor(inp.background, '#ffffff'))],
     connectorSvg: lineLayerFor(boxes),
     frameGroups: frameGroups,
     pasteboard: pasteboard,

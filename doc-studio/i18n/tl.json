@@ -27,5 +27,7 @@
   "inputs.content.label": "Dokumento",
   "inputs.content.help": "Ang dokumento mismo - naka-imbak bilang portable na rich-text (ProseMirror) JSON. Isinusulat sa canvas gamit ang Doc Studio editor; ino-render ng engine ang JSON na ito tungo sa mga pahina para sa pag-export. Kapag walang laman, babalik ito sa isang starter na dokumento.",
   "inputs.width.label": "Lapad ng pahina",
-  "inputs.height.label": "Taas ng pahina"
+  "inputs.height.label": "Taas ng pahina",
+  "inputs.sourceAuthor.label": "Orihinal na may-akda",
+  "inputs.sourceAuthor.help": "Ang may-akda ng in-import na dokumento, awtomatikong pinupunan mula sa sariling properties ng file. Kinikilala siya ng na-export na file kasama mo. Burahin para alisin."
 }

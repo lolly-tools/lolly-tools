@@ -1685,7 +1685,9 @@
           "help": "Your own class names for this box (space-separated, a-z 0-9 - _), so Custom CSS can say .callout { … } instead of addressing an id. Added to the box's class list on the canvas, in every export and in presentation - one document, one truth. Names in the app's own namespaces (lolly- pr- seq- fc-) are dropped. Set from the right-click menu; showFor:[] keeps it out of the sidebar. APPENDED after flipV - the compact-blocks URL wire format is append-only."
         }
       ],
-      "default": []
+      "default": [
+        { "id": "artboard-1", "kind": "frame", "x": 0, "y": 0, "w": 1920, "h": 1080, "rot": 0, "shape": "rect", "bg": "var(--brand-surface, #ffffff)", "order": 0, "clipChildren": true }
+      ]
     }
   ]
 }

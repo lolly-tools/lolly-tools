@@ -12,5 +12,7 @@
   "inputs.quality.label": "Jakość",
   "inputs.quality.help": "Jakość dla formatów stratnych. Niższa wartość oznacza mniejszy plik i mniej wyraźne szczegóły. PNG ją ignoruje.",
   "inputs.maxEdge.label": "Najdłuższa krawędź (px)",
-  "inputs.maxEdge.help": "Zmniejsz tak, aby najdłuższa krawędź miała maksymalnie tyle pikseli. 0 zachowuje oryginalny rozmiar. Nigdy nie powiększa."
+  "inputs.maxEdge.help": "Zmniejsz tak, aby najdłuższa krawędź miała maksymalnie tyle pikseli. 0 zachowuje oryginalny rozmiar. Nigdy nie powiększa.",
+  "inputs.keepLocation.label": "Zachowaj lokalizację",
+  "inputs.keepLocation.help": "Przenosi pozycję GPS zdjęcia do przekonwertowanego pliku. Domyślnie wyłączone - lokalizacja to dane osobowe. Pozostałe dane zdjęcia (autor, prawa autorskie, data wykonania) są przenoszone zawsze, a karta dokładnie pokazuje, co się stało."
 }

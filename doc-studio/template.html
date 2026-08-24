@@ -101,7 +101,7 @@
   .doc-footer-title { font-weight: 500; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 72%; }
 </style>
 
-<div class="doc" data-lolly-anno-font="{{font}}" data-lolly-anno-accent="{{accent}}" data-lolly-anno-theme="{{theme}}" style="{{{docStyle}}}">
+<div class="doc" data-lolly-anno-font="{{font}}" data-lolly-anno-accent="{{accent}}" data-lolly-anno-theme="{{theme}}"{{#if sourceAuthor}} data-source-author="{{sourceAuthor}}"{{/if}} style="{{{docStyle}}}">
   {{#each pages}}
   <div class="doc-page" data-pdf-page data-lolly-anno="{{pageSize}}">
     <div class="doc-body" data-lolly-anno="{{columns}}">{{{html}}}</div>

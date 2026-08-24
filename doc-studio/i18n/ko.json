@@ -27,5 +27,7 @@
   "inputs.content.label": "문서",
   "inputs.content.help": "문서 본문이에요 - 이식 가능한 서식 있는 텍스트(ProseMirror) JSON으로 저장돼요. 캔버스에서 문서 스튜디오 편집기로 작성하며, 엔진이 이 JSON을 내보내기용 페이지로 렌더링해요. 비어 있으면 기본 예시 문서로 대체돼요.",
   "inputs.width.label": "페이지 너비",
-  "inputs.height.label": "페이지 높이"
+  "inputs.height.label": "페이지 높이",
+  "inputs.sourceAuthor.label": "원작자",
+  "inputs.sourceAuthor.help": "가져온 문서의 작성자로, 파일 자체 속성에서 자동으로 채워집니다. 내보낸 파일에 사용자와 함께 표기됩니다. 제외하려면 지우세요."
 }

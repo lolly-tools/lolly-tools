@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Șablon de pornire",
   "inputs.deck.fields.layout.options.big-number": "Număr mare",
   "inputs.deck.fields.layout.options.main-point": "Ideea principală",
-  "inputs.deck.fields.layout.options.one-column": "O coloană"
+  "inputs.deck.fields.layout.options.one-column": "O coloană",
+  "inputs.sourceAuthor.label": "Autor original",
+  "inputs.sourceAuthor.help": "Autorul unui deck importat, completat automat din proprietățile fișierului. Fișierul exportat îl creditează alături de dvs. Ștergeți câmpul pentru a-l omite."
 }

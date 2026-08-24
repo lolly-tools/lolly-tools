@@ -12,5 +12,7 @@
   "inputs.quality.label": "质量",
   "inputs.quality.help": "有损格式的质量。数值越低，文件越小，细节越柔和。PNG 会忽略此设置。",
   "inputs.maxEdge.label": "最长边(px)",
-  "inputs.maxEdge.help": "缩小图像，使最长边不超过此像素值。0 表示保留原始尺寸。绝不放大。"
+  "inputs.maxEdge.help": "缩小图像，使最长边不超过此像素值。0 表示保留原始尺寸。绝不放大。",
+  "inputs.keepLocation.label": "保留位置信息",
+  "inputs.keepLocation.help": "将照片的 GPS 位置带入转换后的文件。默认关闭 - 位置属于个人数据。照片的其他信息(作者、版权、拍摄日期)始终会带入,卡片会准确显示发生了什么。"
 }

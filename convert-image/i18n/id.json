@@ -12,5 +12,7 @@
   "inputs.quality.label": "Kualitas",
   "inputs.quality.help": "Kualitas untuk format lossy. Lebih rendah berarti file lebih kecil dan detail lebih lembut. PNG mengabaikannya.",
   "inputs.maxEdge.label": "Sisi terpanjang (px)",
-  "inputs.maxEdge.help": "Perkecil sehingga sisi terpanjang paling banyak sebesar ini dalam piksel. 0 mempertahankan ukuran asli. Tidak pernah memperbesar."
+  "inputs.maxEdge.help": "Perkecil sehingga sisi terpanjang paling banyak sebesar ini dalam piksel. 0 mempertahankan ukuran asli. Tidak pernah memperbesar.",
+  "inputs.keepLocation.label": "Simpan lokasi",
+  "inputs.keepLocation.help": "Membawa posisi GPS foto ke file hasil konversi. Nonaktif secara default - lokasi adalah data pribadi. Detail foto lainnya (penulis, hak cipta, tanggal pengambilan) selalu ikut terbawa, dan kartu menunjukkan persis apa yang terjadi."
 }

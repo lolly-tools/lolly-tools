@@ -57,5 +57,7 @@
   "inputs.mode.options.template": "Başlangıç şablonu",
   "inputs.deck.fields.layout.options.big-number": "Büyük sayı",
   "inputs.deck.fields.layout.options.main-point": "Ana fikir",
-  "inputs.deck.fields.layout.options.one-column": "Tek sütun"
+  "inputs.deck.fields.layout.options.one-column": "Tek sütun",
+  "inputs.sourceAuthor.label": "Özgün yazar",
+  "inputs.sourceAuthor.help": "İçe aktarılan sunum yazarı, dosyanın kendi özelliklerinden otomatik doldurulur. Dışa aktarılan dosya onu sizinle birlikte anar. Çıkarmak için alanı temizleyin."
 }
