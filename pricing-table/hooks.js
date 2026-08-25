@@ -109,9 +109,12 @@ function _palette(args) {
   var ink = _hex(args.color, INK_FALLBACK);
   var paper = _hex(args.background, PAPER_FALLBACK);
   var accent = _hex(args.accent, ACCENT_FALLBACK);
+  // transparentBg only clears the outer sheet; card/edge/tint mixes below still
+  // derive from the chosen paper colour so the plan panels keep their design.
+  var transparent = args.transparentBg === true || args.transparentBg === 'true';
   return {
     inkColor: ink,
-    paperColor: paper,
+    paperColor: transparent ? 'transparent' : paper,
     accentColor: accent,
     onAccentColor: _onColor(accent),
     cardColor: _mix(paper, ink, 0.05),

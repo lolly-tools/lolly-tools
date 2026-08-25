@@ -8,7 +8,7 @@
     "heading": "",
     "firstname": "Ana",
     "lastname": "Kovač",
-    "course": "Container Fundamentals",
+    "awardtopic": "Container Fundamentals",
     "awarddate": "2026-06-18",
     "presenter": "Maya Lindqvist",
     "presenterTitle": "Programme Director",
@@ -26,7 +26,7 @@
       "name": "Workshop attendance",
       "description": "A one-day workshop, signed by the facilitator.",
       "values": {
-        "course": "Accessible Design, one-day workshop",
+        "awardtopic": "Accessible Design, one-day workshop",
         "awarddate": "2026-09-11",
         "presenter": "Jonas Weber",
         "presenterTitle": "Facilitator"
@@ -38,7 +38,7 @@
       "description": "An exam pass, with the reference line switched on.",
       "values": {
         "certKind": "achievement",
-        "course": "Certified Platform Administrator",
+        "awardtopic": "Certified Platform Administrator",
         "awarddate": "2026-04-30",
         "presenter": "Ingrid Sorensen",
         "presenterTitle": "Head of Certification",

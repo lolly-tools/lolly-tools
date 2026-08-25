@@ -1,3 +1,4 @@
+<!-- Code Canvas — design help from Jeroen van Erp <jeroen.vanerp@suse.com>. -->
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -123,7 +124,7 @@
 .cc-callout-text em     { font-style: italic; }
 </style>
 
-<div class="cc-root" id="cc-root" data-code="{{code}}" data-language="{{language}}" data-theme="{{theme}}" data-window-style="{{windowStyle}}" data-line-numbers="{{lineNumbers}}" data-show-window="{{showWindow}}" data-scale="{{scale}}" data-title-scale="{{titleScale}}" data-icon-scale="{{iconScale}}" data-line-height="{{lineHeight}}" data-callout-mode="{{calloutMode}}" data-callout-prefix="{{calloutPrefix}}" data-callout-font="{{calloutFont}}" data-transparent-bg="{{transparentBg}}" data-blink="{{#if blinkCursor}}on{{else}}off{{/if}}">
+<div class="cc-root" id="cc-root" data-code="{{code}}" data-language="{{language}}" data-theme="{{theme}}" data-window-style="{{windowStyle}}" data-line-numbers="{{lineNumbers}}" data-show-window="{{showWindow}}" data-shadow="{{#if shadow}}on{{else}}off{{/if}}" data-scale="{{scale}}" data-title-scale="{{titleScale}}" data-icon-scale="{{iconScale}}" data-line-height="{{lineHeight}}" data-callout-mode="{{calloutMode}}" data-callout-prefix="{{calloutPrefix}}" data-callout-font="{{calloutFont}}" data-transparent-bg="{{transparentBg}}" data-blink="{{#if blinkCursor}}on{{else}}off{{/if}}">
   <div class="cc-window" id="cc-window">
     <div class="cc-header" id="cc-header">
       <div class="cc-controls cc-controls-left" id="cc-controls-left"></div>
@@ -178,6 +179,7 @@
   var theme = root.dataset.theme || 'suse-dark';
   var lineNums = root.dataset.lineNumbers !== 'false';
   var showWindow = root.dataset.showWindow !== 'false';
+  var shadow = root.dataset.shadow !== 'off';
   var scale = parseFloat(root.dataset.scale || '100') / 100;
   var titleScale = parseFloat(root.dataset.titleScale || '100') / 100;
   var iconScale = parseFloat(root.dataset.iconScale || '100') / 100;
@@ -267,6 +269,7 @@
   var rightCtl = document.getElementById('cc-controls-right');
 
   root.style.background = transparentBg ? 'transparent' : t.outerBg;
+  if (!shadow) window_.style.boxShadow = 'none';
   window_.style.background = t.codeBg;
   header.style.background  = t.headerBg;
   codeEl.style.background  = t.codeBg;
@@ -392,8 +395,8 @@
         i = j; continue;
       }
 
-      // Single-line comment: //
-      if (c === '/' && peek(1) === '/' && lang !== 'css') {
+      // Single-line comment: // (but not the // in a URL like https://…)
+      if (c === '/' && peek(1) === '/' && peek(-1) !== ':' && lang !== 'css') {
         var j = i;
         while (j < n && src[j] !== '\n') j++;
         out += maybeCallout(src, i, j, 2) || span('comment', src.slice(i, j));

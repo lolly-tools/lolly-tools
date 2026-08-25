@@ -218,14 +218,123 @@ function workDims(W, H, maxEdge) {
   return { w: Math.max(1, Math.round(W * k)), h: Math.max(1, Math.round(H * k)) };
 }
 
-// object-fit:cover + object-position + zoom (1 = exactly cover).
-function drawCover(ctx, source, iw, ih, W, H, zoom, px, py) {
-  var s = Math.max(W / iw, H / ih) * zoom;
+// Image framing (plans/148): ONE placement shared with every other tool and with
+// the DOM {{framing}} recipe, so the graded photo sits exactly where the sidebar
+// and the on-canvas overlay say it does. Synced from community/_shared/framing.js.
+// === lolly:shared frameRect - generated from community/_shared/framing.js; edit there and run npm run sync:shared ===
+// Where an iw×ih image lands inside a W×H frame, as CSS would place it:
+// object-fit + object-position + transform:scale about the pan point. Returns
+// source/destination rects for one drawImage, plus the roll and its origin.
+function frameRect(iw, ih, W, H, framing, fit) {
+  var f = framing || {};
+  var nz = Number(f.zoom); var zoom = isFinite(nz) ? Math.max(1, nz) : 100;
+  var nx = Number(f.x); var px = (isFinite(nx) ? nx : 50) / 100;
+  var ny = Number(f.y); var py = (isFinite(ny) ? ny : 50) / 100;
+  var nr = Number(f.rotate); var rotate = isFinite(nr) ? nr : 0;
+  if (!(iw > 0) || !(ih > 0) || !(W > 0) || !(H > 0)) {
+    return { sx: 0, sy: 0, sw: Math.max(1, iw), sh: Math.max(1, ih),
+      dx: 0, dy: 0, dw: W, dh: H, rotate: rotate, originX: W / 2, originY: H / 2 };
+  }
+  var base = fit === 'contain' ? Math.min(W / iw, H / ih) : Math.max(W / iw, H / ih);
+  var s = base * (zoom / 100);
   var dw = iw * s, dh = ih * s;
+  return { sx: 0, sy: 0, sw: iw, sh: ih,
+    dx: (W - dw) * px, dy: (H - dh) * py, dw: dw, dh: dh,
+    rotate: rotate, originX: W * px, originY: H * py };
+}
+// === /lolly:shared frameRect ===
+
+// === lolly:shared projectFraming - generated from community/_shared/framing.js; edit there and run npm run sync:shared ===
+// The CSS perspective projection, expanded by hand: roll about Z, then yaw about
+// Y, then pitch about X, then the perspective divide - all about the pan origin.
+// 1200 is the same viewing distance the {{framing}} helper writes into
+// `perspective(...)`, so the canvas and the DOM tilt identically.
+var FRAMING_PERSPECTIVE = 1200;
+function projectFraming(px, py, originX, originY, framing, persp) {
+  var f = framing || {};
+  var d = isFinite(Number(persp)) && Number(persp) > 0 ? Number(persp) : FRAMING_PERSPECTIVE;
+  var roll = Number(f.rotate) || 0, pitch = Number(f.pitch) || 0, yaw = Number(f.yaw) || 0;
+  var X = px - originX, Y = py - originY, Z = 0;
+  var rad = Math.PI / 180, c, s, nx, ny, nz;
+  if (roll) {
+    c = Math.cos(roll * rad); s = Math.sin(roll * rad);
+    nx = X * c - Y * s; ny = X * s + Y * c; X = nx; Y = ny;
+  }
+  if (yaw) {
+    c = Math.cos(yaw * rad); s = Math.sin(yaw * rad);
+    nx = X * c + Z * s; nz = -X * s + Z * c; X = nx; Z = nz;
+  }
+  if (pitch) {
+    c = Math.cos(pitch * rad); s = Math.sin(pitch * rad);
+    ny = Y * c - Z * s; nz = Y * s + Z * c; Y = ny; Z = nz;
+  }
+  var w = 1 - Z / d;
+  var k = 1 / (w > 1e-3 ? w : 1e-3);
+  return { x: originX + X * k, y: originY + Y * k };
+}
+// === /lolly:shared projectFraming ===
+
+// === lolly:shared drawFramed - generated from community/_shared/framing.js; edit there and run npm run sync:shared ===
+// Draw `source` into the current context's W×H frame with the given framing.
+// Needs frameRect() and projectFraming() in scope.
+//
+// No tilt: one drawImage, with roll applied about the pan point (matching CSS
+// transform-origin). Tilted: a mesh of small quads, each drawn with the affine
+// map through three of its projected corners - canvas 2-D has no projective
+// transform, so perspective emerges from the subdivision. Tiles are drawn with a
+// half-pixel overlap because adjacent affine patches otherwise leave hairline
+// seams where their edges disagree.
+// Measured against the exact projection at a hard 12 degree pitch / 9 degree yaw
+// on a 1080 frame: 8 tiles is 11.0px out at the worst corner, 16 is 2.9, 24 is
+// 1.3. 24 is the live-preview compromise - a canvas tool redraws this per frame,
+// and 576 draws is affordable where 1024 starts to cost. The shell's one-off bake
+// (lib/framing-bake.ts) uses 32 for the extra half-pixel.
+var FRAMING_TILES = 24;
+function drawFramed(ctx, source, iw, ih, W, H, framing, fit) {
+  var r = frameRect(iw, ih, W, H, framing, fit);
+  var f = framing || {};
   ctx.imageSmoothingEnabled = true;
   if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(source, -px * (dw - W), -py * (dh - H), dw, dh);
+  if (!Number(f.pitch) && !Number(f.yaw)) {
+    if (r.rotate) {
+      ctx.save();
+      ctx.translate(r.originX, r.originY);
+      ctx.rotate(r.rotate * Math.PI / 180);
+      ctx.translate(-r.originX, -r.originY);
+    }
+    ctx.drawImage(source, r.sx, r.sy, r.sw, r.sh, r.dx, r.dy, r.dw, r.dh);
+    if (r.rotate) ctx.restore();
+    return;
+  }
+  var n = FRAMING_TILES;
+  var tw = r.sw / n, th = r.sh / n;       // source tile
+  var dw = r.dw / n, dh = r.dh / n;       // destination tile, before projection
+  var over = 0.5;
+  for (var j = 0; j < n; j++) {
+    for (var i = 0; i < n; i++) {
+      var x0 = r.dx + i * dw, y0 = r.dy + j * dh;
+      var p00 = projectFraming(x0, y0, r.originX, r.originY, f);
+      var p10 = projectFraming(x0 + dw, y0, r.originX, r.originY, f);
+      var p01 = projectFraming(x0, y0 + dh, r.originX, r.originY, f);
+      // The affine that carries the tile's own unit square onto its projected
+      // corners: columns are the two edge vectors, translation is the corner.
+      var a = (p10.x - p00.x) / dw, b = (p10.y - p00.y) / dw;
+      var c = (p01.x - p00.x) / dh, d = (p01.y - p00.y) / dh;
+      if (!isFinite(a) || !isFinite(b) || !isFinite(c) || !isFinite(d)) continue;
+      ctx.save();
+      // transform(), not setTransform(): the caller may already have a transform
+      // on the context (a translate into a panel, a device-pixel scale), and
+      // replacing it would move every tile out of that space.
+      ctx.transform(a, b, c, d, p00.x, p00.y);
+      // In tile space the destination is the un-projected tile at the origin.
+      ctx.drawImage(source,
+        r.sx + i * tw, r.sy + j * th, tw, th,
+        0, 0, dw + over, dh + over);
+      ctx.restore();
+    }
+  }
 }
+// === /lolly:shared drawFramed ===
 
 // ── colour maths ─────────────────────────────────────────────────────────────
 
@@ -706,7 +815,7 @@ function paramsFrom(inputs) {
     saturation: clamp(n(inputs.saturation, 100), 0, 200) / 100,
     vibrance: clamp(n(inputs.vibrance, 0), -100, 100) / 100,
     hsl: hslBandsFrom(inputs),
-    preset: PRESETS[inputs.preset] ? inputs.preset : 'none',
+    preset: PRESETS[inputs.filmLook] ? inputs.filmLook : 'none',
     presetStrength: clamp(n(inputs.presetStrength, 100), 0, 100) / 100,
     lutSource: lutSource,
     lutPreset: lutPreset,
@@ -731,9 +840,15 @@ function paramsFrom(inputs) {
     // view / framing
     splitPreview: !!inputs.splitPreview,
     histogram: !!inputs.histogram,
-    zoom: clamp(n(fr.zoom, 100), 100, 800) / 100,
-    px: clamp(n(fr.x, 50), 0, 100) / 100,
-    py: clamp(n(fr.y, 50), 0, 100) / 100,
+    // The whole framing compound, straight through to the shared frameRect - the
+    // engine already clamped each field to the manifest's declared range, so a
+    // second clamp here could only DISAGREE with the slider (it used to: 100-800
+    // against a slider that stopped at 400).
+    framing: {
+      zoom: n(fr.zoom, 100), x: n(fr.x, 50), y: n(fr.y, 50),
+      rotate: n(fr.rotate, 0), pitch: n(fr.pitch, 0), yaw: n(fr.yaw, 0),
+    },
+    fit: inputs.imageFit === 'contain' ? 'contain' : 'cover',
     W: clamp(Math.round(n(inputs.width, 1080)), 1, MAX_EDGE),
     H: clamp(Math.round(n(inputs.height, 1080)), 1, MAX_EDGE),
     bakeSize: inputs.bakeSize === '17' ? 17 : inputs.bakeSize === '65' ? 65 : 33,
@@ -1349,7 +1464,7 @@ function drawDust(ctx, W, H, P) {
 // the noise is seeded, and the blur is the JS separable box (NEVER ctx.filter,
 // whose gaussian is platform-dependent) - so the same params + seed always yield
 // the same master on a given device. It is NOT byte-identical across shells: the
-// source draw (drawCover's ctx.drawImage resampling) and the dust layer (drawDust
+// source draw (drawFramed's ctx.drawImage resampling) and the dust layer (drawDust
 // rasterised on a canvas, then read back) still go through the platform canvas,
 // whose resampling/antialiasing differ - inherent, since this tool's pixels ARE a
 // canvas artefact. So the canonical output is "a pure function of the params on
@@ -1426,7 +1541,7 @@ function composeFloat(source, iw, ih, W, H, P, stops, userLut) {
   var framed = document.createElement('canvas'); framed.width = W; framed.height = H;
   var fctx = framed.getContext('2d', { willReadFrequently: true });
   if (!fctx) return null;
-  drawCover(fctx, source, iw, ih, W, H, P.zoom, P.px, P.py);
+  drawFramed(fctx, source, iw, ih, W, H, P.framing, P.fit);
   var img;
   try { img = fctx.getImageData(0, 0, W, H); } catch (e) { return null; }
   var buf = new Float32Array(W * H * 4);
@@ -1599,13 +1714,13 @@ function renderFrame(source, iw, ih, dims, P, stops, userLut) {
   if (source.__frameKey) { // live frames pass a canvas straight through
     framed = source;
   } else {
-    key = JSON.stringify([source.__srcId, dims.w, dims.h, P.zoom, P.px, P.py]);
+    key = JSON.stringify([source.__srcId, dims.w, dims.h, P.framing, P.fit]);
     if (_framedCache.key === key && _framedCache.canvas) framed = _framedCache.canvas;
     else {
       framed = document.createElement('canvas'); framed.width = dims.w; framed.height = dims.h;
       var fctx = framed.getContext('2d', { willReadFrequently: true });
       if (!fctx) return null;
-      drawCover(fctx, source, iw, ih, dims.w, dims.h, P.zoom, P.px, P.py);
+      drawFramed(fctx, source, iw, ih, dims.w, dims.h, P.framing, P.fit);
       _framedCache = { key: key, canvas: framed };
     }
   }
@@ -1894,7 +2009,7 @@ function onFrame(ctx) {
     srcFrame.getContext('2d').putImageData(new ImageData(frame.data, frame.width, frame.height), 0, 0);
     live = document.createElement('canvas'); live.width = dims.w; live.height = dims.h;
     var lctx = live.getContext('2d', { willReadFrequently: true });
-    drawCover(lctx, srcFrame, frame.width, frame.height, dims.w, dims.h, P.zoom, P.px, P.py);
+    drawFramed(lctx, srcFrame, frame.width, frame.height, dims.w, dims.h, P.framing, P.fit);
     live.__frameKey = true;
   } catch (e) { return null; }
 

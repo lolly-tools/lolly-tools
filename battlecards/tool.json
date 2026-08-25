@@ -15,7 +15,8 @@
     "actions": ["copy", "download", "save"],
     "paged": true,
     "filmstrip": "bottom",
-    "paginate": { "source": "data" }
+    "paginate": { "source": "data" },
+    "transparentBg": false
   },
   "inputs": [
     {

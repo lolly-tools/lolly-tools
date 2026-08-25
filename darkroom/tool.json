@@ -3,7 +3,7 @@
   "name": "Darkroom",
   "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture - then bake your look as a LUT any editor can use. Opens a Photoshop or GIMP file as layers too: position, blend and hide each one, grade the composite, and export flat images or a layered PSD.",
   "a11yLabel": "Graded photo preview - {{default preset \"custom\"}} look",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "engineVersion": "^1.12.0",
   "status": "community",
   "category": "designer",
@@ -19,10 +19,10 @@
     "blurb": "Grade photos with film looks, LUTs and your brand colours"
   },
   "examples": [
-    { "label": "Teal & orange cinema", "values": { "preset": "teal-orange", "vignette": 22, "halation": 18 } },
-    { "label": "Faded matte + grain", "values": { "preset": "matte", "grain": 45, "vignette": 28 } },
+    { "label": "Teal & orange cinema", "values": { "filmLook": "teal-orange", "vignette": 22, "halation": 18 } },
+    { "label": "Faded matte + grain", "values": { "filmLook": "matte", "grain": 45, "vignette": 28 } },
     { "label": "Brand duotone", "values": { "treatment": "duotone", "treatmentAmount": 85 } },
-    { "label": "Classic black & white", "values": { "preset": "bw", "grain": 35, "vignette": 24, "contrast": 12 } },
+    { "label": "Classic black & white", "values": { "filmLook": "bw", "grain": 35, "vignette": 24, "contrast": 12 } },
     { "label": "Vivid slide LUT", "values": { "lutSource": "preset", "lutPreset": "slide-vivid" } }
   ],
   "render": {
@@ -54,12 +54,28 @@
     {
       "id": "imageFraming",
       "label": "Zoom & Position",
-      "help": "Zoom scales the photo up; X / Y pan it within the frame. Drag a label or type a value.",
+      "framingFor": "image",
+      "help": "Drag the photo on the canvas to move it, scroll to zoom, and hold Alt while dragging to correct converging verticals. Or drag a label / type a value here.",
       "type": "vector",
       "fields": [
-        { "id": "zoom", "label": "Zoom", "min": 100, "max": 400, "step": 1, "default": 100 },
-        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
-        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
+        { "id": "zoom",   "label": "Zoom",       "min": 100,  "max": 400, "step": 1,   "default": 100 },
+        { "id": "x",      "label": "X",          "min": 0,    "max": 100, "step": 1,   "default": 50  },
+        { "id": "y",      "label": "Y",          "min": 0,    "max": 100, "step": 1,   "default": 50  },
+        { "id": "rotate", "label": "Rotate",     "min": -180, "max": 180, "step": 0.5, "default": 0   },
+        { "id": "pitch",  "label": "Vertical",   "min": -45,  "max": 45,  "step": 0.5, "default": 0   },
+        { "id": "yaw",    "label": "Horizontal", "min": -45,  "max": 45,  "step": 0.5, "default": 0   }
+      ]
+    },
+    {
+      "id": "imageFit",
+      "label": "Fit",
+      "type": "select",
+      "attachTo": "image",
+      "display": "icon-toggle",
+      "default": "cover",
+      "options": [
+        { "value": "cover",   "label": "Fill", "icon": "fitCover" },
+        { "value": "contain", "label": "Fit",  "icon": "fitContain" }
       ]
     },
     {
@@ -229,7 +245,7 @@
     {"id":"hslLumPurple","label":"Purple","section":"HSL / Colour","type":"number","display":"slider","default":0,"min":-100,"max":100,"step":1,"urlKey":"ml6","showIf":{"hslMode":["luminance"]},"help":"Brighten the purple band. 0 leaves it untouched."},
     {"id":"hslLumMagenta","label":"Magenta","section":"HSL / Colour","type":"number","display":"slider","default":0,"min":-100,"max":100,"step":1,"urlKey":"ml7","showIf":{"hslMode":["luminance"]},"help":"Brighten the magenta band. 0 leaves it untouched."},
     {
-      "id": "preset",
+      "id": "filmLook",
       "label": "Film look",
       "section": "Film look",
       "type": "select",
@@ -259,7 +275,7 @@
       "min": 0,
       "max": 100,
       "step": 1,
-      "showIf": { "preset": ["chrome", "portrait", "teal-orange", "bleach", "matte", "cross", "night", "bw", "bw-hard", "sepia"] },
+      "showIf": { "filmLook": ["chrome", "portrait", "teal-orange", "bleach", "matte", "cross", "night", "bw", "bw-hard", "sepia"] },
       "help": "Blend between the untouched image (0) and the full look (100)."
     },
     {

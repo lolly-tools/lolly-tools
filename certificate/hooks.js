@@ -205,8 +205,8 @@ function build(args, logoUrl) {
     citeText: KINDS[kind].cite,
     recipientName: name,
     nameSizeU: nameSize(name),
-    courseText: str(args.course),
-    courseSizeU: courseSize(str(args.course)),
+    courseText: str(args.awardtopic),
+    courseSizeU: courseSize(str(args.awardtopic)),
     dateText: dateText,
     presenterText: presenter,
     presenterTitleText: str(args.presenterTitle),
@@ -234,9 +234,13 @@ function build(args, logoUrl) {
     innerH: vbH - 80,
     innerBottom: vbH - 40,
 
-    // Colours.
+    // Colours. paperColor drives --ct-paper, which is the only thing that
+    // paints .ct-root's background - so 'transparent' there is the whole
+    // toggle. mutedColor/ruleSoftColor below still mix against the real
+    // paper hex: those are contrast colours (muted labels, hairlines), not
+    // a fill, and stay meaningful with no paper painted underneath.
     inkColor: ink,
-    paperColor: paper,
+    paperColor: args.transparentBg === true ? 'transparent' : paper,
     accentColor: accent,
     mutedColor: mix(ink, paper, 0.45),
     ruleSoftColor: mix(paper, accent, 0.45),

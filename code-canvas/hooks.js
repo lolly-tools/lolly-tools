@@ -34,8 +34,8 @@ function compute(inputs) {
   var showWindow = inputs.showWindow !== false;
   var ext = EXT[lang] || 'txt';
 
-  var filename = inputs.filename && inputs.filename.trim()
-    ? inputs.filename.trim()
+  var filename = inputs.fileName && inputs.fileName.trim()
+    ? inputs.fileName.trim()
     : '';
 
   return {

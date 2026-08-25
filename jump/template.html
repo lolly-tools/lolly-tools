@@ -1,4 +1,4 @@
-<div class="jp-root jp-{{default style "buttons"}}" style="--jp-ink:{{inkColor}};--jp-paper:{{paperColor}};--jp-accent:{{accentColor}};--jp-on-accent:{{onAccentColor}};--jp-muted:{{mutedColor}};--jp-edge:{{edgeColor}};--jp-card:{{cardColor}}">
+<div class="jp-root jp-{{default style "buttons"}}{{#if redirect}} jp-is-forward{{/if}}" style="--jp-ink:{{inkColor}};--jp-paper:{{paperColor}};--jp-accent:{{accentColor}};--jp-on-accent:{{onAccentColor}};--jp-muted:{{mutedColor}};--jp-edge:{{edgeColor}};--jp-card:{{cardColor}}">
 
   <header class="jp-head">
     <h1 class="jp-heading">{{heading}}</h1>
@@ -8,14 +8,76 @@
   {{#if error}}
   <p class="jp-note">{{error}}</p>
   {{else}}
-  <nav class="jp-list">
-    {{#each items}}
-    <a class="jp-link" href="{{href}}" rel="noopener">
-      <span class="jp-label">{{label}}</span>
-      <span class="jp-host">{{host}}</span>
-    </a>
-    {{/each}}
-  </nav>
+    {{#if redirect}}
+    <div class="jp-forward" data-jp-forward data-jp-href="{{redirectHref}}" data-jp-host="{{redirectHost}}" data-jp-challenge="{{challenge}}">
+      {{#if challenge}}
+      <button type="button" class="jp-hold" data-jp-hold>
+        <span class="jp-hold-fill" data-jp-fill></span>
+        <span class="jp-hold-label">Press and hold to continue</span>
+      </button>
+      <p class="jp-forward-to">You'll be taken to <strong>{{redirectHost}}</strong></p>
+      {{else}}
+      <p class="jp-forward-to" data-jp-note>Taking you to <strong>{{redirectHost}}</strong>&hellip;</p>
+      {{/if}}
+      <noscript><a class="jp-link" href="{{redirectHref}}" rel="noopener">Continue to {{redirectHost}}</a></noscript>
+    </div>
+    {{else}}
+    <nav class="jp-list">
+      {{#each items}}
+      <a class="jp-link" href="{{href}}" rel="noopener">
+        <span class="jp-label">{{label}}</span>
+        <span class="jp-host">{{host}}</span>
+      </a>
+      {{/each}}
+    </nav>
+    {{/if}}
   {{/if}}
+
+  <script>
+  // Redirect on visit. Runs on the visitor page only (`.tool-layout.is-visitor`);
+  // in the editor/preview it just narrates where a visitor would land, never
+  // navigating. IIFE + var: this <script> is re-run on every canvas repaint.
+  (function () {
+    var fwd = document.querySelector('[data-jp-forward]');
+    if (!fwd) return;
+    var href = fwd.getAttribute('data-jp-href') || '';
+    if (!href) return;
+    var live = !!document.querySelector('.tool-layout.is-visitor');
+    var host = fwd.getAttribute('data-jp-host') || 'the link';
+
+    function go() {
+      if (live) { window.location.replace(href); return; }
+      var note = document.createElement('p');
+      note.className = 'jp-forward-note';
+      note.textContent = 'Preview — visitors continue to ' + host;
+      fwd.appendChild(note);
+    }
+
+    // No human check: forward straight away.
+    if (fwd.getAttribute('data-jp-challenge') !== '1') { go(); return; }
+
+    var btn = fwd.querySelector('[data-jp-hold]');
+    var fill = fwd.querySelector('[data-jp-fill]');
+    if (!btn) { go(); return; }
+
+    var HOLD_MS = 900;
+    var raf = null, start = 0, done = false;
+    function frame(t) {
+      if (!start) start = t;
+      var p = Math.min(1, (t - start) / HOLD_MS);
+      if (fill) fill.style.width = (p * 100) + '%';
+      if (p >= 1) { done = true; btn.classList.add('is-done'); go(); return; }
+      raf = requestAnimationFrame(frame);
+    }
+    function begin(e) { if (e && e.preventDefault) e.preventDefault(); if (done || start || raf) return; raf = requestAnimationFrame(frame); }
+    function cancel() { if (done) return; if (raf) cancelAnimationFrame(raf); raf = null; start = 0; if (fill) fill.style.width = '0%'; }
+    btn.addEventListener('pointerdown', begin);
+    btn.addEventListener('pointerup', cancel);
+    btn.addEventListener('pointerleave', cancel);
+    btn.addEventListener('pointercancel', cancel);
+    btn.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') begin(e); });
+    btn.addEventListener('keyup', cancel);
+  })();
+  </script>
 
 </div>

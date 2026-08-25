@@ -13,7 +13,8 @@
     "height": 520,
     "formats": ["svg", "png", "pdf", "eps", "emf"],
     "actions": ["copy", "download", "save"],
-    "filenameFrom": ["value"]
+    "filenameFrom": ["value"],
+    "transparentBg": false
   },
   "hooks": {
     "onInit": true,

@@ -23,7 +23,7 @@
 
       <div class="sf-shot">
         {{#if image.url}}
-        <img class="sf-img" src="{{asset image}}" alt="">
+        <img class="sf-img" src="{{asset image}}" alt="" {{framing "imageFraming"}}>
         {{else}}
         <div class="sf-ph" aria-hidden="true">
           <div class="sf-ph-rail"><span></span><span></span><span></span></div>

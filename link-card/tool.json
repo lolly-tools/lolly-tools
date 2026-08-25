@@ -21,7 +21,8 @@
     "height": 630,
     "formats": ["png", "jpg", "webp", "svg", "pdf"],
     "actions": ["copy", "download", "save"],
-    "filenameFrom": ["siteName", "heading"]
+    "filenameFrom": ["siteName", "heading"],
+    "transparentBg": false
   },
   "hooks": {
     "onInit": true,

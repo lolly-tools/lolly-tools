@@ -84,7 +84,7 @@
         "subtitle": "MilkDrop, twenty years on",
         "style": "milkdrop",
         "layout": "overlay",
-        "preset": "stock:geiss-thumb-drum"
+        "vizLook": "stock:geiss-thumb-drum"
       }
     }
   ],
@@ -196,7 +196,7 @@
       "help": "MilkDrop runs the real thing: a WebGL visualiser driven frame by frame from your clip, in your brand colours. Where it cannot run (no WebGL, a headless render) the card falls back to bars. Bars, mirror and spectrum read the real frequency spectrum. Wave shows the clip's envelope with a playhead. Oscilloscope draws the actual waveform. Ring, blob, ridgeline and dots are frequency-driven too."
     },
     {
-      "id": "preset",
+      "id": "vizLook",
       "label": "Visualiser preset",
       "type": "select",
       "default": "bloom",

@@ -225,6 +225,12 @@ async function _build(args) {
   var ink = _hex(args.color, INK_FALLBACK);
   var card = _hex(args.background, CARD_FALLBACK);
   var accent = _hex(args.accent, ACCENT_FALLBACK);
+  // The outermost element IS the card (it fills the whole canvas, no separate
+  // page backdrop), so "transparent background" means this fill goes away.
+  // `card` itself stays the real hex below - the muted-text mix, the rule tint
+  // and the logo's light/dark pick all still want the AUTHORED tone, only the
+  // painted --lc-card var should drop to alpha.
+  var transparentBg = args.transparentBg === true;
 
   var site = _str(args.siteName);
   var shownHost = hostDisplay(args.url);
@@ -245,7 +251,7 @@ async function _build(args) {
     cardUnit: layout.unit,
 
     inkColor: ink,
-    cardColor: card,
+    cardColor: transparentBg ? 'transparent' : card,
     accentColor: accent,
     accentInk: _onColor(accent),
     mutedColor: _mix(ink, card, 0.42),

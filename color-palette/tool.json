@@ -34,11 +34,13 @@
       "copy",
       "download",
       "save"
-    ]
+    ],
+    "transparentBg": false
   },
   "hooks": {
     "onInit": true,
     "onInput": true,
+    "beforeExport": true,
     "exportStill": true
   },
   "inputs": [

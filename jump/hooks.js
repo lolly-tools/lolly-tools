@@ -61,6 +61,14 @@ function _host(href) {
   return href.replace(/^[a-z][a-z0-9+.-]*:/i, '');
 }
 
+// A redirect NAVIGATES on visit, so its scheme has to be safe to hand to
+// location.replace: http(s)/mailto/tel only. `javascript:`/`data:` etc. would
+// execute, so they never become a redirect target (the page falls back to the
+// link list). An anchor href a click away is contained; an auto-forward is not.
+function _safeRedirect(href) {
+  return /^(https?|mailto|tel):/i.test(href) ? href : '';
+}
+
 function compute(args) {
   var rows = Array.isArray(args.links) ? args.links : [];
   var items = [];
@@ -75,6 +83,12 @@ function compute(args) {
     });
   }
 
+  // On visit: 'page' (default) shows the list; 'forward' redirects to the first
+  // link; 'gate' redirects after a press-and-hold human check. The redirect only
+  // arms when there's a safe first link - otherwise it quietly shows the list.
+  var onVisit = _str(args.onVisit) || 'page';
+  var redirectHref = onVisit !== 'page' && items.length ? _safeRedirect(items[0].href) : '';
+
   var ink = _hex(args.color, INK_FALLBACK);
   var paper = _hex(args.background, PAPER_FALLBACK);
   var accent = _hex(args.accent, ACCENT_FALLBACK);
@@ -83,6 +97,10 @@ function compute(args) {
     items: items,
     linkCount: items.length ? String(items.length) : '',
     error: items.length ? '' : 'Add a link to build the page.',
+    redirect: redirectHref ? '1' : '',
+    challenge: redirectHref && onVisit === 'gate' ? '1' : '',
+    redirectHref: redirectHref,
+    redirectHost: redirectHref ? _host(redirectHref) : '',
     inkColor: ink,
     paperColor: paper,
     accentColor: accent,

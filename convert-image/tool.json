@@ -32,7 +32,7 @@
       "help": "A HEIC, HEIF, JPEG, PNG, WebP, AVIF or TIFF image. It's read in your browser and never leaves your device."
     },
     {
-      "id": "format",
+      "id": "target",
       "label": "Convert to",
       "type": "select",
       "default": "webp",
@@ -52,7 +52,7 @@
       "max": 100,
       "step": 5,
       "display": "slider",
-      "showIf": { "format": ["webp", "jpeg"] },
+      "showIf": { "target": ["webp", "jpeg"] },
       "help": "Quality for the lossy formats. Lower means a smaller file and softer detail. PNG ignores it."
     },
     {

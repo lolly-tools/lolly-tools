@@ -20,7 +20,8 @@
     "formats": ["pdf", "pdf-cmyk", "svg", "png"],
     "actions": ["copy", "download", "save"],
     "printMarks": true,
-    "filenameFrom": ["piece", "lastname"]
+    "filenameFrom": ["piece", "lastname"],
+    "transparentBg": false
   },
   "hooks": {
     "onInit": true,

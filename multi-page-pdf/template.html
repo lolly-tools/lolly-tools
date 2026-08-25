@@ -47,7 +47,7 @@
     overflow: hidden;
     border-bottom: 6px solid var(--accent);
   }
-  .mpdf-cover-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mpdf-cover-hero img { width: 100%; height: 100%; display: block; }  /* fit/position: {{framing}} helper, plans/148 */
   .mpdf-cover-body {
     flex: 1 1 auto;
     display: flex;
@@ -138,7 +138,7 @@
     overflow: hidden;
     border-bottom: 6px solid var(--accent);
   }
-  .mpdf-back-hero img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mpdf-back-hero img { width: 100%; height: 100%; display: block; }  /* fit/position: {{framing}} helper, plans/148 */
   .mpdf-back-heading { font-size: var(--heading-size); font-weight: var(--heading-weight, 700); margin: 0 0 .35em; color: var(--back-ink); }
   .mpdf-back-text { font-size: var(--body-size); font-weight: var(--body-weight, 400); line-height: 1.5; color: var(--back-ink); max-width: 80%; }
   .mpdf-back-fill { flex: 1 1 auto; }
@@ -227,7 +227,7 @@
   <div class="mpdf-page mpdf-page--{{type}}" data-pdf-page data-lolly-anno="{{pageSize}}">
 
     {{#if isCover}}
-      {{#if coverImageUrl}}<div class="mpdf-cover-hero" data-canvas-input="coverImage"><img src="{{coverImageUrl}}" alt=""></div>{{/if}}
+      {{#if coverImageUrl}}<div class="mpdf-cover-hero" data-canvas-input="coverImage"><img src="{{coverImageUrl}}" alt="" {{framing "coverImageFraming"}}></div>{{/if}}
       <div class="mpdf-cover-body" data-lolly-anno="{{coverLogoSize}}">
         {{#if coverLogoUrl}}<img class="mpdf-cover-logo" data-canvas-input="coverLogo" src="{{coverLogoUrl}}" alt="">{{/if}}
         <div class="mpdf-cover-fill" data-lolly-anno="{{coverBg}}"></div>
@@ -259,7 +259,7 @@
     {{/if}}
 
     {{#if isBack}}
-      {{#if backImageUrl}}<div class="mpdf-back-hero" data-canvas-input="backImage"><img src="{{backImageUrl}}" alt=""></div>{{/if}}
+      {{#if backImageUrl}}<div class="mpdf-back-hero" data-canvas-input="backImage"><img src="{{backImageUrl}}" alt="" {{framing "backImageFraming"}}></div>{{/if}}
       {{#if backHeading}}<h2 class="mpdf-back-heading">{{backHeading}}</h2>{{/if}}
       {{#if backText}}<div class="mpdf-back-text">{{{markdown backText}}}</div>{{/if}}
       <div class="mpdf-back-fill" data-lolly-anno="{{backBg}}"></div>

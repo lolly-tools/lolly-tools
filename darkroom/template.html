@@ -12,7 +12,11 @@
          (browser-cached → instant) sits underneath while that happens; the inline
          script below drops it once the top image has loaded. -->
     {{#if prevSrc}}<image href="{{prevSrc}}" data-bs-base="1" x="0" y="0" width="{{width}}" height="{{height}}" preserveAspectRatio="none"/>{{/if}}
-    <image data-lolly-anno="{{preset}} {{treatment}}" href="{{outSrc}}" data-bs-top="1" x="0" y="0" width="{{width}}" height="{{height}}" preserveAspectRatio="none"/>
+    <!-- data-framing marks THIS element as the framed image for the shell's
+         framing overlay (plans/148). The bitmap is already framed by hooks.js
+         through the same frameRect maths the overlay writes into, so dragging
+         here and the numbers in the sidebar are two views of one value. -->
+    <image data-lolly-anno="{{filmLook}} {{treatment}}" href="{{outSrc}}" data-bs-top="1" data-framing="imageFraming" x="0" y="0" width="{{width}}" height="{{height}}" preserveAspectRatio="none"/>
     {{#if split}}{{#if beforeSrc}}
     <!-- Before/after split: the untouched framed source laid over the graded base
          and clipped to one side of a divider the user can drag + rotate. It's part

@@ -15,6 +15,126 @@
  */
 /* global onInit, onInput, onFrame, beforeExport, afterExport, host */
 
+// Image framing (plans/148). Hoisted to the file's top level so every effect
+// IIFE below sees ONE implementation - the same placement maths the DOM
+// {{framing}} recipe and every other tool use. This replaced three separate
+// copies of the same cover arithmetic, one per effect module, left behind when
+// the per-effect hooks were merged into this file.
+// === lolly:shared frameRect - generated from community/_shared/framing.js; edit there and run npm run sync:shared ===
+// Where an iw×ih image lands inside a W×H frame, as CSS would place it:
+// object-fit + object-position + transform:scale about the pan point. Returns
+// source/destination rects for one drawImage, plus the roll and its origin.
+function frameRect(iw, ih, W, H, framing, fit) {
+  var f = framing || {};
+  var nz = Number(f.zoom); var zoom = isFinite(nz) ? Math.max(1, nz) : 100;
+  var nx = Number(f.x); var px = (isFinite(nx) ? nx : 50) / 100;
+  var ny = Number(f.y); var py = (isFinite(ny) ? ny : 50) / 100;
+  var nr = Number(f.rotate); var rotate = isFinite(nr) ? nr : 0;
+  if (!(iw > 0) || !(ih > 0) || !(W > 0) || !(H > 0)) {
+    return { sx: 0, sy: 0, sw: Math.max(1, iw), sh: Math.max(1, ih),
+      dx: 0, dy: 0, dw: W, dh: H, rotate: rotate, originX: W / 2, originY: H / 2 };
+  }
+  var base = fit === 'contain' ? Math.min(W / iw, H / ih) : Math.max(W / iw, H / ih);
+  var s = base * (zoom / 100);
+  var dw = iw * s, dh = ih * s;
+  return { sx: 0, sy: 0, sw: iw, sh: ih,
+    dx: (W - dw) * px, dy: (H - dh) * py, dw: dw, dh: dh,
+    rotate: rotate, originX: W * px, originY: H * py };
+}
+// === /lolly:shared frameRect ===
+
+// === lolly:shared projectFraming - generated from community/_shared/framing.js; edit there and run npm run sync:shared ===
+// The CSS perspective projection, expanded by hand: roll about Z, then yaw about
+// Y, then pitch about X, then the perspective divide - all about the pan origin.
+// 1200 is the same viewing distance the {{framing}} helper writes into
+// `perspective(...)`, so the canvas and the DOM tilt identically.
+var FRAMING_PERSPECTIVE = 1200;
+function projectFraming(px, py, originX, originY, framing, persp) {
+  var f = framing || {};
+  var d = isFinite(Number(persp)) && Number(persp) > 0 ? Number(persp) : FRAMING_PERSPECTIVE;
+  var roll = Number(f.rotate) || 0, pitch = Number(f.pitch) || 0, yaw = Number(f.yaw) || 0;
+  var X = px - originX, Y = py - originY, Z = 0;
+  var rad = Math.PI / 180, c, s, nx, ny, nz;
+  if (roll) {
+    c = Math.cos(roll * rad); s = Math.sin(roll * rad);
+    nx = X * c - Y * s; ny = X * s + Y * c; X = nx; Y = ny;
+  }
+  if (yaw) {
+    c = Math.cos(yaw * rad); s = Math.sin(yaw * rad);
+    nx = X * c + Z * s; nz = -X * s + Z * c; X = nx; Z = nz;
+  }
+  if (pitch) {
+    c = Math.cos(pitch * rad); s = Math.sin(pitch * rad);
+    ny = Y * c - Z * s; nz = Y * s + Z * c; Y = ny; Z = nz;
+  }
+  var w = 1 - Z / d;
+  var k = 1 / (w > 1e-3 ? w : 1e-3);
+  return { x: originX + X * k, y: originY + Y * k };
+}
+// === /lolly:shared projectFraming ===
+
+// === lolly:shared drawFramed - generated from community/_shared/framing.js; edit there and run npm run sync:shared ===
+// Draw `source` into the current context's W×H frame with the given framing.
+// Needs frameRect() and projectFraming() in scope.
+//
+// No tilt: one drawImage, with roll applied about the pan point (matching CSS
+// transform-origin). Tilted: a mesh of small quads, each drawn with the affine
+// map through three of its projected corners - canvas 2-D has no projective
+// transform, so perspective emerges from the subdivision. Tiles are drawn with a
+// half-pixel overlap because adjacent affine patches otherwise leave hairline
+// seams where their edges disagree.
+// Measured against the exact projection at a hard 12 degree pitch / 9 degree yaw
+// on a 1080 frame: 8 tiles is 11.0px out at the worst corner, 16 is 2.9, 24 is
+// 1.3. 24 is the live-preview compromise - a canvas tool redraws this per frame,
+// and 576 draws is affordable where 1024 starts to cost. The shell's one-off bake
+// (lib/framing-bake.ts) uses 32 for the extra half-pixel.
+var FRAMING_TILES = 24;
+function drawFramed(ctx, source, iw, ih, W, H, framing, fit) {
+  var r = frameRect(iw, ih, W, H, framing, fit);
+  var f = framing || {};
+  ctx.imageSmoothingEnabled = true;
+  if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = 'high';
+  if (!Number(f.pitch) && !Number(f.yaw)) {
+    if (r.rotate) {
+      ctx.save();
+      ctx.translate(r.originX, r.originY);
+      ctx.rotate(r.rotate * Math.PI / 180);
+      ctx.translate(-r.originX, -r.originY);
+    }
+    ctx.drawImage(source, r.sx, r.sy, r.sw, r.sh, r.dx, r.dy, r.dw, r.dh);
+    if (r.rotate) ctx.restore();
+    return;
+  }
+  var n = FRAMING_TILES;
+  var tw = r.sw / n, th = r.sh / n;       // source tile
+  var dw = r.dw / n, dh = r.dh / n;       // destination tile, before projection
+  var over = 0.5;
+  for (var j = 0; j < n; j++) {
+    for (var i = 0; i < n; i++) {
+      var x0 = r.dx + i * dw, y0 = r.dy + j * dh;
+      var p00 = projectFraming(x0, y0, r.originX, r.originY, f);
+      var p10 = projectFraming(x0 + dw, y0, r.originX, r.originY, f);
+      var p01 = projectFraming(x0, y0 + dh, r.originX, r.originY, f);
+      // The affine that carries the tile's own unit square onto its projected
+      // corners: columns are the two edge vectors, translation is the corner.
+      var a = (p10.x - p00.x) / dw, b = (p10.y - p00.y) / dw;
+      var c = (p01.x - p00.x) / dh, d = (p01.y - p00.y) / dh;
+      if (!isFinite(a) || !isFinite(b) || !isFinite(c) || !isFinite(d)) continue;
+      ctx.save();
+      // transform(), not setTransform(): the caller may already have a transform
+      // on the context (a translate into a panel, a device-pixel scale), and
+      // replacing it would move every tile out of that space.
+      ctx.transform(a, b, c, d, p00.x, p00.y);
+      // In tile space the destination is the un-projected tile at the origin.
+      ctx.drawImage(source,
+        r.sx + i * tw, r.sy + j * th, tw, th,
+        0, 0, dw + over, dh + over);
+      ctx.restore();
+    }
+  }
+}
+// === /lolly:shared drawFramed ===
+
 function inputsFrom(model) { var o = {}; model.forEach(function (i) { o[i.id] = i.value; }); return o; }
 function _num(v, d) { var n = Number(v); return isFinite(n) ? n : d; }
 function _esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -27,7 +147,12 @@ var _activeEffect = 'halftone';
 // framing + effect are baked into outSrc, so a 1:1 image map is faithful. When the
 // effect supplies imgKey/imgW/imgH they're stamped on the root so the template's
 // auto-fit script snaps the export canvas to a freshly-chosen image's native size.
-function _psSvg(p, W, H) {
+function _psSvg(p, W, H, framingId) {
+  // data-framing marks the composed bitmap as THE framed image for the shell's
+  // framing overlay (plans/148). The pixels are already framed through the same
+  // frameRect maths the overlay writes into, so dragging here and the sidebar's
+  // numbers are two views of one value.
+  var frameAttr = framingId ? ' data-framing="' + _esc(framingId) + '"' : '';
   var keyAttr = p && p.imgKey
     ? ' data-img-key="' + _esc(p.imgKey) + '" data-img-w="' + (p.imgW || '') + '" data-img-h="' + (p.imgH || '') + '"'
     : '';
@@ -37,7 +162,7 @@ function _psSvg(p, W, H) {
   }
   return head
     + (p.prevSrc ? '<image href="' + p.prevSrc + '" x="0" y="0" width="' + W + '" height="' + H + '" preserveAspectRatio="none"/>' : '')
-    + '<image href="' + p.outSrc + '" x="0" y="0" width="' + W + '" height="' + H + '" preserveAspectRatio="none"/>'
+    + '<image href="' + p.outSrc + '"' + frameAttr + ' x="0" y="0" width="' + W + '" height="' + H + '" preserveAspectRatio="none"/>'
     + '<g id="lolly-ov-slot">' + (p.overlaySvg || '') + '</g></svg>';
 }
 
@@ -50,7 +175,12 @@ var _SVG_KEY = { posterize: 'posterSvg', voronoi: 'voronoiSvg' };
 // duotone both bake a bitmap and get wrapped in an <svg> by _psSvg.
 function _finalizeOne(effect, p, W, H) {
   if (!p) return p;
-  if (effect === 'pixel-stretch' || effect === 'duotone') { p.svgContent = _psSvg(p, W, H); return p; }
+  if (effect === 'pixel-stretch' || effect === 'duotone') {
+    // Each effect's framing lives under its own namespaced id (plans/91), so the
+    // marker names the one this effect actually writes to.
+    p.svgContent = _psSvg(p, W, H, effect === 'duotone' ? 'du_imageFraming' : 'px_imageFraming');
+    return p;
+  }
   var k = _SVG_KEY[effect];
   if (k && p[k] && !p.svgContent) p.svgContent = p[k];
   return p;
@@ -777,21 +907,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -1554,21 +1690,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -2261,21 +2403,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -3376,21 +3524,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -4165,13 +4319,6 @@ function workDims(W, H, maxEdge) {
   var k = maxEdge / longest;
   return { w: Math.max(1, Math.round(W * k)), h: Math.max(1, Math.round(H * k)) };
 }
-function drawCover(ctx, source, iw, ih, W, H, zoom, px, py) {
-  var s = Math.max(W / iw, H / ih) * zoom;
-  var dw = iw * s, dh = ih * s;
-  ctx.imageSmoothingEnabled = true;
-  if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(source, -px * (dw - W), -py * (dh - H), dw, dh);
-}
 
 // ── colour grade (HSL/contrast matrices + separable/non-separable blends) ──────
 function mul3(a, b) {
@@ -4354,7 +4501,7 @@ function buildToneLut(mode, labSh, labMd, labHi) {
 function makeSrc(source, iw, ih, W, H, p, lab) {
   var src = document.createElement('canvas'); src.width = W; src.height = H;
   var sctx = src.getContext('2d', { willReadFrequently: true }); if (!sctx) return null;
-  drawCover(sctx, source, iw, ih, W, H, p.zoom, p.px, p.py);
+  drawFramed(sctx, source, iw, ih, W, H, p.framing, 'cover');
   applyGradeAndTreat(sctx, W, H, p, lab);
   return src;
 }
@@ -4373,9 +4520,14 @@ function paramsFrom(inputs) {
     sat: clamp(n(inputs.saturation, 100), 0, 200) / 100,
     light: clamp(n(inputs.lightness, 0), -100, 100) / 100,
     treat: treatmentFrom(inputs),
-    zoom: clamp(n(fr.zoom, 100), 100, 800) / 100,
-    px: clamp(n(fr.x, 50), 0, 100) / 100,
-    py: clamp(n(fr.y, 50), 0, 100) / 100,
+    // The canonical framing compound (plans/148), straight to the shared
+    // frameRect. The engine already clamped every field to the manifest's
+    // declared range, so a second clamp here could only disagree with the slider
+    // (it used to: 100-800 against a slider that stops at 400).
+    framing: {
+      zoom: n(fr.zoom, 100), x: n(fr.x, 50), y: n(fr.y, 50),
+      rotate: n(fr.rotate, 0), pitch: n(fr.pitch, 0), yaw: n(fr.yaw, 0),
+    },
     W: clamp(Math.round(n(inputs.width, 1080)), 1, 8000),
     H: clamp(Math.round(n(inputs.height, 1080)), 1, 8000),
   };
@@ -4422,21 +4574,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -4846,13 +5004,6 @@ function workDims(W, H, maxEdge) {
 }
 
 // object-fit:cover + object-position, plus a zoom multiplier (1 = exactly cover).
-function drawCover(ctx, source, iw, ih, W, H, zoom, px, py) {
-  var s = Math.max(W / iw, H / ih) * zoom;
-  var dw = iw * s, dh = ih * s;
-  ctx.imageSmoothingEnabled = true;
-  if (ctx.imageSmoothingQuality) ctx.imageSmoothingQuality = 'high';
-  ctx.drawImage(source, -px * (dw - W), -py * (dh - H), dw, dh);
-}
 
 // ── colour (HSL) ───────────────────────────────────────────────────────────────
 
@@ -4982,7 +5133,7 @@ function applyHsl(ctx, W, H, p) {
 function makeSrc(source, iw, ih, W, H, p) {
   var src = document.createElement('canvas'); src.width = W; src.height = H;
   var sctx = src.getContext('2d', { willReadFrequently: true }); if (!sctx) return null;
-  drawCover(sctx, source, iw, ih, W, H, p.zoom, p.px, p.py);
+  drawFramed(sctx, source, iw, ih, W, H, p.framing, 'cover');
   applyHsl(sctx, W, H, p);
   return src;
 }
@@ -5075,9 +5226,14 @@ function paramsFrom(inputs) {
     sat: clamp(n(inputs.saturation, 100), 0, 200) / 100,
     light: clamp(n(inputs.lightness, 0), -100, 100) / 100,
     treat: treatmentFrom(inputs),
-    zoom: clamp(n(fr.zoom, 100), 100, 800) / 100,
-    px: clamp(n(fr.x, 50), 0, 100) / 100,
-    py: clamp(n(fr.y, 50), 0, 100) / 100,
+    // The canonical framing compound (plans/148), straight to the shared
+    // frameRect. The engine already clamped every field to the manifest's
+    // declared range, so a second clamp here could only disagree with the slider
+    // (it used to: 100-800 against a slider that stops at 400).
+    framing: {
+      zoom: n(fr.zoom, 100), x: n(fr.x, 50), y: n(fr.y, 50),
+      rotate: n(fr.rotate, 0), pitch: n(fr.pitch, 0), yaw: n(fr.yaw, 0),
+    },
     W: clamp(Math.round(n(inputs.width, 1080)), 1, 8000),
     H: clamp(Math.round(n(inputs.height, 1080)), 1, 8000),
   };
@@ -5137,21 +5293,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -5406,7 +5568,7 @@ async function compute(model) {
 
     // Cache the colour-adjusted base so tweaking only the smear (threshold / spread /
     // feather / direction) skips the expensive cover + HSL re-render.
-    var srcKey = JSON.stringify({ url: url, d: dims, zoom: p.zoom, px: p.px, py: p.py, hue: p.hue, sat: p.sat, light: p.light, contrast: p.contrast, treat: p.treat });
+    var srcKey = JSON.stringify({ url: url, d: dims, framing: p.framing, hue: p.hue, sat: p.sat, light: p.light, contrast: p.contrast, treat: p.treat });
     var src;
     if (_srcCache.key === srcKey && _srcCache.canvas) { src = _srcCache.canvas; }
     else { src = makeSrc(img, iw, ih, dims.w, dims.h, p); _srcCache = { key: srcKey, canvas: src }; }
@@ -5752,21 +5914,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -6649,21 +6817,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -7524,21 +7698,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -8275,21 +8455,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 
@@ -8501,18 +8687,6 @@ function workDims(W, H, maxEdge) {
   if (longest <= maxEdge) return { w: W, h: H };
   var k = maxEdge / longest;
   return { w: Math.max(1, Math.round(W * k)), h: Math.max(1, Math.round(H * k)) };
-}
-function drawCover(ctx, source, iw, ih, W, H) {
-  var s = Math.max(W / iw, H / ih);
-  var dw = iw * s, dh = ih * s;
-  ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(source, (W - dw) / 2, (H - dh) / 2, dw, dh);
-}
-function drawContain(ctx, source, iw, ih, W, H) {
-  var s = Math.min(W / iw, H / ih);
-  var dw = iw * s, dh = ih * s;
-  ctx.imageSmoothingEnabled = true;
-  ctx.drawImage(source, (W - dw) / 2, (H - dh) / 2, dw, dh);
 }
 
 // ── per-channel RGB offset (edge-clamped sampling) ──────────────────────────
@@ -8729,8 +8903,8 @@ async function compute(model) {
       if (!ctx) {
         svgContent = wrapImg(null, W, H, '', 'Preview renders in the browser', overlaySvg);
       } else {
-        if (params.fit === 'contain') drawContain(ctx, img, iw, ih, dims.w, dims.h);
-        else drawCover(ctx, img, iw, ih, dims.w, dims.h);
+        if (params.fit === 'contain') drawFramed(ctx, img, iw, ih, dims.w, dims.h, null, 'contain');
+        else drawFramed(ctx, img, iw, ih, dims.w, dims.h, null, 'cover');
         var imageData = ctx.getImageData(0, 0, dims.w, dims.h);
         var base = imageData.data;
         if (grade.on) gradeRasterInPlace(base, grade);   // grade the source, then corrupt
@@ -8783,8 +8957,8 @@ function onFrame(ctx) {
     cv.width = dims.w; cv.height = dims.h;
     var ctx2 = cv.getContext('2d', { willReadFrequently: true });
     if (!ctx2) return null;
-    if (params.fit === 'contain') drawContain(ctx2, srcFrame, frame.width, frame.height, dims.w, dims.h);
-    else drawCover(ctx2, srcFrame, frame.width, frame.height, dims.w, dims.h);
+    if (params.fit === 'contain') drawFramed(ctx2, srcFrame, frame.width, frame.height, dims.w, dims.h, null, 'contain');
+    else drawFramed(ctx2, srcFrame, frame.width, frame.height, dims.w, dims.h, null, 'cover');
     if (ovi.noFilter) {
       var overlaySvgL = buildOverlaySvg(W, H, ov);
       svgContent = svgOpen(W, H)

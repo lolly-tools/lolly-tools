@@ -218,6 +218,53 @@ function trimmedViewBox(box, penWidth) {
   return x + ' ' + y + ' ' + w + ' ' + h;
 }
 
+// ── designed path data ───────────────────────────────────────────────────────
+
+// A command the DRAWING PAD never writes. The pad only ever emits absolute
+// M/L polylines, so any curve (c/s/q/t/a), relative move (m/l) or shorthand
+// (h/v/z) means the value is a signature someone pasted or authored as real SVG
+// path data - render it as given rather than reading its numbers as bare point
+// pairs (which is what put a curved signature in the wrong place, unread).
+var PAD_ONLY = /[CcSsQqTtAaHhVvZzml]/;
+// The SVG path-data grammar. The value lands raw in a `d` attribute, so a value
+// with any character outside this is refused, not rendered as garbage.
+var PATH_GRAMMAR = /^[MmLlHhVvCcSsQqTtAaZz0-9eE.,\s+-]*$/;
+
+/**
+ * A pasted/authored SVG path -> one verbatim path plus its trimmed frame, or
+ * null when the value is plain pad polyline data (the existing point pipeline
+ * handles that). The tight box comes from host.geom (curve-aware, exact); a
+ * hand-typed polyline of straight segments would box fine from its points, but
+ * a real signature's coordinates live on the curves between them, so points
+ * would trim too tight.
+ */
+function richPath(value, penWidth, trim) {
+  var d = (value == null ? '' : String(value)).trim();
+  if (!d || !PAD_ONLY.test(d)) return null;
+  if (!PATH_GRAMMAR.test(d)) {
+    return { d: '', viewBox: '0 0 ' + FRAME_W + ' ' + FRAME_H, trimmed: false,
+      warning: 'That signature is not readable SVG path data, so nothing is drawn.' };
+  }
+  var viewBox = '0 0 ' + FRAME_W + ' ' + FRAME_H;
+  var trimmed = false;
+  var warning = '';
+  if (trim) {
+    var res = typeof host !== 'undefined' && host && host.geom && host.geom.bounds
+      ? host.geom.bounds(d) : null;
+    var b = res && res.ok ? res.value : null;
+    if (b && isFinite(b.x0) && isFinite(b.y0) && isFinite(b.x1) && isFinite(b.y1)) {
+      viewBox = trimmedViewBox(b, penWidth);
+      trimmed = true;
+    } else {
+      // ponytail: no curve-aware box without host.geom (always present in
+      // web/CLI/Tauri) - fall back to the full frame rather than ship a bezier
+      // flattener just for the minimal test host. Upgrade: wire host.geom there.
+      warning = 'This signature could not be trimmed to the ink on this device.';
+    }
+  }
+  return { d: d, viewBox: viewBox, trimmed: trimmed, warning: warning };
+}
+
 // ── compute ──────────────────────────────────────────────────────────────────
 
 var memoKey = null;
@@ -234,13 +281,40 @@ function compute(model) {
   for (var i = 0; i < model.length; i++) a[model[i].id] = model[i].value;
   transparentBg = a.transparentBg !== false;
 
-  var ink = hex(a.color, '#111827');
-  var penWidth = clamp(num(a.penWidth, 7), 1, 40);
+  // Empty when the ink is unset/unresolved, so the template paints currentColor
+  // and the signature follows the theme's foreground. A real pick pins the ink.
+  var ink = hex(a.color, '');
+  var penWidth = clamp(num(a.penWidth, 1), 0.25, 7);
   var smoothing = clamp(num(a.smoothing, 35), 0, 100);
   var trim = a.trim !== false;
 
   var key = JSON.stringify([a.strokes, ink, penWidth, smoothing, trim]);
   if (key === memoKey) return memoResult;
+
+  // A pasted or authored signature (curves, relative moves) renders verbatim -
+  // it is already a designed line, so it is not thinned, smoothed or reboxed
+  // from points. The pad's own M/L polylines fall through to the pipeline below.
+  var rich = richPath(a.strokes, penWidth, trim);
+  if (rich) {
+    memoKey = key;
+    memoResult = {
+      paths: rich.d ? [{ d: rich.d }] : [],
+      viewBox: rich.viewBox,
+      inkColor: ink,
+      penStroke: penWidth,
+      // The value is already canonical SVG path data - write it back unchanged
+      // so save, share links and the pad (which appends its strokes to it) keep
+      // the exact path.
+      strokesValue: rich.d,
+      strokeCount: rich.d ? 1 : 0,
+      pointCount: 0,
+      isEmpty: !rich.d,
+      trimmed: rich.trimmed,
+      smoothMode: 'raw',
+      warning: rich.warning,
+    };
+    return memoResult;
+  }
 
   var parsed = parseStrokes(a.strokes);
   var paths = [];

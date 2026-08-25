@@ -3,7 +3,7 @@
   "name": "Filter",
   "description": "One tool for photo effects: pick halftone, scanline, posterize, voronoi, dither or ASCII art (vector) or duotone, pixel-stretch, imperfections or glitch (raster). Brand overlays, live camera, and exports to as many formats as each effect supports.",
   "a11yLabel": "{{effect}} filter of the chosen image",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -430,7 +430,7 @@
       "section": "Ink",
       "type": "color",
       "default": "{color.semantic.surface}",
-      "help": "Fill behind the dots. Turn on “No BG” in the export options for a transparent background instead.",
+      "help": "Fill behind the dots. Turn on “Transparent background” for no fill instead.",
       "showIf": {
         "effect": "halftone"
       }
@@ -979,7 +979,8 @@
       "id": "du_imageFraming",
       "label": "Zoom & Position",
       "section": "Position",
-      "help": "Zoom scales the photo up; X / Y pan it within the frame (like object-position). Drag a label or type a value.",
+      "framingFor": "image",
+      "help": "Drag the photo on the canvas to move it, scroll to zoom, and hold Alt while dragging to correct converging verticals. Or drag a label / type a value here.",
       "type": "vector",
       "fields": [
         {
@@ -1005,6 +1006,30 @@
           "max": 100,
           "step": 1,
           "default": 50
+        },
+        {
+          "id": "rotate",
+          "label": "Rotate",
+          "min": -180,
+          "max": 180,
+          "step": 0.5,
+          "default": 0
+        },
+        {
+          "id": "pitch",
+          "label": "Vertical",
+          "min": -45,
+          "max": 45,
+          "step": 0.5,
+          "default": 0
+        },
+        {
+          "id": "yaw",
+          "label": "Horizontal",
+          "min": -45,
+          "max": 45,
+          "step": 0.5,
+          "default": 0
         }
       ],
       "showIf": {
@@ -1089,7 +1114,8 @@
       "id": "px_imageFraming",
       "label": "Zoom & Position",
       "section": "Position",
-      "help": "Zoom scales the photo up; X / Y pan it within the frame (like object-position). Drag a label or type a value.",
+      "framingFor": "image",
+      "help": "Drag the photo on the canvas to move it, scroll to zoom, and hold Alt while dragging to correct converging verticals. Or drag a label / type a value here.",
       "type": "vector",
       "fields": [
         {
@@ -1115,6 +1141,30 @@
           "max": 100,
           "step": 1,
           "default": 50
+        },
+        {
+          "id": "rotate",
+          "label": "Rotate",
+          "min": -180,
+          "max": 180,
+          "step": 0.5,
+          "default": 0
+        },
+        {
+          "id": "pitch",
+          "label": "Vertical",
+          "min": -45,
+          "max": 45,
+          "step": 0.5,
+          "default": 0
+        },
+        {
+          "id": "yaw",
+          "label": "Horizontal",
+          "min": -45,
+          "max": 45,
+          "step": 0.5,
+          "default": 0
         }
       ],
       "showIf": {

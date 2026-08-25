@@ -129,3 +129,62 @@
 .jp-minimal .jp-host {
   color: var(--jp-muted, rgba(0, 0, 0, 0.55));
 }
+
+/* Forward mode: the page redirects on visit. Shown centred, with an optional
+   press-and-hold human check that fills the accent before it lets you through. */
+
+.jp-forward {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  margin: auto 0;
+  text-align: center;
+}
+
+.jp-forward-to,
+.jp-forward-note {
+  margin: 0;
+  font-size: 20px;
+  color: var(--jp-muted, rgba(0, 0, 0, 0.55));
+}
+
+.jp-forward-to strong {
+  color: var(--jp-ink, #17232b);
+  font-weight: 600;
+}
+
+.jp-hold {
+  position: relative;
+  overflow: hidden;
+  border: 0;
+  cursor: pointer;
+  padding: 24px 52px;
+  border-radius: 999px;
+  background: var(--jp-card, rgba(0, 0, 0, 0.06));
+  color: var(--jp-ink, #17232b);
+  font: inherit;
+  font-size: 23px;
+  font-weight: 600;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: none; /* a press-and-hold must not scroll or select on mobile */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.jp-hold-fill {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 0;
+  background: var(--jp-accent, #2563eb);
+  opacity: 0.92;
+  pointer-events: none;
+}
+
+.jp-hold-label {
+  position: relative;
+}
+
+.jp-hold.is-done .jp-hold-label {
+  color: var(--jp-on-accent, #ffffff);
+}

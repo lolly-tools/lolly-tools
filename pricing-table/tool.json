@@ -100,7 +100,8 @@
     "height": 1000,
     "formats": ["png", "svg", "pdf", "csv", "json"],
     "actions": ["copy", "download", "save"],
-    "filenameFrom": ["heading"]
+    "filenameFrom": ["heading"],
+    "transparentBg": false
   },
   "inputs": [
     {

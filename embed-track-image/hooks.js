@@ -83,7 +83,7 @@ function onInput(ctx) {
     supportedCount: supported,
     unsupportedCount: files.length - supported,
     rasterCount: raster,
-    durableOn: v.durable === true,
+    durableOn: v.durableMark === true,
     needsName: !hasName,
     downloadLabel: files.length > 1
       ? ('Stamp & download ' + files.length + ' files')
@@ -110,7 +110,7 @@ async function exportFile(ctx) {
     for (var p = 0; p < parts.length; p++) if (parts[p].indexOf('@') !== -1) { email = parts[p]; break; }
   }
   var authorObj = author ? (email ? { name: author, email: email } : { name: author }) : null;
-  var wantDurable = v.durable === true;
+  var wantDurable = v.durableMark === true;
 
   var out = [];
   for (var i = 0; i < files.length; i++) {

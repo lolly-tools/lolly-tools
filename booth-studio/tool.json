@@ -1,7 +1,7 @@
 {
   "id": "booth-studio",
   "name": "Booth Studio",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "engineVersion": "^1.0.0",
   "status": "experimental",
   "category": "event",
@@ -130,6 +130,20 @@
       ]
     },
     {
+      "id": "backWallFraming",
+      "label": "Back wall position",
+      "section": "Panels",
+      "framingFor": "backWall",
+      "showIf": {"design": ["inline", "corner", "island"]},
+      "help": "Move and zoom the artwork inside this panel. Same numbers, same ranges, as every other image slot.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom", "label": "Zoom", "symbol": "+", "min": 100, "max": 400, "step": 1, "default": 100 },
+        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
+        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
+      ]
+    },
+    {
       "id": "leftWing",
       "label": "Left wing",
       "section": "Panels",
@@ -171,6 +185,20 @@
       ]
     },
     {
+      "id": "leftWingFraming",
+      "label": "Left wing position",
+      "section": "Panels",
+      "framingFor": "leftWing",
+      "showIf": {"design": ["corner", "island"]},
+      "help": "Move and zoom the artwork inside this panel. Same numbers, same ranges, as every other image slot.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom", "label": "Zoom", "symbol": "+", "min": 100, "max": 400, "step": 1, "default": 100 },
+        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
+        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
+      ]
+    },
+    {
       "id": "rightWing",
       "label": "Right wing",
       "section": "Panels",
@@ -207,6 +235,20 @@
           "label": "Fit whole (letterbox)",
           "icon": "fitContain"
         }
+      ]
+    },
+    {
+      "id": "rightWingFraming",
+      "label": "Right wing position",
+      "section": "Panels",
+      "framingFor": "rightWing",
+      "showIf": {"design": ["island"]},
+      "help": "Move and zoom the artwork inside this panel. Same numbers, same ranges, as every other image slot.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom", "label": "Zoom", "symbol": "+", "min": 100, "max": 400, "step": 1, "default": 100 },
+        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
+        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
       ]
     },
     {
@@ -254,6 +296,20 @@
       ]
     },
     {
+      "id": "headerFraming",
+      "label": "Header position",
+      "section": "Panels",
+      "framingFor": "header",
+      "showIf": {"design": ["inline", "corner", "island"]},
+      "help": "Move and zoom the artwork inside this panel. Same numbers, same ranges, as every other image slot.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom", "label": "Zoom", "symbol": "+", "min": 100, "max": 400, "step": 1, "default": 100 },
+        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
+        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
+      ]
+    },
+    {
       "id": "counter",
       "label": "Counter front",
       "section": "Panels",
@@ -280,6 +336,19 @@
           "label": "Fit whole (letterbox)",
           "icon": "fitContain"
         }
+      ]
+    },
+    {
+      "id": "counterFraming",
+      "label": "Counter front position",
+      "section": "Panels",
+      "framingFor": "counter",
+      "help": "Move and zoom the artwork inside this panel. Same numbers, same ranges, as every other image slot.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom", "label": "Zoom", "symbol": "+", "min": 100, "max": 400, "step": 1, "default": 100 },
+        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
+        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
       ]
     },
     {
@@ -321,6 +390,20 @@
           "label": "Fit whole (letterbox)",
           "icon": "fitContain"
         }
+      ]
+    },
+    {
+      "id": "towerFraming",
+      "label": "Tower position",
+      "section": "Panels",
+      "framingFor": "tower",
+      "showIf": {"design": ["island", "kiosk"]},
+      "help": "Move and zoom the artwork inside this panel. Same numbers, same ranges, as every other image slot.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom", "label": "Zoom", "symbol": "+", "min": 100, "max": 400, "step": 1, "default": 100 },
+        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
+        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
       ]
     },
     {
@@ -368,6 +451,20 @@
       ]
     },
     {
+      "id": "screenFraming",
+      "label": "Screen position",
+      "section": "Panels",
+      "framingFor": "screen",
+      "showIf": {"design": ["inline", "corner", "island"]},
+      "help": "Move and zoom the artwork inside this panel. Same numbers, same ranges, as every other image slot.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom", "label": "Zoom", "symbol": "+", "min": 100, "max": 400, "step": 1, "default": 100 },
+        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
+        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
+      ]
+    },
+    {
       "id": "floor",
       "label": "Floor decal",
       "section": "Panels",
@@ -408,6 +505,20 @@
           "label": "Fit whole (letterbox)",
           "icon": "fitContain"
         }
+      ]
+    },
+    {
+      "id": "floorFraming",
+      "label": "Floor decal position",
+      "section": "Panels",
+      "framingFor": "floor",
+      "showIf": {"design": ["inline", "corner", "island"]},
+      "help": "Move and zoom the artwork inside this panel. Same numbers, same ranges, as every other image slot.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom", "label": "Zoom", "symbol": "+", "min": 100, "max": 400, "step": 1, "default": 100 },
+        { "id": "x",    "label": "X",    "min": 0,   "max": 100, "step": 1, "default": 50  },
+        { "id": "y",    "label": "Y",    "min": 0,   "max": 100, "step": 1, "default": 50  }
       ]
     },
     {
@@ -529,27 +640,14 @@
       "id": "bgPosition",
       "label": "Position",
       "section": "Background",
+      "framingFor": "bgImage",
+      "help": "Which part of the backdrop stays in frame, how far in it is zoomed, and whether it is straightened. Drag it on the canvas, or set the numbers here.",
       "type": "vector",
-      "help": "Which part of the content stays in frame when it is cropped - like CSS object-position. 50/50 is centred.",
       "fields": [
-        {
-          "id": "x",
-          "label": "Horizontal",
-          "symbol": "↔",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 50
-        },
-        {
-          "id": "y",
-          "label": "Vertical",
-          "symbol": "↕",
-          "min": 0,
-          "max": 100,
-          "step": 1,
-          "default": 50
-        }
+        { "id": "x",      "label": "Horizontal", "symbol": "\u2194", "min": 0, "max": 100, "step": 1, "default": 50 },
+        { "id": "y",      "label": "Vertical",   "symbol": "\u2195", "min": 0, "max": 100, "step": 1, "default": 50 },
+        { "id": "zoom",   "label": "Zoom",       "symbol": "+", "min": 100,  "max": 400, "step": 1,   "default": 100 },
+        { "id": "rotate", "label": "Rotate",     "min": -180, "max": 180, "step": 0.5, "default": 0 }
       ]
     },
     {

@@ -1,5 +1,5 @@
 <div class="bc-card {{#if (eq orientation "portrait")}}is-portrait{{/if}}"
-     style="--bc-accent: {{default accent "#4f46e5"}}; --bc-bg: {{default bg "#ffffff"}}; --bc-ink: {{default ink "#111827"}};">
+     style="--bc-accent: {{default accent "#4f46e5"}}; --bc-bg: {{#if transparentBg}}transparent{{else}}{{default bg "#ffffff"}}{{/if}}; --bc-ink: {{default ink "#111827"}};">
   <div class="bc-inner">
     <header class="bc-head">
       <span class="bc-deck">{{default title "Battlecards"}}</span>

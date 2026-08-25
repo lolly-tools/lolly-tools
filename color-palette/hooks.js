@@ -431,6 +431,9 @@ var _memoResult = null;
 // ctx carries { node, format, opts, host } but NOT the input model, so it can't
 // recompute. onInit/onInput always run before any export, so this is current.
 var _lastSwatches = [];
+// Mirrors the transparentBg input for beforeExport, which (like exportStill)
+// gets no input model - only { format, opts }.
+var _transparentBg = false;
 
 function compute(model) {
   var a = Object.fromEntries(model.map(function (i) { return [i.id, i.value]; }));
@@ -459,12 +462,15 @@ function compute(model) {
   // An allowlist, not a truthiness test: `grid` is default-off, and it arrives
   // through URL params, so only an explicit yes turns it on.
   var showGrid = a.grid === true || a.grid === 'true' || a.grid === 1 || a.grid === '1';
+  // The sheet's own backdrop only - swatches and ramp cells always stay opaque.
+  var transparentBg = Boolean(a.transparentBg);
+  _transparentBg = transparentBg;
   // The grid takes the bottom third of the fixed viewBox, so the ramp rows stop
   // higher up and their three text lines close up to match.
   var rowsBottom = showGrid ? ROWS_BOTTOM_GRID : ROWS_BOTTOM;
 
   // cssStyle is in the key so flipping variables↔classes re-emits the CSS export.
-  var key = JSON.stringify([seed, kind, steps, withNeutrals, contrast, bg, curveKey, lcCustom, cssStyle, vision, showGrid]);
+  var key = JSON.stringify([seed, kind, steps, withNeutrals, contrast, bg, curveKey, lcCustom, cssStyle, vision, showGrid, transparentBg]);
   if (key === _memoKey) return _memoResult;
 
   // Seed-tinted near-black / near-white anchors: paper & ink for the sheet
@@ -672,7 +678,9 @@ function compute(model) {
 
   _memoKey = key;
   _memoResult = {
-    paper: paper,
+    // paperFill paints the sheet's own backdrop rect (none when transparent);
+    // paper stays the real tint the grid's own "Paper" swatch shows and measures.
+    paperFill: transparentBg ? 'none' : paper,
     ink: ink,
     hairline: ink + '22',
     subtitle: subtitle,
@@ -695,6 +703,17 @@ function compute(model) {
 
 function onInit(ctx) { return compute(ctx.model); }
 function onInput(ctx) { return compute(ctx.model); }
+
+function beforeExport({ format, opts }) {
+  // Clear the container background for alpha-capable raster formats so the
+  // sheet's fill:none backdrop rect isn't composited onto an opaque canvas.
+  // (svg carries the fill:none straight through; jpg/csv/json/css/scss/gpl/ase
+  // have no alpha channel to preserve.)
+  var alphaFormats = ['png', 'webp'];
+  if (_transparentBg && alphaFormats.includes(format)) {
+    opts.background = 'transparent';
+  }
+}
 
 // Own the binary Adobe .ase export: build the swatch file from the last computed
 // palette via host.color.paletteExportBytes (engine >= 1.108) and return its

@@ -8,7 +8,7 @@
     "heading": "",
     "firstname": "Tomás",
     "lastname": "Herrera",
-    "course": "The 2026 Innovation Award",
+    "awardtopic": "The 2026 Innovation Award",
     "awarddate": "2026-05-09",
     "presenter": "Ingrid Sorensen",
     "presenterTitle": "Chair of the Jury",
@@ -29,7 +29,7 @@
         "certKind": "appreciation",
         "firstname": "Priya",
         "lastname": "Nair",
-        "course": "Two years of volunteering",
+        "awardtopic": "Two years of volunteering",
         "awarddate": "2026-03-02",
         "presenter": "Jonas Weber",
         "presenterTitle": "Community Lead"
@@ -43,7 +43,7 @@
         "heading": "Team of the Year",
         "firstname": "The Atlas",
         "lastname": "Team",
-        "course": "For shipping the 2026 platform on time and in the open",
+        "awardtopic": "For shipping the 2026 platform on time and in the open",
         "awarddate": "2026-12-04",
         "presenter": "Maya Lindqvist",
         "presenterTitle": "Chief Executive"

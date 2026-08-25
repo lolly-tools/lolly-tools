@@ -73,7 +73,8 @@
   display: block;
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  /* fit / position / transform come from the {{framing}} helper inline
+     (plans/148) - one recipe shared with every other framed image. */
 }
 
 .sf-frame--browser .sf-shot,

@@ -623,7 +623,7 @@ async function build(ctx) {
   if (wantViz && vizMeta) {
     try {
       const presets = await h.viz.presets();
-      const found = presets.find((p) => p.id === v.preset) || presets[0];
+      const found = presets.find((p) => p.id === v.vizLook) || presets[0];
       if (found) {
         vizPreset = found.id;
         if (v.credit !== false && found.author && found.author !== 'Lolly') {

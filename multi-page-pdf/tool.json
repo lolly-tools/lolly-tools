@@ -3,7 +3,7 @@
   "name": "Multi-Page PDF",
   "description": "Build a multi-page PDF - a cover, flowing content blocks, and a back page.",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - multi-page PDF document",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -141,6 +141,21 @@
       "allowUpload": true,
       "help": "Optional hero image filling the top of the cover.",
       "section": "Cover"
+    },
+    {
+      "id": "coverImageFraming",
+      "label": "Cover image framing",
+      "framingFor": "coverImage",
+      "help": "Drag the image on the canvas to move it, scroll to zoom, and hold Alt while dragging to correct converging verticals. Or set the numbers here.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom",   "label": "Zoom",       "min": 100,  "max": 400, "step": 1,   "default": 100 },
+        { "id": "x",      "label": "X",          "min": 0,    "max": 100, "step": 1,   "default": 50  },
+        { "id": "y",      "label": "Y",          "min": 0,    "max": 100, "step": 1,   "default": 50  },
+        { "id": "rotate", "label": "Rotate",     "min": -180, "max": 180, "step": 0.5, "default": 0   },
+        { "id": "pitch",  "label": "Vertical",   "min": -45,  "max": 45,  "step": 0.5, "default": 0   },
+        { "id": "yaw",    "label": "Horizontal", "min": -45,  "max": 45,  "step": 0.5, "default": 0   }
+      ]
     },
     {
       "id": "coverBg",
@@ -294,6 +309,21 @@
       "allowUpload": true,
       "help": "Optional image along the top of the back page.",
       "section": "Back page"
+    },
+    {
+      "id": "backImageFraming",
+      "label": "Back image framing",
+      "framingFor": "backImage",
+      "help": "Drag the image on the canvas to move it, scroll to zoom, and hold Alt while dragging to correct converging verticals. Or set the numbers here.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom",   "label": "Zoom",       "min": 100,  "max": 400, "step": 1,   "default": 100 },
+        { "id": "x",      "label": "X",          "min": 0,    "max": 100, "step": 1,   "default": 50  },
+        { "id": "y",      "label": "Y",          "min": 0,    "max": 100, "step": 1,   "default": 50  },
+        { "id": "rotate", "label": "Rotate",     "min": -180, "max": 180, "step": 0.5, "default": 0   },
+        { "id": "pitch",  "label": "Vertical",   "min": -45,  "max": 45,  "step": 0.5, "default": 0   },
+        { "id": "yaw",    "label": "Horizontal", "min": -45,  "max": 45,  "step": 0.5, "default": 0   }
+      ]
     },
     {
       "id": "backLogoSize",

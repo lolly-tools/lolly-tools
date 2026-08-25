@@ -76,7 +76,7 @@ function optsOf(inputs) {
   var q = Math.min(100, Math.max(10, Number(inputs.quality) || 85));
   var edge = Math.floor(Number(inputs.maxEdge));
   return {
-    format: formatOf(inputs.format),
+    format: formatOf(inputs.target),
     quality: q / 100,
     maxEdge: isFinite(edge) && edge >= 1 ? edge : 0,
     keepLocation: inputs.keepLocation === true || inputs.keepLocation === 'true',
@@ -179,7 +179,7 @@ async function compute(ctx) {
     done: false, pending: false,
     outSize: '', outMeta: '', deltaText: '', saved: false, grew: false,
     carriedLine: '',
-    formatLabel: labelOf(formatOf(inputs.format)),
+    formatLabel: labelOf(formatOf(inputs.target)),
   };
 
   if (!f || !f.bytes) return base;

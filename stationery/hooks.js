@@ -180,6 +180,11 @@ async function _build(args) {
   var paper = _hex(args.background, PAPER_FALLBACK);
   var accent = _hex(args.accent, ACCENT_FALLBACK);
   var isBack = piece.face === 'back';
+  // Engine-injected boolean (render.transparentBg in the manifest). Only the
+  // painted sheet goes transparent - `surface` (below) still carries the real
+  // hex so mutedColor/ruleColor keep mixing against a colour, not the string
+  // 'transparent'.
+  var transparent = args.transparentBg === true || args.transparentBg === 'true';
 
   // The card back prints on the accent field; every other piece prints on the
   // paper. Everything downstream reads `surface` / `surfaceInk`, so one branch
@@ -205,7 +210,9 @@ async function _build(args) {
     trimUnit: piece.unit,
 
     inkColor: surfaceInk,
-    paperColor: surface,
+    // The `--st-paper` value the template paints .st-piece with - the only
+    // place the sheet's background comes from (styles.css: background: var(--st-paper)).
+    paperColor: transparent ? 'transparent' : surface,
     accentColor: isBack ? _onColor(accent) : accent,
     mutedColor: _mix(surfaceInk, surface, 0.4),
     ruleColor: _mix(surfaceInk, surface, 0.82),

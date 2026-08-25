@@ -498,6 +498,7 @@ function compute(args) {
       : encodeEan8(norm.value);
     var background = _hex(args.background, '#ffffff');
     var color = _hex(args.color, '#111111');
+    var transparentBg = args.transparentBg === true;
     var summary = _summary(kind, norm.value);
     result = {
       svgContent: buildSvg(enc, {
@@ -508,11 +509,11 @@ function compute(args) {
         // symmetric number satisfies all of them. Matches the manifest default.
         quiet: Math.round(_num(args.quiet, 11, 0, 24)),
         showText: args.showText !== false,
-        background: background,
+        background: transparentBg ? 'none' : background,
         color: color,
         summary: summary,
       }),
-      bgHex: background,
+      bgHex: transparentBg ? 'transparent' : background,
       inkHex: color,
       bcError: '',
       bcHint: '',

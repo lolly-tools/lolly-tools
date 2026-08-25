@@ -81,7 +81,7 @@
       "help": "Optional - a short title or description of the work."
     },
     {
-      "id": "durable",
+      "id": "durableMark",
       "label": "Add a durable invisible watermark",
       "type": "boolean",
       "section": "Marks",

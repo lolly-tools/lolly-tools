@@ -26,7 +26,7 @@ function num(v, fallback) {
 // (resolveAssetRefs) as a full AssetRef object - so read `.url` off it. Anything
 // else (unset, or a bare id the runtime could not resolve) means "empty panel",
 // which the renderer draws as a labelled placeholder rather than failing.
-function panelFrom(v, fit) {
+function panelFrom(v, fit, framing) {
   if (!v || typeof v !== 'object' || !v.url) return null;
   var meta = (v.meta && typeof v.meta === 'object') ? v.meta : {};
   return {
@@ -35,9 +35,23 @@ function panelFrom(v, fit) {
     // icon-toggle). A wordmark on the fascia and a photo on the back wall want
     // opposite answers, so one global fit was never right.
     fit: fit === 'contain' ? 'contain' : 'cover',
+    // The canonical framing compound for this surface (plans/148), fed straight
+    // to the shared frameRect - the same values, ranges and maths every other
+    // tool's image slot uses.
+    framing: framingFrom(framing),
     name: typeof meta.name === 'string' ? meta.name : '',
     width: num(v.width, 0),
     height: num(v.height, 0),
+  };
+}
+
+// A framing vector's raw model value → plain numbers. The engine has already
+// clamped each field to its declared range, so this only fills the gaps.
+function framingFrom(v) {
+  var f = (v && typeof v === 'object') ? v : {};
+  return {
+    zoom: num(f.zoom, 100), x: num(f.x, 50), y: num(f.y, 50),
+    rotate: num(f.rotate, 0), pitch: num(f.pitch, 0), yaw: num(f.yaw, 0),
   };
 }
 
@@ -72,7 +86,7 @@ function compute(model) {
   for (var i = 0; i < model.length; i++) inp[model[i].id] = model[i].value;
 
   var panels = {};
-  for (var r = 0; r < ROLES.length; r++) panels[ROLES[r]] = panelFrom(inp[ROLES[r]], inp[ROLES[r] + 'Fit']);
+  for (var r = 0; r < ROLES.length; r++) panels[ROLES[r]] = panelFrom(inp[ROLES[r]], inp[ROLES[r] + 'Fit'], inp[ROLES[r] + 'Framing']);
 
   var cam = (inp.camera && typeof inp.camera === 'object') ? inp.camera : {};
   var bgPos = (inp.bgPosition && typeof inp.bgPosition === 'object') ? inp.bgPosition : {};
@@ -97,10 +111,9 @@ function compute(model) {
     // 0–1, per the canonical `bgOpacity` in schemas/canonical-inputs.json.
     bgOpacity: Math.max(0, Math.min(1, num(inp.bgOpacity, 0.7))),
     bgBlend: BLENDS.indexOf(inp.bgBlend) >= 0 ? inp.bgBlend : 'source-over',
-    bgPosition: {
-      x: Math.max(0, Math.min(100, num(bgPos.x, 50))),
-      y: Math.max(0, Math.min(100, num(bgPos.y, 50))),
-    },
+    // The backdrop's framing. `bgPosition` keeps its id (a permanent URL
+    // contract) and simply grew the rest of the canonical field set.
+    bgPosition: framingFrom(bgPos),
     exposure: num(inp.exposure, 1),
     shadows: inp.shadows !== false,
     people: inp.people !== false,

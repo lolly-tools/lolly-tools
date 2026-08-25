@@ -48,21 +48,27 @@ function overlayInputs(inp) {
 }
 function overlayActive(o) { return !!(o.showLogo || o.lowerThird); }
 
-// One of the 8 shipped SUSE logo ids. white → on-dark mono, green → on-dark colour,
-// black → on-light mono. Horizontal lockup only (reads best over a strip/corner).
+// The brand-logo VARIANT for a style (used as the cache key + resolution key). Horizontal
+// lockup only (reads best over a strip/corner). white → mono-reverse (on-dark mono), green →
+// primary-reverse (on-dark colour), black → mono (on-light). Resolved from the CURRENT
+// brand's asset.logo.<variant> tokens, so this brand-neutral tool inherits whatever brand is
+// loaded rather than a hard-coded SUSE mark.
 function logoVariantId(style) {
-  return style === 'green' ? 'suse/logo/hor-neg-green'
-    : style === 'black' ? 'suse/logo/hor-pos-black'
-      : 'suse/logo/hor-neg-white';
+  return style === 'green' ? 'horizontal-primary-reverse'
+    : style === 'black' ? 'horizontal-mono'
+      : 'horizontal-mono-reverse';
 }
 // Resolve the chosen logo variant to a URL, cached per-variant. Safe to await in
-// compute/onInit; call WITHOUT await from onFrame - it just warms the cache.
+// compute/onInit; call WITHOUT await from onFrame - it just warms the cache. Null when the
+// brand declares no such logo (no SUSE fallback - this is a brand-neutral community tool).
 function resolveLogoUrl(style) {
-  var id = logoVariantId(style);
-  if (_logoCache[id] !== undefined) return Promise.resolve(_logoCache[id]);
-  return host.assets.get(id)
-    .then(function (r) { return (_logoCache[id] = (r && r.url) || null); })
-    .catch(function () { return (_logoCache[id] = null); });
+  var variant = logoVariantId(style);
+  if (_logoCache[variant] !== undefined) return Promise.resolve(_logoCache[variant]);
+  var idP = (host.tokens && host.tokens.resolve) ? host.tokens.resolve('{asset.logo.' + variant + '}') : Promise.resolve(null);
+  return Promise.resolve(idP).then(function (id) {
+    if (typeof id !== 'string' || !id || id.indexOf('{') === 0) return (_logoCache[variant] = null);
+    return host.assets.get(id).then(function (r) { return (_logoCache[variant] = (r && r.url) || null); });
+  }).catch(function () { return (_logoCache[variant] = null); });
 }
 function cachedLogoUrl(style) { return _logoCache[logoVariantId(style)] || ''; }
 

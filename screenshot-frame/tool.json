@@ -3,7 +3,7 @@
   "name": "Screenshot Frame",
   "description": "Drop in a screenshot and get it framed, padded and shadowed on a brand backdrop.",
   "a11yLabel": "Screenshot in a {{default frame \"browser\"}} frame on a {{default backdrop \"gradient\"}} backdrop",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "everyone",
@@ -47,6 +47,21 @@
       "assetType": "image",
       "allowUpload": true,
       "help": "Drop in a screen grab. Without one the frame shows a plain placeholder screen."
+    },
+    {
+      "id": "imageFraming",
+      "label": "Zoom & Position",
+      "framingFor": "image",
+      "help": "Drag the image on the canvas to move it, scroll to zoom, and hold Alt while dragging to correct converging verticals. Or set the numbers here.",
+      "type": "vector",
+      "fields": [
+        { "id": "zoom",   "label": "Zoom",       "min": 100,  "max": 400, "step": 1,   "default": 100 },
+        { "id": "x",      "label": "X",          "min": 0,    "max": 100, "step": 1,   "default": 50  },
+        { "id": "y",      "label": "Y",          "min": 0,    "max": 100, "step": 1,   "default": 50  },
+        { "id": "rotate", "label": "Rotate",     "min": -180, "max": 180, "step": 0.5, "default": 0   },
+        { "id": "pitch",  "label": "Vertical",   "min": -45,  "max": 45,  "step": 0.5, "default": 0   },
+        { "id": "yaw",    "label": "Horizontal", "min": -45,  "max": 45,  "step": 0.5, "default": 0   }
+      ]
     },
     {
       "id": "frame",

@@ -57,6 +57,20 @@
           { "label": "Now", "url": "https://example.com/now" }
         ]
       }
+    },
+    {
+      "label": "Forwarder",
+      "values": {
+        "heading": "Redirecting",
+        "subheading": "One link that forwards you on.",
+        "onVisit": "gate",
+        "accent": "#2563eb",
+        "background": "#f6f8fc",
+        "color": "#16202b",
+        "links": [
+          { "label": "Destination", "url": "https://example.com/live" }
+        ]
+      }
     }
   ],
   "render": {
@@ -94,6 +108,19 @@
         { "label": "Website", "url": "https://example.com" },
         { "label": "Newsletter", "url": "https://example.com/news" },
         { "label": "Say hello", "url": "https://example.com/contact" }
+      ]
+    },
+    {
+      "id": "onVisit",
+      "label": "On visit",
+      "type": "select",
+      "urlKey": "go",
+      "default": "page",
+      "help": "\"Forward\" turns the page into a redirect to the first link - a URL forwarder. Add a password in the Share dialog for a password-gated forwarder. \"Forward after a human check\" adds a press-and-hold step first, so a casual bot following the link does not sail straight through. The check is a speed bump, not proof: whoever holds a link without a password can still read where it points.",
+      "options": [
+        { "value": "page", "label": "Show the links page" },
+        { "value": "forward", "label": "Forward to the first link" },
+        { "value": "gate", "label": "Forward after a human check" }
       ]
     },
     {

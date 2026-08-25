@@ -1,6 +1,6 @@
-<div class="sg-wrap" data-ink="{{inkColor}}" data-pen="{{penStroke}}" data-strokes="{{strokesValue}}">
+<div class="sg-wrap" data-ink="{{inkColor}}" data-pen="{{penStroke}}" data-strokes="{{strokesValue}}"{{#if inkColor}} style="color:{{inkColor}}"{{/if}}>
   <svg class="sg-svg" xmlns="http://www.w3.org/2000/svg" viewBox="{{viewBox}}" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Handwritten signature, {{strokeCount}} strokes">
-    {{#each paths}}<path d="{{d}}" fill="none" stroke="{{../inkColor}}" stroke-width="{{../penStroke}}" stroke-linecap="round" stroke-linejoin="round" />
+    {{#each paths}}<path d="{{d}}" fill="none" stroke="currentColor" stroke-width="{{../penStroke}}" stroke-linecap="round" stroke-linejoin="round" />
     {{/each}}
   </svg>
   {{#if isEmpty}}
@@ -155,7 +155,7 @@
       try { svg.setPointerCapture(e.pointerId); } catch (err) { /* not capturable */ }
       var el = document.createElementNS(SVG_NS, 'path');
       el.setAttribute('fill', 'none');
-      el.setAttribute('stroke', wrap.getAttribute('data-ink') || '#111827');
+      el.setAttribute('stroke', wrap.getAttribute('data-ink') || 'currentColor');
       el.setAttribute('stroke-width', wrap.getAttribute('data-pen') || '7');
       el.setAttribute('stroke-linecap', 'round');
       el.setAttribute('stroke-linejoin', 'round');
