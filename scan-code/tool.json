@@ -17,7 +17,8 @@
     "height": 640,
     "formats": ["png"],
     "export": false,
-    "actions": []
+    "actions": [],
+    "liveFacing": "environment"
   },
   "inputs": [
     {
