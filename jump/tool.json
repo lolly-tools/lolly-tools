@@ -3,7 +3,7 @@
   "name": "Jump Page",
   "description": "A one-link landing page: up to ten links with a heading and your colours, and the whole page lives inside the link you share.",
   "a11yLabel": "Jump page {{default heading \"Links\"}} holding {{default linkCount \"no\"}} links",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.82.0",
   "status": "community",
   "category": "utility",
@@ -102,7 +102,8 @@
       "help": "Up to ten. A label is optional - an empty one shows the site's own name. Share the page with the Share button: the whole page travels inside the link, so it works on any Lolly, offline, with nothing stored on a server. Add a password in the Share dialog and the page only opens for someone who knows it.",
       "fields": [
         { "id": "label", "label": "Label", "type": "text", "default": "" },
-        { "id": "url", "label": "Address", "type": "text", "default": "" }
+        { "id": "url", "label": "Address", "type": "text", "default": "" },
+        { "id": "icon", "label": "Glyph", "type": "text", "default": "", "placeholder": "★" }
       ],
       "default": [
         { "label": "Website", "url": "https://example.com" },
@@ -127,11 +128,25 @@
       "id": "style",
       "label": "Style",
       "type": "select",
-      "default": "buttons",
+      "default": "cinema",
+      "help": "\"Scroll cinema\" gives the shared page a full-height opening and one scene per link, animated as you scroll. The other three are a plain list.",
       "options": [
+        { "value": "cinema", "label": "Scroll cinema" },
         { "value": "buttons", "label": "Buttons" },
         { "value": "cards", "label": "Cards" },
         { "value": "minimal", "label": "Minimal" }
+      ]
+    },
+    {
+      "id": "mood",
+      "label": "Mood",
+      "type": "select",
+      "default": "calm",
+      "help": "How far the scroll cinema moves. One dial over every animation - it changes nothing for the other styles, and nothing for a visitor who asks for reduced motion.",
+      "options": [
+        { "value": "calm", "label": "Calm" },
+        { "value": "bold", "label": "Bold" },
+        { "value": "electric", "label": "Electric" }
       ]
     },
     {
@@ -152,6 +167,13 @@
       "type": "color",
       "default": "{color.semantic.primary}",
       "help": "Colours the buttons and the link marks."
+    },
+    {
+      "id": "footer",
+      "label": "Show the Lolly line",
+      "type": "boolean",
+      "default": true,
+      "help": "A visible \"Made with Lolly\" line closing the scroll cinema. Nothing is embedded in the link either way - turning it off simply removes the line."
     }
   ],
   "hooks": {

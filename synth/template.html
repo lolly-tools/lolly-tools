@@ -1,0 +1,92 @@
+<div class="synth-wrap" data-lolly-anno="{{scene}} {{color1}} {{color2}} {{color3}} {{intensity}} {{speed}} {{seed}} {{live}}">
+  <!-- Deliberately NOT data-capture-stream: that opts video into the real-time
+       MediaRecorder path, which returns before the frame source is built and so
+       never calls the frame clock below. The picture would be recorded at
+       whatever phase the live loop happened to be at while the muxed soundtrack
+       started at 0:00. Frame-by-frame is slower and is the only path that keeps
+       the two in step. -->
+  <canvas class="synth-canvas" id="synth-canvas"></canvas>
+</div>
+<script type="application/json" id="synth-state">{{{_state}}}</script>
+<script>
+(function () {
+  /* Idempotent per-paint IIFE - the template re-runs on EVERY paint (the
+     'Template script IIFE required' invariant). An epoch guard drops stale async
+     callbacks from a prior paint; the previous instrument is disposed before a
+     new one is built, because WebGL contexts are capped around 16 per tab and
+     are not collected promptly. Mirrors tools/3d/template.html. */
+  window.__lollySynthEpoch = (window.__lollySynthEpoch || 0) + 1;
+  var EP = window.__lollySynthEpoch;
+  function alive() { return window.__lollySynthEpoch === EP; }
+
+  var canvas = document.getElementById('synth-canvas');
+  var stateEl = document.getElementById('synth-state');
+  if (!canvas || !stateEl) return;
+  var cfg; try { cfg = JSON.parse(stateEl.textContent || '{}'); } catch (e) { return; }
+  if (!cfg || !cfg.emitters) return;
+
+  /* Async readiness handshake: the export path must WAIT for the library and the
+     first painted frame, else it snapshots a blank canvas. */
+  window.__toolHasReadySignal = true;
+  var readyFired = false;
+  function fireReady() {
+    if (readyFired) return; readyFired = true;
+    try { document.dispatchEvent(new CustomEvent('tool:ready')); } catch (e) {}
+  }
+
+  if (window.__lollySynth && typeof window.__lollySynth.dispose === 'function') {
+    try { window.__lollySynth.dispose(); } catch (e) {}
+    window.__lollySynth = null;
+  }
+
+  function message(txt) {
+    var w = canvas && canvas.parentNode;
+    if (w) { var d = document.createElement('div'); d.className = 'synth-msg'; d.textContent = txt; w.appendChild(d); }
+  }
+
+  var LIB = '/tools/synth/lib/synth.js';
+  function loadLib() {
+    if (window.LollySynth) return Promise.resolve(window.LollySynth);
+    window.__lollySynthLoading = window.__lollySynthLoading || new Promise(function (res, rej) {
+      var s = document.createElement('script');
+      s.src = LIB;
+      s.onload = function () { res(window.LollySynth); };
+      s.onerror = function () { s.remove(); window.__lollySynthLoading = null; rej(new Error('synth lib load failed')); };
+      document.head.appendChild(s);
+    });
+    return window.__lollySynthLoading;
+  }
+
+  loadLib().then(function (LollySynth) {
+    if (!alive()) return;
+    if (!LollySynth || !LollySynth.create) { message('The synth engine failed to load.'); fireReady(); return; }
+    var inst;
+    try { inst = LollySynth.create(canvas, cfg); }
+    catch (err) {
+      console.error('[synth] init error:', err);
+      message(String((err && err.message) || err));
+      fireReady();
+      return;
+    }
+
+    /* The deterministic export-frame clock. Registered ON THE CANVAS, never on
+       window: a window global survives SPA tool navigation and would let a
+       detached canvas drive an unrelated tool's export. `create` already painted
+       one frame synchronously (a headless or hidden-tab host may never fire a
+       rAF), so this only has to answer the exporter's own phases. */
+    canvas.__lollyFrameRender = function (t01, clipSec) {
+      if (!alive()) return;
+      // clipSec is the export's own decision about how long the clip is; the
+      // scene sizes its loop from it so any duration comes out seamless.
+      inst.renderLoopFrame(t01, clipSec);
+    };
+
+    window.__lollySynth = { dispose: inst.dispose };
+    fireReady();
+  }).catch(function (e) {
+    console.error('[synth]', e);
+    message('The synth engine failed to load.');
+    fireReady();
+  });
+})();
+</script>

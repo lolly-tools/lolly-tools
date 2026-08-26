@@ -1,0 +1,63 @@
+{
+  "id": "synth",
+  "name": "Synth",
+  "version": "0.1.0",
+  "engineVersion": "^1.152.0",
+  "status": "experimental",
+  "category": "designer",
+  "description": "A visual instrument: play a live fluid-ink field with your pointer, coloured entirely from your brand palette, and export it as a still or a seamless loop.",
+  "a11yLabel": "Flowing {{default scene \"ink\"}} field in brand colours",
+  "tags": ["motion", "generative", "webgl", "loop", "fluid", "visualizer"],
+  "render": {
+    "width": 1280,
+    "height": 720,
+    "formats": ["png", "jpg", "webp", "webm", "mp4", "gif", "apng"],
+    "actions": ["copy", "download", "save"],
+    "convertPaths": false,
+    "video": { "wait": 1, "duration": 6 }
+  },
+  "hooks": {
+    "onInit": true,
+    "onInput": true,
+    "beforeExport": true
+  },
+  "inputs": [
+    {
+      "id": "scene",
+      "label": "Scene",
+      "section": "Scene",
+      "type": "select",
+      "default": "ink",
+      "help": "Which simulation is playing.",
+      "options": [
+        { "value": "ink", "label": "Ink - fluid dye" }
+      ]
+    },
+    {
+      "id": "live",
+      "label": "Play it",
+      "section": "Scene",
+      "type": "boolean",
+      "default": true,
+      "help": "Let your pointer push the ink around. Off leaves the field playing its own loop, which is what you want while you set up an export."
+    },
+
+    {
+      "id": "audio",
+      "label": "Music",
+      "section": "Sound",
+      "type": "asset",
+      "assetType": "audio",
+      "allowUpload": true,
+      "help": "The field moves to this track: bass feeds the ink, onsets kick the swirl, and each source listens to its own part of the spectrum. It's analysed on your device - the audio never leaves the browser - and the same clip always drives the same picture. A video export runs the length of the track and carries it as the soundtrack. Speech and ambient clips have no tempo to follow, so the beat pulse simply stays out of it."
+    },
+
+    { "id": "color1", "label": "Colour 1", "section": "Colour", "type": "color", "default": "{color.semantic.primary}", "help": "The ramp runs Colour 1 to Colour 3 through OKLab, so the blend stays perceptual." },
+    { "id": "color2", "label": "Colour 2", "section": "Colour", "type": "color", "default": "{color.semantic.secondary}" },
+    { "id": "color3", "label": "Colour 3", "section": "Colour", "type": "color", "default": "{color.semantic.surface}" },
+
+    { "id": "intensity", "label": "Intensity", "section": "Motion", "type": "number", "display": "slider", "default": 1, "min": 0, "max": 2, "step": 0.05, "help": "How much ink is injected and how hard it is pushed." },
+    { "id": "speed", "label": "Speed", "section": "Motion", "type": "number", "display": "slider", "default": 1, "min": 0.1, "max": 4, "step": 0.05, "help": "How fast the field evolves. The loop stays the same length." },
+    { "id": "seed", "label": "Seed", "section": "Motion", "type": "number", "default": 7, "min": 0, "max": 999999, "step": 1, "help": "Picks the arrangement of ink sources. The same seed always replays the same piece." }
+  ]
+}

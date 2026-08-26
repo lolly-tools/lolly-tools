@@ -3,7 +3,7 @@
   "name": "QR Code Generator",
   "description": "QR codes for a link, contact card, Wi-Fi network, calendar event, location or plain text.",
   "a11yLabel": "QR code holding {{default qrSummary \"nothing yet\"}}",
-  "version": "2.3.0",
+  "version": "2.4.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "everyone",
@@ -35,14 +35,18 @@
       "type": "select",
       "urlKey": "p",
       "default": "url",
-      "help": "What a scanner gets: a link to open, text to read, a contact to save, a network to join, an event to add, or a map pin.",
+      "help": "What a scanner gets: a QR code carrying a link, text, a contact, a network, an event or a map pin - or a linear product barcode (EAN-13, EAN-8, UPC-A or Code 128).",
       "options": [
         { "value": "url", "label": "Link" },
         { "value": "text", "label": "Plain text" },
         { "value": "vcard", "label": "Contact card" },
         { "value": "wifi", "label": "Wi-Fi network" },
         { "value": "event", "label": "Calendar event" },
-        { "value": "geo", "label": "Location" }
+        { "value": "geo", "label": "Location" },
+        { "value": "ean13", "label": "Barcode · EAN-13" },
+        { "value": "ean8", "label": "Barcode · EAN-8" },
+        { "value": "upca", "label": "Barcode · UPC-A" },
+        { "value": "code128", "label": "Barcode · Code 128" }
       ]
     },
     {
@@ -197,6 +201,58 @@
       "showIf": { "payload": "geo" }
     },
     {
+      "id": "value",
+      "label": "Number or text",
+      "type": "text",
+      "default": "4006381333931",
+      "showIf": { "payload": ["ean13", "ean8", "upca", "code128"] },
+      "help": "The number or text the barcode carries. In a retail number spaces and hyphens are ignored; give it one digit short and the check digit is worked out for you. Code 128 takes any printable ASCII."
+    },
+    {
+      "id": "showText",
+      "label": "Print the number",
+      "type": "boolean",
+      "default": true,
+      "showIf": { "payload": ["ean13", "ean8", "upca", "code128"] },
+      "help": "The human-readable line under the bars, set in your brand's monospace face."
+    },
+    {
+      "id": "moduleWidth",
+      "label": "Bar width",
+      "type": "number",
+      "display": "slider",
+      "default": 3,
+      "min": 1,
+      "max": 10,
+      "step": 0.5,
+      "showIf": { "payload": ["ean13", "ean8", "upca", "code128"] },
+      "help": "Width of one module, the thinnest bar. Retail print uses 0.33 mm; set the export size in millimetres to hit it."
+    },
+    {
+      "id": "barHeight",
+      "label": "Bar height",
+      "type": "number",
+      "display": "slider",
+      "default": 160,
+      "min": 40,
+      "max": 400,
+      "step": 5,
+      "showIf": { "payload": ["ean13", "ean8", "upca", "code128"] },
+      "help": "Taller bars are easier to scan at an angle."
+    },
+    {
+      "id": "quiet",
+      "label": "Quiet zone",
+      "type": "number",
+      "display": "slider",
+      "default": 11,
+      "min": 0,
+      "max": 24,
+      "step": 1,
+      "showIf": { "payload": ["ean13", "ean8", "upca", "code128"] },
+      "help": "Modules of clear space each side, and a scanner fails without it. The standards ask for 11 on an EAN-13, 10 on a Code 128, 9 on a UPC-A."
+    },
+    {
       "id": "color",
       "label": "Module color",
       "type": "color",
@@ -218,7 +274,8 @@
         { "value": "M", "label": "Medium (15%)" },
         { "value": "Q", "label": "Quartile (25%)" },
         { "value": "H", "label": "High (30%)" }
-      ]
+      ],
+      "showIf": { "payload": ["url", "text", "vcard", "wifi", "event", "geo"] }
     },
     {
       "id": "padding",
@@ -229,6 +286,7 @@
       "min": 0,
       "max": 10,
       "step": 1,
+      "showIf": { "payload": ["url", "text", "vcard", "wifi", "event", "geo"] },
       "help": "Modules of white space around the code. Minimum 4 recommended."
     },
     {
@@ -236,6 +294,7 @@
       "label": "Joined modules",
       "type": "boolean",
       "default": true,
+      "showIf": { "payload": ["url", "text", "vcard", "wifi", "event", "geo"] },
       "help": "Merge all modules into a single SVG path instead of one rect per module. Crisper at small sizes, and it removes the faint grid that independent antialiased edges produce between neighbouring modules."
     }
   ],

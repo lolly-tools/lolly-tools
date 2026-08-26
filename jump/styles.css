@@ -1,7 +1,13 @@
 /* Jump Page.
    Every colour comes in as a custom property the template sets from the hook's
    resolved palette, so a brand with no tokens still paints: the fallbacks below
-   are the same literals the hook falls back to. Brand-agnostic throughout. */
+   are the same literals the hook falls back to. Brand-agnostic throughout.
+
+   Four styles share one markup: three plain lists (buttons/cards/minimal) and
+   `cinema`, the default, which turns the shared page into full-height scenes.
+   The cinema LAYOUT is unconditional - only its motion is gated (bottom of the
+   file), so the editor preview and every unsupported browser get the finished
+   page with nothing hidden. */
 
 .jp-root {
   width: 100%;
@@ -33,6 +39,11 @@
   font-weight: 700;
   line-height: 1.08;
   letter-spacing: -0.015em;
+  overflow-wrap: anywhere;
+}
+
+.jp-word {
+  display: inline-block;
 }
 
 .jp-sub {
@@ -40,6 +51,10 @@
   font-size: 23px;
   line-height: 1.4;
   color: var(--jp-muted, rgba(0, 0, 0, 0.55));
+}
+
+.jp-cue {
+  display: none;
 }
 
 .jp-note {
@@ -68,6 +83,11 @@
   color: inherit;
 }
 
+.jp-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
 .jp-label {
   font-size: 25px;
   font-weight: 600;
@@ -79,6 +99,31 @@
   font-size: 16px;
   line-height: 1.2;
   overflow-wrap: anywhere;
+}
+
+.jp-foot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  text-align: center;
+}
+
+.jp-foot-echo,
+.jp-foot-made {
+  margin: 0;
+}
+
+.jp-foot-echo {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.jp-foot-made {
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--jp-muted, rgba(0, 0, 0, 0.55));
 }
 
 /* Buttons: filled accent pills, the host folded into the pill. */
@@ -130,8 +175,282 @@
   color: var(--jp-muted, rgba(0, 0, 0, 0.55));
 }
 
+/* ── Cinema ─────────────────────────────────────────────────────────────────
+   A full-height opening, then one scene per link, then a quiet close. Washes
+   are derived from the three colour inputs in CSS; the derived forms live in
+   the feature queries at the end of this section, because a declaration that
+   contains `var()` is valid at parse time and would win the cascade over a
+   plain colour above it, then compute to nothing where the function is
+   unsupported. `overflow: clip` rather than `hidden`: clip does not make a
+   scroll container, so the scenes still resolve against the page's own
+   scroller. */
+
+/* `container-type: inline-size` is what makes the `cqw` type below measure the
+   CANVAS rather than the window. On the visitor page the canvas is the full
+   viewport, so cqw and vw agree; in the editor the canvas is a fixed 900px
+   artboard inside a much wider window, and vw type rendered there at nearly
+   twice its true size. inline-size (not `size`) because the height is content
+   driven and a size container would need it fixed. */
+.jp-cinema {
+  container-type: inline-size;
+  height: auto;
+  min-height: 100%;
+  padding: 0;
+  gap: 0;
+  align-items: stretch;
+  text-align: left;
+  overflow: clip;
+}
+
+.jp-cinema .jp-head {
+  position: relative;
+  isolation: isolate;
+  justify-content: center;
+  align-items: flex-start;
+  gap: clamp(16px, 2.4vh, 34px);
+  min-height: 100svh;
+  max-width: none;
+  padding: 12svh clamp(28px, 7cqw, 132px) 10svh;
+  text-align: left;
+  overflow: clip;
+}
+
+.jp-cinema .jp-head::before {
+  content: "";
+  position: absolute;
+  inset: -25% -12%;
+  z-index: -1;
+  opacity: 0.2;
+  background:
+    radial-gradient(58% 52% at 16% 18%, var(--jp-accent, #2563eb), transparent 70%),
+    radial-gradient(54% 48% at 86% 82%, var(--jp-accent, #2563eb), transparent 70%);
+}
+
+.jp-cinema .jp-heading {
+  font-size: clamp(46px, 11.5cqw, 178px);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+  max-width: 14ch;
+}
+
+.jp-cinema .jp-sub {
+  font-size: clamp(18px, 2.2cqw, 30px);
+  line-height: 1.35;
+  max-width: 26ch;
+  text-wrap: balance;
+}
+
+/* The scroll cue: a chevron under the opening, gone after the first screen. */
+
+.jp-cinema .jp-cue {
+  display: block;
+  width: 13px;
+  height: 13px;
+  margin-top: clamp(18px, 4svh, 52px);
+  border-right: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  transform: rotate(45deg);
+  opacity: 0.45;
+}
+
+.jp-cinema .jp-note {
+  margin: auto;
+  padding: 0 clamp(28px, 7cqw, 132px) 12svh;
+}
+
+.jp-cinema .jp-list {
+  display: block;
+  width: 100%;
+  max-width: none;
+  gap: 0;
+}
+
+/* One scene, one anchor. The glyph gets its own grid column and swaps sides
+   with the scene's parity, so consecutive scenes never read identically. */
+
+.jp-cinema .jp-link {
+  position: relative;
+  isolation: isolate;
+  overflow: clip;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "label glyph"
+    "host  glyph";
+  align-items: center;
+  align-content: center;
+  gap: 0;
+  min-height: 70svh;
+  padding: 9svh clamp(28px, 7cqw, 132px);
+  border-radius: 0;
+  text-align: left;
+}
+
+.jp-cinema .jp-odd {
+  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-areas:
+    "glyph label"
+    "glyph host";
+  justify-items: end;
+  text-align: right;
+}
+
+.jp-cinema .jp-link::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background: var(--jp-paper, #f7f8fa);
+}
+
+/* The bloom sits opposite the glyph, so the pair reads as one composition. */
+
+.jp-cinema .jp-link::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: var(--jp-bloom, 0);
+  background: radial-gradient(46% 62% at 88% 14%, var(--jp-accent, #2563eb), transparent 68%);
+}
+
+.jp-cinema .jp-odd::after {
+  background: radial-gradient(46% 62% at 12% 86%, var(--jp-accent, #2563eb), transparent 68%);
+}
+
+.jp-cinema .jp-wash-a { --jp-tint: 0%; --jp-bloom: 0; }
+.jp-cinema .jp-wash-b { --jp-tint: 7%; --jp-bloom: 0.16; }
+.jp-cinema .jp-wash-c { --jp-tint: 13%; --jp-bloom: 0; }
+.jp-cinema .jp-wash-d { --jp-tint: 4%; --jp-bloom: 0.24; }
+
+.jp-cinema .jp-label {
+  grid-area: label;
+  align-self: end;
+  font-size: clamp(34px, 6.6cqw, 104px);
+  font-weight: 700;
+  line-height: 0.98;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+
+.jp-cinema .jp-host {
+  grid-area: host;
+  align-self: start;
+  margin-top: clamp(10px, 1.6vh, 22px);
+  font-size: clamp(13px, 1.3cqw, 18px);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--jp-muted, rgba(0, 0, 0, 0.55));
+}
+
+.jp-cinema .jp-icon {
+  grid-area: glyph;
+  align-self: center;
+  padding-inline: clamp(16px, 3.5cqw, 64px);
+  font-size: clamp(56px, 15cqw, 232px);
+  line-height: 1;
+}
+
+/* The close: the heading echoed small, and the attribution line. */
+
+.jp-cinema .jp-foot {
+  align-items: flex-start;
+  justify-content: center;
+  gap: 12px;
+  min-height: 46svh;
+  padding: 8svh clamp(28px, 7cqw, 132px);
+  text-align: left;
+  background: var(--jp-paper, #f7f8fa);
+}
+
+.jp-cinema .jp-foot-echo {
+  font-size: clamp(22px, 3.4cqw, 46px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+/* Keyboard focus: the scenes are the page's only interactive content, and the
+   UA ring falls outside `overflow: clip` on a full-bleed anchor, so it is drawn
+   inside the scene instead. */
+
+.jp-cinema .jp-link:focus-visible {
+  outline: 3px solid var(--jp-accent, #2563eb);
+  outline-offset: -8px;
+}
+
+/* Off the visitor page the scenes are laid out inside a fixed artboard, where
+   `svh` still measures the browser viewport - so a viewport-height hero would
+   push every link past the canvas edge, with no scroll to recover them. The
+   editor preview therefore runs the same scenes at content height. */
+
+.jp-cinema:not(.jp-live) .jp-head {
+  min-height: 0;
+  padding-block: 7%;
+}
+
+.jp-cinema:not(.jp-live) .jp-link {
+  min-height: 0;
+  padding-block: 5%;
+}
+
+.jp-cinema:not(.jp-live) .jp-foot {
+  min-height: 0;
+  padding-block: 5%;
+}
+
+/* The derived washes. Split by feature, so a browser with `color-mix()` but no
+   relative colours keeps the tints. */
+
+@supports (background: color-mix(in oklch, red, blue)) {
+  .jp-cinema .jp-link::before {
+    background: color-mix(in oklch, var(--jp-accent, #2563eb) var(--jp-tint, 0%), var(--jp-paper, #f7f8fa));
+  }
+
+  .jp-cinema .jp-foot {
+    background: color-mix(in oklch, var(--jp-ink, #17232b) 5%, var(--jp-paper, #f7f8fa));
+  }
+}
+
+@supports (background: oklch(from red l c h)) {
+  .jp-cinema .jp-head::before {
+    background:
+      radial-gradient(58% 52% at 16% 18%, oklch(from var(--jp-accent, #2563eb) l c h), transparent 70%),
+      radial-gradient(54% 48% at 86% 82%, oklch(from var(--jp-accent, #2563eb) calc(l * 0.86) c calc(h + 46)), transparent 70%);
+  }
+
+  .jp-cinema .jp-link::after {
+    background: radial-gradient(46% 62% at 88% 14%, oklch(from var(--jp-accent, #2563eb) calc(l * 0.92) c calc(h - 28)), transparent 68%);
+  }
+
+  .jp-cinema .jp-odd::after {
+    background: radial-gradient(46% 62% at 12% 86%, oklch(from var(--jp-accent, #2563eb) calc(l * 0.92) c calc(h - 28)), transparent 68%);
+  }
+}
+
 /* Forward mode: the page redirects on visit. Shown centred, with an optional
    press-and-hold human check that fills the accent before it lets you through. */
+
+.jp-cinema.jp-is-forward {
+  padding: 96px 72px;
+  align-items: center;
+  gap: 56px;
+}
+
+.jp-cinema.jp-is-forward .jp-head {
+  min-height: 0;
+  padding: 0;
+  align-items: center;
+  text-align: center;
+  max-width: 560px;
+}
+
+.jp-cinema.jp-is-forward .jp-heading {
+  font-size: 54px;
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  max-width: none;
+}
 
 .jp-forward {
   display: flex;
@@ -187,4 +506,102 @@
 
 .jp-hold.is-done .jp-hold-label {
   color: var(--jp-on-accent, #ffffff);
+}
+
+/* ── Motion ─────────────────────────────────────────────────────────────────
+   Inert until all three gates open: `jp-live` (stamped by the template script
+   on the visitor page only), engine support, and a visitor who has not asked
+   for less motion. Nothing below is load-bearing for legibility - every
+   element's resting state is the finished one. `--jp-motion` is the one dial
+   the Mood input turns. */
+
+@keyframes jp-rise-in {
+  from { opacity: 0; transform: translateY(calc(var(--jp-motion, 1) * 0.55em)); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes jp-scene-in {
+  from { opacity: 0; transform: translateY(calc(var(--jp-motion, 1) * 46px)); clip-path: inset(0 0 100% 0); }
+  to { opacity: 1; transform: none; clip-path: inset(0 0 -20% 0); }
+}
+
+@keyframes jp-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes jp-glyph-drift {
+  from { transform: translateY(calc(var(--jp-motion, 1) * 12svh)) rotate(calc(var(--jp-motion, 1) * -5deg)); }
+  to { transform: translateY(calc(var(--jp-motion, 1) * -12svh)) rotate(calc(var(--jp-motion, 1) * 5deg)); }
+}
+
+@keyframes jp-wash-drift {
+  to { transform: translateY(calc(var(--jp-motion, 1) * -7%)) scale(1.12); }
+}
+
+@keyframes jp-cue-out {
+  to { opacity: 0; transform: rotate(45deg) translate(7px, 7px); }
+}
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+
+    /* The opening is already on screen at load, so its words are timed, not
+       scrolled; the stagger step is the dial's. */
+    .jp-root.jp-live.jp-cinema .jp-word {
+      animation: jp-rise-in 0.85s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+      animation-delay: calc(var(--jp-w, 0) * 80ms * var(--jp-motion, 1));
+    }
+
+    .jp-root.jp-live.jp-cinema .jp-sub {
+      animation: jp-rise-in 0.95s cubic-bezier(0.2, 0.75, 0.2, 1) both;
+      animation-delay: calc(260ms * var(--jp-motion, 1));
+    }
+
+    .jp-root.jp-live.jp-cinema .jp-head::before {
+      animation: jp-wash-drift linear both;
+      animation-timeline: scroll(root block);
+    }
+
+    .jp-root.jp-live.jp-cinema .jp-cue {
+      animation: jp-cue-out linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0 32svh;
+    }
+
+    .jp-root.jp-live.jp-cinema .jp-link::before {
+      animation: jp-fade-in linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% cover 22%;
+    }
+
+    .jp-root.jp-live.jp-cinema .jp-label {
+      animation: jp-scene-in linear both;
+      animation-timeline: view(block);
+      animation-range: entry 6% cover 34%;
+    }
+
+    /* A range that ends in `cover` cannot finish for a subject near the foot of
+       the document - there is no scroll left to reach it, and `both` fill would
+       strand the element mid-reveal. The two ranges that close a scene end in
+       `entry`, which every subject completes. */
+    .jp-root.jp-live.jp-cinema .jp-host {
+      animation: jp-rise-in linear both;
+      animation-timeline: view(block);
+      animation-range: entry 22% entry 100%;
+    }
+
+    /* The glyph travels the whole scene, so it never tracks the words. */
+    .jp-root.jp-live.jp-cinema .jp-icon {
+      animation: jp-glyph-drift linear both;
+      animation-timeline: view(block);
+      animation-range: cover 0% cover 100%;
+    }
+
+    .jp-root.jp-live.jp-cinema .jp-foot-echo {
+      animation: jp-scene-in linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% entry 100%;
+    }
+  }
 }

@@ -1,8 +1,9 @@
-<div class="jp-root jp-{{default style "buttons"}}{{#if redirect}} jp-is-forward{{/if}}" style="--jp-ink:{{inkColor}};--jp-paper:{{paperColor}};--jp-accent:{{accentColor}};--jp-on-accent:{{onAccentColor}};--jp-muted:{{mutedColor}};--jp-edge:{{edgeColor}};--jp-card:{{cardColor}}">
+<div class="jp-root jp-{{default style "cinema"}}{{#if redirect}} jp-is-forward{{/if}}" style="--jp-ink:{{inkColor}};--jp-paper:{{paperColor}};--jp-accent:{{accentColor}};--jp-on-accent:{{onAccentColor}};--jp-muted:{{mutedColor}};--jp-edge:{{edgeColor}};--jp-card:{{cardColor}};--jp-motion:{{motionScale}}">
 
   <header class="jp-head">
-    <h1 class="jp-heading">{{heading}}</h1>
+    <h1 class="jp-heading" data-canvas-input="heading">{{#each headingWords}}<span class="jp-word" style="--jp-w:{{i}}">{{w}}</span> {{/each}}</h1>
     {{#if subheading}}<p class="jp-sub">{{subheading}}</p>{{/if}}
+    {{#if showCue}}<span class="jp-cue" aria-hidden="true"></span>{{/if}}
   </header>
 
   {{#if error}}
@@ -24,25 +25,37 @@
     {{else}}
     <nav class="jp-list">
       {{#each items}}
-      <a class="jp-link" href="{{href}}" rel="noopener">
+      <a class="jp-link {{sceneParity}} {{sceneWash}}" href="{{href}}" rel="noopener">
+        {{#if icon}}<span class="jp-icon" aria-hidden="true">{{icon}}</span>{{/if}}
         <span class="jp-label">{{label}}</span>
         <span class="jp-host">{{host}}</span>
       </a>
       {{/each}}
     </nav>
+    {{#if showFooter}}
+    <footer class="jp-foot">
+      <p class="jp-foot-echo">{{heading}}</p>
+      <p class="jp-foot-made">Made with Lolly</p>
+    </footer>
+    {{/if}}
     {{/if}}
   {{/if}}
 
   <script>
-  // Redirect on visit. Runs on the visitor page only (`.tool-layout.is-visitor`);
-  // in the editor/preview it just narrates where a visitor would land, never
-  // navigating. IIFE + var: this <script> is re-run on every canvas repaint.
+  // Two jobs, one script (the canvas re-runs it on every repaint, so IIFE + var).
+  // 1. Stamp `jp-live` on the visitor page (`.tool-layout.is-visitor`) - tool CSS
+  //    is scoped to the canvas and cannot see that class, and it is the sole gate
+  //    on the scroll-driven animations, so the editor preview stays static.
+  // 2. Redirect on visit; in the editor it only narrates where a visitor lands.
   (function () {
+    var live = !!document.querySelector('.tool-layout.is-visitor');
+    var root = document.querySelector('.jp-root');
+    if (live && root) root.classList.add('jp-live');
+
     var fwd = document.querySelector('[data-jp-forward]');
     if (!fwd) return;
     var href = fwd.getAttribute('data-jp-href') || '';
     if (!href) return;
-    var live = !!document.querySelector('.tool-layout.is-visitor');
     var host = fwd.getAttribute('data-jp-host') || 'the link';
 
     function go() {

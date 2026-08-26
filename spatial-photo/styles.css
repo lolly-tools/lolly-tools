@@ -1,0 +1,33 @@
+/* Auto-scoped to #tool-canvas by the shell. The <canvas> backing store is the
+   export resolution (set by the renderer); CSS only scales it to the stage. */
+.sp-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.sp-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 100%;
+  touch-action: none; /* a tap sets focus instead of scrolling the page */
+}
+
+/* The message is a sibling of the canvas inside the centred flex row, so the
+   canvas has to leave the flow or the two share the width and the text sits
+   off-centre. A message means there is nothing to draw, so hiding it is safe:
+   the template IIFE rebuilds the canvas on the next paint. */
+.sp-wrap:has(.sp-msg) .sp-canvas { display: none; }
+
+.sp-msg {
+  font-family: var(--font-brand);
+  font-size: 14px;
+  color: var(--brand-muted, #9aa0a6);
+  padding: 16px;
+  text-align: center;
+  max-width: 22em;
+}

@@ -3,7 +3,9 @@
  *
  * Reads the `links` blocks into the list the logic-less template prints: one
  * entry per usable link, each with a resolved href, a display label and the
- * bare host name. DOM-free and memoized on the input values, so the CLI and
+ * bare host name, plus the per-scene class names and the split heading the
+ * `cinema` style needs - the template is logic-less, so every scrap of
+ * computation lives here. DOM-free and memoized on the input values, so the CLI and
  * the node tests run the same path the web shell does. Nothing here throws: a
  * page with no usable links comes back as a hint the template renders in place.
  *
@@ -14,6 +16,24 @@
  */
 
 var JUMP_MAX = 10;
+
+// A glyph is one emoji, not a caption: capped by GRAPHEME so the cut can never
+// leave a lone surrogate half behind, nor split a ZWJ sequence (a family, a
+// profession, a flag) into a different emoji plus a dangling joiner.
+var ICON_MAX = 4;
+
+// The stagger index the opening scene delays each word by. Capped because a
+// heading arriving from a hand-typed link is not bounded by the manifest's
+// maxLength (the engine constrains edits, not initial values), and an
+// uncapped index holds the tail of a long heading at opacity 0 for seconds.
+var WORD_STAGGER_MAX = 12;
+
+// Scene wash classes, cycled per link so ten links never read as ten identical
+// rows. The template is logic-less, so the cycling happens here.
+var WASHES = ['jp-wash-a', 'jp-wash-b', 'jp-wash-c', 'jp-wash-d'];
+
+// One dial over every cinema animation (travel distance + stagger step).
+var MOODS = { calm: '0.6', bold: '1', electric: '1.6' };
 
 // Fallbacks for every colour input. A colour default is a token alias that
 // resolves to '' on a brand with no tokens, so each one needs a literal here.
@@ -69,6 +89,29 @@ function _safeRedirect(href) {
   return /^(https?|mailto|tel):/i.test(href) ? href : '';
 }
 
+function _icon(v) {
+  var s = _str(v).replace(/\s+/g, '');
+  var units = typeof Intl !== 'undefined' && Intl.Segmenter
+    ? Array.from(new Intl.Segmenter().segment(s), function (x) { return x.segment; })
+    : Array.from(s);
+  return units.slice(0, ICON_MAX).join('');
+}
+
+// The heading, one span per word, so the opening scene can stagger them in.
+function _words(v) {
+  return _str(v).split(/\s+/).filter(Boolean).map(function (w, i) {
+    return { w: w, i: i < WORD_STAGGER_MAX ? i : WORD_STAGGER_MAX };
+  });
+}
+
+// A boolean arrives as a real boolean from the model and as text from a
+// hand-typed URL, so both spellings of "off" have to count.
+function _bool(v, dflt) {
+  if (v === undefined || v === null || v === '') return dflt;
+  if (typeof v === 'string') return !/^(0|false|off|no)$/i.test(v.trim());
+  return !!v;
+}
+
 function compute(args) {
   var rows = Array.isArray(args.links) ? args.links : [];
   var items = [];
@@ -76,10 +119,14 @@ function compute(args) {
     var href = _href(rows[i] && rows[i].url);
     if (!href) continue;
     var host = _host(href);
+    var n = items.length;
     items.push({
       href: href,
       host: host,
       label: _str(rows[i].label) || host,
+      icon: _icon(rows[i].icon),
+      sceneParity: n % 2 ? 'jp-odd' : 'jp-even',
+      sceneWash: WASHES[n % WASHES.length],
     });
   }
 
@@ -89,12 +136,22 @@ function compute(args) {
   var onVisit = _str(args.onVisit) || 'page';
   var redirectHref = onVisit !== 'page' && items.length ? _safeRedirect(items[0].href) : '';
 
+  // A hand-typed URL value never passes the select's option whitelist (the
+  // engine constrains edits, not initial values), so `mood` is looked up as an
+  // own property - `constructor` and friends would otherwise resolve.
+  var mood = _str(args.mood);
+  var style = _str(args.style) || 'cinema';
+
   var ink = _hex(args.color, INK_FALLBACK);
   var paper = _hex(args.background, PAPER_FALLBACK);
   var accent = _hex(args.accent, ACCENT_FALLBACK);
 
   return {
     items: items,
+    headingWords: _words(args.heading),
+    motionScale: Object.prototype.hasOwnProperty.call(MOODS, mood) ? MOODS[mood] : MOODS.calm,
+    showFooter: style === 'cinema' && _bool(args.footer, true) ? '1' : '',
+    showCue: items.length && !redirectHref ? '1' : '',
     linkCount: items.length ? String(items.length) : '',
     error: items.length ? '' : 'Add a link to build the page.',
     redirect: redirectHref ? '1' : '',
