@@ -1,7 +1,7 @@
 {
   "name": "D3-Diagrammstudio",
   "description": "Leistungsstarke datengetriebene Diagramme mit D3 - eine Tabelle einfügen, und sie zeichnet sich selbst. Balken, Linien, Flächen, Streudiagramme, Kreise, Radar, Treemap, Heatmap, 3D-Balken & -Kreise und Wortwolken. Paletten leiten sich aus Ihren Markenfarben ab, mit Musterfüllungen und Umfärben per Klick - markenkonform und vektorsauber.",
-  "featured.blurb": "Tabelle einfügen - D3 erstellt das Diagramm, markenkonform und vektorsauber",
+  "featured.blurb": "Tabelle einfügen — D3 erstellt das Diagramm, markenkonform und vektorsauber",
   "a11yLabel": "{{chartType}} Diagramm{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Diagrammtyp",
   "inputs.chartType.options.bar": "Balken - vertikal",

@@ -1,7 +1,7 @@
 {
   "name": "D3 Grafik Stüdyosu",
   "description": "D3 ile güçlü veri odaklı grafikler - bir tablo yapıştırın, kendini çizsin. Çubuklar, çizgiler, alanlar, dağılım, pasta, radar, ısı haritası, 3D çubuklar ve pastalar ile kelime bulutları. Paletler markanızın renklerinden türetilir, desenli dolgular ve tıkla-yeniden-renklendir ile - markanıza uygun ve vektör temiz.",
-  "featured.blurb": "Bir tablo yapıştır - D3 onu grafiğe dönüştürsün, markana uygun ve vektör netliğinde",
+  "featured.blurb": "Bir tablo yapıştır — D3 onu grafiğe dönüştürsün, markana uygun ve vektör netliğinde",
   "a11yLabel": "{{chartType}} grafiği{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Grafik türü",
   "inputs.chartType.options.bar": "Çubuk - dikey",

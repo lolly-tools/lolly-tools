@@ -1,7 +1,7 @@
 {
   "name": "D3 차트 스튜디오",
   "description": "D3 기반의 강력한 데이터 차트 - 표를 붙여넣으면 스스로 차트가 됩니다. 막대, 선, 영역, 산점도, 파이, 레이더, 트리맵, 히트맵, 3D 막대와 파이, 워드클라우드까지. 팔레트는 브랜드 색상에서 파생되며, 패턴 채우기와 클릭 재색상이 가능합니다 - 온브랜드하고 벡터답게 깔끔합니다.",
-  "featured.blurb": "표를 붙여넣으세요 - D3가 브랜드에 맞는 깔끔한 벡터 차트로 만들어 드려요",
+  "featured.blurb": "표를 붙여넣으세요 — D3가 브랜드에 맞는 깔끔한 벡터 차트로 만들어 드려요",
   "a11yLabel": "{{chartType}} 차트{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "차트 유형",
   "inputs.chartType.options.bar": "막대 - 세로",

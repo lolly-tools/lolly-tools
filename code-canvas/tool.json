@@ -7,6 +7,7 @@
   "status": "official",
   "category": "everyone",
   "tags": ["code", "developer", "snippet", "export"],
+  "featured": { "order": 5 },
   "render": {
     "width": 1200,
     "height": 800,

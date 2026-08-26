@@ -1,7 +1,7 @@
 {
   "name": "Estúdio de Gráficos D3",
   "description": "Gráficos poderosos orientados a dados com D3 - cole uma tabela e ela se transforma em gráfico sozinha. Barras, linhas, áreas, dispersão, pizza, radar, treemap, mapa de calor, barras & pizzas 3D e nuvens de palavras. As paletas derivam das cores da sua marca, com preenchimentos padronizados e reclique para recolorir - fiel à marca e nítido em vetor.",
-  "featured.blurb": "Cole uma tabela - o D3 monta o gráfico, alinhado à marca e em vetor limpo",
+  "featured.blurb": "Cole uma tabela — o D3 monta o gráfico, alinhado à marca e em vetor limpo",
   "a11yLabel": "{{chartType}} gráfico{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Tipo de gráfico",
   "inputs.chartType.options.bar": "Barra - vertical",

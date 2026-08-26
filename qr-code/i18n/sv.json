@@ -1,6 +1,6 @@
 {
   "name": "QR-kodgenerator",
-  "description": "QR-koder för valfri URL, med full kontroll över färg och stil.",
+  "description": "QR-koder för en länk, ett kontaktkort, Wi-Fi-nätverk, kalenderhändelse, plats eller vanlig text.",
   "a11yLabel": "QR-kod som länkar till {{default url \"(no URL set)\"}}",
   "featured.blurb": "QR-koder i valfri varumärkesfärg",
   "inputs.url.label": "URL",

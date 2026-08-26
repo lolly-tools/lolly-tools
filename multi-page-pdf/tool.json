@@ -9,7 +9,7 @@
   "category": "designer",
   "tags": ["pdf", "document", "report", "multi-page", "brochure", "layout", "print"],
   "featured": {
-    "order": 3,
+    "order": 8,
     "blurb": "Multi-page PDFs - cover, content, back"
   },
   "render": {

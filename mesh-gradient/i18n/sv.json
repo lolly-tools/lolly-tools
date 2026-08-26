@@ -1,6 +1,6 @@
 {
   "name": "Nätgradient",
-  "description": "Mjuka nätgradienter från dina varumärkesfärger. Dra färgpunkterna direkt på ytan.",
+  "description": "Mjuka mesh-liknande gradienter från dina varumärkesfärger. Dra färgpunkterna direkt på canvasen, eller slå på Drift-läget och exportera loopen som WebM, MP4 eller GIF.",
   "a11yLabel": "Nätgradient som blandar {{count}} färger",
   "inputs.count.label": "Färgpunkter",
   "inputs.color1.label": "Färg 1 (bas)",

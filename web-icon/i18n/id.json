@@ -1,6 +1,6 @@
 {
   "name": "Pembuat Ikon Web",
-  "description": "Pembuat favicon dan ikon aplikasi - .ico multiukuran, plus PNG dan SVG.",
+  "description": "Pembuat favicon dan ikon aplikasi - file .ico multi-ukuran, PNG, dan SVG, atau seluruh kit aplikasi sebagai satu zip.",
   "a11yLabel": "Ikon web berlabel {{default text \"untitled\"}}",
   "inputs.text.label": "Label",
   "inputs.text.help": "Hingga ~4 karakter terbaca paling jelas di tab browser. Label akan menyesuaikan ukuran otomatis untuk mengisi ikon.",

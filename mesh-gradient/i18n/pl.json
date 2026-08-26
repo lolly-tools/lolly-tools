@@ -1,6 +1,6 @@
 {
   "name": "Gradient siatkowy",
-  "description": "Miękkie gradienty siatkowe z próbek kolorów Twojej marki. Przesuwaj punkty kolorów bezpośrednio na płótnie.",
+  "description": "Miękkie gradienty w stylu siatki z kolorów Twojej marki. Przeciągaj punkty kolorów wprost na płótnie albo włącz Dryf i eksportuj pętlę jako WebM, MP4 lub GIF.",
   "a11yLabel": "Gradient siatkowy mieszający {{count}} kolorów",
   "inputs.blend.label": "Tryb mieszania",
   "inputs.blend.help": "Sposób mieszania się punktów kolorów.",

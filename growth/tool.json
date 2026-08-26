@@ -3,16 +3,16 @@
   "name": "Growth",
   "description": "Differential growth: a line that repels itself until it folds into coral. Seed it from a ring, a burst, your headline's letterforms or your logo, and export the result as real, plotter-ready SVG paths.",
   "a11yLabel": "Differential growth pattern grown from a {{seedShape}} seed",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.152.0",
   "status": "community",
   "category": "designer",
   "tags": ["generative", "art", "plotter", "vector", "svg", "organic", "pattern"],
   "examples": [
-    { "label": "Coral bloom", "values": { "seedShape": "burst", "density": 58, "steps": 300, "weight": 2, "seed": 7 } },
-    { "label": "Rosette", "values": { "seedShape": "ring", "symmetry": "radial-6", "density": 52, "steps": 155, "weight": 1.5, "seed": 12 } },
-    { "label": "Ribbon", "values": { "seedShape": "line", "symmetry": "mirror", "density": 45, "steps": 280, "weight": 3, "seed": 3 } },
-    { "label": "Grown wordmark", "values": { "seedShape": "text", "text": "GROW", "density": 74, "steps": 200, "weight": 1.5, "seed": 21 } }
+    { "label": "Rosette", "values": { "seedShape": "ring", "symmetry": "radial-6", "density": 40, "steps": 110, "weight": 3, "seed": 12 } },
+    { "label": "Snowflake", "values": { "seedShape": "line", "symmetry": "radial-6", "density": 28, "steps": 160, "weight": 3, "seed": 3 } },
+    { "label": "Grown wordmark", "values": { "seedShape": "text", "text": "GROW", "density": 74, "steps": 120, "weight": 2, "seed": 21 } },
+    { "label": "Plotter paper", "values": { "seedShape": "burst", "background": "{color.semantic.surface}", "color1": "{color.semantic.secondary}", "color2": "{color.semantic.text}", "color3": "{color.spectrum.teal}", "density": 46, "steps": 300, "weight": 2, "seed": 7 } }
   ],
   "render": {
     "width": 1200,
@@ -53,17 +53,17 @@
       "showIf": { "seedShape": ["logo"] },
       "help": "Traced as a silhouette at a fixed sampling size, so the same logo always seeds the same shape."
     },
-    { "id": "color1", "label": "Colour 1", "type": "color", "default": "{color.semantic.primary}" },
-    { "id": "color2", "label": "Colour 2", "type": "color", "default": "{color.semantic.secondary}", "showIf": { "seedShape": ["burst", "text", "logo"] }, "help": "Colours cycle by loop, so a single-loop seed (Ring, Line) only ever uses Colour 1." },
-    { "id": "color3", "label": "Colour 3", "type": "color", "default": "{color.spectrum.teal}", "showIf": { "seedShape": ["burst", "text", "logo"] } },
-    { "id": "background", "label": "Background", "type": "color", "default": "{color.semantic.surface}" },
+    { "id": "color1", "label": "Colour 1", "type": "color", "default": "{color.semantic.secondary}" },
+    { "id": "color2", "label": "Colour 2", "type": "color", "default": "{color.semantic.surface}", "help": "Colours cycle by loop and by symmetry stamp, so a plain Ring with no symmetry only ever uses Colour 1." },
+    { "id": "color3", "label": "Colour 3", "type": "color", "default": "{color.spectrum.teal}" },
+    { "id": "background", "label": "Background", "type": "color", "default": "{color.semantic.text}" },
     {
       "id": "density",
       "label": "Density",
       "section": "Growth",
       "type": "number",
       "display": "slider",
-      "default": 58,
+      "default": 46,
       "min": 20,
       "max": 100,
       "step": 1,
@@ -101,7 +101,7 @@
       "section": "Line",
       "type": "number",
       "display": "slider",
-      "default": 2,
+      "default": 3,
       "min": 0.5,
       "max": 8,
       "step": 0.5
@@ -117,22 +117,22 @@
     },
     {
       "id": "seed",
-      "label": "Seed",
-      "section": "Line",
+      "label": "Variation",
+      "section": "Growth",
       "type": "number",
       "default": 7,
       "min": 0,
       "max": 9999,
       "step": 1,
-      "help": "Same seed and settings always grow the same pattern."
+      "help": "Same variation and settings always grow the same pattern."
     },
     {
       "id": "grown",
-      "label": "Show it grown",
-      "section": "Line",
+      "label": "Finished piece",
+      "section": "Growth",
       "type": "boolean",
       "default": true,
-      "help": "Off plays the growth from the seed instead of landing on the finished piece, and is what an animated export records."
+      "help": "On lands on the finished organism. Turn it off to watch it grow from the seed - that is what an animated export records."
     }
   ],
   "hooks": {

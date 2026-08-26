@@ -1,6 +1,6 @@
 {
   "name": "QRコード生成ツール",
-  "description": "任意のURLからQRコードを作成できます。色やスタイルを自由に調整可能です。",
+  "description": "リンク、連絡先カード、Wi-Fiネットワーク、カレンダーの予定、位置情報、プレーンテキストのQRコードを作成します。",
   "a11yLabel": "{{default url \"(no URL set)\"}} にリンクするQRコード",
   "featured.blurb": "ブランドカラーでQRコードを作成",
   "inputs.url.label": "URL",

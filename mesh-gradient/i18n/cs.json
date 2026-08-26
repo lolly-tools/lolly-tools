@@ -1,6 +1,6 @@
 {
   "name": "Síťový gradient",
-  "description": "Jemné síťové přechody z barev tvé značky. Barevné body přetáhneš přímo na plátně.",
+  "description": "Jemné síťové přechody z barev tvé značky. Táhni barevné body přímo na plátně, nebo zapni pomalý plynulý pohyb bodů a exportuj smyčku jako WebM, MP4 nebo GIF.",
   "a11yLabel": "Síťový gradient mísící {{count}} barev",
   "inputs.count.label": "Barevné body",
   "inputs.color1.label": "Barva 1 (základní)",

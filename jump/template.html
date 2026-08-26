@@ -27,6 +27,7 @@
       {{#each items}}
       <a class="jp-link {{sceneParity}} {{sceneWash}}" href="{{href}}" rel="noopener">
         {{#if icon}}<span class="jp-icon" aria-hidden="true">{{icon}}</span>{{/if}}
+        {{#if ghost}}<span class="jp-ghost" aria-hidden="true">{{ghost}}</span>{{/if}}
         <span class="jp-label">{{label}}</span>
         <span class="jp-host">{{host}}</span>
       </a>

@@ -1,6 +1,6 @@
 {
   "name": "Web-Icon-Generator",
-  "description": "Favicon- und App-Icon-Ersteller - ein mehrgrößiges .ico, plus PNG und SVG.",
+  "description": "Favicon- und App-Icon-Generator - eine .ico-Datei mit mehreren Größen, PNG und SVG, oder das komplette App-Icon-Set als eine ZIP-Datei.",
   "a11yLabel": "Web-Symbol beschriftet mit {{default text \"untitled\"}}",
   "inputs.text.label": "Beschriftung",
   "inputs.text.help": "Bis zu ca. 4 Zeichen lassen sich in einem Browser-Tab am besten lesen. Die Beschriftung passt sich automatisch an, um das Symbol auszufüllen.",

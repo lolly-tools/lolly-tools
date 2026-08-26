@@ -1,6 +1,6 @@
 {
   "name": "Penjana Kod QR",
-  "description": "Kod QR untuk sebarang URL, dengan kawalan penuh warna dan gaya.",
+  "description": "Kod QR untuk pautan, kad kenalan, rangkaian Wi-Fi, acara kalendar, lokasi atau teks biasa.",
   "featured.blurb": "Kod QR dalam sebarang warna jenama",
   "a11yLabel": "Kod QR yang menghubungkan ke {{default url \"(no URL set)\"}}",
   "inputs.url.label": "URL",

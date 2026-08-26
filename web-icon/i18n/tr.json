@@ -1,6 +1,6 @@
 {
   "name": "Web İkonu Oluşturucu",
-  "description": "Favicon ve uygulama simgesi oluşturucu - çok boyutlu bir .ico, ayrıca PNG ve SVG.",
+  "description": "Favicon ve uygulama simgesi oluşturucu - çok boyutlu bir .ico, PNG ve SVG dosyası, ya da tüm uygulama setini tek bir zip içinde.",
   "a11yLabel": "{{default text \"untitled\"}} etiketli web ikonu",
   "inputs.text.label": "Etiket",
   "inputs.text.help": "Tarayıcı sekmesinde en iyi ~4 karaktere kadar okunur. Etiket, ikonu dolduracak şekilde otomatik boyutlanır.",

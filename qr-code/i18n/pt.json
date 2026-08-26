@@ -1,6 +1,6 @@
 {
   "name": "Gerador de Código QR",
-  "description": "Códigos QR para qualquer URL, com controle total de cor e estilo.",
+  "description": "Códigos QR para um link, cartão de contato, rede Wi-Fi, evento de calendário, localização ou texto simples.",
   "a11yLabel": "Código QR que leva a {{default url \"(nenhuma URL definida)\"}}",
   "featured.blurb": "Códigos QR em qualquer cor da marca",
   "inputs.url.label": "URL",

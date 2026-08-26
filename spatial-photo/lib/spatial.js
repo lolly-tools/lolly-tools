@@ -212,10 +212,10 @@
     'out vec4 fragColor;',
     'void main(){',
     '  vec3 c = texture(uPhoto, vUv).rgb;',
-    // Distance haze: far (small depth) washes toward the brand colour, squared
-    // so the near field stays untouched.
+    // Distance haze: far (small depth) washes toward the brand colour, on a
+    // falloff steep enough that the near field stays untouched.
     '  float far = 1.0 - vDepth;',
-    '  c = mix(c, uFog, clamp(uFogAmount * far * far, 0.0, 1.0));',
+    '  c = mix(c, uFog, clamp(uFogAmount * pow(far, 1.5), 0.0, 1.0));',
     '  float coc = clamp(abs(vDepth - uFocus) * 2.4 * uDof, 0.0, 1.0);',
     '  fragColor = vec4(c, coc);',
     '}'
@@ -324,7 +324,7 @@
    */
   function gridSize(dpr) { return dpr > 1.5 ? 192 : 256; }
 
-  var RELIEF = 0.45;      // displacement depth in plane half-heights
+  var RELIEF = 0.7;       // displacement depth in plane half-heights
   /* How far past the framed picture the mesh reaches, as a fraction of the
    * frame. Anywhere it falls short, the clear colour (the fog colour, at full
    * saturation) bands the frame edge mid-move.
@@ -335,12 +335,12 @@
    *     scales the visible half-height by 1 + amount*camZ;
    *   - the far surface sits RELIEF/2 further away again;
    *   - `sway`/`drift` translate the camera laterally.
-   * dolly-out is the binding case: (1 + 0.8*0.5) + (RELIEF/2)*tan(20°) = 1.482,
-   * so the mesh half-extent 1 + 2*OVERSCAN must be at least that.
+   * dolly-out is the binding case: (1 + 0.8*0.5) + (RELIEF/2)*tan(20°) = 1.527,
+   * so the mesh half-extent 1 + 2*OVERSCAN = 1.56 must be at least that.
    * tests/spatial-photo.test.ts recomputes this per preset, so lowering it or
    * raising a preset's amplitude fails there rather than on screen.
    */
-  var OVERSCAN = 0.25;
+  var OVERSCAN = 0.28;
   var BASE_FOV = 40;      // degrees
   var MAX_BLUR_PX = 26;   // widest circle of confusion, in output pixels
   var INFLATE_MS = 600;   // the flat photo becoming a scene - plans/160 WP-D

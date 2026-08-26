@@ -1,6 +1,6 @@
 {
   "name": "Créateur d'icônes web",
-  "description": "Créateur de favicon et d'icône d'application - un .ico multi-tailles, plus PNG et SVG.",
+  "description": "Générateur de favicon et d'icône d'application - un fichier .ico multi-tailles, en PNG et SVG, ou le kit complet dans un seul zip.",
   "a11yLabel": "Icône web avec le libellé {{default text \"sans titre\"}}",
   "inputs.text.label": "Libellé",
   "inputs.text.help": "Jusqu'à ~4 caractères se lisent le mieux dans un onglet de navigateur. Le libellé s'adapte automatiquement pour remplir l'icône.",

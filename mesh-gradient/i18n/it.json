@@ -1,6 +1,6 @@
 {
   "name": "Mesh Gradient",
-  "description": "Sfumature morbide in stile mesh dai colori del tuo brand. Trascina i punti colore direttamente sulla tela.",
+  "description": "Gradienti morbidi in stile mesh dai colori del tuo brand. Trascina i punti colore direttamente sul canvas, oppure attiva il Drift ed esporta il loop come WebM, MP4 o GIF.",
   "a11yLabel": "Mesh gradient che mescola {{count}} colori",
   "inputs.count.label": "Punti colore",
   "inputs.color1.label": "Colore 1 (base)",

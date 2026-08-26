@@ -1,7 +1,7 @@
 {
   "name": "D3 diagramstudio",
   "description": "Kraftige datadrevne diagrammer med D3 - lim inn en tabell, så diagramfører den seg selv. Stolper, linjer, arealer, spredning, kake, radar, tremap, varmekart, 3D-stolper og -kaker og ordskyer. Paletter avledes fra merkevarens farger, med mønsterfyll og klikk-for-å-omfarge - merkevaretro og vektorrent.",
-  "featured.blurb": "Lim inn en tabell - D3 lager diagrammet, merkevaretilpasset og vektorrent",
+  "featured.blurb": "Lim inn en tabell — D3 lager diagrammet, merkevaretilpasset og vektorrent",
   "a11yLabel": "{{chartType}}-diagram{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Diagramtype",
   "inputs.chartType.options.bar": "Stolper - vertikal",

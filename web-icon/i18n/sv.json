@@ -1,6 +1,6 @@
 {
   "name": "Webbikonskapare",
-  "description": "Favicon- och appikonsverktyg - en .ico i flera storlekar, plus PNG och SVG.",
+  "description": "Favicon- och app-ikonmakare - en flerstorleks .ico, PNG och SVG, eller hela appkitet som en enda zip-fil.",
   "a11yLabel": "Webbikon märkt {{default text \"untitled\"}}",
   "inputs.text.label": "Etikett",
   "inputs.text.help": "Upp till cirka 4 tecken syns bäst i en webbläsarflik. Etiketten anpassar automatiskt sin storlek för att fylla ikonen.",

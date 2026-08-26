@@ -1,6 +1,6 @@
 {
   "name": "Mesh-Verlauf",
-  "description": "Weiche Mesh-Verläufe aus Ihren Markenfarben. Ziehen Sie die Farbpunkte direkt auf der Zeichenfläche.",
+  "description": "Weiche Mesh-Verläufe aus den Farbfeldern Ihrer Marke. Ziehen Sie die Farbpunkte direkt auf der Zeichenfläche, oder aktivieren Sie Drift und exportieren Sie die Schleife als WebM, MP4 oder GIF.",
   "a11yLabel": "Mesh-Verlauf, der {{count}} Farben mischt",
   "inputs.count.label": "Farbpunkte",
   "inputs.color1.label": "Farbe 1 (Basis)",

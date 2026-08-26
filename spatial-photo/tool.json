@@ -38,12 +38,12 @@
       "label": "Camera move",
       "section": "Move",
       "type": "select",
-      "default": "dolly-in",
+      "default": "sway",
       "help": "Each move is a closed loop, so a video comes back to where it started with no seam.",
       "options": [
+        { "value": "sway", "label": "Sway" },
         { "value": "dolly-in", "label": "Dolly in" },
         { "value": "dolly-out", "label": "Dolly out" },
-        { "value": "sway", "label": "Sway" },
         { "value": "push-tilt", "label": "Push and tilt" },
         { "value": "vertigo", "label": "Vertigo (dolly zoom)" },
         { "value": "drift", "label": "Drift" }
@@ -109,7 +109,7 @@
       "label": "Atmosphere",
       "section": "Atmosphere",
       "type": "color",
-      "default": "{color.semantic.primary}",
+      "default": "{color.semantic.secondary}",
       "help": "The colour distance washes toward - a brand haze on the far field rather than a generic grey."
     },
     {
@@ -118,7 +118,7 @@
       "section": "Atmosphere",
       "type": "number",
       "display": "slider",
-      "default": 0.2,
+      "default": 0.45,
       "min": 0,
       "max": 1,
       "step": 0.05
@@ -129,7 +129,7 @@
       "section": "Atmosphere",
       "type": "number",
       "display": "slider",
-      "default": 1,
+      "default": 1.25,
       "min": 0.2,
       "max": 3,
       "step": 0.05,

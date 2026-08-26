@@ -7,7 +7,12 @@
    `cinema`, the default, which turns the shared page into full-height scenes.
    The cinema LAYOUT is unconditional - only its motion is gated (bottom of the
    file), so the editor preview and every unsupported browser get the finished
-   page with nothing hidden. */
+   page with nothing hidden.
+
+   The cinema reads as opening titles: a full-bleed accent title card, then one
+   scene per link cycling paper / accent tint / full accent / shaded paper, and
+   a dark end card. The palette never leaves the three colour inputs - every
+   wash is the accent, the ink or the paper, mixed or graded. */
 
 .jp-root {
   width: 100%;
@@ -54,6 +59,10 @@
 }
 
 .jp-cue {
+  display: none;
+}
+
+.jp-ghost {
   display: none;
 }
 
@@ -176,14 +185,14 @@
 }
 
 /* ── Cinema ─────────────────────────────────────────────────────────────────
-   A full-height opening, then one scene per link, then a quiet close. Washes
-   are derived from the three colour inputs in CSS; the derived forms live in
-   the feature queries at the end of this section, because a declaration that
-   contains `var()` is valid at parse time and would win the cascade over a
-   plain colour above it, then compute to nothing where the function is
-   unsupported. `overflow: clip` rather than `hidden`: clip does not make a
-   scroll container, so the scenes still resolve against the page's own
-   scroller. */
+   The film arc: accent title card, scenes building paper - tint - full accent,
+   a dark close. Derived colours (mixes and grades) live in the feature queries
+   at the end of this section, because a declaration that contains a colour
+   function is valid at parse time and would win the cascade over a plain
+   colour above it, then compute to nothing where the function is unsupported;
+   every scene therefore has a plain-colour form that already carries the arc.
+   `overflow: clip` rather than `hidden`: clip does not make a scroll
+   container, so the scenes still resolve against the page's own scroller. */
 
 /* `container-type: inline-size` is what makes the `cqw` type below measure the
    CANVAS rather than the window. On the visitor page the canvas is the full
@@ -202,6 +211,11 @@
   overflow: clip;
 }
 
+/* The title card: the heading set huge over a full-bleed accent field. The
+   ::before layer carries the grade - a highlight falling from one corner, a
+   shadow pooling in the other - in plain rgba so the frame has depth on any
+   engine; the relative-colour query below re-cuts it from the accent itself. */
+
 .jp-cinema .jp-head {
   position: relative;
   isolation: isolate;
@@ -213,17 +227,18 @@
   padding: 12svh clamp(28px, 7cqw, 132px) 10svh;
   text-align: left;
   overflow: clip;
+  background: var(--jp-accent, #2563eb);
+  color: var(--jp-on-accent, #ffffff);
 }
 
 .jp-cinema .jp-head::before {
   content: "";
   position: absolute;
-  inset: -25% -12%;
+  inset: -22% -12%;
   z-index: -1;
-  opacity: 0.2;
   background:
-    radial-gradient(58% 52% at 16% 18%, var(--jp-accent, #2563eb), transparent 70%),
-    radial-gradient(54% 48% at 86% 82%, var(--jp-accent, #2563eb), transparent 70%);
+    radial-gradient(62% 56% at 16% 16%, rgba(255, 255, 255, 0.16), transparent 72%),
+    radial-gradient(56% 52% at 86% 88%, rgba(0, 0, 0, 0.24), transparent 74%);
 }
 
 .jp-cinema .jp-heading {
@@ -235,6 +250,8 @@
 }
 
 .jp-cinema .jp-sub {
+  color: inherit;
+  opacity: 0.85;
   font-size: clamp(18px, 2.2cqw, 30px);
   line-height: 1.35;
   max-width: 26ch;
@@ -245,13 +262,13 @@
 
 .jp-cinema .jp-cue {
   display: block;
-  width: 13px;
-  height: 13px;
+  width: 17px;
+  height: 17px;
   margin-top: clamp(18px, 4svh, 52px);
-  border-right: 2px solid currentColor;
-  border-bottom: 2px solid currentColor;
+  border-right: 3px solid currentColor;
+  border-bottom: 3px solid currentColor;
   transform: rotate(45deg);
-  opacity: 0.45;
+  opacity: 0.8;
 }
 
 .jp-cinema .jp-note {
@@ -319,15 +336,41 @@
   background: radial-gradient(46% 62% at 12% 86%, var(--jp-accent, #2563eb), transparent 68%);
 }
 
-.jp-cinema .jp-wash-a { --jp-tint: 0%; --jp-bloom: 0; }
-.jp-cinema .jp-wash-b { --jp-tint: 7%; --jp-bloom: 0.16; }
-.jp-cinema .jp-wash-c { --jp-tint: 13%; --jp-bloom: 0; }
-.jp-cinema .jp-wash-d { --jp-tint: 4%; --jp-bloom: 0.24; }
+/* The scene cycle. a: clean paper. b: the accent mixed into the paper (a plain
+   bloom stands in until the mix query below). c: the crescendo - the full
+   accent, graded like the title card. d: shaded paper. The cycle is dealt by
+   the hooks; three links land on the crescendo, longer lists breathe. */
+
+.jp-cinema .jp-wash-a { --jp-bloom: 0.2; }
+.jp-cinema .jp-wash-b { --jp-bloom: 0.18; }
+.jp-cinema .jp-wash-c { --jp-bloom: 0; }
+.jp-cinema .jp-wash-d { --jp-bloom: 0.22; }
+
+.jp-cinema .jp-link.jp-wash-c {
+  color: var(--jp-on-accent, #ffffff);
+}
+
+.jp-cinema .jp-link.jp-wash-c::before {
+  background: var(--jp-accent, #2563eb);
+}
+
+.jp-cinema .jp-link.jp-wash-c::after {
+  opacity: 1;
+  background:
+    radial-gradient(56% 60% at 84% 16%, rgba(255, 255, 255, 0.14), transparent 70%),
+    radial-gradient(52% 56% at 12% 88%, rgba(0, 0, 0, 0.2), transparent 72%);
+}
+
+.jp-cinema .jp-odd.jp-wash-c::after {
+  background:
+    radial-gradient(56% 60% at 16% 16%, rgba(255, 255, 255, 0.14), transparent 70%),
+    radial-gradient(52% 56% at 88% 88%, rgba(0, 0, 0, 0.2), transparent 72%);
+}
 
 .jp-cinema .jp-label {
   grid-area: label;
   align-self: end;
-  font-size: clamp(34px, 6.6cqw, 104px);
+  font-size: clamp(38px, 8cqw, 124px);
   font-weight: 700;
   line-height: 0.98;
   letter-spacing: -0.03em;
@@ -344,6 +387,33 @@
   color: var(--jp-muted, rgba(0, 0, 0, 0.55));
 }
 
+.jp-cinema .jp-link.jp-wash-c .jp-host {
+  color: inherit;
+  opacity: 0.75;
+}
+
+/* The chevron after the host is the "press me": borders, not a glyph, so no
+   font gets a vote. It travels on hover (below). */
+
+.jp-cinema .jp-host::after {
+  content: "";
+  display: inline-block;
+  width: 0.5em;
+  height: 0.5em;
+  margin-left: 0.9em;
+  border-top: 0.14em solid var(--jp-accent, #2563eb);
+  border-right: 0.14em solid var(--jp-accent, #2563eb);
+  transform: rotate(45deg);
+  vertical-align: 0.05em;
+}
+
+.jp-cinema .jp-link.jp-wash-c .jp-host::after {
+  border-color: currentColor;
+}
+
+/* The emoji glyph a link chose, or the ghost: the label's first letter cut
+   huge in the brand face. Either one is the scene's parallax layer. */
+
 .jp-cinema .jp-icon {
   grid-area: glyph;
   align-self: center;
@@ -352,22 +422,81 @@
   line-height: 1;
 }
 
-/* The close: the heading echoed small, and the attribution line. */
+.jp-cinema .jp-ghost {
+  display: block;
+  grid-area: glyph;
+  align-self: center;
+  padding-inline: clamp(8px, 2cqw, 40px);
+  font-size: clamp(96px, 26cqw, 400px);
+  line-height: 0.8;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--jp-accent, #2563eb);
+  opacity: 0.14;
+  user-select: none;
+}
+
+.jp-cinema .jp-link.jp-wash-c .jp-ghost {
+  color: var(--jp-on-accent, #ffffff);
+  opacity: 0.18;
+}
+
+/* Hover, only where hover is real, so touch never sticks a half-lit scene.
+   Colour and a few pixels of chevron travel - feedback, not choreography. */
+
+@media (hover: hover) {
+  .jp-cinema .jp-link::before {
+    transition: filter 0.45s ease;
+  }
+
+  .jp-cinema .jp-link:hover::before {
+    filter: brightness(0.96);
+  }
+
+  .jp-cinema .jp-label {
+    transition: color 0.3s ease;
+  }
+
+  .jp-cinema .jp-link:hover .jp-label {
+    color: var(--jp-accent, #2563eb);
+  }
+
+  .jp-cinema .jp-link.jp-wash-c:hover .jp-label {
+    color: inherit;
+  }
+
+  .jp-cinema .jp-host::after {
+    transition: translate 0.3s ease;
+  }
+
+  .jp-cinema .jp-link:hover .jp-host::after {
+    translate: 0.3em 0;
+  }
+}
+
+/* The close: an end card on the ink, the heading echoed large. */
 
 .jp-cinema .jp-foot {
   align-items: flex-start;
   justify-content: center;
-  gap: 12px;
-  min-height: 46svh;
-  padding: 8svh clamp(28px, 7cqw, 132px);
+  gap: 14px;
+  min-height: 56svh;
+  padding: 10svh clamp(28px, 7cqw, 132px);
   text-align: left;
-  background: var(--jp-paper, #f7f8fa);
+  background: var(--jp-ink, #17232b);
+  color: var(--jp-paper, #f7f8fa);
 }
 
 .jp-cinema .jp-foot-echo {
-  font-size: clamp(22px, 3.4cqw, 46px);
+  font-size: clamp(30px, 5cqw, 72px);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+
+.jp-cinema .jp-foot-made {
+  color: inherit;
+  opacity: 0.55;
 }
 
 /* Keyboard focus: the scenes are the page's only interactive content, and the
@@ -377,6 +506,10 @@
 .jp-cinema .jp-link:focus-visible {
   outline: 3px solid var(--jp-accent, #2563eb);
   outline-offset: -8px;
+}
+
+.jp-cinema .jp-link.jp-wash-c:focus-visible {
+  outline-color: var(--jp-on-accent, #ffffff);
 }
 
 /* Off the visitor page the scenes are laid out inside a fixed artboard, where
@@ -400,23 +533,27 @@
 }
 
 /* The derived washes. Split by feature, so a browser with `color-mix()` but no
-   relative colours keeps the tints. */
+   relative colours keeps the mixes. */
 
 @supports (background: color-mix(in oklch, red, blue)) {
-  .jp-cinema .jp-link::before {
-    background: color-mix(in oklch, var(--jp-accent, #2563eb) var(--jp-tint, 0%), var(--jp-paper, #f7f8fa));
+  .jp-cinema .jp-link.jp-wash-b::before {
+    background: color-mix(in oklch, var(--jp-accent, #2563eb) 12%, var(--jp-paper, #f7f8fa));
+  }
+
+  .jp-cinema .jp-link.jp-wash-d::before {
+    background: color-mix(in oklch, var(--jp-ink, #17232b) 7%, var(--jp-paper, #f7f8fa));
   }
 
   .jp-cinema .jp-foot {
-    background: color-mix(in oklch, var(--jp-ink, #17232b) 5%, var(--jp-paper, #f7f8fa));
+    background: color-mix(in oklch, var(--jp-ink, #17232b) 88%, black);
   }
 }
 
 @supports (background: oklch(from red l c h)) {
   .jp-cinema .jp-head::before {
     background:
-      radial-gradient(58% 52% at 16% 18%, oklch(from var(--jp-accent, #2563eb) l c h), transparent 70%),
-      radial-gradient(54% 48% at 86% 82%, oklch(from var(--jp-accent, #2563eb) calc(l * 0.86) c calc(h + 46)), transparent 70%);
+      radial-gradient(64% 58% at 16% 16%, oklch(from var(--jp-accent, #2563eb) calc(l * 1.14) calc(c * 1.05) calc(h + 16)), transparent 72%),
+      radial-gradient(58% 54% at 86% 88%, oklch(from var(--jp-accent, #2563eb) calc(l * 0.6) c calc(h - 18)), transparent 74%);
   }
 
   .jp-cinema .jp-link::after {
@@ -428,8 +565,8 @@
   }
 }
 
-/* Forward mode: the page redirects on visit. Shown centred, with an optional
-   press-and-hold human check that fills the accent before it lets you through. */
+/* Forward mode: the page redirects on visit. Shown centred on the plain paper,
+   with an optional press-and-hold human check that fills the accent. */
 
 .jp-cinema.jp-is-forward {
   padding: 96px 72px;
@@ -443,6 +580,12 @@
   align-items: center;
   text-align: center;
   max-width: 560px;
+  background: none;
+  color: inherit;
+}
+
+.jp-cinema.jp-is-forward .jp-head::before {
+  content: none;
 }
 
 .jp-cinema.jp-is-forward .jp-heading {
@@ -450,6 +593,11 @@
   line-height: 1.08;
   letter-spacing: -0.015em;
   max-width: none;
+}
+
+.jp-cinema.jp-is-forward .jp-sub {
+  color: var(--jp-muted, rgba(0, 0, 0, 0.55));
+  opacity: 1;
 }
 
 .jp-forward {
@@ -536,11 +684,18 @@
 }
 
 @keyframes jp-wash-drift {
-  to { transform: translateY(calc(var(--jp-motion, 1) * -7%)) scale(1.12); }
+  to { transform: translateY(calc(var(--jp-motion, 1) * -6%)) scale(1.1); }
+}
+
+/* The bob animates `translate`, the resting rotate stays on `transform` - the
+   two compose instead of fighting. */
+@keyframes jp-cue-bob {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 9px; }
 }
 
 @keyframes jp-cue-out {
-  to { opacity: 0; transform: rotate(45deg) translate(7px, 7px); }
+  to { opacity: 0; }
 }
 
 @supports (animation-timeline: view()) {
@@ -563,10 +718,11 @@
       animation-timeline: scroll(root block);
     }
 
+    /* Idle, the cue bobs; scrolled, it fades - two animations, two timelines. */
     .jp-root.jp-live.jp-cinema .jp-cue {
-      animation: jp-cue-out linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0 32svh;
+      animation: jp-cue-bob 1.7s ease-in-out infinite, jp-cue-out linear both;
+      animation-timeline: auto, scroll(root block);
+      animation-range: normal, 0 26svh;
     }
 
     .jp-root.jp-live.jp-cinema .jp-link::before {
@@ -592,7 +748,8 @@
     }
 
     /* The glyph travels the whole scene, so it never tracks the words. */
-    .jp-root.jp-live.jp-cinema .jp-icon {
+    .jp-root.jp-live.jp-cinema .jp-icon,
+    .jp-root.jp-live.jp-cinema .jp-ghost {
       animation: jp-glyph-drift linear both;
       animation-timeline: view(block);
       animation-range: cover 0% cover 100%;

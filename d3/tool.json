@@ -33,7 +33,7 @@
     "csv"
   ],
   "featured": {
-    "order": 4,
+    "order": 3,
     "blurb": "Paste a table \u2014 D3 charts it, on-brand and vector-clean"
   },
   "examples": [
@@ -142,7 +142,7 @@
       "download",
       "save"
     ],
-    "transparentBg": false
+    "transparentBg": true
   },
   "hooks": {
     "onInit": true,

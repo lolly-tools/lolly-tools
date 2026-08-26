@@ -425,6 +425,17 @@
       "help": "Dot colour when Colour source is Solid."
     },
     {
+      "id": "ht_transparentBg",
+      "label": "Transparent background",
+      "section": "Ink",
+      "type": "boolean",
+      "default": true,
+      "help": "Drop the fill so the dots sit on transparency, ready to drop onto any design (PNG / SVG).",
+      "showIf": {
+        "effect": "halftone"
+      }
+    },
+    {
       "id": "ht_bgColor",
       "label": "Background",
       "section": "Ink",
@@ -432,7 +443,8 @@
       "default": "{color.semantic.surface}",
       "help": "Fill behind the dots. Turn on “Transparent background” for no fill instead.",
       "showIf": {
-        "effect": "halftone"
+        "effect": "halftone",
+        "ht_transparentBg": false
       }
     },
     {
@@ -779,7 +791,7 @@
       "label": "Transparent background",
       "section": "Ink",
       "type": "boolean",
-      "default": false,
+      "default": true,
       "help": "Drop the lightest 'paper' separation so the background is transparent (PNG / SVG).",
       "showIf": {
         "effect": "posterize"
@@ -888,7 +900,7 @@
       "label": "Transparent background",
       "section": "Ink",
       "type": "boolean",
-      "default": false,
+      "default": true,
       "help": "Drop the background so any gaps / border are transparent (PNG / SVG).",
       "showIf": {
         "effect": "voronoi"

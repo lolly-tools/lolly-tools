@@ -1,6 +1,6 @@
 {
   "name": "Mesh Gradient",
-  "description": "Malambot na mesh-style na gradient mula sa mga swatch ng brand mo. I-drag ang mga color point diretso sa canvas.",
+  "description": "Malumanay na mesh-style na gradient mula sa mga swatch ng iyong brand. I-drag ang mga colour point direkta sa canvas, o i-on ang Drift mode at i-export ang loop bilang WebM, MP4 o GIF.",
   "a11yLabel": "Mesh gradient na naghahalo ng {{count}} kulay",
   "inputs.count.label": "Mga punto ng kulay",
   "inputs.color1.label": "Kulay 1 (base)",

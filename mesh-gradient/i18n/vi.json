@@ -1,6 +1,6 @@
 {
   "name": "Gradient Lưới",
-  "description": "Gradient dạng lưới mềm mại từ các mẫu màu thương hiệu của bạn. Kéo các điểm màu ngay trên khung vẽ.",
+  "description": "Gradient mượt kiểu lưới, tạo từ các màu trong bảng màu thương hiệu của bạn. Kéo các điểm màu ngay trên canvas, hoặc bật chế độ trôi (Drift) để xuất vòng lặp dưới dạng WebM, MP4 hoặc GIF.",
   "a11yLabel": "Gradient lưới pha trộn {{count}} màu",
   "inputs.count.label": "Điểm màu",
   "inputs.color1.label": "Màu 1 (nền)",

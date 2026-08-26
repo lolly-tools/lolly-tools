@@ -1,6 +1,6 @@
 {
   "name": "網頁圖示產生器",
-  "description": "Favicon 與應用程式圖示產生器 - 多尺寸 .ico，另加 PNG 與 SVG。",
+  "description": "Favicon 與應用程式圖示產生工具 - 提供多尺寸的 .ico、PNG 與 SVG，或整組應用程式圖示打包成一個 zip 檔。",
   "a11yLabel": "標籤為 {{default text \"untitled\"}} 的網頁圖示",
   "inputs.text.label": "標籤",
   "inputs.text.help": "最多約 4 個字元在瀏覽器分頁中顯示效果最佳。標籤會自動調整大小以填滿圖示。",

@@ -1,7 +1,7 @@
 {
   "name": "D3 Studio grafů",
   "description": "Výkonné datové grafy s D3 - vlož tabulku a graf se vykreslí sám. Sloupce, čáry, plochy, bodové grafy, koláče, paprskové grafy, treemapy, teplotní mapy, 3D sloupce a koláče a slovní mraky. Palety vycházejí z barev tvé značky, s vzorovými výplněmi a přebarvením kliknutím - na značku a vektorově čisté.",
-  "featured.blurb": "Vlož tabulku - D3 z ní udělá graf, podle tvé značky a vektorově čistý",
+  "featured.blurb": "Vlož tabulku — D3 z ní udělá graf, podle tvé značky a vektorově čistý",
   "a11yLabel": "{{chartType}} graf{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Typ grafu",
   "inputs.chartType.options.bar": "Sloupcový - svislý",

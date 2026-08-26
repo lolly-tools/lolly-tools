@@ -1,6 +1,6 @@
 {
   "name": "Mesh Gradyan",
-  "description": "Marka renklerinden yumuşak, mesh tarzı gradyanlar. Renk noktalarını doğrudan kanvas üzerinde sürükle.",
+  "description": "Marka renklerinden yumuşak, mesh tarzı gradyanlar. Renk noktalarını doğrudan tuval üzerinde sürükle ya da Kayma özelliğini aç, döngüyü WebM, MP4 veya GIF olarak dışa aktar.",
   "a11yLabel": "{{count}} rengi harmanlayan mesh gradyan",
   "inputs.count.label": "Renk noktaları",
   "inputs.color1.label": "Renk 1 (taban)",

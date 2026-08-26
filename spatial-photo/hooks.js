@@ -95,7 +95,7 @@ function _compute(model) {
     dof: _clamp(_num(inp.dof, 0.35), 0, 1),
     fog: _color(inp.fog, '#30ba78'),
     fogAmount: _clamp(_num(inp.fogAmount, 0.2), 0, 1),
-    depthContrast: _clamp(_num(inp.depthContrast, 1), 0.2, 3)
+    depthContrast: _clamp(_num(inp.depthContrast, 1.25), 0.2, 3)
   };
 
   _dur = cfg.duration;

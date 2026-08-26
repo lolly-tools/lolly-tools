@@ -1,6 +1,6 @@
 {
   "name": "Mesh Gradient",
-  "description": "Myke mesh-gradienter fra fargene i merkevaren din. Dra fargepunktene rett på lerretet.",
+  "description": "Myke mesh-fargeoverganger fra fargeprøvene i merkevaren din. Dra fargepunktene rett på lerretet, eller slå på Drift og eksporter løkken som WebM, MP4 eller GIF.",
   "a11yLabel": "Mesh-gradient som blander {{count}} farger",
   "inputs.count.label": "Fargepunkter",
   "inputs.color1.label": "Farge 1 (base)",

@@ -1,6 +1,6 @@
 {
   "name": "Web Icon Maker",
-  "description": "Kreator favikon i ikon aplikacji - wielorozmiarowy plik .ico oraz PNG i SVG.",
+  "description": "Kreator favicon i ikon aplikacji - wielorozmiarowy plik .ico, PNG i SVG, albo cały zestaw aplikacji w jednym archiwum zip.",
   "a11yLabel": "Ikona internetowa z etykietą {{default text \"untitled\"}}",
   "inputs.text.label": "Etykieta",
   "inputs.text.help": "Do ~4 znaków wygląda najlepiej w karcie przeglądarki. Etykieta automatycznie dopasowuje rozmiar, by wypełnić ikonę.",

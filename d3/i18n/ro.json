@@ -1,7 +1,7 @@
 {
   "name": "Studio Grafice D3",
   "description": "Grafice puternice bazate pe date cu D3 - lipește un tabel și se reprezintă singur. Bare, linii, arii, dispersie, plăcintă, radar, treemap, heatmap, bare și plăcinte 3D și nori de cuvinte. Paletele derivă din culorile brandului tău, cu umpluturi de model și reculorare cu un clic - în ton cu brandul și clare ca vector.",
-  "featured.blurb": "Lipește un tabel - D3 îl transformă în grafic, pe brand și impecabil ca vector",
+  "featured.blurb": "Lipește un tabel — D3 îl transformă în grafic, pe brand și impecabil ca vector",
   "a11yLabel": "Grafic {{chartType}}{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Tip grafic",
   "inputs.chartType.options.bar": "Bare - vertical",

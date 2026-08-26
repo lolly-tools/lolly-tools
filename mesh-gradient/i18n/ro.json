@@ -1,6 +1,6 @@
 {
   "name": "Degrade Mesh",
-  "description": "Degrade-uri mesh delicate din mostrele brandului tău. Trage punctele de culoare direct pe canvas.",
+  "description": "Degrade-uri moi în stil mesh, din eșantioanele brandului tău. Trage punctele de culoare direct pe canvas, sau activează Derivă și exportă bucla ca WebM, MP4 sau GIF.",
   "a11yLabel": "Degrade mesh care combină {{count}} culori",
   "inputs.count.label": "Puncte de culoare",
   "inputs.color1.label": "Culoare 1 (bază)",

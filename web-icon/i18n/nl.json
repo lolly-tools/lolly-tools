@@ -1,6 +1,6 @@
 {
   "name": "Web-icoonmaker",
-  "description": "Favicon- en app-iconmaker - een .ico in meerdere formaten, plus PNG en SVG.",
+  "description": "Favicon- en app-iconmaker - een .ico, PNG en SVG in meerdere formaten, of de hele app-iconenset als één zip-bestand.",
   "a11yLabel": "Webicoon met label {{default text \"untitled\"}}",
   "inputs.text.label": "Label",
   "inputs.text.help": "Tot ongeveer 4 tekens is het best leesbaar in een browsertab. Het label past zich automatisch aan om het icoon te vullen.",

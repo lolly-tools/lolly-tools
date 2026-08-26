@@ -1,0 +1,82 @@
+<div class="sc" data-mode="{{mode}}">
+
+  {{#if (eq mode "camera")}}
+  <div class="sc-viewfinder" aria-label="Camera viewfinder">
+    {{#if scanFrameSrc}}
+    <svg class="sc-vf" viewBox="0 0 {{scanFrameW}} {{scanFrameH}}" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Live camera">
+      <image href="{{scanFrameSrc}}" x="0" y="0" width="{{scanFrameW}}" height="{{scanFrameH}}" preserveAspectRatio="xMidYMid slice"/>
+      {{#if scanCorners}}<polygon points="{{scanCorners}}" class="sc-vf__quad"/>{{/if}}
+    </svg>
+    <div class="sc-vf__reticle" aria-hidden="true"></div>
+    {{else}}
+    <div class="sc-viewfinder__frame">
+      <span class="sc-viewfinder__hint">Turn the camera on, then hold a code inside the frame</span>
+    </div>
+    {{/if}}
+  </div>
+  {{/if}}
+
+  {{#if scanEmpty}}
+    <div class="sc-empty">
+      {{#if (eq mode "paste")}}Paste a code's text above to inspect it.{{/if}}
+      {{#if (eq mode "image")}}Choose an image containing a code.{{/if}}
+      {{#if (eq mode "camera")}}Nothing decoded yet - hold a code in view.{{/if}}
+    </div>
+  {{else}}
+    <div class="sc-result" data-kind="{{scanKind}}">
+      <div class="sc-result__head">
+        <span class="sc-badge">{{scanLabel}}</span>
+        {{#if scanFormat}}<span class="sc-fmt">{{scanFormat}}</span>{{/if}}
+      </div>
+
+      {{{scanValueHtml}}}
+
+      {{#if scanFieldsHtml}}<div class="sc-fields">{{{scanFieldsHtml}}}</div>{{/if}}
+
+      {{#if scanHasWarn}}
+      <div class="sc-warn" role="status">
+        <span class="sc-warn__h">Before you act</span>
+        <ul>{{{scanWarnHtml}}}</ul>
+      </div>
+      {{/if}}
+
+      <div class="sc-actions">
+        <button type="button" class="sc-btn sc-btn--primary" data-copy="{{scanCopy}}">Copy</button>
+        {{#if scanOpenUrl}}
+        <a class="sc-btn" href="{{scanOpenUrl}}" target="_blank" rel="noopener noreferrer nofollow" data-open>Open link…</a>
+        {{/if}}
+      </div>
+
+      <p class="sc-foot">Read on this device. Nothing was uploaded.</p>
+    </div>
+  {{/if}}
+
+  <script>
+  // Editor-runtime only (stripped on export): Copy the exact decoded value and
+  // toggle a masked secret's reveal. No network, no auto-actions.
+  (function () {
+    var root = document.currentScript && document.currentScript.parentElement;
+    if (!root) return;
+    root.addEventListener('click', function (e) {
+      var copyBtn = e.target.closest('[data-copy]');
+      if (copyBtn) {
+        var v = copyBtn.getAttribute('data-copy') || '';
+        try { navigator.clipboard && navigator.clipboard.writeText(v); } catch (err) {}
+        var was = copyBtn.textContent; copyBtn.textContent = 'Copied';
+        setTimeout(function () { copyBtn.textContent = was; }, 1200);
+        return;
+      }
+      var reveal = e.target.closest('[data-reveal]');
+      if (reveal) {
+        var span = reveal.parentElement.querySelector('[data-secret]');
+        if (span) {
+          var open = reveal.getAttribute('data-open') === '1';
+          span.textContent = open ? (span.getAttribute('data-mask') || '') : (span.getAttribute('data-secret') || '');
+          reveal.setAttribute('data-open', open ? '0' : '1');
+          reveal.textContent = open ? 'Reveal' : 'Hide';
+        }
+      }
+    });
+  })();
+  </script>
+</div>

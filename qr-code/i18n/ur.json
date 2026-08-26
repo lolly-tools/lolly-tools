@@ -1,6 +1,6 @@
 {
   "name": "QR کوڈ جنریٹر",
-  "description": "کسی بھی URL کے لیے QR کوڈز، مکمل رنگ اور اسٹائل کنٹرول کے ساتھ۔",
+  "description": "کسی لنک، رابطہ کارڈ، Wi-Fi نیٹ ورک، کیلنڈر ایونٹ، مقام یا سادہ متن کے لیے QR کوڈز۔",
   "a11yLabel": "{{default url \"(no URL set)\"}} سے منسلک QR کوڈ",
   "featured.blurb": "کسی بھی برانڈ رنگ میں QR کوڈز",
   "inputs.url.label": "URL",

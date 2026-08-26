@@ -28,8 +28,10 @@ var ICON_MAX = 4;
 // uncapped index holds the tail of a long heading at opacity 0 for seconds.
 var WORD_STAGGER_MAX = 12;
 
-// Scene wash classes, cycled per link so ten links never read as ten identical
-// rows. The template is logic-less, so the cycling happens here.
+// Scene wash classes, cycled per link: clean paper, accent tint, the full
+// accent crescendo, shaded paper. Dealt in this order so a three-link page
+// (the default) lands its last scene on the crescendo before the dark close.
+// The template is logic-less, so the cycling happens here.
 var WASHES = ['jp-wash-a', 'jp-wash-b', 'jp-wash-c', 'jp-wash-d'];
 
 // One dial over every cinema animation (travel distance + stagger step).
@@ -97,6 +99,19 @@ function _icon(v) {
   return units.slice(0, ICON_MAX).join('');
 }
 
+// A scene with no chosen glyph gets a ghost instead: the label's first
+// grapheme, which the cinema sets huge in the brand face as the parallax
+// layer - so an icon-less page still composes. Uppercased, because a lone
+// letterform reads as a mark, not a typo.
+function _ghost(label) {
+  var s = _str(label);
+  if (!s) return '';
+  var units = typeof Intl !== 'undefined' && Intl.Segmenter
+    ? Array.from(new Intl.Segmenter().segment(s), function (x) { return x.segment; })
+    : Array.from(s);
+  return (units[0] || '').toLocaleUpperCase();
+}
+
 // The heading, one span per word, so the opening scene can stagger them in.
 function _words(v) {
   return _str(v).split(/\s+/).filter(Boolean).map(function (w, i) {
@@ -120,11 +135,14 @@ function compute(args) {
     if (!href) continue;
     var host = _host(href);
     var n = items.length;
+    var label = _str(rows[i].label) || host;
+    var icon = _icon(rows[i].icon);
     items.push({
       href: href,
       host: host,
-      label: _str(rows[i].label) || host,
-      icon: _icon(rows[i].icon),
+      label: label,
+      icon: icon,
+      ghost: icon ? '' : _ghost(label),
       sceneParity: n % 2 ? 'jp-odd' : 'jp-even',
       sceneWash: WASHES[n % WASHES.length],
     });

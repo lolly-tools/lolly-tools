@@ -1,6 +1,6 @@
 {
   "name": "Dégradé maillé",
-  "description": "Des dégradés doux façon maillage à partir des couleurs de ta marque. Fais glisser les points de couleur directement sur le canevas.",
+  "description": "Des dégradés doux façon maillage à partir des couleurs de ta marque. Fais glisser les points de couleur directement sur le canevas, ou active la dérive et exporte la boucle en WebM, MP4 ou GIF.",
   "a11yLabel": "Dégradé maillé mélangeant {{count}} couleurs",
   "inputs.count.label": "Points de couleur",
   "inputs.color1.label": "Couleur 1 (base)",

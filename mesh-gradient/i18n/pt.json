@@ -1,6 +1,6 @@
 {
   "name": "Gradiente em Malha",
-  "description": "Gradientes suaves em estilo malha a partir das amostras da sua marca. Arraste os pontos de cor diretamente na tela.",
+  "description": "Gradientes suaves em malha a partir das amostras de cor da sua marca. Arraste os pontos de cor direto na tela, ou ative a Deriva e exporte o loop como WebM, MP4 ou GIF.",
   "a11yLabel": "Gradiente em malha misturando {{count}} cores",
   "inputs.count.label": "Pontos de cor",
   "inputs.color1.label": "Cor 1 (base)",

@@ -11,9 +11,11 @@ under the **ISC** license (https://lucide.dev/license).
 
 ## Vendored libraries
 
-Some tools vendor minified third-party libraries under `<id>/lib/`. Each keeps
-its upstream license; see the `lolly` monorepo's `THIRD-PARTY-NOTICES.md` for
-full attribution.
+Some tools vendor minified third-party libraries under `<id>/lib/`, and
+`qr-code/hooks.js` inlines two directly so the tool stays a single
+self-contained data file: qrcode-svg (MIT) and a selective bwip-js/BWIPP
+bundle (MIT) for the industrial symbologies. Each keeps its upstream license;
+see the `lolly` monorepo's `THIRD-PARTY-NOTICES.md` for full attribution.
 
 ## Trademarks
 

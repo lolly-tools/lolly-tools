@@ -43,8 +43,8 @@ var LOGO_STRIDE = 2;
 var CURVE_STEPS = 8;
 
 var FALLBACK_FAMILY = 'SUSE';
-var FALLBACK_COLORS = ['#30ba78', '#2453ff', '#1ab2a1'];
-var FALLBACK_BG = '#f7f8fa';
+var FALLBACK_COLORS = ['#30ba78', '#ffffff', '#00bda7'];
+var FALLBACK_BG = '#0c322c';
 
 function _num(v, d) { var n = Number(v); return Number.isFinite(n) ? n : d; }
 function _clamp(n, lo, hi) { return n < lo ? lo : (n > hi ? hi : n); }
@@ -271,13 +271,13 @@ function buildSeed(shape, contours, P, rand) {
     }
     loops = [line];
   } else if (shape === 'burst') {
-    var R = P.fitBox * 0.26;
+    var R = P.fitBox * 0.30;
     for (var b = 0; b < 3; b++) {
       var a = (b / 3) * Math.PI * 2 - Math.PI / 2;
-      loops.push(ringPoints(cx + Math.cos(a) * R, cy + Math.sin(a) * R, P.fitBox * 0.09, 48));
+      loops.push(ringPoints(cx + Math.cos(a) * R, cy + Math.sin(a) * R, P.fitBox * 0.13, 48));
     }
   } else {
-    loops = [ringPoints(cx, cy, P.fitBox * 0.16, 64)];
+    loops = [ringPoints(cx, cy, P.fitBox * 0.30, 64)];
   }
   // The node ceiling has to bind on the SEED too, not just on injected growth: a
   // traced logo or headline carries far more contour than P.spacing would ever
@@ -459,12 +459,20 @@ function loopsToPaths(loops, colors, weight, taper) {
   return out;
 }
 
-function stampGroups(stamps, inner, flipped) {
+/** Rotate the palette so each stamped copy leads with a different colour - the
+ *  stamps already duplicate the path data, so only the stroke attribute varies
+ *  and a symmetric piece weaves instead of reading as one flat repeat. */
+function _rotate(arr, i) {
+  i = i % arr.length;
+  return arr.slice(i).concat(arr.slice(0, i));
+}
+
+function stampGroups(stamps, mk, flipIndex) {
   var out = '';
   for (var i = 0; i < stamps.length; i++) {
-    var body = flipped && i === 1 ? flipped : inner;
+    var isFlip = i === flipIndex;
     out += '<g' + (stamps[i] ? ' transform="' + stamps[i] + '"' : '')
-      + (body === flipped ? ' data-flip="1"' : '') + '>' + body + '</g>';
+      + (isFlip ? ' data-flip="1"' : '') + '>' + mk(i, isFlip) + '</g>';
   }
   return out;
 }
@@ -472,7 +480,7 @@ function stampGroups(stamps, inner, flipped) {
 // ── params ──────────────────────────────────────────────────────────────────
 
 function buildParams(a) {
-  var density = _clamp(_num(a.density, 58), 20, 100);
+  var density = _clamp(_num(a.density, 46), 20, 100);
   // Repulsion radius in px - the gap the finished pattern keeps between its own
   // strands. Node spacing sits well inside it so a strand reads as a line.
   var repel = 22 - (density - 20) / 80 * 14;
@@ -602,7 +610,7 @@ async function compute(model, h) {
     _safeColor(a.color3, FALLBACK_COLORS[2]),
   ];
   var bg = _safeColor(a.background, FALLBACK_BG);
-  var weight = _clamp(_num(a.weight, 2), 0.1, 8);
+  var weight = _clamp(_num(a.weight, 3), 0.1, 8);
   var taper = a.taper === true;
   var grown = a.grown !== false;
   var sym = ['none', 'mirror', 'radial-3', 'radial-6'].indexOf(a.symmetry) >= 0 ? a.symmetry : 'none';
@@ -627,19 +635,24 @@ async function compute(model, h) {
   }
 
   var rand = mulberry32(P.seed ^ 0x9e3779b9);
-  var seedLoops = buildSeed(contours && contours.length ? shape : 'ring', contours, P, rand);
+  // Only the TRACED seeds may fall back to a ring (their contours can fail to
+  // resolve); burst/line/ring pass through - the old check collapsed every
+  // non-traced seed to a ring, so the default burst never actually ran.
+  var traced = shape === 'text' || shape === 'logo';
+  var seedLoops = buildSeed(traced && !(contours && contours.length) ? 'ring' : shape, contours, P, rand);
   var st = simState(seedLoops, P);
   if (grown) runTo(st, P, P.steps);
 
   var stamps = symmetryStamps(sym, P.w, P.h);
-  var inner = loopsToPaths(st.loops, colors, weight, taper);
-  var flipped = sym === 'mirror'
-    ? loopsToPaths(st.loops.map(function (L) { return flipX(L, P.w); }), colors, weight, taper)
+  var flippedLoops = sym === 'mirror'
+    ? st.loops.map(function (L) { return flipX(L, P.w); })
     : null;
   _memoKey = key;
   _memoResult = {
-    _paths: stampGroups(stamps, inner, flipped),
-    _state: safeJson({ seed: seedLoops, P: P, steps: P.steps, grown: grown, flip: !!flipped }),
+    _paths: stampGroups(stamps, function (i, isFlip) {
+      return loopsToPaths(isFlip ? flippedLoops : st.loops, _rotate(colors, i), weight, taper);
+    }, sym === 'mirror' ? 1 : -1),
+    _state: safeJson({ seed: seedLoops, P: P, steps: P.steps, grown: grown, flip: !!flippedLoops }),
     bgColor: bg,
     note: note,
   };

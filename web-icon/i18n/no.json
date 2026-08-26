@@ -1,6 +1,6 @@
 {
   "name": "Webikon-generator",
-  "description": "Favicon- og app-ikonskaper - en flerstørrelses .ico, pluss PNG og SVG.",
+  "description": "Favicon- og app-ikon-generator - en flerstørrelses .ico-fil, PNG og SVG, eller hele appikonpakken som én zip-fil.",
   "a11yLabel": "Webikon merket {{default text \"untitled\"}}",
   "inputs.text.label": "Etikett",
   "inputs.text.help": "Opptil ca. 4 tegn er lettest å lese i en nettleserfane. Etiketten skalerer automatisk for å fylle ikonet.",
