@@ -1,9 +1,9 @@
 {
   "id": "3d",
   "name": "3D",
-  "version": "1.2.3",
+  "version": "1.2.4",
   "engineVersion": "^1.0.0",
-  "status": "experimental",
+  "status": "official",
   "category": "designer",
   "description": "Load a 3D model into a lit scene, orbit and pose the camera, and render a still or a turntable animation.",
   "a11yLabel": "3D render of {{default model \"a model\"}} in {{default scene \"studio\"}} lighting",

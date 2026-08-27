@@ -35,7 +35,6 @@ own). Each tool is a directory of *data, not code*:
 | `frame` | Screenshot beautifier - browser/phone/laptop frames, padding, shadow and a brand backdrop |
 | `annotate` | Mark up your own screenshot on your device - arrows, boxes, numbered step pins, callouts, highlighter and a spotlight dim, with optional snap-to-text placement |
 | `filter` | Photo effects in one tool - pick an effect (halftone, scanline, posterize, voronoi as vector; duotone, pixel-stretch, imperfections as raster) |
-| `pricing-table` | Pricing and feature comparison tables - plans as columns, ticks and crosses, one plan featured |
 | `stationery` | Business cards, letterhead and compliments slips from the active brand - each piece at its real print trim (85 x 55 mm, A4, DL) |
 | `print-sheet` | Imposition - one artwork n-up on A4/Letter/A3 with crop marks; paste a Lolly tool link to fill every cell |
 | `certificate` | Completion and award certificates - brand lockup, rule border, true A4/Letter landscape page sizes, and a roster CSV to a sheet per person |
@@ -44,6 +43,10 @@ own). Each tool is a directory of *data, not code*:
 | `signature` | Signing pad - draw with a finger, stylus or mouse and get the signature on transparency as SVG or PNG, trimmed to the ink |
 | `barcode` | Linear barcodes as vector art - EAN-13, EAN-8, UPC-A and Code 128, check digit worked out, printed digits in the guard-bar gutter |
 | `icon` | Favicon and app-icon maker - a multi-size `.ico`, PNG and SVG, or the whole app kit as one zip: maskable and monochrome icons, a PWA `manifest.json` and a social card |
+| `diagram-builder` | Org charts, flowcharts, timelines and more - from cards, text, Mermaid, DOT or CSV |
+| `logo-wall` | Arrange a pile of logos into an even sponsor grid, optically balanced, each logo raster or traced to vector |
+| `wayfinding-signage` | Directional event signage at real trim sizes - heading, arrow rows and an optional event logo |
+| `calendar-ics` | A dated card or printable month grid that also exports a real `.ics` file |
 
 Tool `id`s are permanent contracts - never renamed or reused.
 

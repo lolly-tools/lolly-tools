@@ -3,7 +3,7 @@
   "name": "Certificate",
   "description": "Completion and award certificates from the active brand - one name at a time, or a whole roster from a CSV in Bulk from rows.",
   "a11yLabel": "{{default titleText \"Certificate\"}} for {{default recipientName \"a recipient\"}}",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "everyone",
@@ -19,10 +19,7 @@
         "awarddate": "2026-06-18",
         "presenter": "Maya Lindqvist",
         "presenterTitle": "Programme Director",
-        "company": "Northwind Institute",
-        "color": "#1f2933",
-        "background": "#faf8f4",
-        "accent": "#8a6a2b"
+        "company": "Northwind Institute"
       }
     },
     {
@@ -36,10 +33,7 @@
         "presenter": "Ingrid Sorensen",
         "presenterTitle": "Chair of the Jury",
         "company": "Northwind Institute",
-        "serial": "No. 2026-0413",
-        "color": "#1c2733",
-        "background": "#f7f7f4",
-        "accent": "#1f5d63"
+        "serial": "No. 2026-0413"
       }
     },
     {
@@ -52,10 +46,7 @@
         "awarddate": "2026-03-02",
         "presenter": "Jonas Weber",
         "presenterTitle": "Community Lead",
-        "company": "Riverside Library",
-        "color": "#232a24",
-        "background": "#f8f7f1",
-        "accent": "#5c6b3c"
+        "company": "Riverside Library"
       }
     },
     {
@@ -69,10 +60,7 @@
         "awarddate": "2026-07-24",
         "presenter": "Maya Lindqvist",
         "presenterTitle": "Programme Director",
-        "company": "Northwind Institute",
-        "color": "#1f2933",
-        "background": "#f6f7f9",
-        "accent": "#3f5b8c"
+        "company": "Northwind Institute"
       }
     }
   ],

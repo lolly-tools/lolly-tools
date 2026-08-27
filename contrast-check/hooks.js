@@ -375,34 +375,41 @@ function _matrix(swatches, large, metric) {
       cell.w = _r1(CELL_W - 3);
       cell.h = _r1(CELL_H - 3);
       // The chip word IS the value. WCAG keeps _pairRow's level fill + tick/cross
-      // and just swaps the level name for the ratio; APCA drops the grade entirely.
+      // and just swaps the level name for the ratio; APCA drops the grade entirely
+      // except for a red X on a fail.
+      var noIcon = false; // WCAG chips carry a tick/cross, so they reserve the slot
       if (apca) {
-        cell.chipMark = ''; // empty path: no tick/cross for APCA
         if (cell.lc == null) {
-          // No APCA on this shell: neutral pill, value unknown.
+          // No APCA on this shell: neutral pill, value unknown, no icon.
           cell.chipWord = '—';
           cell.chipFill = CHIP_NEUTRAL;
           cell.chipInk = CHIP_INK;
+          cell.chipMark = '';
+          noIcon = true;
         } else if (cell.lc < 30) {
-          // Below the usable floor: a red fail, whatever the pair's own colours.
+          // Below the usable floor: a red fail with a white X, so it never gets lost
+          // next to a dark row-tinted pill (e.g. SUSE's dark persimmon).
           cell.chipWord = 'Lc ' + Math.round(cell.lc);
           cell.chipFill = CHIP_FAIL;
           cell.chipInk = CHIP_INK;
+          cell.chipMark = CROSS;
         } else {
           // Usable: tint the pill with the ROW colour (this cell's text colour) so a
           // reader scanning a big chart can track the row; ink is black/white by best
-          // APCA contrast on that colour.
+          // APCA contrast on that colour. No icon, so the row colour reads clean.
           cell.chipWord = 'Lc ' + Math.round(cell.lc);
           cell.chipFill = row.hex;
           cell.chipInk = _bestInk(row.hex);
+          cell.chipMark = '';
+          noIcon = true;
         }
       } else {
         cell.chipWord = cell.ratioText;
       }
       // Centre the chip in the cell; its width comes from the word, so measure
       // once at x 0 and place it from that.
-      var chipW = _chipGeom(0, 0, chipH, cell.chipWord, chipFont, apca).chipW;
-      _assign(cell, _chipGeom(GRID_X + j * CELL_W + (CELL_W - chipW) / 2, cy - chipH / 2, chipH, cell.chipWord, chipFont, apca));
+      var chipW = _chipGeom(0, 0, chipH, cell.chipWord, chipFont, noIcon).chipW;
+      _assign(cell, _chipGeom(GRID_X + j * CELL_W + (CELL_W - chipW) / 2, cy - chipH / 2, chipH, cell.chipWord, chipFont, noIcon));
       cells.push(cell);
     });
   });
@@ -477,7 +484,7 @@ async function compute(model) {
     vbH: grid.vbH,
     vbR: _r1(grid.vbW - 60), // right inset for the header divider + no-tokens note
     paletteCaption: metric === 'apca'
-      ? 'Rows are the text colour, columns the background. Each cell shows its APCA Lc on a pill tinted with the row colour; red marks a pair below the usable floor (Lc 30).'
+      ? 'Rows are the text colour, columns the background. Each cell shows its APCA Lc on a pill tinted with the row colour; a red X marks a pair below the usable floor (Lc 30).'
       : 'Rows are the text colour, columns the background. Each cell shows its WCAG ratio in a pass (green), UI-only (amber) or fail (red) chip.',
     fgHex: fg,
     bgHex: bg,

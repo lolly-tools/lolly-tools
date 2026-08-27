@@ -2009,16 +2009,22 @@ function compute(model) {
     mediaHtml: mediaHtml, pathHtml: pathHtml, boxFit: boxFit, timeAttrs: timeAttrs,
     boxCls: boxCls,
   };
-  var frameGroups = frameGroupsFor(boxes, frameArrays);
+  // NULL, never undefined, when there are no frames: mergePatch SKIPS undefined
+  // keys (darkroom's videoLook cache leans on that), so an undefined here would
+  // keep the PREVIOUS run's frameGroups alive - a doc that left frames mode (the
+  // chooser swapping a framed blank canvas for the frameless Video template) kept
+  // rendering its old empty artboard forever, and nothing drawn ever painted.
+  // null is stored, and {{#if frameGroups}} reads it as absent.
+  var frameGroups = frameGroupsFor(boxes, frameArrays) || null;
   // Pasteboard only when frames exist: without a frame the single {{else}} artboard
-  // renders every box already, so it stays undefined and no loose copy is emitted.
-  var pasteboard = frameGroups ? pasteboardFor(boxes, frameArrays) : undefined;
+  // renders every box already, so it stays null and no loose copy is emitted.
+  var pasteboard = frameGroups ? pasteboardFor(boxes, frameArrays) : null;
   // Native-pptx deck model (plan 95 route-a): emitted ONLY when frames exist, so a
   // no-frames design stays byte-identical and uses export-pptx's DOM-walk fallback.
   // `deckJson` collides with no input id (inputs: background/transparentBg/connectors/
   // boxes + box fields) so the runtime routes it to extras; the template reads
   // {{{deckJson}}} into <script data-pptx-deck>, exactly like deck-studio.
-  var deckJson = frameGroups ? safeJson(deckModelFor(boxes, byId)) : undefined;
+  var deckJson = frameGroups ? safeJson(deckModelFor(boxes, byId)) : null;
   var out = {
     boxStyle: boxStyle,
     textStyle: textStyle,

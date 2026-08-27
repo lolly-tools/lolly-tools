@@ -1,3 +1,0 @@
-{{#each data.columns}}{{#unless @first}},{{/unless}}{{csvCell this}}{{/each}}
-{{#each data.rows}}{{#each this}}{{#unless @first}},{{/unless}}{{csvCell this}}{{/each}}
-{{/each}}
