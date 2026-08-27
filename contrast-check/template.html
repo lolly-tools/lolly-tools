@@ -1,10 +1,10 @@
 <div class="cx-wrap">
-  <svg class="cx-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" width="1600" height="1000" role="img" aria-label="Contrast and colour-vision check sheet">
-    <rect x="0" y="0" width="1600" height="1000" fill="#f7f7f5"/>
+  <svg class="cx-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{vbW}} {{vbH}}" width="{{vbW}}" height="{{vbH}}" style="width:100%;height:auto;display:block" role="img" aria-label="Contrast and colour-vision check sheet">
+    <rect x="0" y="0" width="{{vbW}}" height="{{vbH}}" fill="#f7f7f5"/>
     <text x="60" y="84" fill="#14171a" font-family="SUSE, system-ui, sans-serif" font-size="42" font-weight="700">Contrast Checker</text>
     <text x="60" y="118" fill="#14171a" fill-opacity="0.66" class="cx-mono" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="19">{{subtitle}}</text>
-    <line x1="60" y1="136" x2="1540" y2="136" stroke="#14171a" stroke-opacity="0.14" stroke-width="1.5"/>
-    {{#if note}}<text x="1540" y="118" text-anchor="end" fill="#14171a" fill-opacity="0.66" font-family="SUSE, system-ui, sans-serif" font-size="16">{{note}}</text>{{/if}}
+    <line x1="60" y1="136" x2="{{vbR}}" y2="136" stroke="#14171a" stroke-opacity="0.14" stroke-width="1.5"/>
+    {{#if note}}<text x="{{vbR}}" y="118" text-anchor="end" fill="#14171a" fill-opacity="0.66" font-family="SUSE, system-ui, sans-serif" font-size="16">{{note}}</text>{{/if}}
 
     {{#if error}}
     <!-- The hook failed, so there are no colours to paint. Show the reason and
@@ -14,7 +14,7 @@
     {{else}}
     {{#if isPalette}}
     <!-- Palette mode: foreground rows on background columns. -->
-    <text x="60" y="176" fill="#14171a" fill-opacity="0.7" font-family="SUSE, system-ui, sans-serif" font-size="16" font-weight="600">Rows are the text colour, columns are the background. Each cell shows its ratio and the level it reaches.</text>
+    <text x="60" y="176" fill="#14171a" fill-opacity="0.7" font-family="SUSE, system-ui, sans-serif" font-size="16" font-weight="600">{{paletteCaption}}</text>
     {{#each colHeads}}
     <rect x="{{x}}" y="192" width="18" height="18" rx="4" fill="{{hex}}" stroke="#14171a" stroke-opacity="0.2"/>
     <text x="{{textX}}" y="206" fill="#14171a" fill-opacity="0.8" font-family="SUSE, system-ui, sans-serif" font-size="11">{{name}}</text>
@@ -25,9 +25,10 @@
     {{/each}}
     {{#each cells}}
     <rect x="{{x}}" y="{{y}}" width="{{w}}" height="{{h}}" rx="6" fill="{{bg}}" stroke="#14171a" stroke-opacity="0.12"/>
-    <text x="{{cx}}" y="{{ratioY}}" text-anchor="middle" fill="{{fg}}" class="cx-mono" font-family="ui-monospace, Menlo, Consolas, monospace" font-size="{{rSize}}" font-weight="600">{{ratioText}}</text>
-    <!-- The verdict chip: a solid pass/warn/fail fill with white ink and a tick or
-         cross, so a failing cell reads as failing whatever the pair's own colours do. -->
+    <!-- The verdict chip carries the value itself, on a solid guaranteed-contrast
+         fill, so a failing (low-contrast) pair's number stays readable - which it
+         would not, drawn in the pair's own colours. WCAG: pass/warn/fail with a
+         tick/cross. APCA: neutral ink, red below the usable floor, no mark. -->
     <rect x="{{chipX}}" y="{{chipY}}" width="{{chipW}}" height="{{chipH}}" rx="{{chipR}}" fill="{{chipFill}}"/>
     <g transform="translate({{chipIconX}} {{chipIconY}}) scale({{chipS}})"><path d="{{chipMark}}" fill="none" stroke="{{chipInk}}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></g>
     <text x="{{chipTextX}}" y="{{chipTextY}}" fill="{{chipInk}}" font-family="SUSE, system-ui, sans-serif" font-size="{{chipFont}}" font-weight="700">{{chipWord}}</text>

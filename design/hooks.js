@@ -1195,22 +1195,23 @@ function startSeconds(b) {
 // them to each other by asserting the emitted attribute equals the engine's own
 // serialiseKf(parseKf(raw)) for a corpus of hostile and ordinary tracks. Change one side
 // without the other and that test fails, which is exactly what it is for.
-var KF_CHANNEL_ORDER = ['x', 'y', 'z', 's', 'r', 'rx', 'ry', 'o', 'b', 'f', 'a', 'p'];
+// 'v' is CLIP VOLUME (plans/165 WP-3) - audio automation riding the same grammar.
+var KF_CHANNEL_ORDER = ['x', 'y', 'z', 's', 'r', 'rx', 'ry', 'o', 'b', 'f', 'a', 'p', 'v'];
 // The same names LONGEST-FIRST, which is what makes 'rx-8' channel rx at −8 rather than
 // channel r followed by junk. No channel is named 'e', so an ease token can never be read
 // as a channel.
-var KF_CHANNELS_BY_LEN = ['rx', 'ry', 'a', 'b', 'f', 'o', 'p', 'r', 's', 'x', 'y', 'z'];
+var KF_CHANNELS_BY_LEN = ['rx', 'ry', 'a', 'b', 'f', 'o', 'p', 'r', 's', 'v', 'x', 'y', 'z'];
 // `z` spans ±12000 on the WIRE, which is NOT the z field's own −300…900: one kf grammar
 // carries both a box's lift and the CAMERA's dolly, and camZ is the only zoom control
 // there is. The field clamp still governs the z FIELD - see data-t-z below.
 var KF_CLAMPS = {
   x: [-100000, 100000], y: [-100000, 100000], z: [-12000, 12000], s: [0.01, 100],
   r: [-3600, 3600], rx: [-180, 180], ry: [-180, 180], o: [0, 1], b: [0, 300],
-  f: [-3000, 3000], a: [0, 1], p: [50, 12000],
+  f: [-3000, 3000], a: [0, 1], p: [50, 12000], v: [0, 2],
 };
 var KF_QUANTA = {
   x: 0.01, y: 0.01, z: 0.01, s: 0.001, r: 0.01, rx: 0.01, ry: 0.01,
-  o: 0.001, b: 0.01, f: 0.01, a: 0.001, p: 0.01,
+  o: 0.001, b: 0.01, f: 0.01, a: 0.001, p: 0.01, v: 0.001,
 };
 // The eight named curves, by their wire token: linear, ease-in, ease-out, ease-in-out,
 // overshoot, anticipate, smooth, snappy. 'eh' (hold) is an ease too but has no points.
@@ -1404,6 +1405,13 @@ function timeAttrsFor(b) {
       if (exitEase) parts.push(' data-t-exit-ease="' + exitEase + '"');
     }
     if (boolVal(b.mute, false)) parts.push(' data-t-mute="1"');
+    // Clip volume (plan 165 WP-1). Same f2-then-compare as speed above, for the same
+    // float-noise reason: an absent attribute means unity, so a document written before
+    // the field existed renders and sounds exactly as it always did.
+    var gain = f2(clamp(num(b.gain, 1), 0, 2));
+    if (gain !== 1) {
+      parts.push(' data-t-gain="' + gain + '"');
+    }
     if (b.lane === 'seq') parts.push(' data-t-lane="seq"');
   }
   // plan 104 section 5.3 / section 5.1 - depth as a clamped number (the ±300 house clamp on one side,

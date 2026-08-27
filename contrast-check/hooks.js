@@ -94,12 +94,15 @@ function cvdWcagLevel(ratio, large) {
 }
 // === /lolly:shared cvd ===
 
-// Sheet geometry (matches the template's fixed viewBox).
-var GRID_X = 250;      // palette matrix: first cell column
-var GRID_RIGHT = 1540;
-var GRID_TOP = 232;
-var GRID_BOTTOM = 952;
-var MAX_SWATCHES = 12; // an N x N matrix past this is unreadable at 1600px
+// Sheet geometry. Pair mode is a fixed 1600 x 1000; palette mode GROWS the sheet
+// with the brand's palette rather than shrinking cells to fit a fixed canvas -
+// so a rich brand gets a large reference and a small brand a compact one, and
+// the whole palette is covered with no cap.
+var GRID_X = 250;      // palette matrix: left gutter (row-header swatch + name)
+var GRID_TOP = 232;    // palette matrix: first cell row (header band sits above)
+var CELL_W = 108;      // fixed, readable cell - matches the old comfortable N=12
+var CELL_H = 60;
+var MIN_W = 980;       // keep the title/subtitle uncramped for a tiny palette
 
 // APCA band table: the smallest |Lc| each use still carries, richest first.
 // Copied from APCA_BANDS in engine/src/color-tools.ts, whose whole point is that
@@ -129,6 +132,9 @@ var CHIP_PASS = '#137333';
 var CHIP_WARN = '#b45309';
 var CHIP_FAIL = '#b3261e';
 var CHIP_INK = '#ffffff';
+// APCA has no size-free pass/fail, so its cells carry no green/amber grade: the
+// Lc sits in a neutral ink chip, red only below the 'Not usable' floor (Lc 30).
+var CHIP_NEUTRAL = '#14171a';
 
 function _chip(level) {
   if (level === 'AAA' || level === 'AA') return { chipFill: CHIP_PASS, chipInk: CHIP_INK, chipMark: TICK, chipWord: level, chipPass: true };
@@ -138,15 +144,19 @@ function _chip(level) {
 
 // Chip geometry: an 18-unit tick/cross scaled to the chip height, then the
 // word. The width is estimated from the word length (SUSE Sans, 600 weight),
-// which is what an SVG with no text measurement can do.
-function _chipGeom(x, y, h, word, font) {
+// which is what an SVG with no text measurement can do. `noIcon` drops the
+// tick/cross slot (APCA chips have no pass/fail mark) so the value centres tight.
+function _chipGeom(x, y, h, word, font, noIcon) {
   var s = (h - 6) / 18;
   var textW = word.length * font * 0.6;
-  var w = 4 + 18 * s + 5 + textW + 8;
+  var iconW = noIcon ? 0 : 18 * s;
+  var lead = noIcon ? 10 : 4;
+  var gap = noIcon ? 0 : 5;
+  var w = lead + iconW + gap + textW + (noIcon ? 10 : 8);
   return {
     chipX: _r1(x), chipY: _r1(y), chipW: _r1(w), chipH: _r1(h), chipR: _r1(h / 2), chipS: _r1(s),
     chipIconX: _r1(x + 4), chipIconY: _r1(y + 3),
-    chipTextX: _r1(x + 4 + 18 * s + 5), chipTextY: _r1(y + h / 2 + font * 0.36),
+    chipTextX: _r1(x + lead + iconW + gap), chipTextY: _r1(y + h / 2 + font * 0.36),
     chipFont: _r1(font),
     chipAfterX: _r1(x + w + 14),
   };
@@ -156,7 +166,6 @@ function _assign(target, src) {
   return target;
 }
 
-function _clamp(n, lo, hi) { return Math.min(hi, Math.max(lo, n)); }
 function _r1(n) { return Math.round(n * 10) / 10; }
 
 // Colour values arrive via URL params and land raw inside SVG attributes, so
@@ -205,6 +214,16 @@ function _apca(text, bg) {
   }
   return null; // no local APCA - the sheet just omits Lc on older shells
 }
+// Black or white ink, whichever reads better ON `bg` by APCA - used to label an
+// APCA pill tinted with the row colour. Falls back to a luminance split on a
+// shell with no APCA (host.color absent).
+function _bestInk(bg) {
+  var black = _apca('#000000', bg);
+  var white = _apca('#ffffff', bg);
+  if (black == null || white == null) return _lum(bg) > 0.36 ? '#000000' : '#ffffff';
+  return black >= white ? '#000000' : '#ffffff';
+}
+
 // The template prints this after the words "APCA: ", so the no-Lc case must not
 // repeat them.
 function _band(lc) {
@@ -307,7 +326,7 @@ async function _swatches() {
   if (!list || !list.length) return [];
   var out = [];
   var seen = {};
-  for (var i = 0; i < list.length && out.length < MAX_SWATCHES; i++) {
+  for (var i = 0; i < list.length; i++) {
     var s = list[i] || {};
     var hex = _hex(s.value, '');
     if (!hex || seen[hex]) continue;
@@ -317,33 +336,31 @@ async function _swatches() {
   return out;
 }
 
-// Foreground rows x background columns. Every cell paints the row colour on the
-// column colour and carries its own ratio and level, so a cell is readable (or
-// visibly is not) on its own terms.
-function _matrix(swatches, large) {
+// Foreground rows x background columns, on a fixed-cell grid that grows with the
+// palette. Every cell paints the row colour on the column colour, and the metric
+// VALUE sits inside the verdict chip - not drawn in the pair's own colours - so a
+// failing (and therefore low-contrast) pair stays readable, which is exactly the
+// cell you most need to read. `metric` is 'wcag' | 'apca'.
+function _matrix(swatches, large, metric) {
   var n = swatches.length;
-  var cellW = (GRID_RIGHT - GRID_X) / n;
-  var cellH = (GRID_BOTTOM - GRID_TOP) / n;
-  var rSize = _clamp(Math.min(cellW / 6, cellH / 4), 10, 26);
-  var lSize = _clamp(rSize * 0.68, 9, 17);
-  // The verdict chip under the ratio: tall enough to read, never past the
-  // cell's lower half (a 12 x 12 matrix leaves 60px per cell).
-  var chipH = _clamp(Math.round(lSize * 1.5), 14, Math.min(24, cellH / 2 - 8));
-  var nameChars = Math.max(4, Math.floor((cellW - 30) / 6.2)); // chip + gap, at 11px
+  var apca = metric === 'apca';
+  var chipH = 28;
+  var chipFont = 15;
+  var nameChars = Math.max(4, Math.floor((CELL_W - 30) / 6.2)); // col name, at 11px
 
   var cells = [];
   var rowHeads = [];
   var colHeads = [];
   swatches.forEach(function (col, j) {
     colHeads.push({
-      x: _r1(GRID_X + j * cellW + 6),
-      textX: _r1(GRID_X + j * cellW + 30),
+      x: _r1(GRID_X + j * CELL_W + 6),
+      textX: _r1(GRID_X + j * CELL_W + 30),
       hex: col.hex,
       name: _cut(col.name, nameChars),
     });
   });
   swatches.forEach(function (row, i) {
-    var cy = GRID_TOP + i * cellH + cellH / 2;
+    var cy = GRID_TOP + i * CELL_H + CELL_H / 2;
     rowHeads.push({
       y: _r1(cy - 13),
       textY: _r1(cy + 5),
@@ -353,23 +370,45 @@ function _matrix(swatches, large) {
     });
     swatches.forEach(function (col, j) {
       var cell = _pairRow(row.hex, col.hex, large);
-      cell.x = _r1(GRID_X + j * cellW);
-      cell.y = _r1(GRID_TOP + i * cellH);
-      cell.w = _r1(cellW - 3);
-      cell.h = _r1(cellH - 3);
-      cell.cx = _r1(GRID_X + j * cellW + cellW / 2);
-      cell.ratioY = _r1(cy - 3);
-      cell.levelY = _r1(cy + lSize + 6);
-      cell.rSize = _r1(rSize);
-      cell.lSize = _r1(lSize);
-      // Centre the chip under the ratio; its width comes from the word, so
-      // measure once at x 0 and place it from that.
-      var chipW = _chipGeom(0, 0, chipH, cell.chipWord, lSize).chipW;
-      _assign(cell, _chipGeom(GRID_X + j * cellW + cellW / 2 - chipW / 2, cy + 3, chipH, cell.chipWord, lSize));
+      cell.x = _r1(GRID_X + j * CELL_W);
+      cell.y = _r1(GRID_TOP + i * CELL_H);
+      cell.w = _r1(CELL_W - 3);
+      cell.h = _r1(CELL_H - 3);
+      // The chip word IS the value. WCAG keeps _pairRow's level fill + tick/cross
+      // and just swaps the level name for the ratio; APCA drops the grade entirely.
+      if (apca) {
+        cell.chipMark = ''; // empty path: no tick/cross for APCA
+        if (cell.lc == null) {
+          // No APCA on this shell: neutral pill, value unknown.
+          cell.chipWord = '—';
+          cell.chipFill = CHIP_NEUTRAL;
+          cell.chipInk = CHIP_INK;
+        } else if (cell.lc < 30) {
+          // Below the usable floor: a red fail, whatever the pair's own colours.
+          cell.chipWord = 'Lc ' + Math.round(cell.lc);
+          cell.chipFill = CHIP_FAIL;
+          cell.chipInk = CHIP_INK;
+        } else {
+          // Usable: tint the pill with the ROW colour (this cell's text colour) so a
+          // reader scanning a big chart can track the row; ink is black/white by best
+          // APCA contrast on that colour.
+          cell.chipWord = 'Lc ' + Math.round(cell.lc);
+          cell.chipFill = row.hex;
+          cell.chipInk = _bestInk(row.hex);
+        }
+      } else {
+        cell.chipWord = cell.ratioText;
+      }
+      // Centre the chip in the cell; its width comes from the word, so measure
+      // once at x 0 and place it from that.
+      var chipW = _chipGeom(0, 0, chipH, cell.chipWord, chipFont, apca).chipW;
+      _assign(cell, _chipGeom(GRID_X + j * CELL_W + (CELL_W - chipW) / 2, cy - chipH / 2, chipH, cell.chipWord, chipFont, apca));
       cells.push(cell);
     });
   });
-  return { cells: cells, rowHeads: rowHeads, colHeads: colHeads };
+  var vbW = Math.max(MIN_W, _r1(GRID_X + n * CELL_W + 40));
+  var vbH = _r1(GRID_TOP + n * CELL_H + 40);
+  return { cells: cells, rowHeads: rowHeads, colHeads: colHeads, vbW: vbW, vbH: vbH };
 }
 
 var _memoKey = null;
@@ -384,6 +423,7 @@ async function compute(model) {
   var bg = _hex(a.background, '#ffffff');
   var large = a.textSize === 'large';
   var wantPalette = a.mode === 'palette';
+  var metric = a.metric === 'apca' ? 'apca' : 'wcag';
   var sample = String(a.sample == null ? '' : a.sample).trim() || 'The quick brown fox jumps over the lazy dog.';
 
   // Read the swatches BEFORE the memo check, and key on them: the brand's tokens
@@ -391,7 +431,7 @@ async function compute(model) {
   // keep showing the old brand's colours. The read is a token lookup, and only
   // palette mode makes it, so pair-mode keystrokes still short-circuit here.
   var swatches = wantPalette ? await _swatches() : [];
-  var key = JSON.stringify([fg, bg, large, wantPalette, sample, swatches]);
+  var key = JSON.stringify([fg, bg, large, wantPalette, metric, sample, swatches]);
   if (key === _memoKey) return _memoResult;
 
   var isPalette = swatches.length > 0;
@@ -402,9 +442,10 @@ async function compute(model) {
 
   var pair = _pairRow(fg, bg, large);
   var sims = _sims(fg, bg, large);
-  var grid = isPalette ? _matrix(swatches, large) : { cells: [], rowHeads: [], colHeads: [] };
+  var grid = isPalette ? _matrix(swatches, large, metric) : { cells: [], rowHeads: [], colHeads: [], vbW: 1600, vbH: 1000 };
 
   var sizeWord = large ? 'large text' : 'normal text';
+  var metricWord = metric === 'apca' ? 'APCA Lc' : 'WCAG ratios';
   var csvSource = isPalette ? grid.cells : sims;
   var csvRows = csvSource.map(function (r) {
     return {
@@ -419,6 +460,7 @@ async function compute(model) {
 
   var report = {
     mode: isPalette ? 'palette' : 'pair',
+    metric: metric,
     textSize: large ? 'large' : 'normal',
     pair: { fg: fg, bg: bg, ratio: Number(pair.ratio.toFixed(2)), wcag: pair.ratioText, level: pair.level, apcaLc: pair.lc, apcaBand: pair.band },
     checks: _checks(pair.ratio, large).map(function (c) { return { id: c.key, need: c.need, pass: c.pass }; }),
@@ -430,6 +472,13 @@ async function compute(model) {
     isPalette: isPalette,
     note: note,
     error: '',
+    // The sheet grows with the palette (pair mode stays a fixed 1600 x 1000).
+    vbW: grid.vbW,
+    vbH: grid.vbH,
+    vbR: _r1(grid.vbW - 60), // right inset for the header divider + no-tokens note
+    paletteCaption: metric === 'apca'
+      ? 'Rows are the text colour, columns the background. Each cell shows its APCA Lc on a pill tinted with the row colour; red marks a pair below the usable floor (Lc 30).'
+      : 'Rows are the text colour, columns the background. Each cell shows its WCAG ratio in a pass (green), UI-only (amber) or fail (red) chip.',
     fgHex: fg,
     bgHex: bg,
     // Three caps, one per size in the sample panel: the panel is 840px wide, so
@@ -438,7 +487,7 @@ async function compute(model) {
     sampleMid: _cut(sample, 52),
     sample: _cut(sample, 90),
     subtitle: isPalette
-      ? swatches.length + ' brand colours, every pairing, judged at ' + sizeWord
+      ? swatches.length + ' brand colours, ' + metricWord + ', every pairing, judged at ' + sizeWord
       : fg + ' on ' + bg + ', judged at ' + sizeWord,
     ratioText: pair.ratioText,
     ratioValue: pair.ratio.toFixed(2),
@@ -465,7 +514,13 @@ async function _safe(ctx) {
   try {
     return await compute(ctx.model);
   } catch (e) {
-    return { isPalette: false, error: 'Could not check this pair: ' + (e && e.message ? e.message : 'unknown error') };
+    // The root <svg> and the background rect fill from vbW/vbH, so the error
+    // result must carry them too - an empty width/height is an invalid attribute.
+    return {
+      isPalette: false,
+      error: 'Could not check this pair: ' + (e && e.message ? e.message : 'unknown error'),
+      vbW: 1600, vbH: 1000, vbR: 1540,
+    };
   }
 }
 

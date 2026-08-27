@@ -2,7 +2,7 @@
   "id": "contrast-check",
   "name": "Contrast",
   "description": "Check a text and background pair, or every pairing in your brand palette, against WCAG 2.1 and APCA, and see how it reads to colour-blind viewers.",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "utility",
@@ -62,6 +62,27 @@
         {
           "value": "palette",
           "label": "Whole palette"
+        }
+      ]
+    },
+    {
+      "id": "metric",
+      "label": "Scale",
+      "type": "select",
+      "display": "segmented",
+      "default": "wcag",
+      "help": "WCAG 2.1 ratios with AA/AAA verdicts, or APCA Lc. APCA trades contrast against text size, so it has no size-free pass or fail - the palette just reports each Lc, flagging only pairs below the usable floor.",
+      "showIf": {
+        "mode": "palette"
+      },
+      "options": [
+        {
+          "value": "wcag",
+          "label": "WCAG"
+        },
+        {
+          "value": "apca",
+          "label": "APCA"
         }
       ]
     },
@@ -131,6 +152,7 @@
         "color": "#14171a",
         "background": "#ffffff",
         "mode": "palette",
+        "metric": "wcag",
         "textSize": "normal"
       }
     }
