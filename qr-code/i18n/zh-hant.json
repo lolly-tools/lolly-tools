@@ -1,5 +1,5 @@
 {
-  "name": "QR Code 產生器",
+  "name": "QR Code",
   "description": "產生連結、聯絡卡、Wi-Fi 網路、行事曆活動、地點或純文字用的 QR Code。",
   "a11yLabel": "連結到 {{default url \"(no URL set)\"}} 的 QR Code",
   "featured.blurb": "任何品牌色都能產生 QR Code",

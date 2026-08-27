@@ -1,5 +1,5 @@
 {
-  "name": "Compactar PDF",
+  "name": "Compactar",
   "description": "Reduza um PDF recomprimindo suas imagens - no seu dispositivo.",
   "a11yLabel": "Compactador de PDF para {{fileName}}",
   "inputs.source.label": "PDF",

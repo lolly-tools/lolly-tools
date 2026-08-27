@@ -1,5 +1,5 @@
 {
-  "name": "デッキをリブランド",
+  "name": "リブランド",
   "description": "PowerPointデッキをアップロードして色とフォントをブランドに合わせます - デバイス上で再構築、何もアップロードされません。",
   "a11yLabel": "{{fileName}} 用デッキリブランダー",
   "inputs.source.label": "PowerPointファイル",

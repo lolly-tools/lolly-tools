@@ -438,7 +438,7 @@ function ramp(host, accent, n) {
  * The length of audio the last analysis actually covered, in seconds.
  *
  * Module-level because `beforeExport` needs it and hooks share one module instance per
- * mount (the same pattern mesh-gradient uses for its palette). Seeded with the
+ * mount (the same pattern gradient uses for its palette). Seeded with the
  * placeholder length so an export that somehow precedes an analysis still gets the
  * manifest's own default.
  */

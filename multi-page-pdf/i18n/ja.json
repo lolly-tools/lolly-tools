@@ -1,5 +1,5 @@
 {
-  "name": "複数ページ PDF",
+  "name": "冊子",
   "description": "複数ページのPDFを作成 - 表紙、流し込みのコンテンツブロック、裏表紙。",
   "featured.blurb": "複数ページのPDF - 表紙、本文、裏表紙",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - 複数ページ PDF ドキュメント",

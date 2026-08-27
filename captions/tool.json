@@ -3,7 +3,7 @@
   "name": "Captions",
   "description": "Subtitles for a clip - transcribe it on device or drop in an SRT/VTT file, style the cues, and export burned-in frames plus clean .srt and .vtt sidecars.",
   "a11yLabel": "A {{default style \"bar\"}} caption over a clip, showing the cue at {{default t 0}} seconds",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "engineVersion": ">=1.150.0",
   "status": "community",
   "category": "everyone",
@@ -55,13 +55,7 @@
   "render": {
     "width": 1920,
     "height": 1080,
-    "formats": [
-      "png",
-      "svg",
-      "srt",
-      "vtt",
-      "json"
-    ],
+    "formats": ["png", "svg", "srt", "vtt", "json", "jpg", "webp"],
     "actions": [
       "copy",
       "download",

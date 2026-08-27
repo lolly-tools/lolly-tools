@@ -34,7 +34,7 @@
 /* ── Compare: the same page at two viewports in one frame ──────────────────
    Both layouts are pure CSS on the root modifier the hook sets, so single mode
    matches no rule below and renders exactly as it always did. The phone bezel is
-   a lighter cousin of screenshot-frame's: a thin dark surround, a rounded screen
+   a lighter cousin of frame's: a thin dark surround, a rounded screen
    and a notch pill, no side buttons - this tool's subject is the page, not the
    device. ── */
 

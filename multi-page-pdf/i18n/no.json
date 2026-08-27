@@ -1,5 +1,5 @@
 {
-  "name": "Flersidig PDF",
+  "name": "Hefte",
   "description": "Bygg en flersides PDF - en forside, flytende innholdsblokker og en bakside.",
   "featured.blurb": "Flersides PDF-er - forside, innhold, bakside",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - flersidig PDF-dokument",

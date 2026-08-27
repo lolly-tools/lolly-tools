@@ -1,5 +1,5 @@
 {
-  "name": "Finish Preview",
+  "name": "Afwerkingen",
   "description": "Bekijk een preview van folie, spot-UV, reliëf en soft-touch afwerkingen op je artwork - exporteer daarna de drukklare spotplaat. De glans op het scherm is alleen voor presentatie; de plaat is de echte deliverable die je drukkerij nodig heeft.",
   "a11yLabel": "Artwork met een gesimuleerde drukafwerking, of de drukklare plaat in plaatweergave",
   "inputs.image.label": "Artwork",

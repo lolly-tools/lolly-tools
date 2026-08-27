@@ -1,5 +1,5 @@
 {
-  "name": "Generator de coduri QR",
+  "name": "Cod QR",
   "description": "Coduri QR pentru un link, o carte de vizită, o rețea Wi-Fi, un eveniment de calendar, o locație sau text simplu.",
   "featured.blurb": "Coduri QR în orice culoare de brand",
   "a11yLabel": "Cod QR care trimite la {{default url \"(no URL set)\"}}",

@@ -7,7 +7,7 @@
   /* Idempotent per-paint IIFE - the template re-runs on EVERY paint (see the
      'Template script IIFE required' invariant). An epoch guard drops stale async
      callbacks from a prior paint; the previous renderer is disposed so we never
-     leak WebGL contexts (browsers cap ~16). Mirrors tools/d3/template.html. */
+     leak WebGL contexts (browsers cap ~16). Mirrors tools/chart/template.html. */
   window.__lolly3dEpoch = (window.__lolly3dEpoch || 0) + 1;
   var EP = window.__lolly3dEpoch;
   function alive() { return window.__lolly3dEpoch === EP; }
@@ -389,6 +389,17 @@
     function hemi(sky, ground, intensity) { scene.add(new THREE.HemisphereLight(sky, ground, intensity * k)); }
 
     switch (cfg.scene) {
+      case 'soft-glow':
+        // Diffused, glowing "clay" light: the neutral RoomEnvironment IBL (applied
+        // in start()) does the soft wraparound base; a bright hemisphere lifts the
+        // whole form so nothing goes to hard shadow, a gentle top-front key gives
+        // shape + a soft contact shadow, and a dim cool rim from behind-above traces
+        // a glowing edge. Low contrast on purpose - reads luminous, not studio-sharp.
+        hemi(0xffffff, 0xc3ccd6, 0.85);
+        dir(0xffffff, 1.15, 2, 6, 4, true);      // soft key, top-front
+        dir(0xffffff, 0.45, -3, 4, 3, false);    // fill, opposite side
+        dir(0xdfeaff, 0.7, -1, 5, -5, false);    // cool back-top rim → glow edge
+        break;
       case 'plain':
         hemi(0xffffff, 0x777777, 0.5); dir(0xffffff, 1.1, 3, 6, 4, true); break;
       case 'bright-studio':

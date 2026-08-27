@@ -1,5 +1,5 @@
 {
-  "name": "PDF Berbilang Halaman",
+  "name": "Buku Kecil",
   "description": "Bina PDF berbilang halaman - muka depan, blok kandungan yang mengalir, dan muka belakang.",
   "featured.blurb": "PDF berbilang halaman - muka depan, kandungan, belakang",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - dokumen PDF berbilang halaman",

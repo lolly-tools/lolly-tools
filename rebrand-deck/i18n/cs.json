@@ -1,5 +1,5 @@
 {
-  "name": "Rebrandovat prezentaci",
+  "name": "Rebranding",
   "description": "Nahraj prezentaci PowerPoint a přizpůsob její barvy a fonty své značce - přestavěno na tvém zařízení, nic se nikam nenahrává.",
   "a11yLabel": "Přeznačení prezentace pro {{fileName}}",
   "inputs.source.label": "Soubor PowerPoint",

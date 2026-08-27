@@ -1,5 +1,5 @@
 {
-  "name": "Deck Builder",
+  "name": "Deck",
   "description": "Bumuo ng slide deck gamit ang live on-canvas editor - i-edit ang text, kulay at larawan nang direkta sa bawat slide.",
   "a11yLabel": "Slide deck na may {{slideCount}} na slide",
   "inputs.size.label": "Sukat ng deck",

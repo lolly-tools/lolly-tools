@@ -1,5 +1,5 @@
 {
-  "name": "Presentasjonsbygger",
+  "name": "Presentasjon",
   "description": "Bygg en lysbildepresentasjon med en levende redigering på lerretet - rediger tekst, farger og bilder direkte på hvert lysbilde.",
   "a11yLabel": "Lysbildeserie med {{slideCount}} lysbilder",
   "inputs.size.label": "Presentasjonsstørrelse",

@@ -1,5 +1,5 @@
 {
-  "name": "Herbrand een deck",
+  "name": "Herbranden",
   "description": "Upload een PowerPoint-presentatie en pas de kleuren en fonts aan je merk aan - herbouwd op je eigen apparaat, niets wordt geüpload.",
   "a11yLabel": "Deck-rebrander voor {{fileName}}",
   "inputs.source.label": "PowerPoint-bestand",

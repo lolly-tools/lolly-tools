@@ -1,5 +1,5 @@
 {
-  "name": "Rebranduiește o prezentare",
+  "name": "Rebranding",
   "description": "Încarcă o prezentare PowerPoint și adaptează-i culorile și fonturile la brandul tău - reconstruită pe dispozitivul tău, nimic nu este încărcat.",
   "a11yLabel": "Rebrander prezentare pentru {{fileName}}",
   "inputs.source.label": "Fișier PowerPoint",

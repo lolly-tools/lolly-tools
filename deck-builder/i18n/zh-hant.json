@@ -1,5 +1,5 @@
 {
-  "name": "簡報建立工具",
+  "name": "簡報",
   "description": "以即時畫布編輯器製作投影片 - 直接在每張投影片上編輯文字、色彩與圖片。",
   "a11yLabel": "含 {{slideCount}} 張投影片的簡報",
   "inputs.size.label": "簡報大小",

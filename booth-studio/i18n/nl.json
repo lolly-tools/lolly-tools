@@ -1,5 +1,5 @@
 {
-  "name": "Standstudio",
+  "name": "Stand",
   "description": "Richt een 3D-eventstand in met sponsorartwork. Klik op een paneel om er een afbeelding op te zetten, kies een standontwerp en render een still of een turntable voor een sponsorpitch.",
   "a11yLabel": "3D-mockup van {{default design \"an inline\"}} eventstand aangekleed met sponsorartwork",
   "inputs.design.label": "Standontwerp",

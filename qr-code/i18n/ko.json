@@ -1,5 +1,5 @@
 {
-  "name": "QR 코드 생성기",
+  "name": "QR 코드",
   "description": "링크, 연락처 카드, Wi-Fi 네트워크, 캘린더 일정, 위치, 일반 텍스트까지 QR 코드로 만들어요.",
   "featured.blurb": "브랜드 색상 그대로 만드는 QR 코드",
   "a11yLabel": "{{default url \"(설정된 URL 없음)\"}}(으)로 연결되는 QR 코드",

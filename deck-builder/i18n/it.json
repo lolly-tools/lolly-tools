@@ -1,5 +1,5 @@
 {
-  "name": "Creatore di deck",
+  "name": "Deck",
   "description": "Crea una presentazione con un editor live sul canvas - modifica testo, colori e immagini direttamente su ogni slide.",
   "a11yLabel": "Presentazione con {{slideCount}} diapositive",
   "inputs.size.label": "Dimensione del deck",

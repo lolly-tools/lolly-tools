@@ -1,29 +1,140 @@
 {
   "id": "jump",
-  "name": "Jump Page",
-  "description": "A one-link landing page: up to ten links with a heading and your colours, and the whole page lives inside the link you share.",
+  "name": "Jump",
+  "description": "A one-link landing page: your links, heading, portrait and colours on an expressive page - and the whole page lives inside the link you share.",
   "a11yLabel": "Jump page {{default heading \"Links\"}} holding {{default linkCount \"no\"}} links",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "engineVersion": "^1.82.0",
   "status": "community",
   "category": "utility",
-  "tags": ["links", "landing", "linktree", "bio", "jump", "marketing", "share"],
+  "tags": [
+    "links",
+    "landing",
+    "linktree",
+    "bio",
+    "jump",
+    "marketing",
+    "share"
+  ],
   "examples": [
     {
-      "label": "Studio front door",
+      "label": "Aurora front door",
       "values": {
         "heading": "Northwind Studio",
         "subheading": "Everything we make, one link.",
-        "style": "buttons",
+        "style": "aurora",
         "accent": "#2563eb",
-        "background": "#f6f8fc",
-        "color": "#16202b",
-        "links": [
-          { "label": "Portfolio", "url": "https://example.com/work" },
-          { "label": "Book a session", "url": "https://example.com/book" },
-          { "label": "Newsletter", "url": "https://example.com/news" },
-          { "label": "Contact", "url": "https://example.com/hello" }
-        ]
+        "background": "#0b1020",
+        "color": "#eef2ff",
+        "links": {
+          "columns": [
+            "URL",
+            "Name",
+            "Emoji"
+          ],
+          "rows": [
+            [
+              "https://example.com/work",
+              "Portfolio",
+              ""
+            ],
+            [
+              "https://example.com/book",
+              "Book a session",
+              ""
+            ],
+            [
+              "https://example.com/news",
+              "Newsletter",
+              ""
+            ],
+            [
+              "https://example.com/hello",
+              "Contact",
+              ""
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "label": "Front page",
+      "values": {
+        "heading": "Ana Kovac",
+        "subheading": "Writing, photography and the occasional talk.",
+        "style": "editorial",
+        "accent": "#b91c1c",
+        "background": "#faf7f2",
+        "color": "#1c1917",
+        "links": {
+          "columns": [
+            "URL",
+            "Name",
+            "Emoji"
+          ],
+          "rows": [
+            [
+              "https://example.com/essays",
+              "Writing",
+              ""
+            ],
+            [
+              "https://example.com/photos",
+              "Photography",
+              ""
+            ],
+            [
+              "https://example.com/talks",
+              "Talks",
+              ""
+            ],
+            [
+              "https://example.com/now",
+              "Now",
+              ""
+            ]
+          ]
+        }
+      }
+    },
+    {
+      "label": "Playroom",
+      "values": {
+        "heading": "Pick a door",
+        "subheading": "",
+        "style": "orbit",
+        "accent": "#7c3aed",
+        "background": "#faf9fd",
+        "color": "#1c1730",
+        "links": {
+          "columns": [
+            "URL",
+            "Name",
+            "Emoji"
+          ],
+          "rows": [
+            [
+              "https://example.com/game",
+              "Play",
+              "🎮"
+            ],
+            [
+              "https://example.com/music",
+              "Listen",
+              "🎧"
+            ],
+            [
+              "https://example.com/shop",
+              "Shop",
+              "🛍️"
+            ],
+            [
+              "https://example.com/chat",
+              "Chat",
+              "💬"
+            ]
+          ]
+        }
       }
     },
     {
@@ -35,27 +146,30 @@
         "accent": "#0d7a5f",
         "background": "#f5f7f4",
         "color": "#132019",
-        "links": [
-          { "label": "Slides (PDF)", "url": "https://example.com/talk/slides" },
-          { "label": "The paper", "url": "https://example.com/talk/paper" },
-          { "label": "Live demo", "url": "https://example.com/talk/demo" }
-        ]
-      }
-    },
-    {
-      "label": "Quiet list",
-      "values": {
-        "heading": "Ana Kovac",
-        "subheading": "",
-        "style": "minimal",
-        "accent": "#7c3aed",
-        "background": "#faf9fd",
-        "color": "#1c1730",
-        "links": [
-          { "label": "Writing", "url": "https://example.com/essays" },
-          { "label": "Photography", "url": "https://example.com/photos" },
-          { "label": "Now", "url": "https://example.com/now" }
-        ]
+        "links": {
+          "columns": [
+            "URL",
+            "Name",
+            "Emoji"
+          ],
+          "rows": [
+            [
+              "https://example.com/talk/slides",
+              "Slides (PDF)",
+              ""
+            ],
+            [
+              "https://example.com/talk/paper",
+              "The paper",
+              ""
+            ],
+            [
+              "https://example.com/talk/demo",
+              "Live demo",
+              ""
+            ]
+          ]
+        }
       }
     },
     {
@@ -67,49 +181,189 @@
         "accent": "#2563eb",
         "background": "#f6f8fc",
         "color": "#16202b",
-        "links": [
-          { "label": "Destination", "url": "https://example.com/live" }
-        ]
+        "links": {
+          "columns": [
+            "URL",
+            "Name",
+            "Emoji"
+          ],
+          "rows": [
+            [
+              "https://example.com/live",
+              "Destination",
+              ""
+            ]
+          ]
+        }
       }
     }
   ],
   "render": {
     "width": 900,
     "height": 1400,
-    "formats": ["html"],
-    "export": false
+    "formats": [
+      "html"
+    ],
+    "export": false,
+    "webPreview": true
   },
   "inputs": [
+    {
+      "id": "style",
+      "label": "Style",
+      "type": "select",
+      "urlKey": "st",
+      "section": "Style",
+      "default": "cinema",
+      "help": "\"Scroll cinema\" opens full-height with one scene per link. \"Aurora glass\", \"Front page\", \"Cover story\" and \"Playroom\" are expressive landing pages built from your brand colours and type; Buttons, Cards and Minimal are plain lists.",
+      "options": [
+        {
+          "value": "cinema",
+          "label": "Scroll cinema"
+        },
+        {
+          "value": "aurora",
+          "label": "Aurora glass"
+        },
+        {
+          "value": "editorial",
+          "label": "Front page"
+        },
+        {
+          "value": "mural",
+          "label": "Cover story"
+        },
+        {
+          "value": "orbit",
+          "label": "Playroom"
+        },
+        {
+          "value": "buttons",
+          "label": "Buttons"
+        },
+        {
+          "value": "cards",
+          "label": "Cards"
+        },
+        {
+          "value": "minimal",
+          "label": "Minimal"
+        }
+      ]
+    },
+    {
+      "id": "mood",
+      "label": "Mood",
+      "type": "select",
+      "urlKey": "m",
+      "section": "Style",
+      "default": "calm",
+      "help": "How far the page moves: one dial, turning whatever its style animates. Aurora glass: the speed the light field flows. Scroll cinema: how far each scene travels as it arrives. Playroom: how buoyant the bubbles float and how hard they bounce in. Front page and Cover story: how much travel the type and the picture reveal take. It changes nothing for the plain lists, and nothing for a visitor who asks for reduced motion.",
+      "options": [
+        {
+          "value": "calm",
+          "label": "Calm"
+        },
+        {
+          "value": "bold",
+          "label": "Bold"
+        },
+        {
+          "value": "electric",
+          "label": "Electric"
+        }
+      ]
+    },
+    {
+      "id": "color",
+      "label": "Text",
+      "type": "color",
+      "urlKey": "ink",
+      "section": "Style",
+      "default": "{color.semantic.text}",
+      "help": "The page reads in both colour schemes: whichever pair of text and background you set, the other one is derived from it, and a visitor sees the one their device asks for."
+    },
+    {
+      "id": "background",
+      "label": "Background",
+      "type": "color",
+      "urlKey": "pp",
+      "section": "Style",
+      "default": "{color.semantic.surface}"
+    },
+    {
+      "id": "accent",
+      "label": "Accent",
+      "type": "color",
+      "urlKey": "ac",
+      "section": "Style",
+      "default": "{color.semantic.primary}",
+      "help": "Colours the buttons, the glass glow and the link marks."
+    },
+    {
+      "id": "footer",
+      "label": "Show the Lolly line",
+      "type": "boolean",
+      "urlKey": "ft",
+      "section": "Style",
+      "default": true,
+      "help": "A visible \"Made with Lolly\" line closing the animated styles. Nothing is embedded in the link either way - turning it off simply removes the line."
+    },
+    {
+      "id": "links",
+      "label": "Links",
+      "type": "table",
+      "urlKey": "l",
+      "columnEditors": [
+        "url",
+        "text",
+        "emoji"
+      ],
+      "help": "Up to ten, one row per link. The address goes first; the name is optional, and a blank one shows the site's own name. Tap a cell in the Emoji column to pick a glyph. Everything starts empty on purpose: only what you type travels, so a page built from the CLI or a hand-typed link never carries sample content. Share with the Share button - the whole page lives inside the link, offline, nothing on a server.",
+      "default": {
+        "columns": [
+          "URL",
+          "Name",
+          "Emoji"
+        ],
+        "rows": []
+      }
+    },
     {
       "id": "heading",
       "label": "Heading",
       "type": "text",
-      "default": "Find us everywhere",
-      "maxLength": 60
+      "urlKey": "t",
+      "default": "",
+      "maxLength": 60,
+      "placeholder": "Find us everywhere"
     },
     {
       "id": "subheading",
       "label": "Sub-heading",
       "type": "text",
-      "default": "One link for all of it.",
-      "maxLength": 120
+      "urlKey": "sub",
+      "default": "",
+      "maxLength": 120,
+      "placeholder": "One link for all of it."
     },
     {
-      "id": "links",
-      "label": "Links",
-      "type": "blocks",
-      "urlKey": "l",
-      "help": "Up to ten. A label is optional - an empty one shows the site's own name. Share the page with the Share button: the whole page travels inside the link, so it works on any Lolly, offline, with nothing stored on a server. Add a password in the Share dialog and the page only opens for someone who knows it.",
-      "fields": [
-        { "id": "label", "label": "Label", "type": "text", "default": "" },
-        { "id": "url", "label": "Address", "type": "text", "default": "" },
-        { "id": "icon", "label": "Glyph", "type": "text", "default": "", "placeholder": "★" }
-      ],
-      "default": [
-        { "label": "Website", "url": "https://example.com" },
-        { "label": "Newsletter", "url": "https://example.com/news" },
-        { "label": "Say hello", "url": "https://example.com/contact" }
-      ]
+      "id": "avatar",
+      "label": "Portrait",
+      "type": "asset",
+      "assetType": "image",
+      "allowUpload": true,
+      "urlKey": "av",
+      "help": "A face or logo above the heading. A catalog or brand asset travels as a tiny reference, so the share link stays short; an uploaded picture only opens on this device unless the link is packed."
+    },
+    {
+      "id": "backdrop",
+      "label": "Backdrop",
+      "type": "asset",
+      "assetType": "image",
+      "allowUpload": true,
+      "urlKey": "bg",
+      "help": "A full-bleed picture behind the page. The Cover story style builds its whole opening from it; Aurora dims it under the glass. Catalog and brand assets keep the share link tiny."
     },
     {
       "id": "onVisit",
@@ -119,61 +373,19 @@
       "default": "page",
       "help": "\"Forward\" turns the page into a redirect to the first link - a URL forwarder. Add a password in the Share dialog for a password-gated forwarder. \"Forward after a human check\" adds a press-and-hold step first, so a casual bot following the link does not sail straight through. The check is a speed bump, not proof: whoever holds a link without a password can still read where it points.",
       "options": [
-        { "value": "page", "label": "Show the links page" },
-        { "value": "forward", "label": "Forward to the first link" },
-        { "value": "gate", "label": "Forward after a human check" }
+        {
+          "value": "page",
+          "label": "Show the links page"
+        },
+        {
+          "value": "forward",
+          "label": "Forward to the first link"
+        },
+        {
+          "value": "gate",
+          "label": "Forward after a human check"
+        }
       ]
-    },
-    {
-      "id": "style",
-      "label": "Style",
-      "type": "select",
-      "default": "cinema",
-      "help": "\"Scroll cinema\" gives the shared page a full-height opening and one scene per link, animated as you scroll. The other three are a plain list.",
-      "options": [
-        { "value": "cinema", "label": "Scroll cinema" },
-        { "value": "buttons", "label": "Buttons" },
-        { "value": "cards", "label": "Cards" },
-        { "value": "minimal", "label": "Minimal" }
-      ]
-    },
-    {
-      "id": "mood",
-      "label": "Mood",
-      "type": "select",
-      "default": "calm",
-      "help": "How far the scroll cinema moves. One dial over every animation - it changes nothing for the other styles, and nothing for a visitor who asks for reduced motion.",
-      "options": [
-        { "value": "calm", "label": "Calm" },
-        { "value": "bold", "label": "Bold" },
-        { "value": "electric", "label": "Electric" }
-      ]
-    },
-    {
-      "id": "color",
-      "label": "Text",
-      "type": "color",
-      "default": "{color.semantic.text}"
-    },
-    {
-      "id": "background",
-      "label": "Background",
-      "type": "color",
-      "default": "{color.semantic.surface}"
-    },
-    {
-      "id": "accent",
-      "label": "Accent",
-      "type": "color",
-      "default": "{color.semantic.primary}",
-      "help": "Colours the buttons and the link marks."
-    },
-    {
-      "id": "footer",
-      "label": "Show the Lolly line",
-      "type": "boolean",
-      "default": true,
-      "help": "A visible \"Made with Lolly\" line closing the scroll cinema. Nothing is embedded in the link either way - turning it off simply removes the line."
     }
   ],
   "hooks": {

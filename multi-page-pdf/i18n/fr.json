@@ -1,5 +1,5 @@
 {
-  "name": "PDF multi-pages",
+  "name": "Livret",
   "description": "Construisez un PDF multi-pages - une couverture, des blocs de contenu qui s'écoulent, et une quatrième de couverture.",
   "featured.blurb": "PDF multi-pages - couverture, contenu, dos",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - document PDF multi-pages",

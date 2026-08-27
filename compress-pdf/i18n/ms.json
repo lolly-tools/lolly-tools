@@ -1,5 +1,5 @@
 {
-  "name": "Mampatkan PDF",
+  "name": "Mampat",
   "description": "Kecilkan PDF dengan memampatkan semula imejnya - pada peranti anda.",
   "a11yLabel": "Pemampat PDF untuk {{fileName}}",
   "inputs.source.label": "PDF",

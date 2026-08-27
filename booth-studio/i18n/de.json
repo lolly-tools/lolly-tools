@@ -1,5 +1,5 @@
 {
-  "name": "Stand-Studio",
+  "name": "Stand",
   "description": "Gestalten Sie einen 3D-Messestand mit Sponsor-Grafiken. Klicken Sie auf ein beliebiges Panel, um ein Bild darauf abzulegen, wählen Sie ein Standdesign, und rendern Sie ein Standbild oder eine Turntable-Ansicht für einen Sponsoring-Pitch.",
   "a11yLabel": "3D-Mockup eines {{default design \"an inline\"}} Messestands mit Sponsoren-Artwork",
   "inputs.design.label": "Standdesign",

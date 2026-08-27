@@ -3,7 +3,7 @@
   "name": "Doc Studio",
   "description": "Write a multi-page document on the canvas - rich text, headings, tables and inserted Lolly renders that flow onto pages and export as a PDF.",
   "a11yLabel": "{{default docTitle \"Untitled\"}} - multi-page document",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -25,14 +25,7 @@
   "render": {
     "width": 794,
     "height": 1123,
-    "formats": [
-      "pdf",
-      "pptx",
-      "svg",
-      "md",
-      "docx",
-      "odt"
-    ],
+    "formats": ["pdf", "pptx", "svg", "md", "docx", "odt", "html"],
     "actions": [
       "download",
       "save"

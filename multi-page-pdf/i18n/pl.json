@@ -1,5 +1,5 @@
 {
-  "name": "Wielostronicowy PDF",
+  "name": "Broszura",
   "description": "Zbuduj wielostronicowy PDF - okładkę, płynące bloki treści i tylną stronę.",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - dokument PDF wielostronicowy",
   "featured.blurb": "Wielostronicowe PDF-y - okładka, treść, tył",

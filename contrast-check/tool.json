@@ -1,8 +1,8 @@
 {
   "id": "contrast-check",
-  "name": "Contrast Checker",
+  "name": "Contrast",
   "description": "Check a text and background pair, or every pairing in your brand palette, against WCAG 2.1 and APCA, and see how it reads to colour-blind viewers.",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "utility",
@@ -17,13 +17,7 @@
   "render": {
     "width": 1600,
     "height": 1000,
-    "formats": [
-      "svg",
-      "png",
-      "pdf",
-      "csv",
-      "json"
-    ],
+    "formats": ["svg", "png", "pdf", "csv", "json", "jpg", "webp", "avif"],
     "actions": [
       "copy",
       "download",

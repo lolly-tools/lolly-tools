@@ -1,5 +1,5 @@
 {
-  "name": "Constructor prezentări",
+  "name": "Prezentare",
   "description": "Construiește o prezentare cu un editor live pe canvas - editează text, culori și imagini direct pe fiecare diapozitiv.",
   "a11yLabel": "Prezentare cu {{slideCount}} slide-uri",
   "inputs.size.label": "Dimensiune prezentare",

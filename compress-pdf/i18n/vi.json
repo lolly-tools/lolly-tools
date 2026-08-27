@@ -1,5 +1,5 @@
 {
-  "name": "Nén PDF",
+  "name": "Nén",
   "description": "Thu nhỏ PDF bằng cách nén lại hình ảnh trong đó - ngay trên thiết bị của bạn.",
   "a11yLabel": "Công cụ nén PDF cho {{fileName}}",
   "inputs.source.label": "PDF",

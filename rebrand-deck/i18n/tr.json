@@ -1,5 +1,5 @@
 {
-  "name": "Sunumu Yeniden Markala",
+  "name": "Yeniden Markalama",
   "description": "Bir PowerPoint destesi yükleyin ve renklerini ile yazı tiplerini markanıza uydurun - cihazınızda yeniden oluşturulur, hiçbir şey yüklenmez.",
   "a11yLabel": "{{fileName}} için sunum yeniden markalayıcısı",
   "inputs.source.label": "PowerPoint dosyası",

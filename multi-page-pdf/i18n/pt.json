@@ -1,5 +1,5 @@
 {
-  "name": "PDF de várias páginas",
+  "name": "Livreto",
   "description": "Monte um PDF multipágina - uma capa, blocos de conteúdo fluido e uma contracapa.",
   "a11yLabel": "{{default coverTitle \"Sem título\"}} - documento PDF de várias páginas",
   "featured.blurb": "PDFs multipágina - capa, conteúdo, contracapa",

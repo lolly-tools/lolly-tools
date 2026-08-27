@@ -1,5 +1,5 @@
 {
-  "name": "Comprimă PDF",
+  "name": "Comprimă",
   "description": "Micșorează un PDF recomprimându-i imaginile - pe dispozitivul tău.",
   "a11yLabel": "Compresor PDF pentru {{fileName}}",
   "inputs.source.help": "Un fișier PDF. Este citit în browser și nu îți lasă niciodată dispozitivul.",

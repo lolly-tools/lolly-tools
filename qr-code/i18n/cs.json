@@ -1,5 +1,5 @@
 {
-  "name": "Generátor QR kódů",
+  "name": "QR kód",
   "description": "QR kódy pro odkaz, kontaktní kartu, síť Wi-Fi, událost v kalendáři, polohu nebo prostý text.",
   "a11yLabel": "QR kód odkazující na {{default url \"(žádná adresa URL)\"}}",
   "featured.blurb": "QR kódy v libovolné barvě značky",

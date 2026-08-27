@@ -1,7 +1,7 @@
 {
   "id": "3d",
   "name": "3D",
-  "version": "1.1.0",
+  "version": "1.2.3",
   "engineVersion": "^1.0.0",
   "status": "experimental",
   "category": "designer",
@@ -11,7 +11,7 @@
   "render": {
     "width": 1280,
     "height": 1280,
-    "formats": ["png", "jpg", "webp", "webm", "mp4", "gif"],
+    "formats": ["png", "jpg", "webp", "webm", "mp4", "gif", "avif", "tiff", "apng", "webp-anim"],
     "actions": ["copy", "download", "save"],
     "convertPaths": false,
     "video": { "wait": 2, "duration": 5 }
@@ -26,9 +26,12 @@
       "label": "Model",
       "section": "Model",
       "type": "select",
-      "default": "sample-1",
+      "default": "geeko",
       "help": "A bundled sample model. Upload your own below to override.",
       "options": [
+        { "value": "geeko", "label": "Geeko" },
+        { "value": "geeko-branch", "label": "Geeko on a branch" },
+        { "value": "geeko-sitting", "label": "Geeko sitting" },
         { "value": "sample-1", "label": "Sample 1 - animated" },
         { "value": "sample-2", "label": "Sample 2" },
         { "value": "sample-3", "label": "Sample 3" }
@@ -49,9 +52,10 @@
       "label": "Scene",
       "section": "Scene",
       "type": "select",
-      "default": "natural",
+      "default": "soft-glow",
       "help": "A lighting + environment preset.",
       "options": [
+        { "value": "soft-glow", "label": "Soft glow" },
         { "value": "plain", "label": "Plain" },
         { "value": "natural", "label": "Natural" },
         { "value": "bright-studio", "label": "Bright studio" },

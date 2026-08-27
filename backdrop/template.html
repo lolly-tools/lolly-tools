@@ -1,0 +1,187 @@
+<div class="bd-wrap">
+  {{{svgContent}}}
+</div>
+<script>
+  (function () {
+    'use strict';
+    /* Backdrop canvas script.
+       Mounts one vendored Paper Shaders fragment (lib/paper-shaders.min.js,
+       Apache-2.0) into the hook-emitted .bd-host and drives it three ways:
+       - LIVE: the mount's own rAF at the effect's designed pace x the speed
+         knob (0 under reduced motion - a video export still animates).
+       - STILL: the canvas always sits on the `phase` scrub position, so what
+         you see is exactly what a still export captures.
+       - VIDEO: the shell's deterministic frame clock (__lollyFrameRender)
+         pauses the mount and drives setFrame() per captured frame, so clips
+         are frame-exact at any fps. Clips are NOT seamless loops (upstream
+         time is open-ended, plans/164) - the export bar length picks the cut.
+       Every effect's `intensity`/`density` map onto its own most expressive
+       uniforms, curated so 50 reproduces the shader author's designed look.
+       No WebGL2 -> the host's CSS-gradient wash stays visible. */
+    var cs = document.currentScript;
+    var wrap = cs && cs.previousElementSibling && cs.previousElementSibling.classList
+      && cs.previousElementSibling.classList.contains('bd-wrap')
+      ? cs.previousElementSibling
+      : null;
+    if (!wrap) {
+      var wraps = document.querySelectorAll('.bd-wrap');
+      wrap = wraps[wraps.length - 1];
+    }
+    if (!wrap) return;
+    var host = wrap.querySelector('.bd-host');
+    if (!host || host.dataset.bdWired) return;
+    host.dataset.bdWired = '1';
+    var cfg;
+    try { cfg = JSON.parse(host.getAttribute('data-bd') || '{}'); } catch (e) { return; }
+    if (!cfg || !cfg.effect) return;
+    var canvasRoot = wrap.closest('[data-lolly-canvas]');
+    var store = canvasRoot || wrap;
+
+    var calm = false;
+    try {
+      calm = (typeof matchMedia === 'function' && matchMedia('(prefers-reduced-motion: reduce)').matches)
+        || document.documentElement.getAttribute('data-a11y-motion') === 'reduce';
+    } catch (e) { /* jsdom */ }
+
+    /* ── per-effect curation ─────────────────────────────────────────────────
+       I/D are the intensity/density knobs in 0..1; each map is tuned so 0.5
+       lands on the upstream defaultPreset. speed/scale carry each effect's
+       designed multipliers the same way. Enum uniforms use the upstream
+       numeric values (WarpPatterns.checks=0, DitheringShapes.sphere=7,
+       DitheringTypes['4x4']=3, DotGridShapes.circle=0,
+       PulsingBorderAspectRatios.auto=0). */
+    var EFFECTS = {
+      'metaballs': { frag: 'metaballsFragmentShader', fit: 'object', speed: 1, scale: 1, noise: true,
+        u: function (I, D, C) { return { u_colorBack: C.back, u_colors: C.arr, u_colorsCount: C.arr.length, u_size: 0.3 + I * 0.6, u_count: Math.round(3 + D * 17) }; } },
+      'smoke-ring': { frag: 'smokeRingFragmentShader', fit: 'object', speed: 0.5, scale: 0.8, noise: true,
+        u: function (I, D, C) { return { u_colorBack: C.back, u_colors: C.arr, u_colorsCount: C.arr.length, u_thickness: 0.2 + I * 0.9, u_noiseScale: 1 + D * 4, u_noiseIterations: 8, u_radius: 0.25, u_innerShape: 0.7 }; } },
+      'voronoi': { frag: 'voronoiFragmentShader', fit: 'pattern', speed: 0.5, scale: 0.5, noise: true,
+        u: function (I, D, C) { return { u_colors: C.arr, u_colorsCount: C.arr.length, u_colorGap: C.back, u_colorGlow: C.arr[0], u_distortion: I * 0.8, u_gap: 0.01 + D * 0.06, u_glow: 0, u_stepsPerColor: 3 }; } },
+      'neuro-noise': { frag: 'neuroNoiseFragmentShader', fit: 'pattern', speed: 1, scale: 1,
+        u: function (I, D, C) { return { u_colorFront: C.arr[0], u_colorMid: C.arr[1] || C.arr[0], u_colorBack: C.back, u_contrast: I * 0.6, u_brightness: D * 0.12 }; } },
+      'perlin-noise': { frag: 'perlinNoiseFragmentShader', fit: 'pattern', speed: 0.5, scale: 1,
+        u: function (I, D, C) { return { u_colorFront: C.arr[0], u_colorBack: C.back, u_proportion: 0.15 + I * 0.4, u_softness: D * 0.6, u_octaveCount: 2, u_persistence: 1, u_lacunarity: 1.5 }; } },
+      'dithering': { frag: 'ditheringFragmentShader', fit: 'pattern', speed: 1, scale: 0.6,
+        u: function (I, D, C) { return { u_colorFront: C.arr[0], u_colorBack: C.back, u_pxSize: 2 * Math.pow(4, I - 0.5), u_shape: 7, u_type: 3 }; } },
+      'warp': { frag: 'warpFragmentShader', fit: 'pattern', speed: 1, scale: 1, noise: true,
+        u: function (I, D, C) { return { u_colors: C.arr, u_colorsCount: C.arr.length, u_distortion: I * 0.6, u_swirl: D * 1.6, u_swirlIterations: 10, u_proportion: 0.45, u_softness: 1, u_shape: 0, u_shapeScale: 0.1 }; } },
+      'spiral': { frag: 'spiralFragmentShader', fit: 'pattern', speed: 1, scale: 1,
+        u: function (I, D, C) { return { u_colorFront: C.arr[0], u_colorBack: C.back, u_density: 0.3 + I * 1.4, u_strokeWidth: 0.2 + D * 0.6, u_distortion: 0, u_strokeTaper: 0, u_strokeCap: 0, u_noise: 0, u_noiseFrequency: 0, u_softness: 0 }; } },
+      'swirl': { frag: 'swirlFragmentShader', fit: 'object', speed: 0.32, scale: 1,
+        u: function (I, D, C) { return { u_colors: C.arr, u_colorsCount: C.arr.length, u_colorBack: C.back, u_twist: 0.05 + I * 0.4, u_bandCount: Math.round(2 + D * 8), u_center: 0.2, u_proportion: 0.5, u_softness: 0, u_noise: 0.2, u_noiseFrequency: 0.4 }; } },
+      'waves': { frag: 'wavesFragmentShader', fit: 'pattern', speed: 0, scale: 0.6,
+        u: function (I, D, C) { return { u_colorFront: C.arr[0], u_colorBack: C.back, u_amplitude: I, u_frequency: 0.5 * Math.pow(4, D - 0.5), u_spacing: 1.2, u_proportion: 0.1, u_softness: 0, u_shape: 0 }; } },
+      'dot-orbit': { frag: 'dotOrbitFragmentShader', fit: 'pattern', speed: 1.5, scale: 1, noise: true,
+        u: function (I, D, C) { return { u_colorBack: C.back, u_colors: C.arr, u_colorsCount: C.arr.length, u_spreading: I * 2, u_size: 0.4 + D * 1.2, u_sizeRange: 0, u_stepsPerColor: 4 }; } },
+      'dot-grid': { frag: 'dotGridFragmentShader', fit: 'pattern', speed: 0, scale: 1,
+        u: function (I, D, C) {
+          var gap = 32 * Math.pow(3, 0.5 - D);
+          return { u_colorBack: C.back, u_colorFill: C.arr[0], u_colorStroke: C.arr[1] || C.arr[0], u_dotSize: 2 * Math.pow(3, I - 0.5), u_gapX: gap, u_gapY: gap, u_strokeWidth: 0, u_sizeRange: 0, u_opacityRange: 0, u_shape: 0 };
+        } },
+      'god-rays': { frag: 'godRaysFragmentShader', fit: 'object', speed: 0.75, scale: 1, noise: true, offsetY: -0.55,
+        u: function (I, D, C) { return { u_colorBack: C.back, u_colorBloom: C.arr[0], u_colors: C.arr, u_colorsCount: C.arr.length, u_intensity: I * 1.6, u_density: D * 0.7, u_spotty: 0.3, u_midIntensity: 0.4, u_midSize: 0.2, u_bloom: 0.4 }; } },
+      'color-panels': { frag: 'colorPanelsFragmentShader', fit: 'object', speed: 0.5, scale: 0.8,
+        u: function (I, D, C) { return { u_colors: C.arr, u_colorsCount: C.arr.length, u_colorBack: C.back, u_length: 0.5 + I * 1.2, u_density: 1 + D * 4, u_angle1: 0, u_angle2: 0, u_edges: 0, u_blur: 0, u_fadeIn: 1, u_fadeOut: 0.3, u_gradient: 0 }; } },
+      'pulsing-border': { frag: 'pulsingBorderFragmentShader', fit: 'object', speed: 1, scale: 0.6, noise: true,
+        u: function (I, D, C) { return { u_colors: C.arr, u_colorsCount: C.arr.length, u_colorBack: C.back, u_intensity: I * 0.5, u_spots: Math.round(2 + D * 8), u_thickness: 0.1, u_roundness: 0.25, u_softness: 0.75, u_bloom: 0.25, u_pulse: 0.25, u_smoke: 0.3, u_smokeSize: 0.6, u_aspectRatio: 0, u_marginLeft: 0, u_marginRight: 0, u_marginTop: 0, u_marginBottom: 0 }; } },
+    };
+    /* Playback is anchored on a nominal 10 s scrub span: `phase` picks a
+       moment inside it, and the export clock advances from there. */
+    var PHASE_SPAN_MS = 10000;
+
+    function init() {
+      var PS = window.PaperShaders;
+      var spec = PS && EFFECTS[cfg.effect];
+      if (!spec || !PS.ShaderMount) return; // fallback wash stays
+      var prev = store.__bdMount;
+      if (prev) { try { prev.dispose(); } catch (e) { /* replaced DOM */ } store.__bdMount = null; }
+
+      var C = {
+        arr: cfg.colors.map(PS.getShaderColorFromString),
+        back: PS.getShaderColorFromString(cfg.background),
+      };
+      var I = cfg.intensity / 100, D = cfg.density / 100;
+      var uniforms = spec.u(I, D, C);
+      if (spec.noise) {
+        /* ShaderMount refuses an undecoded image, and getShaderNoiseTexture()
+           hands back a fresh data-URI Image every call - decode it ONCE per
+           page and remount when ready (instant on every later render). */
+        var img = window.__bdNoise || (window.__bdNoise = PS.getShaderNoiseTexture());
+        if (!img.complete) {
+          img.addEventListener('load', function () { if (document.contains(wrap) && !store.__bdMount) init(); }, { once: true });
+          return;
+        }
+        uniforms.u_noiseTexture = img;
+      }
+      /* Sizing block (pattern fills the plane, object composes a figure). */
+      uniforms.u_fit = spec.fit === 'object' ? 1 : 0;
+      uniforms.u_scale = spec.scale * (cfg.scale / 100);
+      uniforms.u_rotation = cfg.rotation;
+      uniforms.u_offsetX = 0;
+      uniforms.u_offsetY = spec.offsetY || 0;
+      uniforms.u_originX = 0.5;
+      uniforms.u_originY = 0.5;
+      uniforms.u_worldWidth = 0;
+      uniforms.u_worldHeight = 0;
+
+      var effSpeed = spec.speed * (cfg.speed / 100);
+      var phaseMs = (cfg.phase / 100) * PHASE_SPAN_MS;
+      var liveSpeed = calm ? 0 : effSpeed;
+      var mount;
+      try {
+        /* preserveDrawingBuffer so dom-to-image / the direct canvas blit can
+           read pixels outside the paint task. */
+        mount = new PS.ShaderMount(host, PS[spec.frag], uniforms, { preserveDrawingBuffer: true }, 0, phaseMs);
+      } catch (e) { return; } // no WebGL2 - the CSS wash carries
+      store.__bdMount = mount;
+      /* Paint the chosen moment NOW: with speed 0 (reduced motion, the speed
+         knob at 0, or the two still effects) the mount's own loop never runs,
+         and its constructor doesn't render a first frame on its own. Then
+         paint it AGAIN inside a rAF - with no animation loop running,
+         Chromium can leave the first out-of-frame GL paint uncomposited, so
+         the screen keeps whatever was under the canvas until something else
+         forces a composite. Same frame both times, so nothing moves. */
+      /* gl.flush() after each out-of-loop paint: without a running rAF loop
+         the driver can sit on the queued draw and the compositor keeps
+         whatever was under the canvas (observed: the frame only appeared
+         after something read the canvas back, which forces the flush). */
+      function paintPhase() {
+        mount.setFrame(phaseMs);
+        if (mount.gl && mount.gl.flush) mount.gl.flush();
+      }
+      paintPhase();
+      requestAnimationFrame(function () {
+        if (document.contains(mount.canvasElement)) paintPhase();
+      });
+      mount.setSpeed(liveSpeed);
+
+      /* Deterministic export clock: the pipeline raises __lollyFrameDriven,
+         we park the mount's own rAF and paint exact frames; a tiny watcher
+         hands playback back when the capture ends. */
+      var cv = mount.canvasElement;
+      var driving = false;
+      function watchRelease() {
+        if (!document.contains(cv)) return;
+        if (cv.__lollyFrameDriven) { requestAnimationFrame(watchRelease); return; }
+        driving = false;
+        mount.setSpeed(liveSpeed);
+      }
+      cv.__lollyFrameRender = function (t, clipSec) {
+        if (!driving) { driving = true; mount.setSpeed(0); requestAnimationFrame(watchRelease); }
+        mount.setFrame(phaseMs + (t || 0) * (clipSec || 8) * 1000 * (effSpeed || spec.speed || 1));
+      };
+    }
+
+    /* The vendored lib loads once per page from the tool's own lib/ dir
+       (street-map's pattern); every later render reuses the global. */
+    if (window.PaperShaders) { init(); return; }
+    var tag = document.getElementById('bd-lib');
+    if (!tag) {
+      tag = document.createElement('script');
+      tag.id = 'bd-lib';
+      tag.src = '/tools/backdrop/lib/paper-shaders.min.js';
+      document.head.appendChild(tag);
+    }
+    tag.addEventListener('load', function () { if (document.contains(wrap)) init(); });
+  })();
+</script>

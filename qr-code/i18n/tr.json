@@ -1,5 +1,5 @@
 {
-  "name": "QR Kod Oluşturucu",
+  "name": "QR Kod",
   "description": "Bağlantı, kişi kartı, Wi-Fi ağı, takvim etkinliği, konum ya da düz metin için QR kodları.",
   "a11yLabel": "{{default url \"(no URL set)\"}} adresine bağlanan QR kodu",
   "featured.blurb": "Her marka renginde QR kodları",

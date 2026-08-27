@@ -1,5 +1,5 @@
 {
-  "name": "Gumawa ng QR Code",
+  "name": "QR Code",
   "description": "Mga QR code para sa isang link, contact card, Wi-Fi network, calendar event, lokasyon o plain text.",
   "featured.blurb": "Mga QR code sa kahit anong kulay ng brand",
   "a11yLabel": "QR code na naka-link sa {{default url \"(walang naka-set na URL)\"}}",

@@ -1,6 +1,6 @@
 /* Coons-patch gradient-mesh core.
  *
- * Canonical source for the mesh-gradient tool's Subdivide (SVG) and Mesh
+ * Canonical source for the gradient tool's Subdivide (SVG) and Mesh
  * (canvas) modes - and written tool-agnostic so a future consumer (e.g. the
  * design tool's gradient paths) can sync the same regions. Coordinates are
  * percentages of the frame (0-100 on both axes); colours are '#rrggbb'.

@@ -1,5 +1,5 @@
 {
-  "name": "Deck Builder",
+  "name": "Deck",
   "description": "Tạo bộ slide với trình chỉnh sửa trực tiếp trên canvas - chỉnh văn bản, màu sắc và hình ảnh trực tiếp trên từng slide.",
   "a11yLabel": "Bộ trình chiếu có {{slideCount}} trang chiếu",
   "inputs.size.label": "Kích thước bộ slide",

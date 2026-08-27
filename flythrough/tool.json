@@ -1,7 +1,7 @@
 {
   "id": "flythrough",
   "name": "Flythrough",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "engineVersion": "^1.0.0",
   "status": "experimental",
   "category": "designer",
@@ -11,7 +11,7 @@
   "render": {
     "width": 1280,
     "height": 720,
-    "formats": ["png", "jpg", "webp", "webm", "mp4", "gif"],
+    "formats": ["png", "jpg", "webp", "webm", "mp4", "gif", "avif", "tiff", "webp-anim"],
     "actions": ["copy", "download", "save"],
     "convertPaths": false,
     "video": { "wait": 2, "duration": 6 }

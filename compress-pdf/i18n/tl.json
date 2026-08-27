@@ -1,5 +1,5 @@
 {
-  "name": "I-compress ang PDF",
+  "name": "I-compress",
   "description": "Paliitin ang isang PDF sa pamamagitan ng muling pag-compress ng mga larawan nito - sa iyong device.",
   "a11yLabel": "PDF compressor para sa {{fileName}}",
   "inputs.source.label": "PDF",

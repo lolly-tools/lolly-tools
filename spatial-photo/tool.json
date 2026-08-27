@@ -1,7 +1,7 @@
 {
   "id": "spatial-photo",
   "name": "Spatial Photo",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engineVersion": "^1.152.0",
   "status": "experimental",
   "category": "designer",
@@ -11,7 +11,7 @@
   "render": {
     "width": 1280,
     "height": 720,
-    "formats": ["png", "jpg", "webp", "webm", "mp4", "gif"],
+    "formats": ["png", "jpg", "webp", "webm", "mp4", "gif", "avif", "tiff", "webp-anim"],
     "actions": ["copy", "download", "save"],
     "convertPaths": false,
     "c2pa": true,

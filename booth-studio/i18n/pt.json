@@ -1,5 +1,5 @@
 {
-  "name": "Estúdio de Estande",
+  "name": "Estande",
   "description": "Decore um estande de evento 3D com arte do patrocinador. Clique em qualquer painel para soltar uma imagem nele, escolha um design de estande e renderize uma imagem estática ou giratória para o pitch do patrocinador.",
   "a11yLabel": "Maquete 3D de estande de evento {{default design \"an inline\"}} decorado com arte de patrocinador",
   "inputs.design.label": "Design do estande",

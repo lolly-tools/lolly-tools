@@ -1,5 +1,5 @@
 {
-  "name": "Creador de presentaciones",
+  "name": "Presentación",
   "description": "Crea una presentación con un editor en vivo sobre el lienzo - edita texto, colores e imágenes directamente en cada diapositiva.",
   "a11yLabel": "Presentación con {{slideCount}} diapositivas",
   "inputs.size.label": "Tamaño de la presentación",

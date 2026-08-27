@@ -1,5 +1,5 @@
 {
-  "name": "Ubah Merek Dek",
+  "name": "Rebranding",
   "description": "Unggah dek PowerPoint dan sesuaikan warna serta fontnya dengan brand Anda - dibangun ulang di perangkat Anda, tidak ada yang diunggah.",
   "a11yLabel": "Pengubah merek presentasi untuk {{fileName}}",
   "inputs.source.label": "File PowerPoint",

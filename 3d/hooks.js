@@ -3,7 +3,7 @@
 // Fold the input model into one config object and hand it to the template as the
 // `_state` extra (underscore prefix keeps annotateTemplate from touching it, so it
 // stays valid JSON inside <script type="application/json">). The template's WebGL
-// renderer reads it. Mirrors tools/d3/hooks.js.
+// renderer reads it. Mirrors tools/chart/hooks.js.
 
 function safeJson(obj) {
   // Only < needs escaping for safe embedding in <script type="application/json">;

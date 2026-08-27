@@ -1,5 +1,5 @@
 {
-  "name": "演示文稿构建器",
+  "name": "演示文稿",
   "description": "用实时画布编辑器制作幻灯片 - 直接在每张幻灯片上编辑文字、颜色和图片。",
   "a11yLabel": "包含 {{slideCount}} 张幻灯片的演示文稿",
   "inputs.size.label": "演示文稿尺寸",

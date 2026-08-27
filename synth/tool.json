@@ -1,7 +1,7 @@
 {
   "id": "synth",
   "name": "Synth",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "engineVersion": "^1.152.0",
   "status": "experimental",
   "category": "designer",
@@ -17,7 +17,7 @@
   "render": {
     "width": 1280,
     "height": 720,
-    "formats": ["png", "jpg", "webp", "webm", "mp4", "gif", "apng"],
+    "formats": ["png", "jpg", "webp", "webm", "mp4", "gif", "apng", "avif", "tiff", "webp-anim"],
     "actions": ["copy", "download", "save"],
     "convertPaths": false,
     "video": { "wait": 1, "duration": 6 }
@@ -102,7 +102,7 @@
       "section": "Scene",
       "type": "boolean",
       "default": true,
-      "help": "Let your pointer push the picture around, and play it from a MIDI controller if you have one. The knob map is fixed: CC1 is Intensity, CC2 is Speed, CC3 is Symmetry, CC74 is Colour rotation. A knob turns the sidebar control itself, so the move is caught by undo, the URL and the share link, and a knob whose control the current scene does not show simply does nothing. Nothing is asked of your MIDI devices until this is switched on, and Safari has no Web MIDI at all, so there it is only the pointer. Off leaves the picture playing its own loop, which is what you want while you set up an export."
+      "help": "Let your pointer push the picture around, and play it from a MIDI controller if you have one. Playing the keys blooms the picture: each note strikes a splat of ink, low notes to the left and high to the right, and the harder you play the harder it lands. The knob map is fixed: CC1 is Intensity, CC2 is Speed, CC3 is Symmetry, CC74 is Colour rotation. A knob turns the sidebar control itself, so the move is caught by undo, the URL and the share link, and a knob whose control the current scene does not show simply does nothing. Nothing is asked of your MIDI devices until this is switched on, and Safari has no Web MIDI at all, so there it is only the pointer. Off leaves the picture playing its own loop, which is what you want while you set up an export."
     },
 
     { "id": "color1", "label": "Colour 1", "section": "Colour", "type": "color", "default": "{color.semantic.primary}", "help": "The ramp runs Colour 1 to Colour 3 through OKLab, so the blend stays perceptual." },

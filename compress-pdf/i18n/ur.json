@@ -1,5 +1,5 @@
 {
-  "name": "PDF کمپریس کریں",
+  "name": "کمپریس",
   "description": "اپنی تصاویر کو دوبارہ کمپریس کر کے PDF کو چھوٹا کریں - آپ کے آلے پر۔",
   "a11yLabel": "{{fileName}} کے لیے PDF کمپریسر",
   "inputs.source.label": "PDF",

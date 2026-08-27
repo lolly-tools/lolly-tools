@@ -1,5 +1,5 @@
 {
-  "name": "Pembina Dek",
+  "name": "Dek",
   "description": "Bina koleksi slaid dengan editor langsung di atas kanvas - sunting teks, warna dan imej terus pada setiap slaid.",
   "a11yLabel": "Dek slaid dengan {{slideCount}} slaid",
   "inputs.size.label": "Saiz dek",

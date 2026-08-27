@@ -3,7 +3,7 @@
   "name": "Asset Export",
   "description": "Render any catalog asset - or a Lolly tool link - out to any format and size.",
   "a11yLabel": "Exported asset",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "everyone",
@@ -12,7 +12,7 @@
   "render": {
     "width": 1000,
     "height": 1000,
-    "formats": ["svg", "png", "jpg", "webp", "pdf", "pdf-cmyk", "cmyk-tiff", "ico", "zip"],
+    "formats": ["svg", "png", "jpg", "webp", "pdf", "pdf-cmyk", "cmyk-tiff", "ico", "zip", "avif", "tiff", "eps", "dxf", "emf"],
     "actions": ["copy", "download", "save"],
     "transparentBg": false
   },

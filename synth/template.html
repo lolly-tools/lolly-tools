@@ -89,7 +89,7 @@
       inst.renderLoopFrame(t01, clipSec);
     };
 
-    window.__lollySynth = { dispose: inst.dispose };
+    window.__lollySynth = { dispose: inst.dispose, strike: inst.strike };
     fireReady();
   }).catch(function (e) {
     console.error('[synth]', e);
@@ -155,7 +155,14 @@
     navigator.requestMIDIAccess().then(function (access) {
       var onMsg = function (ev) {
         var d = ev.data;
-        if (!d || d.length < 3 || (d[0] & 0xf0) !== 0xb0) return;   // control change, any channel
+        if (!d || d.length < 3) return;
+        var st = d[0] & 0xf0;                 // status, any channel
+        if (st === 0x90 && d[2] > 0) {        // note on (velocity 0 IS a note off) - a struck key blooms the picture
+          var s = window.__lollySynth;
+          if (s && s.strike) s.strike(d[1], d[2]);
+          return;
+        }
+        if (st !== 0xb0) return;              // otherwise only control change is mapped
         for (var i = 0; i < MIDI_CC.length; i++) {
           if (MIDI_CC[i][0] === d[1]) midiWrite(MIDI_CC[i][1], d[2]);
         }

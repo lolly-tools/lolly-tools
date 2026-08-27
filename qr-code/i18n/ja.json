@@ -1,5 +1,5 @@
 {
-  "name": "QRコード生成ツール",
+  "name": "QRコード",
   "description": "リンク、連絡先カード、Wi-Fiネットワーク、カレンダーの予定、位置情報、プレーンテキストのQRコードを作成します。",
   "a11yLabel": "{{default url \"(no URL set)\"}} にリンクするQRコード",
   "featured.blurb": "ブランドカラーでQRコードを作成",

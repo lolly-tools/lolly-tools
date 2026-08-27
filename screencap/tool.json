@@ -3,7 +3,7 @@
   "name": "Screen Capture",
   "description": "Screenshot or record your whole screen, a window, or a browser tab. Drag on the canvas to crop - the export stays the exact pixels you captured.",
   "a11yLabel": "Screen capture, ready to crop and export",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "engineVersion": ">=1.54.0 <2.0.0",
   "status": "community",
   "category": "utility",
@@ -27,11 +27,7 @@
   "render": {
     "width": 7680,
     "height": 4320,
-    "formats": [
-      "png",
-      "jpg",
-      "webp"
-    ],
+    "formats": ["png", "jpg", "webp", "avif", "tiff"],
     "actions": [
       "copy",
       "download",

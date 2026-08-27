@@ -1,6 +1,6 @@
 {
   "id": "rebrand-deck",
-  "name": "Rebrand a Deck",
+  "name": "Rebrand",
   "description": "Upload a PowerPoint deck and snap its colours and fonts to your brand - rebuilt on your device, nothing uploaded.",
   "version": "1.1.0",
   "engineVersion": "^1.58.0",

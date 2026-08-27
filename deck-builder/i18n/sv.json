@@ -1,5 +1,5 @@
 {
-  "name": "Bildspelsbyggare",
+  "name": "Bildspel",
   "description": "Bygg en bildspelspresentation med en live-redigerare på canvasen - redigera text, färger och bilder direkt på varje bild.",
   "a11yLabel": "Presentation med {{slideCount}} bilder",
   "inputs.size.label": "Bildspelets storlek",

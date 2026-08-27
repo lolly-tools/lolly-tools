@@ -1,5 +1,5 @@
 {
-  "name": "PDF multi-pagină",
+  "name": "Broșură",
   "description": "Construiește un PDF cu mai multe pagini - o copertă, blocuri de conținut fluide și o pagină de final.",
   "featured.blurb": "PDF-uri cu mai multe pagini - copertă, conținut, final",
   "a11yLabel": "{{default coverTitle \"Fără titlu\"}} - document PDF cu mai multe pagini",

@@ -1,5 +1,5 @@
 {
-  "name": "Komprimera PDF",
+  "name": "Komprimera",
   "description": "Krympa en PDF genom att komprimera om bilderna - på din enhet.",
   "a11yLabel": "PDF-komprimerare för {{fileName}}",
   "inputs.source.label": "PDF",

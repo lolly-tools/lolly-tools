@@ -1,5 +1,5 @@
 {
-  "name": "Deck Builder",
+  "name": "Deck",
   "description": "Erstellt eine Foliensammlung mit einem Live-Editor direkt auf der Fläche - Text, Farben und Bilder direkt auf jeder Folie bearbeiten.",
   "a11yLabel": "Präsentation mit {{slideCount}} Folien",
   "inputs.size.label": "Deck-Größe",

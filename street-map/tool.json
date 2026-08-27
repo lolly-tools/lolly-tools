@@ -3,7 +3,7 @@
   "name": "Street Map",
   "description": "Clean vector street-block maps of any city. Works offline.",
   "a11yLabel": "Street map centered on {{city}}",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "designer",
@@ -18,7 +18,7 @@
   "render": {
     "width": 900,
     "height": 900,
-    "formats": ["svg", "emf", "dxf", "pdf", "pdf-cmyk", "png"],
+    "formats": ["svg", "emf", "dxf", "pdf", "pdf-cmyk", "png", "jpg", "webp", "avif", "tiff", "eps"],
     "actions": ["copy", "download", "save"],
     "transparentBg": false
   },

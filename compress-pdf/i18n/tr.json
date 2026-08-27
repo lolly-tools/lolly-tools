@@ -1,5 +1,5 @@
 {
-  "name": "PDF Sıkıştır",
+  "name": "Sıkıştırma",
   "description": "Görsellerini yeniden sıkıştırarak bir PDF'yi küçültün - cihazınızda.",
   "a11yLabel": "{{fileName}} için PDF sıkıştırıcı",
   "inputs.source.label": "PDF",

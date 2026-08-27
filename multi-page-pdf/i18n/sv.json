@@ -1,5 +1,5 @@
 {
-  "name": "PDF med flera sidor",
+  "name": "Häfte",
   "description": "Bygg en flersidig PDF - ett omslag, flödande innehållsblock och en baksida.",
   "featured.blurb": "Flersidiga PDF:er - omslag, innehåll, baksida",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - PDF-dokument med flera sidor",

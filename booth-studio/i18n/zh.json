@@ -1,5 +1,5 @@
 {
-  "name": "展位工作室",
+  "name": "展位",
   "description": "用赞助商素材装饰 3D 活动展台。点击任意面板放置图像，选择展台设计，渲染静态图或旋转展示，用于赞助商提案。",
   "a11yLabel": "{{default design \"an inline\"}} 活动展位的 3D 效果图,饰有赞助商美术作品",
   "inputs.design.label": "展位设计",

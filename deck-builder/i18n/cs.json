@@ -1,5 +1,5 @@
 {
-  "name": "Tvůrce prezentací",
+  "name": "Prezentace",
   "description": "Sestav prezentaci s živým editorem přímo na plátně - uprav text, barvy a obrázky přímo na každém snímku.",
   "a11yLabel": "Prezentace s {{slideCount}} snímky",
   "inputs.size.label": "Velikost prezentace",

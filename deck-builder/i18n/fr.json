@@ -1,5 +1,5 @@
 {
-  "name": "Deck Builder",
+  "name": "Deck",
   "description": "Construisez un diaporama avec un éditeur en direct sur le canevas - modifiez texte, couleurs et images directement sur chaque diapositive.",
   "a11yLabel": "Diaporama de {{slideCount}} diapositives",
   "inputs.size.label": "Taille du diaporama",

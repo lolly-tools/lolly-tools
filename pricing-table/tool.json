@@ -1,9 +1,9 @@
 {
   "id": "pricing-table",
-  "name": "Pricing Table",
+  "name": "Pricing",
   "description": "Plans as columns, features as rows, ticks and crosses, and one plan picked out as the recommended one.",
   "a11yLabel": "Pricing table: {{default heading \"Pricing\"}}",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engineVersion": "^1.82.0",
   "status": "community",
   "category": "everyone",
@@ -98,7 +98,7 @@
   "render": {
     "width": 1600,
     "height": 1000,
-    "formats": ["png", "svg", "pdf", "csv", "json"],
+    "formats": ["png", "svg", "pdf", "csv", "json", "jpg", "webp", "avif"],
     "actions": ["copy", "download", "save"],
     "filenameFrom": ["heading"],
     "transparentBg": false

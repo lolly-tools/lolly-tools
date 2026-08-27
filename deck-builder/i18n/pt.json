@@ -1,5 +1,5 @@
 {
-  "name": "Criador de Deck",
+  "name": "Deck",
   "description": "Monte uma apresentação de slides com um editor ao vivo na tela - edite texto, cores e imagens diretamente em cada slide.",
   "a11yLabel": "Apresentação com {{slideCount}} slides",
   "inputs.size.label": "Tamanho do deck",

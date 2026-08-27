@@ -1,5 +1,5 @@
 {
-  "name": "Ombranda en presentation",
+  "name": "Omprofilering",
   "description": "Ladda upp en PowerPoint-presentation och matcha dess färger och typsnitt mot ditt varumärke - ombyggd på din enhet, inget laddas upp.",
   "a11yLabel": "Bildspelsombrandare för {{fileName}}",
   "inputs.source.label": "PowerPoint-fil",

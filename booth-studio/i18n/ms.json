@@ -1,5 +1,5 @@
 {
-  "name": "Studio Gerai",
+  "name": "Gerai",
   "description": "Hiasi gerai acara 3D dengan karya seni penaja. Klik mana-mana panel untuk meletakkan imej padanya, pilih reka bentuk gerai, dan hasilkan imej statik atau turntable untuk tawaran penaja.",
   "a11yLabel": "Mock-up 3D {{default design \"an inline\"}} gerai acara berhias dengan karya seni penaja",
   "inputs.design.label": "Reka bentuk gerai",

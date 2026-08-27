@@ -3,7 +3,7 @@
   "name": "Darkroom",
   "description": "A pro photo-grading darkroom: film looks, third-party .cube LUTs, brand-seeded colour treatments and finishing texture - then bake your look as a LUT any editor can use. Opens a Photoshop or GIMP file as layers too: position, blend and hide each one, grade the composite, and export flat images or a layered PSD.",
   "a11yLabel": "Graded photo preview - {{default preset \"custom\"}} look",
-  "version": "2.2.0",
+  "version": "2.2.1",
   "engineVersion": "^1.12.0",
   "status": "community",
   "category": "designer",
@@ -28,7 +28,7 @@
   "render": {
     "width": 1080,
     "height": 1080,
-    "formats": ["png", "jpg", "webp", "svg", "webm", "mp4", "exr", "hdr", "tiff", "pdf"],
+    "formats": ["png", "jpg", "webp", "svg", "webm", "mp4", "exr", "hdr", "tiff", "pdf", "avif"],
     "denseSections": ["Develop", "Texture"],
     "actions": ["copy", "download", "save"],
     "video": { "wait": 0, "duration": 5 },

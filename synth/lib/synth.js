@@ -1355,6 +1355,21 @@
       if (n) paint();
     }
 
+    // A struck MIDI key is a live splat, exactly like a pointer tap: the pitch
+    // picks the spot (and its colour) across the field, the velocity is how hard
+    // the ink lands. It rides the same bounded impulse queue the pointer uses, so
+    // it never touches state - a played melody is not eighty undo steps or a URL
+    // that grows a param per note. No-op once the exporter owns the canvas or the
+    // instrument is gone, so a note in flight can neither disturb a capture nor
+    // drive a tool that has already left the page.
+    function strike(note, vel) {
+      if (disposed || canvas.__lollyFrameDriven) return;
+      if (impulses.length >= MAX_POINTS) return;
+      var x = clampNum((note - 24) / 72, 0, 1);   // C1..C7 spread across the width
+      var f = clampNum(vel / 127, 0, 1) * 1800;   // a harder hit kicks harder
+      impulses.push({ x: x, y: 0.32, dx: 0, dy: f, tone: x });
+    }
+
     var pointerHandlers = null;
     function wirePointer() {
       var last = null;
@@ -1404,6 +1419,7 @@
       symmetry: sectors,
       rampRotate: rampRot,
       note: function () { return noteEl ? noteEl.textContent : null; },
+      strike: strike,
       dispose: disposeAll
     };
   }

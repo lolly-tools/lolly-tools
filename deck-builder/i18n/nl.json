@@ -1,5 +1,5 @@
 {
-  "name": "Deck Builder",
+  "name": "Deck",
   "description": "Bouw een presentatie met een live editor op het canvas - bewerk tekst, kleuren en afbeeldingen rechtstreeks op elke slide.",
   "a11yLabel": "Diapresentatie met {{slideCount}} dia's",
   "inputs.size.label": "Deckgrootte",

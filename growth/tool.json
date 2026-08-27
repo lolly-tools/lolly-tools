@@ -3,7 +3,7 @@
   "name": "Growth",
   "description": "Differential growth: a line that repels itself until it folds into coral. Seed it from a ring, a burst, your headline's letterforms or your logo, and export the result as real, plotter-ready SVG paths.",
   "a11yLabel": "Differential growth pattern grown from a {{seedShape}} seed",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "engineVersion": "^1.152.0",
   "status": "community",
   "category": "designer",
@@ -17,7 +17,7 @@
   "render": {
     "width": 1200,
     "height": 1200,
-    "formats": ["svg", "pdf", "png", "jpg", "webp", "gif", "webm", "mp4"],
+    "formats": ["svg", "pdf", "png", "jpg", "webp", "gif", "webm", "mp4", "avif", "tiff", "emf", "eps", "dxf", "webp-anim"],
     "actions": ["copy", "download", "save"],
     "convertPaths": false,
     "video": { "wait": 0, "duration": 6 }

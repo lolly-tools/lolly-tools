@@ -1,0 +1,190 @@
+{
+  "id": "backdrop",
+  "name": "Backdrop",
+  "description": "Living backdrops from your design system's colours: fifteen GPU effects - metaballs, god rays, neuro noise, warped fields, orbiting dots and more. Tune, freeze the exact moment you want, and export stills or motion loops for heroes, walls and meeting backgrounds.",
+  "a11yLabel": "Animated {{effect}} backdrop",
+  "version": "1.0.1",
+  "engineVersion": "^1.0.0",
+  "status": "official",
+  "category": "everyone",
+  "tags": ["backdrop", "background", "wallpaper", "hero", "animated", "generative", "brand"],
+  "examples": [
+    { "label": "Lava lamp", "values": { "effect": "metaballs", "count": 4, "color1": "#ffc800", "color2": "#ff5500", "color3": "#f585ff", "color4": "#6e33cc", "background": "#0b0713", "intensity": 55, "density": 45 } },
+    { "label": "Cathedral rays", "values": { "effect": "god-rays", "count": 4, "color1": "#a600ff", "color2": "#6200ff", "color3": "#ffffff", "color4": "#33fff5", "background": "#02010a", "intensity": 60, "density": 45 } },
+    { "label": "Neural drift", "values": { "effect": "neuro-noise", "color1": "#ffffff", "color2": "#47a6ff", "background": "#000000", "intensity": 50, "density": 40, "speed": 80 } },
+    { "label": "Smoke halo", "values": { "effect": "smoke-ring", "count": 2, "color1": "#ffffff", "color2": "#8fd8c9", "background": "#04110d", "intensity": 55, "density": 40, "speed": 80 } },
+    { "label": "Velvet warp", "values": { "effect": "warp", "count": 4, "color1": "#121212", "color2": "#9470ff", "color3": "#121212", "color4": "#8838ff", "background": "#121212", "intensity": 45, "density": 65 } },
+    { "label": "Ember orbit", "values": { "effect": "dot-orbit", "count": 5, "color1": "#ffc96b", "color2": "#ff6200", "color3": "#ff2f00", "color4": "#421100", "color5": "#1a0000", "background": "#000000", "intensity": 50, "density": 50 } },
+    { "label": "Stained cells", "values": { "effect": "voronoi", "count": 3, "color1": "#ff8247", "color2": "#ffe53d", "color3": "#2fb6a3", "background": "#2e0000", "intensity": 50, "density": 40 } },
+    { "label": "Light panels", "values": { "effect": "color-panels", "count": 6, "color1": "#ff9d00", "color2": "#fd4f30", "color3": "#809bff", "color4": "#6d2eff", "color5": "#f15cff", "color6": "#ffd557", "background": "#000000", "intensity": 50, "density": 45, "speed": 70 } }
+  ],
+  "render": {
+    "width": 1600,
+    "height": 900,
+    "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif", "tiff", "webp-anim"],
+    "actions": ["copy", "download", "save"],
+    "video": { "wait": 0, "duration": 8 }
+  },
+  "inputs": [
+    {
+      "id": "effect",
+      "label": "Effect",
+      "type": "select",
+      "default": "metaballs",
+      "help": "The field the GPU paints. Every effect takes your colours; Waves and Dot grid are still patterns, everything else moves.",
+      "options": [
+        { "value": "metaballs", "label": "Metaballs", "badge": "orbs", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "smoke-ring", "label": "Smoke ring", "badge": "orbs", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "voronoi", "label": "Voronoi", "badge": "orbs", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "neuro-noise", "label": "Neuro noise", "badge": "noise", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "perlin-noise", "label": "Perlin", "badge": "noise", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "dithering", "label": "Dither", "badge": "noise", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "warp", "label": "Warp", "badge": "flow", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "spiral", "label": "Spiral", "badge": "flow", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "swirl", "label": "Swirl", "badge": "flow", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "waves", "label": "Waves", "badge": "still", "formats": ["png", "jpg", "webp", "avif"] },
+        { "value": "dot-orbit", "label": "Dot orbit", "badge": "dots", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "dot-grid", "label": "Dot grid", "badge": "still", "formats": ["png", "jpg", "webp", "avif"] },
+        { "value": "god-rays", "label": "God rays", "badge": "light", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "color-panels", "label": "Panels", "badge": "light", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] },
+        { "value": "pulsing-border", "label": "Pulse frame", "badge": "light", "formats": ["png", "jpg", "webp", "avif", "webm", "mp4", "gif"] }
+      ]
+    },
+    {
+      "id": "count",
+      "label": "Colours",
+      "type": "number",
+      "display": "slider",
+      "default": 4,
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "help": "How many swatches feed the effect. Two-colour effects (Neuro, Perlin, Waves, Dither, Spiral, Dot grid) use the first one or two."
+    },
+    {
+      "id": "color1",
+      "label": "Colour 1",
+      "type": "color",
+      "default": "{color.semantic.secondary}"
+    },
+    {
+      "id": "color2",
+      "label": "Colour 2",
+      "type": "color",
+      "default": "{color.spectrum.teal}",
+      "showIf": { "count": [2, 3, 4, 5, 6] }
+    },
+    {
+      "id": "color3",
+      "label": "Colour 3",
+      "type": "color",
+      "default": "#f2a65a",
+      "showIf": { "count": [3, 4, 5, 6] }
+    },
+    {
+      "id": "color4",
+      "label": "Colour 4",
+      "type": "color",
+      "default": "#5b8def",
+      "showIf": { "count": [4, 5, 6] }
+    },
+    {
+      "id": "color5",
+      "label": "Colour 5",
+      "type": "color",
+      "default": "#e0679f",
+      "showIf": { "count": [5, 6] }
+    },
+    {
+      "id": "color6",
+      "label": "Colour 6",
+      "type": "color",
+      "default": "#6d5bd8",
+      "showIf": { "count": [6] }
+    },
+    {
+      "id": "background",
+      "label": "Background",
+      "type": "color",
+      "default": "#0b1021",
+      "help": "The field behind the effect. Dark grounds make the colours glow; try your design system's surface for a calmer wash."
+    },
+    {
+      "id": "intensity",
+      "label": "Intensity",
+      "section": "Character",
+      "type": "number",
+      "display": "slider",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "The effect's main character dial - ball size, ray strength, twist, distortion - tuned per effect so 50 is the designed look."
+    },
+    {
+      "id": "density",
+      "label": "Density",
+      "section": "Character",
+      "type": "number",
+      "display": "slider",
+      "default": 50,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "showIf": { "effect": ["metaballs", "neuro-noise", "perlin-noise", "warp", "spiral", "swirl", "waves", "dot-orbit", "dot-grid", "voronoi", "smoke-ring", "god-rays", "color-panels", "pulsing-border"] },
+      "help": "The effect's secondary dial - how many, how tight, how detailed."
+    },
+    {
+      "id": "scale",
+      "label": "Scale",
+      "section": "Character",
+      "type": "number",
+      "display": "slider",
+      "default": 100,
+      "min": 25,
+      "max": 400,
+      "step": 5,
+      "help": "Zoom of the whole field - higher magnifies the shapes, lower packs more of them in."
+    },
+    {
+      "id": "rotation",
+      "label": "Rotation",
+      "section": "Character",
+      "type": "number",
+      "display": "slider",
+      "default": 0,
+      "min": 0,
+      "max": 360,
+      "step": 5
+    },
+    {
+      "id": "speed",
+      "label": "Speed",
+      "section": "Motion",
+      "type": "number",
+      "display": "slider",
+      "default": 100,
+      "min": 0,
+      "max": 300,
+      "step": 5,
+      "showIf": { "effect": ["metaballs", "neuro-noise", "perlin-noise", "warp", "spiral", "swirl", "dot-orbit", "voronoi", "smoke-ring", "god-rays", "color-panels", "pulsing-border", "dithering"] },
+      "help": "Playback speed, as a percentage of each effect's designed pace. 0 freezes the live canvas; a video export still moves. Clips are not seamless loops - pick a length in the export bar where the cut sits well."
+    },
+    {
+      "id": "phase",
+      "label": "Moment",
+      "section": "Motion",
+      "type": "number",
+      "display": "slider",
+      "default": 35,
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "help": "Scrub through the animation to choose the exact frame a still export captures - and where playback starts. Defaults past the start because several effects are still gathering themselves at moment 0."
+    }
+  ],
+  "hooks": {
+    "onInit": true,
+    "onInput": true
+  }
+}

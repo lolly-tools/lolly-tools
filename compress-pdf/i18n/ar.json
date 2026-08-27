@@ -1,5 +1,5 @@
 {
-  "name": "ضغط PDF",
+  "name": "الضغط",
   "description": "قلّص حجم ملف PDF بإعادة ضغط صوره - على جهازك.",
   "a11yLabel": "ضاغط PDF لـ {{fileName}}",
   "inputs.source.label": "PDF",

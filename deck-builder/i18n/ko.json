@@ -1,5 +1,5 @@
 {
-  "name": "덱 빌더",
+  "name": "덱",
   "description": "라이브 캔버스 편집기로 슬라이드 덱을 만드세요 - 각 슬라이드에서 텍스트, 색상, 이미지를 직접 편집합니다.",
   "a11yLabel": "슬라이드 {{slideCount}}개로 구성된 덱",
   "inputs.size.label": "덱 크기",

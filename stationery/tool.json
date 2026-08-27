@@ -2,7 +2,7 @@
   "id": "stationery",
   "name": "Stationery",
   "description": "Business cards, letterhead and compliments slips from your brand - each piece sized to its real print trim, ready as a print PDF.",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "everyone",
@@ -17,7 +17,7 @@
   "render": {
     "width": 850,
     "height": 550,
-    "formats": ["pdf", "pdf-cmyk", "svg", "png"],
+    "formats": ["pdf", "pdf-cmyk", "svg", "png", "jpg", "webp", "tiff", "cmyk-tiff"],
     "actions": ["copy", "download", "save"],
     "printMarks": true,
     "filenameFrom": ["piece", "lastname"],

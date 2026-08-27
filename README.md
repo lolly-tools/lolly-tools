@@ -24,7 +24,7 @@ own). Each tool is a directory of *data, not code*:
 | Tool | What it does |
 |---|---|
 | `qr-code` | QR code generator - link, text, contact card, Wi-Fi, calendar event or location (SVG/PNG, custom colors, joined modules) |
-| `mesh-gradient` | Mesh-style gradients from brand swatches - draggable colour points, grain, drift animation exportable as WebM / MP4 / GIF |
+| `gradient` | Mesh-style gradients from brand swatches - draggable colour points, grain, drift animation exportable as WebM / MP4 / GIF |
 | `color-palette` | Grow a palette from one seed - harmony accents, OKLab/APCA ramps, an optional contrast grid and colour-vision preview, DTCG tokens plus CSV/CSS/SCSS/GIMP/ASE export |
 | `contrast-check` | WCAG 2.1 and APCA pass/fail for a colour pair or the whole brand palette, with colour-blind and greyscale simulation |
 | `compress-pdf` | On-device PDF compression |
@@ -32,7 +32,7 @@ own). Each tool is a directory of *data, not code*:
 | `text-helper` | Text transforms and helpers |
 | `countdown-timer` | Countdown timer graphics |
 | `url-shot` | Rasterise a live URL (requires the `capture` capability) |
-| `screenshot-frame` | Screenshot beautifier - browser/phone/laptop frames, padding, shadow and a brand backdrop |
+| `frame` | Screenshot beautifier - browser/phone/laptop frames, padding, shadow and a brand backdrop |
 | `annotate` | Mark up your own screenshot on your device - arrows, boxes, numbered step pins, callouts, highlighter and a spotlight dim, with optional snap-to-text placement |
 | `filter` | Photo effects in one tool - pick an effect (halftone, scanline, posterize, voronoi as vector; duotone, pixel-stretch, imperfections as raster) |
 | `pricing-table` | Pricing and feature comparison tables - plans as columns, ticks and crosses, one plan featured |
@@ -43,7 +43,7 @@ own). Each tool is a directory of *data, not code*:
 | `captions` | Subtitles for a clip - transcribe on device or drop in an SRT/VTT file, style the cues, export burned-in frames plus clean `.srt`/`.vtt` sidecars |
 | `signature` | Signing pad - draw with a finger, stylus or mouse and get the signature on transparency as SVG or PNG, trimmed to the ink |
 | `barcode` | Linear barcodes as vector art - EAN-13, EAN-8, UPC-A and Code 128, check digit worked out, printed digits in the guard-bar gutter |
-| `web-icon` | Favicon and app-icon maker - a multi-size `.ico`, PNG and SVG, or the whole app kit as one zip: maskable and monochrome icons, a PWA `manifest.json` and a social card |
+| `icon` | Favicon and app-icon maker - a multi-size `.ico`, PNG and SVG, or the whole app kit as one zip: maskable and monochrome icons, a PWA `manifest.json` and a social card |
 
 Tool `id`s are permanent contracts - never renamed or reused.
 

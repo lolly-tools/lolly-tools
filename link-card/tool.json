@@ -3,7 +3,7 @@
   "name": "Link Card",
   "description": "Paste a link, get a branded social card - title, description, site chip and a thumbnail, at Open Graph, square or summary size.",
   "a11yLabel": "Link card for {{siteLabel}}: {{headingLabel}}",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "everyone",
@@ -19,7 +19,7 @@
   "render": {
     "width": 1200,
     "height": 630,
-    "formats": ["png", "jpg", "webp", "svg", "pdf"],
+    "formats": ["png", "jpg", "webp", "svg", "pdf", "avif", "tiff"],
     "actions": ["copy", "download", "save"],
     "filenameFrom": ["siteName", "heading"],
     "transparentBg": false

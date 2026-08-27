@@ -1,5 +1,5 @@
 {
-  "name": "Multi-Page PDF",
+  "name": "Booklet",
   "description": "Bumuo ng multi-page na PDF - cover, dumadaloy na content blocks, at back page.",
   "featured.blurb": "Multi-page na PDF - cover, content, back",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - multi-page PDF na dokumento",

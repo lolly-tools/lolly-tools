@@ -3,7 +3,7 @@
   "name": "Certificate",
   "description": "Completion and award certificates from the active brand - one name at a time, or a whole roster from a CSV in Bulk from rows.",
   "a11yLabel": "{{default titleText \"Certificate\"}} for {{default recipientName \"a recipient\"}}",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "engineVersion": "^1.0.0",
   "status": "community",
   "category": "everyone",
@@ -79,7 +79,7 @@
   "render": {
     "width": 1123,
     "height": 794,
-    "formats": ["pdf", "pdf-cmyk", "svg", "png"],
+    "formats": ["pdf", "pdf-cmyk", "svg", "png", "jpg", "webp", "tiff", "cmyk-tiff"],
     "actions": ["download", "save"],
     "printMarks": true,
     "filenameFrom": ["firstname", "lastname", "awardtopic"],

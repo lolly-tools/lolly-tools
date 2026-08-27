@@ -345,29 +345,43 @@ function _result(c) {
   return vm;
 }
 
-function onInit({ model }) {
+// Can this host actually open a camera? getUserMedia only exists in a secure
+// context - https or localhost - so over plain http on a phone (a LAN-IP dev
+// server) the browser blocks the camera outright and never even prompts. The
+// viewfinder uses this to explain that dead-end and point at image/paste,
+// instead of an unactionable "turn the camera on".
+function _camReady(host) {
+  try { return !!(host && host.media && typeof host.media.isAvailable === 'function' && host.media.isAvailable()); }
+  catch (e) { return false; }
+}
+
+function onInit({ model, host }) {
   var args = _args(model);
-  if (args.mode === 'paste' && _str(args.paste)) return _result(classify(args.paste, 'manual'));
-  return _result(_scanned);
+  var vm = (args.mode === 'paste' && _str(args.paste)) ? _result(classify(args.paste, 'manual')) : _result(_scanned);
+  vm.scanCameraReady = _camReady(host);
+  return vm;
 }
 
 async function onInput({ model, host }) {
   var args = _args(model);
+  var vm = null;
   if (args.mode === 'paste') {
-    return _result(_str(args.paste) ? classify(args.paste, 'manual') : null);
-  }
-  if (args.mode === 'image' && args.image && args.image.bytes && host && host.scan) {
+    vm = _result(_str(args.paste) ? classify(args.paste, 'manual') : null);
+  } else if (args.mode === 'image' && args.image && args.image.bytes && host && host.scan) {
     try {
       var frame = await _decodeToFrame(args.image.bytes, host);
       if (frame) {
         var formats = _formatsFilter(args.formats);
         var hits = await host.scan.detect(frame, formats ? { formats: formats } : undefined);
-        if (hits && hits.length) { _scanned = classify(hits[0].rawValue, hits[0].format); return _result(_scanned); }
-        return _result({ kind: 'empty', label: 'No code found in this image', fields: [], warnings: [] });
+        vm = (hits && hits.length)
+          ? _result((_scanned = classify(hits[0].rawValue, hits[0].format)))
+          : _result({ kind: 'empty', label: 'No code found in this image', fields: [], warnings: [] });
       }
     } catch (e) { /* fall through to whatever was last scanned */ }
   }
-  return _result(_scanned);
+  if (!vm) vm = _result(_scanned);
+  vm.scanCameraReady = _camReady(host);
+  return vm;
 }
 
 // Camera: the runtime hands one RGBA frame per tick (throttled; overlapping frames
