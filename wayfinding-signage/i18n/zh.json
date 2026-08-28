@@ -1,5 +1,5 @@
 {
-  "name": "导视",
+  "name": "Wayfinding",
   "description": "方向指示牌 - 目的地及对应箭头。印刷级质量。",
   "a11yLabel": "{{default eventName \"活动\"}}的导向标识牌{{#if heading}}--{{heading}}{{/if}}",
   "featured.blurb": "活动方向标识,可直接打印",

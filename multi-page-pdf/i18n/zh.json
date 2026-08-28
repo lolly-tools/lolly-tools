@@ -1,5 +1,5 @@
 {
-  "name": "小册子",
+  "name": "Booklet",
   "description": "制作多页 PDF - 封面、流动的内容区块和封底。",
   "featured.blurb": "多页 PDF - 封面、内容、封底",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - 多页 PDF 文档",

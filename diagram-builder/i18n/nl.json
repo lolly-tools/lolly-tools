@@ -1,5 +1,5 @@
 {
-  "name": "Diagrammen",
+  "name": "Diagrams",
   "description": "Organogrammen, stroomdiagrammen, tijdlijnen en meer - vanuit kaarten, tekst, Mermaid, DOT of CSV.",
   "a11yLabel": "{{default title \"Untitled\"}} - {{diagramType}}-diagram",
   "inputs.diagramPreset.label": "Voorinstelling",

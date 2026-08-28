@@ -1,5 +1,5 @@
 {
-  "name": "ওয়েফাইন্ডিং",
+  "name": "Wayfinding",
   "description": "দিকনির্দেশক ইভেন্ট সাইন - গন্তব্য, প্রতিটির সাথে একটি তীর। প্রিন্ট-রেডি।",
   "featured.blurb": "দিকনির্দেশক ইভেন্ট সাইন, প্রিন্ট-রেডি",
   "a11yLabel": "{{default eventName \"the event\"}}-এর জন্য ওয়েফাইন্ডিং সাইন{{#if heading}} - {{heading}}{{/if}}",

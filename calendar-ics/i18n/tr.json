@@ -1,5 +1,5 @@
 {
-  "name": "Takvim",
+  "name": "Calendar",
   "description": "Etkinlik bilgilerini herhangi bir takvim uygulaması için bir takvim (.ics) dosyasına dönüştür.",
   "inputs.eventName.label": "Etkinlik adı",
   "inputs.eventName.placeholder": "örn. Üç aylık değerlendirme",

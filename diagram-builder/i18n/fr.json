@@ -1,5 +1,5 @@
 {
-  "name": "Diagrammes",
+  "name": "Diagrams",
   "description": "Organigrammes, logigrammes, frises chronologiques et bien plus - à partir de fiches, de texte, de Mermaid, de DOT ou de CSV.",
   "a11yLabel": "{{default title \"Sans titre\"}} - diagramme {{diagramType}}",
   "featured.blurb": "Transforme cartes ou texte en diagrammes à ta marque",

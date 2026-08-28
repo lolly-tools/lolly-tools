@@ -1,5 +1,5 @@
 {
-  "name": "Broschüre",
+  "name": "Booklet",
   "description": "Erstellt ein mehrseitiges PDF - ein Deckblatt, fließende Inhaltsblöcke und eine Rückseite.",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - mehrseitiges PDF-Dokument",
   "featured.blurb": "Mehrseitige PDFs - Deckblatt, Inhalt, Rückseite",

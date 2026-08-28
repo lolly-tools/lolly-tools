@@ -1,5 +1,5 @@
 {
-  "name": "길안내",
+  "name": "Wayfinding",
   "description": "방향 안내 표지판 - 목적지마다 화살표가 붙습니다. 인쇄 준비 완료.",
   "featured.blurb": "인쇄 준비 완료된 이벤트 방향 안내 표지판",
   "a11yLabel": "{{default eventName \"the event\"}}의 길안내 표지판{{#if heading}} - {{heading}}{{/if}}",

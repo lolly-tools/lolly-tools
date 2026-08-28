@@ -1,5 +1,5 @@
 {
-  "name": "کیلنڈر",
+  "name": "Calendar",
   "description": "ایونٹ کی تفصیلات کو کسی بھی کیلنڈر ایپ کے لیے کیلنڈر (.ics) فائل میں تبدیل کریں۔",
   "inputs.eventName.label": "ایونٹ کا نام",
   "inputs.eventName.placeholder": "مثلاً سہ ماہی جائزہ",

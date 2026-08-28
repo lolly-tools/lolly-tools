@@ -1,5 +1,5 @@
 {
-  "name": "标志墙",
+  "name": "Logo Wall",
   "description": "将一堆徽标排布成整齐均匀的赞助商墙 - 即“NASCAR”式墙面。",
   "a11yLabel": "{{logos.length}} 个标志组成的网格",
   "inputs.columns.label": "列数",

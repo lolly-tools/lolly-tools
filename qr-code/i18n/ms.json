@@ -1,5 +1,5 @@
 {
-  "name": "Kod QR",
+  "name": "QR Code",
   "description": "Kod QR untuk pautan, kad kenalan, rangkaian Wi-Fi, acara kalendar, lokasi atau teks biasa.",
   "featured.blurb": "Kod QR dalam sebarang warna jenama",
   "a11yLabel": "Kod QR yang menghubungkan ke {{default url \"(no URL set)\"}}",

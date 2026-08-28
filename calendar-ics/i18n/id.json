@@ -1,5 +1,5 @@
 {
-  "name": "Kalender",
+  "name": "Calendar",
   "description": "Ubah detail acara menjadi berkas kalender (.ics) untuk aplikasi kalender apa pun.",
   "inputs.eventName.label": "Nama acara",
   "inputs.eventName.placeholder": "mis. Tinjauan triwulanan",

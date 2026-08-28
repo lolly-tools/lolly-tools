@@ -1,5 +1,5 @@
 {
-  "name": "導向標示",
+  "name": "Wayfinding",
   "description": "方向指示牌 - 各目的地附箭頭。印刷用。",
   "a11yLabel": "{{default eventName \"the event\"}} 的導向標示牌{{#if heading}} - {{heading}}{{/if}}",
   "featured.blurb": "活動方向標示,可直接列印",

@@ -1,5 +1,5 @@
 {
-  "name": "Logowand",
+  "name": "Logo Wall",
   "description": "Ordnet einen Haufen Logos zu einem sauberen, gleichmäßigen Sponsorenraster an - die „NASCAR“-Wand.",
   "a11yLabel": "Ein Raster aus {{logos.length}} Logos",
   "inputs.columns.label": "Spalten",

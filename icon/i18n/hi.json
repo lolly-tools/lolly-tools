@@ -1,5 +1,5 @@
 {
-  "name": "आइकन",
+  "name": "Icon",
   "description": "फ़ेविकॉन और ऐप-आइकन मेकर - मल्टी-साइज़ .ico, PNG और SVG, या पूरी ऐप किट एक ZIP के रूप में।",
   "a11yLabel": "{{default text \"untitled\"}} लेबल वाला वेब आइकन",
   "inputs.text.label": "लेबल",

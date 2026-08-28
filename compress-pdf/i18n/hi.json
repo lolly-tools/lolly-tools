@@ -1,5 +1,5 @@
 {
-  "name": "कंप्रेस",
+  "name": "Compress",
   "description": "अपनी डिवाइस पर - इमेज को फिर से कंप्रेस करके PDF का आकार घटाएँ।",
   "a11yLabel": "{{fileName}} के लिए PDF कंप्रेसर",
   "inputs.source.label": "PDF",

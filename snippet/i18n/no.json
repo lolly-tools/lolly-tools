@@ -1,5 +1,5 @@
 {
-  "name": "Kodesnutt",
+  "name": "Snippet",
   "description": "Gjør kodesnutter om til rene, syntaksmarkerte bilder, klare til å dele.",
   "inputs.code.label": "Kode",
   "inputs.code.placeholder": "Lim inn koden din her…",

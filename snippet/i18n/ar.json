@@ -1,5 +1,5 @@
 {
-  "name": "المقتطف",
+  "name": "Snippet",
   "description": "حول مقتطفات الكود إلى صور أنيقة مع تمييز الصياغة، جاهزة للمشاركة.",
   "inputs.code.label": "الكود",
   "inputs.code.placeholder": "الصق الكود هنا…",

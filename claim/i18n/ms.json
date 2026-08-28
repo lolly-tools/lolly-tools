@@ -1,5 +1,5 @@
 {
-  "name": "Tuntutan",
+  "name": "Claim",
   "description": "Tuntut nama anda pada mana-mana media yang telah anda hasilkan - imej, PDF, video atau audio. Cop pengarang, hak cipta dan lesen anda sebagai Content Credentials (turut ada Imprint raster yang tahan lama), sambil mengekalkan mana-mana kelayakan yang sudah ada dalam fail - semuanya pada peranti anda, sebelum anda memuat naik ke mana-mana.",
   "a11yLabel": "Benamkan kelayakan ke dalam imej anda",
   "inputs.creator.label": "Artis / pengarang",

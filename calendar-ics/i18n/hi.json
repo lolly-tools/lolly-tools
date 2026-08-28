@@ -1,5 +1,5 @@
 {
-  "name": "कैलेंडर",
+  "name": "Calendar",
   "description": "इवेंट विवरण को किसी भी कैलेंडर ऐप के लिए कैलेंडर (.ics) फ़ाइल में बदलें।",
   "inputs.eventName.label": "इवेंट का नाम",
   "inputs.eventName.placeholder": "जैसे तिमाही समीक्षा",

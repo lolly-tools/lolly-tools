@@ -1,5 +1,5 @@
 {
-  "name": "Krav",
+  "name": "Claim",
   "description": "Krev ditt navn på medier du allerede har laget - bilde, PDF, video eller lyd. Stempl forfatter, opphavsrett og lisens som Content Credentials (også et varig rasterstempel), samtidig som eksisterende legitimasjon i filen bevares - alt på din enhet, før du laster det opp noe sted.",
   "a11yLabel": "Bygg inn legitimasjon i bildet ditt",
   "inputs.creator.label": "Artist / forfatter",

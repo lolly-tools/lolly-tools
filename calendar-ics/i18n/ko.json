@@ -1,5 +1,5 @@
 {
-  "name": "캘린더",
+  "name": "Calendar",
   "description": "일정 정보를 어떤 캘린더 앱에서도 사용할 수 있는 캘린더 파일(.ics)로 변환합니다.",
   "inputs.eventName.label": "일정 이름",
   "inputs.eventName.placeholder": "예: 분기 리뷰",

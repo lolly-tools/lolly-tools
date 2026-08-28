@@ -1,5 +1,5 @@
 {
-  "name": "पुस्तिका",
+  "name": "Booklet",
   "description": "मल्टी-पेज PDF बनाएँ - एक कवर, बहते हुए कंटेंट ब्लॉक और एक बैक पेज।",
   "featured.blurb": "मल्टी-पेज PDF - कवर, कंटेंट, बैक",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - मल्टी-पेज PDF दस्तावेज़",

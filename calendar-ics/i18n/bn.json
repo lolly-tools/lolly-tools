@@ -1,5 +1,5 @@
 {
-  "name": "ক্যালেন্ডার",
+  "name": "Calendar",
   "description": "ইভেন্টের বিবরণকে যেকোনো ক্যালেন্ডার অ্যাপের জন্য একটি ক্যালেন্ডার (.ics) ফাইলে পরিণত করুন।",
   "inputs.eventName.label": "ইভেন্টের নাম",
   "inputs.eventName.placeholder": "যেমন ত্রৈমাসিক রিভিউ",

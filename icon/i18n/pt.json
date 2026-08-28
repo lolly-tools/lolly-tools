@@ -1,5 +1,5 @@
 {
-  "name": "Ícone",
+  "name": "Icon",
   "description": "Criador de favicon e ícone de aplicativo - um .ico multitamanho, PNG e SVG, ou o kit completo do aplicativo em um único zip.",
   "a11yLabel": "Ícone web rotulado como {{default text \"untitled\"}}",
   "inputs.text.label": "Rótulo",

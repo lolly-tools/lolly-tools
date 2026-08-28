@@ -49,11 +49,15 @@
     if (w) { var d = document.createElement('div'); d.className = 'booth-msg'; d.textContent = txt; w.appendChild(d); }
   }
 
-  /* Shared with the `3d` tool: both live in this pack, so the profile view always
-     mounts them together, and a tool id is a permanent contract - so this URL is
-     stable. Deliberate: a second copy would be ~780 KB of duplicate three.js to
-     keep version-synced. If `3d` ever leaves this pack, vendor a copy here. */
-  var LIB = '/tools/3d/lib/three.min.js';
+  /* Borrow three.js from the community `flythrough` tool - both live in this
+     public pack, so the profile view always mounts them together and this URL is
+     stable on every profile. (Was `/tools/3d/lib/...`, but `3d` moved to the
+     PRIVATE brands/suse pack, so that 404'd - and defaulted to "3D library failed
+     to load." - on lolly-start, public clones and CI.) A tool id is a permanent
+     contract, so this path is stable. A second copy would be ~780 KB of duplicate
+     three.js to keep version-synced; if `flythrough` ever leaves community, vendor
+     a copy here. */
+  var LIB = '/tools/flythrough/lib/three.min.js';
   function loadThree() {
     if (window.LollyThree) return Promise.resolve(window.LollyThree);
     window.__lollyThreeLoading = window.__lollyThreeLoading || new Promise(function (res, rej) {
@@ -491,7 +495,7 @@ function drawFramed(ctx, source, iw, ih, W, H, framing, fit) {
     // Backing store == the manifest's render size, so the export resolution is
     // exact and deterministic. Keep in step with render.width/height in tool.json.
     var W = 1600, H = 1000;
-    var design = DESIGNS[cfg.design] || DESIGNS.inline;
+    var design = DESIGNS[cfg.design] || DESIGNS.corner;
 
     // Declared up front: the async panel-texture callbacks below close over
     // `disposed`, and addPeople() populates `people` before the render loop is

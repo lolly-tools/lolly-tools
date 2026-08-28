@@ -1,5 +1,5 @@
 {
-  "name": "圖解",
+  "name": "Diagrams",
   "description": "組織圖、流程圖、時間軸等多種圖表 - 可從卡片、文字、Mermaid、DOT 或 CSV 建立。",
   "a11yLabel": "{{default title \"Untitled\"}} - {{diagramType}} 圖表",
   "featured.blurb": "將卡片或文字轉換為符合品牌風格的圖表",

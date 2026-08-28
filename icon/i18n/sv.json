@@ -1,5 +1,5 @@
 {
-  "name": "Ikon",
+  "name": "Icon",
   "description": "Favicon- och app-ikonmakare - en flerstorleks .ico, PNG och SVG, eller hela appkitet som en enda zip-fil.",
   "a11yLabel": "Webbikon märkt {{default text \"untitled\"}}",
   "inputs.text.label": "Etikett",

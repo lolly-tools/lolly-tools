@@ -1,5 +1,5 @@
 {
-  "name": "Scheman",
+  "name": "Diagrams",
   "description": "Organisationsscheman, flödesscheman, tidslinjer och mer - från kort, text, Mermaid, DOT eller CSV.",
   "a11yLabel": "{{default title \"Untitled\"}} - {{diagramType}}-diagram",
   "featured.blurb": "Gör om kort eller text till diagram i din varumärkesstil",

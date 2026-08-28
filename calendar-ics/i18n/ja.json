@@ -1,5 +1,5 @@
 {
-  "name": "カレンダー",
+  "name": "Calendar",
   "description": "イベントの詳細を、どのカレンダーアプリでも使えるカレンダーファイル(.ics)に変換します。",
   "inputs.eventName.label": "イベント名",
   "inputs.eventName.help": "カレンダーの項目のタイトル(SUMMARY)として表示されます。",

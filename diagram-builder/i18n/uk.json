@@ -1,5 +1,5 @@
 {
-  "name": "Діаграми",
+  "name": "Diagrams",
   "description": "Організаційні схеми, блок-схеми, часові шкали та інше - із карток, тексту, Mermaid, DOT або CSV.",
   "a11yLabel": "{{default title \"Untitled\"}} - діаграма {{diagramType}}",
   "featured.blurb": "Перетворюйте картки або текст на фірмові діаграми",

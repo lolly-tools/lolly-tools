@@ -1,5 +1,5 @@
 {
-  "name": "다이어그램",
+  "name": "Diagrams",
   "description": "조직도, 순서도, 타임라인 등 다양한 다이어그램을 만들어요 - 카드, 텍스트, Mermaid, DOT, CSV로 시작할 수 있어요.",
   "a11yLabel": "{{default title \"Untitled\"}} - {{diagramType}} 다이어그램",
   "featured.blurb": "카드나 텍스트를 브랜드에 맞는 다이어그램으로 바꿔요",

@@ -1,5 +1,5 @@
 {
-  "name": "Degrade",
+  "name": "Gradient",
   "description": "Degrade-uri moi în stil mesh, din eșantioanele brandului tău. Trage punctele de culoare direct pe canvas, sau activează Derivă și exportă bucla ca WebM, MP4 sau GIF.",
   "a11yLabel": "Degrade mesh care combină {{count}} culori",
   "inputs.count.label": "Puncte de culoare",

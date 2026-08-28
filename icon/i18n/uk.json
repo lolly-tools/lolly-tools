@@ -1,5 +1,5 @@
 {
-  "name": "Іконка",
+  "name": "Icon",
   "description": "Створення favicon та іконок застосунків - багаторозмірний .ico, PNG і SVG, або весь набір застосунку одним zip-архівом.",
   "a11yLabel": "Веб-іконка з підписом {{default text \"untitled\"}}",
   "inputs.text.label": "Підпис",

@@ -1,5 +1,5 @@
 {
-  "name": "المخططات",
+  "name": "Diagrams",
   "description": "مخططات هيكلية، ومخططات تدفق، وخطوط زمنية، والمزيد - من بطاقات، أو نص، أو Mermaid، أو DOT، أو CSV.",
   "featured.blurb": "حول البطاقات أو النص إلى مخططات متوافقة مع الهوية",
   "a11yLabel": "{{default title \"بدون عنوان\"}} - مخطط {{diagramType}}",

@@ -1,5 +1,5 @@
 {
-  "name": "Lịch",
+  "name": "Calendar",
   "description": "Chuyển chi tiết sự kiện thành tệp lịch (.ics) dùng được cho mọi ứng dụng lịch.",
   "inputs.eventName.label": "Tên sự kiện",
   "inputs.eventName.placeholder": "vd. Đánh giá theo quý",

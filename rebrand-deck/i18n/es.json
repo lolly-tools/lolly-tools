@@ -1,5 +1,5 @@
 {
-  "name": "Rebranding",
+  "name": "Rebrand",
   "description": "Sube una presentación de PowerPoint y ajusta sus colores y fuentes a tu marca - reconstruida en tu dispositivo, sin subir nada.",
   "a11yLabel": "Cambio de marca de la presentación para {{fileName}}",
   "inputs.source.label": "Archivo PowerPoint",

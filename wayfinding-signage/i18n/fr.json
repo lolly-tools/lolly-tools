@@ -1,5 +1,5 @@
 {
-  "name": "Signalétique",
+  "name": "Wayfinding",
   "description": "Panneaux d'événement directionnels - des destinations, chacune avec une flèche. Prêts pour l'impression.",
   "featured.blurb": "Panneaux directionnels d'événement, prêts à imprimer",
   "a11yLabel": "Panneau directionnel pour {{default eventName \"l'événement\"}}{{#if heading}} - {{heading}}{{/if}}",

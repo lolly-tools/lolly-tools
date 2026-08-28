@@ -1,5 +1,5 @@
 {
-  "name": "Perete de logo-uri",
+  "name": "Logo Wall",
   "description": "Aranjează un morman de logo-uri într-o grilă de sponsori curată și uniformă - peretele „NASCAR”.",
   "a11yLabel": "O grilă cu {{logos.length}} logo-uri",
   "inputs.columns.label": "Coloane",

@@ -1,5 +1,5 @@
 {
-  "name": "Icoon",
+  "name": "Icon",
   "description": "Favicon- en app-iconmaker - een .ico, PNG en SVG in meerdere formaten, of de hele app-iconenset als één zip-bestand.",
   "a11yLabel": "Webicoon met label {{default text \"untitled\"}}",
   "inputs.text.label": "Label",

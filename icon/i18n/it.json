@@ -1,5 +1,5 @@
 {
-  "name": "Icona",
+  "name": "Icon",
   "description": "Creatore di favicon e icone per app - un file .ico multi-dimensione, PNG e SVG, oppure l'intero kit dell'app in un unico zip.",
   "a11yLabel": "Icona web etichettata {{default text \"untitled\"}}",
   "inputs.text.label": "Etichetta",

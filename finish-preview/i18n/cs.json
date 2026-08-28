@@ -1,5 +1,5 @@
 {
-  "name": "Povrchové úpravy",
+  "name": "Finishes",
   "description": "Náhledni fólii, bodový lak UV, ražbu a soft-touch úpravy na svém návrhu - pak exportuj tiskárnou požadovanou spot desku. Náhled na obrazovce je jen prezentační; deska je skutečný výstup, který tvá tiskárna potřebuje.",
   "a11yLabel": "Návrh se simulovanou tiskovou úpravou, nebo tisková deska v zobrazení desky",
   "inputs.image.label": "Návrh",

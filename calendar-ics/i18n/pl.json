@@ -1,5 +1,5 @@
 {
-  "name": "Kalendarz",
+  "name": "Calendar",
   "description": "Zmień szczegóły wydarzenia w plik kalendarza (.ics) dla każdej aplikacji kalendarza.",
   "inputs.eventName.label": "Nazwa wydarzenia",
   "inputs.eventName.help": "Wyświetlana jako tytuł wpisu w kalendarzu (SUMMARY).",

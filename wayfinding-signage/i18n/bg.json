@@ -1,5 +1,5 @@
 {
-  "name": "Навигация",
+  "name": "Wayfinding",
   "description": "Насочващи табели за събития - дестинации, всяка със стрелка. Готово за печат.",
   "featured.blurb": "Указателни табели за събития, готови за печат",
   "a11yLabel": "Навигационна табела за {{default eventName \"the event\"}}{{#if heading}} - {{heading}}{{/if}}",

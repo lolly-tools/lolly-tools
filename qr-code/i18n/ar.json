@@ -1,5 +1,5 @@
 {
-  "name": "رمز QR",
+  "name": "QR Code",
   "description": "رموز QR لرابط، أو بطاقة تواصل، أو شبكة Wi-Fi، أو موعد في التقويم، أو موقع جغرافي، أو نص عادي.",
   "a11yLabel": "رمز QR يرتبط بـ {{default url \"(no URL set)\"}}",
   "featured.blurb": "رموز QR بأي لون من ألوان علامتك",

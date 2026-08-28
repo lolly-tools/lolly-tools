@@ -1,5 +1,5 @@
 {
-  "name": "Bewegwijzering",
+  "name": "Wayfinding",
   "description": "Richtingaanduidende evenementenborden - bestemmingen, elk met een pijl. Drukklaar.",
   "featured.blurb": "Richtingaanwijzende evenementborden, printklaar",
   "a11yLabel": "Bewegwijzeringsbord voor {{default eventName \"het evenement\"}}{{#if heading}} - {{heading}}{{/if}}",

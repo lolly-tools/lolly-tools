@@ -1,5 +1,5 @@
 {
-  "name": "Ikon",
+  "name": "Icon",
   "description": "Favicon- og app-ikon-generator - en flerstørrelses .ico-fil, PNG og SVG, eller hele appikonpakken som én zip-fil.",
   "a11yLabel": "Webikon merket {{default text \"untitled\"}}",
   "inputs.text.label": "Etikett",

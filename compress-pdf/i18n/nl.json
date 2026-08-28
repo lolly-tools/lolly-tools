@@ -1,5 +1,5 @@
 {
-  "name": "Comprimeren",
+  "name": "Compress",
   "description": "Verklein een PDF door de afbeeldingen erin opnieuw te comprimeren - op je eigen apparaat.",
   "a11yLabel": "PDF-compressor voor {{fileName}}",
   "inputs.source.label": "PDF",

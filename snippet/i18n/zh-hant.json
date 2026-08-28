@@ -1,5 +1,5 @@
 {
-  "name": "程式碼片段",
+  "name": "Snippet",
   "description": "將程式碼片段轉換成簡潔、具語法高亮、可分享的圖片。",
   "inputs.code.label": "程式碼",
   "inputs.code.placeholder": "在此貼上程式碼……",

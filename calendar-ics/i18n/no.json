@@ -1,5 +1,5 @@
 {
-  "name": "Kalender",
+  "name": "Calendar",
   "description": "Gjør hendelsesdetaljer om til en kalenderfil (.ics) for alle kalenderapper.",
   "inputs.eventName.label": "Navn på hendelse",
   "inputs.eventName.placeholder": "f.eks. Kvartalsgjennomgang",

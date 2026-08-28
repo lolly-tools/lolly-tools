@@ -1,5 +1,5 @@
 {
-  "name": "Úryvek",
+  "name": "Snippet",
   "description": "Proměň úryvky kódu v čisté obrázky se zvýrazněnou syntaxí, připravené ke sdílení.",
   "inputs.code.label": "Kód",
   "inputs.code.placeholder": "Sem vlož svůj kód…",

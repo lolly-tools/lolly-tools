@@ -1,5 +1,5 @@
 {
-  "name": "Sinalização",
+  "name": "Wayfinding",
   "description": "Placas direcionais de eventos - destinos, cada um com uma seta. Prontas para impressão.",
   "featured.blurb": "Placas direcionais para eventos, prontas para impressão",
   "a11yLabel": "Placa de sinalização para {{default eventName \"the event\"}}{{#if heading}} - {{heading}}{{/if}}",

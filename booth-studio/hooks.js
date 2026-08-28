@@ -92,7 +92,7 @@ function compute(model) {
   var bgPos = (inp.bgPosition && typeof inp.bgPosition === 'object') ? inp.bgPosition : {};
 
   var cfg = {
-    design: inp.design || 'inline',
+    design: inp.design || 'corner',
     structure: inp.structure || '#1c1f26',
     panelBase: inp.panelBase || '#30ba78',
     panels: panels,

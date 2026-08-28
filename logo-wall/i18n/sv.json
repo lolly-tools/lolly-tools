@@ -1,5 +1,5 @@
 {
-  "name": "Logotypvägg",
+  "name": "Logo Wall",
   "description": "Arrangera en hög med logotyper i ett snyggt, jämnt sponsorrutnät - ”NASCAR”-väggen.",
   "a11yLabel": "Ett rutnät med {{logos.length}} logotyper",
   "inputs.columns.label": "Kolumner",

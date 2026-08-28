@@ -1,5 +1,5 @@
 {
-  "name": "日历",
+  "name": "Calendar",
   "description": "把活动详情转换成日历文件（.ics），适用于任何日历应用。",
   "inputs.eventName.label": "活动名称",
   "inputs.eventName.placeholder": "例如：季度回顾",

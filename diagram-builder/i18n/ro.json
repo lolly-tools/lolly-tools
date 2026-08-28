@@ -1,5 +1,5 @@
 {
-  "name": "Diagrame",
+  "name": "Diagrams",
   "description": "Organigrame, diagrame flux, cronologii și multe altele - din carduri, text, Mermaid, DOT sau CSV.",
   "a11yLabel": "{{default title \"Fără titlu\"}} - diagramă {{diagramType}}",
   "featured.blurb": "Transformă carduri sau text în diagrame aliniate brandului",

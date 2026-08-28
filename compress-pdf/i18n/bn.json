@@ -1,5 +1,5 @@
 {
-  "name": "কম্প্রেস",
+  "name": "Compress",
   "description": "এর ছবিগুলো পুনরায় সংকুচিত করে একটি PDF ছোট করুন - আপনার ডিভাইসেই।",
   "a11yLabel": "{{fileName}}-এর জন্য PDF কম্প্রেসর",
   "inputs.source.label": "PDF",

@@ -1,5 +1,5 @@
 {
-  "name": "লোগো ওয়াল",
+  "name": "Logo Wall",
   "description": "একগুচ্ছ লোগোকে একটি পরিষ্কার, সমান স্পনসর গ্রিডে সাজান - “NASCAR” দেয়াল।",
   "a11yLabel": "{{logos.length}}টি লোগোর একটি গ্রিড",
   "inputs.columns.label": "কলাম",

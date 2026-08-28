@@ -1,5 +1,5 @@
 {
-  "name": "Komprimer",
+  "name": "Compress",
   "description": "Krymp en PDF ved å komprimere bildene på nytt - på din enhet.",
   "a11yLabel": "PDF-kompressor for {{fileName}}",
   "inputs.source.label": "PDF",

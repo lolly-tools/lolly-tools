@@ -1,5 +1,5 @@
 {
-  "name": "Mural de Logos",
+  "name": "Logo Wall",
   "description": "Organize uma pilha de logotipos numa grade de patrocinadores limpa e uniforme - o mural “NASCAR”.",
   "a11yLabel": "Uma grade de {{logos.length}} logos",
   "inputs.columns.label": "Colunas",

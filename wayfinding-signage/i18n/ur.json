@@ -1,5 +1,5 @@
 {
-  "name": "راستہ نما",
+  "name": "Wayfinding",
   "description": "سمتی ایونٹ سائنز - منزلیں، ہر ایک تیر کے ساتھ۔ پرنٹ کے لیے تیار۔",
   "featured.blurb": "سمتی ایونٹ سائن، پرنٹ کے لیے تیار",
   "a11yLabel": "{{default eventName \"the event\"}} کے لیے راستہ نما سائن{{#if heading}} - {{heading}}{{/if}}",

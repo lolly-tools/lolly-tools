@@ -1,5 +1,5 @@
 {
-  "name": "QR-Code",
+  "name": "QR Code",
   "description": "QR-Codes für einen Link, eine Kontaktkarte, ein Wi-Fi-Netzwerk, einen Kalendertermin, einen Standort oder reinen Text.",
   "featured.blurb": "QR-Codes in jeder Markenfarbe",
   "a11yLabel": "QR-Code, der zu {{default url \"(keine URL festgelegt)\"}} verlinkt",

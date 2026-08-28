@@ -1,5 +1,5 @@
 {
-  "name": "認領",
+  "name": "Claim",
   "description": "為您已完成的任何媒體聲明作者身分 - 圖片、PDF、影片或音訊。將作者、版權與授權以 Content Credentials 方式標記（也可用耐用的點陣烙印），並保留檔案中既有的任何憑證 - 全程在您的裝置上完成，上傳前即可處理。",
   "a11yLabel": "將憑證嵌入您的圖片",
   "inputs.creator.label": "藝術家 / 作者",

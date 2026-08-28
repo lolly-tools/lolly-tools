@@ -1,5 +1,5 @@
 {
-  "name": "Autoria",
+  "name": "Claim",
   "description": "Reivindique seu nome em qualquer mídia que você já criou - imagem, PDF, vídeo ou áudio. Carimbe seu autor, direitos autorais e licença como Content Credentials (também um Imprint raster durável), preservando qualquer credencial já presente no arquivo - tudo no seu dispositivo, antes de enviá-lo a qualquer lugar.",
   "a11yLabel": "Incorpore credenciais na sua imagem",
   "inputs.creator.label": "Artista / autor",

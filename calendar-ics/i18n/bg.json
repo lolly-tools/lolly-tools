@@ -1,5 +1,5 @@
 {
-  "name": "Календар",
+  "name": "Calendar",
   "description": "Превърни детайлите на събитието в календарен файл (.ics) за всяко календарно приложение.",
   "inputs.eventName.label": "Име на събитието",
   "inputs.eventName.placeholder": "напр. Тримесечен преглед",

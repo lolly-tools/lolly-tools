@@ -1,5 +1,5 @@
 {
-  "name": "الكتيّب",
+  "name": "Booklet",
   "description": "ابنِ ملف PDF متعدد الصفحات - غلاف، كتل محتوى متدفقة، وصفحة خلفية.",
   "featured.blurb": "ملفات PDF متعددة الصفحات - غلاف، محتوى، خلفية",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - مستند PDF متعدد الصفحات",

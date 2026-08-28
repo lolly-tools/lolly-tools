@@ -1,5 +1,5 @@
 {
-  "name": "ダイアグラム",
+  "name": "Diagrams",
   "description": "組織図、フローチャート、タイムラインなどを作成できます - カード、テキスト、Mermaid、DOT、CSVから生成します。",
   "a11yLabel": "{{default title \"Untitled\"}} - {{diagramType}}図表",
   "featured.blurb": "カードやテキストをブランドに合わせた図表に変換します",

@@ -1,5 +1,5 @@
 {
-  "name": "Kitapçık",
+  "name": "Booklet",
   "description": "Çok sayfalı bir PDF oluşturun - bir kapak, akan içerik blokları ve bir arka sayfa.",
   "featured.blurb": "Çok sayfalı PDF'ler - kapak, içerik, arka sayfa",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - çok sayfalı PDF belgesi",

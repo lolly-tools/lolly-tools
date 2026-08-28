@@ -1,5 +1,5 @@
 {
-  "name": "Rebranding",
+  "name": "Rebrand",
   "description": "Chargez un diaporama PowerPoint et calez ses couleurs et polices sur votre marque - reconstruit sur votre appareil, rien n'est envoyé en ligne.",
   "a11yLabel": "Rebrandeur de diaporama pour {{fileName}}",
   "inputs.source.label": "Fichier PowerPoint",

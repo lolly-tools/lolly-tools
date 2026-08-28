@@ -1,5 +1,5 @@
 {
-  "name": "Sơ Đồ",
+  "name": "Diagrams",
   "description": "Sơ đồ tổ chức, sơ đồ luồng, dòng thời gian và nhiều hơn nữa - tạo từ thẻ, văn bản, Mermaid, DOT hoặc CSV.",
   "a11yLabel": "{{default title \"Untitled\"}} - sơ đồ {{diagramType}}",
   "inputs.diagramPreset.label": "Mẫu có sẵn",

@@ -1,5 +1,5 @@
 {
-  "name": "行事曆",
+  "name": "Calendar",
   "description": "將活動詳情轉換成行事曆檔案（.ics），適用於任何行事曆應用程式。",
   "inputs.eventName.label": "活動名稱",
   "inputs.eventName.placeholder": "例如：季度檢討會議",

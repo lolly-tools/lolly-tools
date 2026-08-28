@@ -1,5 +1,5 @@
 {
-  "name": "Logomuur",
+  "name": "Logo Wall",
   "description": "Rangschik een stapel logo's tot een nette, gelijkmatige sponsorgrid - de \"NASCAR\"-muur.",
   "a11yLabel": "Een raster van {{logos.length}} logo's",
   "inputs.columns.label": "Kolommen",

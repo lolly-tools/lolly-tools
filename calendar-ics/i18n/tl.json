@@ -1,5 +1,5 @@
 {
-  "name": "Kalendaryo",
+  "name": "Calendar",
   "description": "I-convert ang mga detalye ng event sa isang calendar file (.ics) na pwedeng gamitin sa kahit anong calendar app.",
   "inputs.eventName.label": "Pangalan ng event",
   "inputs.eventName.placeholder": "hal. Quarterly review",

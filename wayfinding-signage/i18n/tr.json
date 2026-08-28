@@ -1,5 +1,5 @@
 {
-  "name": "Yönlendirme",
+  "name": "Wayfinding",
   "description": "Yönlü etkinlik tabelaları - her biri bir okla, hedefler. Baskıya hazır.",
   "featured.blurb": "Yönlü etkinlik tabelaları, baskıya hazır",
   "a11yLabel": "{{default eventName \"the event\"}} için yönlendirme tabelası{{#if heading}} - {{heading}}{{/if}}",

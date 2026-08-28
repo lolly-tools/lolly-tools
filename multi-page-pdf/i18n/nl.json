@@ -1,5 +1,5 @@
 {
-  "name": "Boekje",
+  "name": "Booklet",
   "description": "Bouw een meerpagina-PDF - een omslag, doorlopende inhoudsblokken en een achterpagina.",
   "featured.blurb": "Meerpagina-PDF's - omslag, inhoud, achterkant",
   "a11yLabel": "{{default coverTitle \"Naamloos\"}} - pdf-document met meerdere pagina's",

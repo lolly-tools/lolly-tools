@@ -1,5 +1,5 @@
 {
-  "name": "標誌牆",
+  "name": "Logo Wall",
   "description": "將一堆標誌排列成整齊均勻的贊助商牆網格 - 即「NASCAR」牆。",
   "a11yLabel": "由 {{logos.length}} 個標誌組成的網格",
   "inputs.columns.label": "欄數",

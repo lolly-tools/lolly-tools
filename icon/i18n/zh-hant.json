@@ -1,5 +1,5 @@
 {
-  "name": "圖示",
+  "name": "Icon",
   "description": "Favicon 與應用程式圖示產生工具 - 提供多尺寸的 .ico、PNG 與 SVG，或整組應用程式圖示打包成一個 zip 檔。",
   "a11yLabel": "標籤為 {{default text \"untitled\"}} 的網頁圖示",
   "inputs.text.label": "標籤",

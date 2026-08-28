@@ -1,5 +1,5 @@
 {
-  "name": "Диаграми",
+  "name": "Diagrams",
   "description": "Организационни диаграми, блок-схеми, времеви линии и още - от карти, текст, Mermaid, DOT или CSV.",
   "featured.blurb": "Превърни карти или текст в диаграми в стила на бранда",
   "a11yLabel": "{{default title \"Untitled\"}} - диаграма {{diagramType}}",

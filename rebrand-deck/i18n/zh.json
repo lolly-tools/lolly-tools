@@ -1,5 +1,5 @@
 {
-  "name": "改版",
+  "name": "Rebrand",
   "description": "上传 PowerPoint 演示文稿,将其颜色和字体适配为你的品牌 - 在你的设备上重建,无需上传任何内容。",
   "a11yLabel": "{{fileName}} 的演示文稿改版工具",
   "inputs.source.label": "PowerPoint 文件",

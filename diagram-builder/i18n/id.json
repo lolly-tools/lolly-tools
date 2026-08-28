@@ -1,5 +1,5 @@
 {
-  "name": "Diagram",
+  "name": "Diagrams",
   "description": "Bagan organisasi, flowchart, linimasa, dan lainnya - dari kartu, teks, Mermaid, DOT, atau CSV.",
   "featured.blurb": "Ubah kartu atau teks menjadi diagram yang sesuai brand",
   "a11yLabel": "{{default title \"Untitled\"}} - diagram {{diagramType}}",

@@ -1,5 +1,5 @@
 {
-  "name": "दिशासूचक",
+  "name": "Wayfinding",
   "description": "दिशा-सूचक इवेंट साइन - गंतव्य, हर एक तीर के साथ। प्रिंट-रेडी।",
   "featured.blurb": "दिशासूचक इवेंट साइन, प्रिंट के लिए तैयार",
   "a11yLabel": "{{default eventName \"the event\"}} के लिए दिशासूचक साइन{{#if heading}} - {{heading}}{{/if}}",

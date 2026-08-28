@@ -1,5 +1,5 @@
 {
-  "name": "Brožura",
+  "name": "Booklet",
   "description": "Sestav vícestránkové PDF - obálku, plynoucí obsahové bloky a zadní stránku.",
   "featured.blurb": "Vícestránková PDF - obálka, obsah, zadní strana",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - vícestránkový PDF dokument",

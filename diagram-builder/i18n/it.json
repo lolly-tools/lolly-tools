@@ -1,5 +1,5 @@
 {
-  "name": "Diagrammi",
+  "name": "Diagrams",
   "description": "Organigrammi, diagrammi di flusso, timeline e altro ancora - da schede, testo, Mermaid, DOT o CSV.",
   "featured.blurb": "Trasforma schede o testo in diagrammi in linea con il brand",
   "a11yLabel": "{{default title \"Untitled\"}} - diagramma {{diagramType}}",

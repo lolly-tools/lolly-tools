@@ -1,5 +1,5 @@
 {
-  "name": "Código QR",
+  "name": "QR Code",
   "description": "Códigos QR para un enlace, una tarjeta de contacto, una red Wi-Fi, un evento de calendario, una ubicación o texto sencillo.",
   "a11yLabel": "Código QR que enlaza con {{default url \"(sin URL configurada)\"}}",
   "featured.blurb": "Códigos QR en cualquier color de marca",

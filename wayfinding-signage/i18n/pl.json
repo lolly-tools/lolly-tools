@@ -1,5 +1,5 @@
 {
-  "name": "Oznakowanie",
+  "name": "Wayfinding",
   "description": "Kierunkowe znaki wydarzeń - miejsca docelowe, każdy ze strzałką. Gotowe do druku.",
   "a11yLabel": "Tablica informacyjna dla {{default eventName \"the event\"}}{{#if heading}} - {{heading}}{{/if}}",
   "featured.blurb": "Tablice informacyjne dla wydarzeń, gotowe do druku",

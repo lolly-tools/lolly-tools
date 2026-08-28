@@ -1,5 +1,5 @@
 {
-  "name": "Segnaletica direzionale",
+  "name": "Wayfinding",
   "description": "Cartelli direzionali per eventi - destinazioni, ciascuna con una freccia. Pronti per la stampa.",
   "a11yLabel": "Cartello direzionale per {{default eventName \"the event\"}}{{#if heading}} - {{heading}}{{/if}}",
   "featured.blurb": "Cartelli direzionali per eventi, pronti per la stampa",

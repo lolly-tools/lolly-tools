@@ -1,5 +1,5 @@
 {
-  "name": "アイコン",
+  "name": "Icon",
   "description": "ファビコンとアプリアイコンを作成します - マルチサイズの.ico、PNG、SVG、またはアプリキット一式を1つのZIPファイルとして書き出せます。",
   "a11yLabel": "{{default text \"untitled\"}}というラベルのウェブアイコン",
   "inputs.text.label": "ラベル",

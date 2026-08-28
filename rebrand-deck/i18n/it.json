@@ -1,5 +1,5 @@
 {
-  "name": "Rebranding",
+  "name": "Rebrand",
   "description": "Carica una presentazione PowerPoint e adatta colori e font al tuo brand - ricostruita sul tuo dispositivo, senza caricamenti.",
   "a11yLabel": "Rebranding del deck per {{fileName}}",
   "inputs.source.label": "File PowerPoint",

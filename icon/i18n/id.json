@@ -1,5 +1,5 @@
 {
-  "name": "Ikon",
+  "name": "Icon",
   "description": "Pembuat favicon dan ikon aplikasi - file .ico multi-ukuran, PNG, dan SVG, atau seluruh kit aplikasi sebagai satu zip.",
   "a11yLabel": "Ikon web berlabel {{default text \"untitled\"}}",
   "inputs.text.label": "Label",

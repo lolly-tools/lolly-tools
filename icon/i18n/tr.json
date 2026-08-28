@@ -1,5 +1,5 @@
 {
-  "name": "Simge",
+  "name": "Icon",
   "description": "Favicon ve uygulama simgesi oluşturucu - çok boyutlu bir .ico, PNG ve SVG dosyası, ya da tüm uygulama setini tek bir zip içinde.",
   "a11yLabel": "{{default text \"untitled\"}} etiketli web ikonu",
   "inputs.text.label": "Etiket",

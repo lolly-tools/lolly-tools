@@ -1,5 +1,5 @@
 {
-  "name": "소책자",
+  "name": "Booklet",
   "description": "여러 페이지 PDF를 만드세요 - 표지, 흐르는 콘텐츠 블록, 뒤표지까지.",
   "featured.blurb": "여러 페이지 PDF - 표지, 콘텐츠, 뒤표지",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - 멀티 페이지 PDF 문서",

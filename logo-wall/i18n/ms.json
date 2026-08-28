@@ -1,5 +1,5 @@
 {
-  "name": "Dinding Logo",
+  "name": "Logo Wall",
   "description": "Susun timbunan logo menjadi grid penaja yang kemas dan sekata - dinding “NASCAR”.",
   "a11yLabel": "Grid dengan {{logos.length}} logo",
   "inputs.columns.label": "Lajur",

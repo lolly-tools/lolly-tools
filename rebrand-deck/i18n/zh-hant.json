@@ -1,5 +1,5 @@
 {
-  "name": "重塑品牌",
+  "name": "Rebrand",
   "description": "上傳 PowerPoint 簡報，讓其色彩與字型套用您的品牌 - 在您的裝置上重建，不會上傳任何內容。",
   "a11yLabel": "{{fileName}} 的簡報品牌重塑工具",
   "inputs.source.label": "PowerPoint 檔案",

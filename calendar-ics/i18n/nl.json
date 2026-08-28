@@ -1,5 +1,5 @@
 {
-  "name": "Kalender",
+  "name": "Calendar",
   "description": "Zet evenementgegevens om in een kalenderbestand (.ics) voor elke agenda-app.",
   "inputs.eventName.label": "Evenementnaam",
   "inputs.eventName.placeholder": "bijv. Kwartaalevaluatie",

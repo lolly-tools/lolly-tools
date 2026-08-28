@@ -1,5 +1,5 @@
 {
-  "name": "Rajah",
+  "name": "Diagrams",
   "description": "Carta organisasi, carta alir, garis masa dan banyak lagi - daripada kad, teks, Mermaid, DOT atau CSV.",
   "a11yLabel": "{{default title \"Untitled\"}} - rajah {{diagramType}}",
   "inputs.diagramPreset.label": "Praset",

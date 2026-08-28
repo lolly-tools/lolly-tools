@@ -1,5 +1,5 @@
 {
-  "name": "Logo Duvarı",
+  "name": "Logo Wall",
   "description": "Bir logo yığınını düzenli, eşit bir sponsor ızgarasına yerleştirin - “NASCAR” duvarı.",
   "a11yLabel": "{{logos.length}} logodan oluşan bir ızgara",
   "inputs.columns.label": "Sütunlar",

@@ -1,5 +1,5 @@
 {
-  "name": "Thẻ Prompt",
+  "name": "Prompt Card",
   "description": "Dàn trang một prompt dài thành một hình ảnh gọn, dễ đọc cho mô hình đa phương thức - đầu vào hình ảnh thường rẻ hơn cùng số từ đó ở dạng token văn bản.",
   "a11yLabel": "Prompt sang Ảnh - dán hoặc thả văn bản vào canvas và nó sẽ được dàn trang để vừa trong một ảnh nhỏ",
   "inputs.text.label": "Văn bản",

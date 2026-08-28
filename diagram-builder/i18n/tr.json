@@ -1,5 +1,5 @@
 {
-  "name": "Diyagramlar",
+  "name": "Diagrams",
   "description": "Organizasyon şemaları, akış şemaları, zaman çizelgeleri ve daha fazlası - kartlardan, metinden, Mermaid, DOT veya CSV'den.",
   "featured.blurb": "Kartları veya metni markana uygun diyagramlara dönüştür",
   "a11yLabel": "{{default title \"Untitled\"}} - {{diagramType}} diyagram",

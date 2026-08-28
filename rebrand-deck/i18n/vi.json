@@ -1,5 +1,5 @@
 {
-  "name": "Đổi Thương Hiệu",
+  "name": "Rebrand",
   "description": "Tải lên một bộ PowerPoint và khớp màu sắc, font chữ theo thương hiệu của bạn - dựng lại ngay trên thiết bị của bạn, không tải lên đâu cả.",
   "a11yLabel": "Công cụ đổi thương hiệu bộ slide cho {{fileName}}",
   "inputs.source.label": "Tệp PowerPoint",

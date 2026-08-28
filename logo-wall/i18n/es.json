@@ -1,5 +1,5 @@
 {
-  "name": "Muro de logos",
+  "name": "Logo Wall",
   "description": "Organiza un montón de logotipos en una cuadrícula de patrocinadores limpia y uniforme - el muro “NASCAR”.",
   "a11yLabel": "Una cuadrícula de {{logos.length}} logos",
   "inputs.columns.label": "Columnas",

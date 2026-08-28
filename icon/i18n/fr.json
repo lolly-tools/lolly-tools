@@ -1,5 +1,5 @@
 {
-  "name": "Icône",
+  "name": "Icon",
   "description": "Générateur de favicon et d'icône d'application - un fichier .ico multi-tailles, en PNG et SVG, ou le kit complet dans un seul zip.",
   "a11yLabel": "Icône web avec le libellé {{default text \"sans titre\"}}",
   "inputs.text.label": "Libellé",

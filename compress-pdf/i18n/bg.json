@@ -1,5 +1,5 @@
 {
-  "name": "Компресиране",
+  "name": "Compress",
   "description": "Смали PDF, като компресираш повторно изображенията му - на твоето устройство.",
   "a11yLabel": "PDF компресор за {{fileName}}",
   "inputs.source.label": "PDF",

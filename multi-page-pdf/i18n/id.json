@@ -1,5 +1,5 @@
 {
-  "name": "Buklet",
+  "name": "Booklet",
   "description": "Buat PDF multihalaman - sampul, blok konten yang mengalir, dan halaman belakang.",
   "featured.blurb": "PDF multihalaman - sampul, konten, belakang",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - dokumen PDF multi-halaman",

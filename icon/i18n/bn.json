@@ -1,5 +1,5 @@
 {
-  "name": "আইকন",
+  "name": "Icon",
   "description": "ফেভিকন ও অ্যাপ-আইকন মেকার - মাল্টি-সাইজ .ico, PNG এবং SVG, অথবা পুরো অ্যাপ কিট একটি ZIP হিসেবে।",
   "a11yLabel": "{{default text \"untitled\"}} লেবেলযুক্ত ওয়েব আইকন",
   "inputs.text.label": "লেবেল",

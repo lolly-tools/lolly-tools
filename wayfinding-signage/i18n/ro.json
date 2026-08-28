@@ -1,5 +1,5 @@
 {
-  "name": "Orientare",
+  "name": "Wayfinding",
   "description": "Indicatoare direcționale pentru evenimente - destinații, fiecare cu o săgeată. Gata de tipar.",
   "featured.blurb": "Panouri direcționale pentru evenimente, gata de print",
   "a11yLabel": "Semn de orientare pentru {{default eventName \"evenimentul\"}}{{#if heading}} - {{heading}}{{/if}}",

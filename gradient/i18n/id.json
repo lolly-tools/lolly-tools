@@ -1,5 +1,5 @@
 {
-  "name": "Gradien",
+  "name": "Gradient",
   "description": "Gradien bergaya mesh yang lembut dari warna brand Anda. Seret titik warna langsung di kanvas, atau aktifkan Mengambang dan ekspor loop-nya sebagai WebM, MP4, atau GIF.",
   "a11yLabel": "Gradien mesh yang memadukan {{count}} warna",
   "inputs.count.label": "Titik warna",

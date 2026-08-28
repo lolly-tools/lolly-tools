@@ -1,5 +1,5 @@
 {
-  "name": "الإرشاد",
+  "name": "Wayfinding",
   "description": "لافتات فعاليات اتجاهية - وجهات، كل منها بسهم. جاهزة للطباعة.",
   "featured.blurb": "لافتات اتجاهات للفعاليات، جاهزة للطباعة",
   "a11yLabel": "لافتة إرشادية لـ {{default eventName \"the event\"}}{{#if heading}} - {{heading}}{{/if}}",

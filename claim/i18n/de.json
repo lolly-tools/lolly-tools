@@ -1,5 +1,5 @@
 {
-  "name": "Anspruch",
+  "name": "Claim",
   "description": "Beanspruchen Sie Ihren Namen für jedes Medium, das Sie bereits erstellt haben - Bild, PDF, Video oder Audio. Stempeln Sie Autor, Copyright und Lizenz als Content Credentials (auch ein dauerhaftes Raster-Imprint), wobei jede bereits in der Datei vorhandene Berechtigung erhalten bleibt - alles auf Ihrem Gerät, bevor Sie es irgendwo hochladen.",
   "a11yLabel": "Nachweise in Ihr Bild einbetten",
   "inputs.creator.label": "Künstler / Autor",

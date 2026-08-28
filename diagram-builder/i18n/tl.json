@@ -1,5 +1,5 @@
 {
-  "name": "Mga Diagram",
+  "name": "Diagrams",
   "description": "Mga org chart, flowchart, timeline at higit pa - mula sa card, text, Mermaid, DOT o CSV.",
   "featured.blurb": "I-convert ang cards o text sa diagrams na naaayon sa brand mo",
   "a11yLabel": "{{default title \"Walang Pamagat\"}} - {{diagramType}} na diagram",

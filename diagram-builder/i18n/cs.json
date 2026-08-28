@@ -1,5 +1,5 @@
 {
-  "name": "Diagramy",
+  "name": "Diagrams",
   "description": "Organizační schémata, vývojové diagramy, časové osy a další - z karet, textu, Mermaid, DOT nebo CSV.",
   "featured.blurb": "Změň karty nebo text na diagramy podle značky",
   "a11yLabel": "{{default title \"Bez názvu\"}} - diagram {{diagramType}}",

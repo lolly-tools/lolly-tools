@@ -1,5 +1,5 @@
 {
-  "name": "아이콘",
+  "name": "Icon",
   "description": "파비콘과 앱 아이콘을 만들어요 - 여러 크기가 담긴 .ico 파일과 PNG, SVG로 받거나, 전체 앱 아이콘 세트를 zip 파일 하나로 받을 수 있어요.",
   "a11yLabel": "{{default text \"untitled\"}} 라벨이 표시된 웹 아이콘",
   "inputs.text.label": "라벨",

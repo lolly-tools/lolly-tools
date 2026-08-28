@@ -1,5 +1,5 @@
 {
-  "name": "Diagramas",
+  "name": "Diagrams",
   "description": "Organigramas, diagramas de flujo, líneas de tiempo y más - a partir de tarjetas, texto, Mermaid, DOT o CSV.",
   "featured.blurb": "Convierte tarjetas o texto en diagramas con tu marca",
   "a11yLabel": "{{default title \"Untitled\"}} - diagrama {{diagramType}}",

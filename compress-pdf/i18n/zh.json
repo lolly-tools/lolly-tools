@@ -1,5 +1,5 @@
 {
-  "name": "压缩",
+  "name": "Compress",
   "description": "通过重新压缩图片来缩小 PDF - 在你的设备上完成。",
   "a11yLabel": "{{fileName}} 的 PDF 压缩器",
   "inputs.source.label": "PDF",

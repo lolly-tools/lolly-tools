@@ -1,5 +1,5 @@
 {
-  "name": "Diagramme",
+  "name": "Diagrams",
   "description": "Organigramme, Flussdiagramme, Zeitleisten und mehr - aus Karten, Text, Mermaid, DOT oder CSV.",
   "a11yLabel": "{{default title \"Untitled\"}} - {{diagramType}}-Diagramm",
   "inputs.diagramPreset.label": "Voreinstellung",

@@ -1,5 +1,5 @@
 {
-  "name": "渐变",
+  "name": "Gradient",
   "description": "由品牌色板生成的柔和网格渐变。直接在画布上拖动颜色点，或开启漂移效果，将循环动画导出为 WebM、MP4 或 GIF。",
   "a11yLabel": "融合 {{count}} 种颜色的网格渐变",
   "inputs.count.label": "颜色点数量",

@@ -1,5 +1,5 @@
 {
-  "name": "Vägvisning",
+  "name": "Wayfinding",
   "description": "Riktningsskyltar för evenemang - destinationer, var och en med en pil. Tryckklara.",
   "featured.blurb": "Riktningsskyltar för evenemang, tryckfärdiga",
   "a11yLabel": "Vägvisningsskylt för {{default eventName \"evenemanget\"}}{{#if heading}} - {{heading}}{{/if}}",

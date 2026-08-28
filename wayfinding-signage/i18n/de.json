@@ -1,5 +1,5 @@
 {
-  "name": "Wegweiser",
+  "name": "Wayfinding",
   "description": "Wegweiser-Schilder für Veranstaltungen - Ziele, jeweils mit einem Pfeil. Druckfertig.",
   "featured.blurb": "Richtungsweisende Veranstaltungsschilder, druckfertig",
   "a11yLabel": "Wegweiser-Schild für {{default eventName \"die Veranstaltung\"}}{{#if heading}} - {{heading}}{{/if}}",

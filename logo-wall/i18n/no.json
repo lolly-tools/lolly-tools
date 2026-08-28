@@ -1,5 +1,5 @@
 {
-  "name": "Logovegg",
+  "name": "Logo Wall",
   "description": "Ordne en haug med logoer i et ryddig, jevnt sponsorrutenett - \"NASCAR\"-veggen.",
   "a11yLabel": "Et rutenett med {{logos.length}} logoer",
   "inputs.columns.label": "Kolonner",

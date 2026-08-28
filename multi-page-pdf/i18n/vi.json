@@ -1,5 +1,5 @@
 {
-  "name": "Sách Nhỏ",
+  "name": "Booklet",
   "description": "Tạo PDF nhiều trang - trang bìa, khối nội dung tự chảy, và trang cuối.",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - tài liệu PDF nhiều trang",
   "featured.blurb": "PDF nhiều trang - bìa, nội dung, trang cuối",

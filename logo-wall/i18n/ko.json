@@ -1,5 +1,5 @@
 {
-  "name": "로고 벽",
+  "name": "Logo Wall",
   "description": "여러 로고를 깔끔하고 균일한 스폰서 그리드로 배치하세요 - “나스카” 월.",
   "a11yLabel": "로고 {{logos.length}}개로 이루어진 그리드",
   "inputs.columns.label": "열",

@@ -1,5 +1,5 @@
 {
-  "name": "Libretto",
+  "name": "Booklet",
   "description": "Crea un PDF multipagina - una copertina, blocchi di contenuto fluidi e una pagina finale.",
   "featured.blurb": "PDF multipagina - copertina, contenuto, retro",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - documento PDF multipagina",

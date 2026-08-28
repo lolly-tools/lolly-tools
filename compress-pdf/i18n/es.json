@@ -1,5 +1,5 @@
 {
-  "name": "Comprimir",
+  "name": "Compress",
   "description": "Reduce el tamaño de un PDF recomprimiendo sus imágenes - en tu dispositivo.",
   "a11yLabel": "Compresor de PDF para {{fileName}}",
   "inputs.source.label": "PDF",

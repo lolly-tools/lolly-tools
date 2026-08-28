@@ -1,5 +1,5 @@
 {
-  "name": "Стиснення",
+  "name": "Compress",
   "description": "Зменште PDF, перестиснувши його зображення - на вашому пристрої.",
   "a11yLabel": "Стискач PDF для {{fileName}}",
   "inputs.source.label": "PDF",

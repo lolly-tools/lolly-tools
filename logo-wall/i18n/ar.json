@@ -1,5 +1,5 @@
 {
-  "name": "حائط الشعارات",
+  "name": "Logo Wall",
   "description": "رتّب كومة من الشعارات في شبكة رعاة نظيفة ومتساوية - جدار \"NASCAR\".",
   "a11yLabel": "شبكة من {{logos.length}} شعارًا",
   "inputs.columns.label": "الأعمدة",

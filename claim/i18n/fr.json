@@ -1,5 +1,5 @@
 {
-  "name": "Revendication",
+  "name": "Claim",
   "description": "Revendiquez votre nom sur tout média que vous avez déjà créé - image, PDF, vidéo ou audio. Apposez votre auteur, copyright et licence comme Content Credentials (aussi un Imprint raster durable), en préservant tout credential déjà présent dans le fichier - le tout sur votre appareil, avant de le mettre en ligne.",
   "a11yLabel": "Intègre des identifiants dans ton image",
   "inputs.creator.label": "Artiste / auteur",

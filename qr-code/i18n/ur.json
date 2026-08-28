@@ -1,5 +1,5 @@
 {
-  "name": "QR کوڈ",
+  "name": "QR Code",
   "description": "کسی لنک، رابطہ کارڈ، Wi-Fi نیٹ ورک، کیلنڈر ایونٹ، مقام یا سادہ متن کے لیے QR کوڈز۔",
   "a11yLabel": "{{default url \"(no URL set)\"}} سے منسلک QR کوڈ",
   "featured.blurb": "کسی بھی برانڈ رنگ میں QR کوڈز",

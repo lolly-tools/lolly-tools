@@ -1,5 +1,5 @@
 {
-  "name": "Penunjuk Arah",
+  "name": "Wayfinding",
   "description": "Papan penunjuk arah acara - tujuan, masing-masing dengan panah. Siap cetak.",
   "featured.blurb": "Papan penunjuk arah acara, siap cetak",
   "a11yLabel": "Papan penunjuk arah untuk {{default eventName \"the event\"}}{{#if heading}} - {{heading}}{{/if}}",

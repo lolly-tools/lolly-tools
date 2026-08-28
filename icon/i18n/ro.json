@@ -1,5 +1,5 @@
 {
-  "name": "Iconiță",
+  "name": "Icon",
   "description": "Creator de favicon și iconițe de aplicație - un fișier .ico cu mai multe dimensiuni, PNG și SVG, sau întregul kit de aplicație într-o singură arhivă zip.",
   "a11yLabel": "Iconiță web etichetată {{default text \"untitled\"}}",
   "inputs.text.label": "Etichetă",

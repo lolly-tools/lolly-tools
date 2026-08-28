@@ -1,5 +1,5 @@
 {
-  "name": "声明",
+  "name": "Claim",
   "description": "为你已制作完成的任意媒体声明署名 - 图像、PDF、视频或音频。以 Content Credentials 的形式标记作者、版权和许可(还提供持久的光栅印记),并保留文件中已有的任何凭证 - 全部在你的设备上完成,上传前即可处理。",
   "a11yLabel": "将凭证嵌入图像",
   "inputs.creator.label": "艺术家 / 作者",

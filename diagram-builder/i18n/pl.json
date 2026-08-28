@@ -1,5 +1,5 @@
 {
-  "name": "Diagramy",
+  "name": "Diagrams",
   "description": "Schematy organizacyjne, schematy blokowe, osie czasu i inne - z kart, tekstu, Mermaid, DOT lub CSV.",
   "a11yLabel": "{{default title \"Bez tytułu\"}} - diagram {{diagramType}}",
   "featured.blurb": "Zamień karty lub tekst w diagramy zgodne z marką",

@@ -1,5 +1,5 @@
 {
-  "name": "QR-kode",
+  "name": "QR Code",
   "description": "QR-koder for en lenke, et kontaktkort, et Wi-Fi-nettverk, en kalenderhendelse, et sted eller ren tekst.",
   "featured.blurb": "QR-koder i valgfri merkefarge",
   "a11yLabel": "QR-kode som lenker til {{default url \"(ingen URL angitt)\"}}",

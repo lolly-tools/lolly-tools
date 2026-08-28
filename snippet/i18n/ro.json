@@ -1,5 +1,5 @@
 {
-  "name": "Fragment",
+  "name": "Snippet",
   "description": "Transformă fragmente de cod în imagini curate, cu evidențierea sintaxei, gata de distribuit.",
   "inputs.code.label": "Cod",
   "inputs.code.placeholder": "Lipește codul aici…",

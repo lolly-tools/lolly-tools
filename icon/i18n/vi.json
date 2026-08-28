@@ -1,5 +1,5 @@
 {
-  "name": "Biểu Tượng",
+  "name": "Icon",
   "description": "Công cụ tạo favicon và biểu tượng ứng dụng - xuất file .ico đa kích thước, PNG và SVG, hoặc trọn bộ app kit dưới dạng một file ZIP.",
   "a11yLabel": "Biểu tượng web được gắn nhãn {{default text \"untitled\"}}",
   "inputs.text.label": "Nhãn",

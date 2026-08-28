@@ -1,5 +1,5 @@
 {
-  "name": "圧縮",
+  "name": "Compress",
   "description": "画像を再圧縮してPDFを軽量化 - デバイス上で処理します。",
   "a11yLabel": "{{fileName}} のPDF圧縮ツール",
   "inputs.source.label": "PDF",

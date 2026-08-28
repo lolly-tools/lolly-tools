@@ -1,5 +1,5 @@
 {
-  "name": "图示",
+  "name": "Diagrams",
   "description": "组织架构图、流程图、时间线等多种图表 - 可通过卡片、文字、Mermaid、DOT 或 CSV 生成。",
   "featured.blurb": "将卡片或文本转换为符合品牌风格的图表",
   "a11yLabel": "{{default title \"未命名\"}} - {{diagramType}} 图表",

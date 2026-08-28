@@ -1,5 +1,5 @@
 {
-  "name": "Cuadernillo",
+  "name": "Booklet",
   "description": "Crea un PDF de varias páginas - una portada, bloques de contenido fluido y una contraportada.",
   "featured.blurb": "PDFs de varias páginas - portada, contenido, contraportada",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - documento PDF multipágina",

@@ -1,5 +1,5 @@
 {
-  "name": "Kalender",
+  "name": "Calendar",
   "description": "Omvandla evenemangsdetaljer till en kalenderfil (.ics) för valfri kalenderapp.",
   "inputs.eventName.label": "Evenemangsnamn",
   "inputs.eventName.placeholder": "t.ex. Kvartalsgenomgång",

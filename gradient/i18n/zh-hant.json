@@ -1,5 +1,5 @@
 {
-  "name": "漸層",
+  "name": "Gradient",
   "description": "以你的品牌色票打造柔和的網格式漸層。直接在畫布上拖曳色點，或開啟漂移，將循環匯出為 WebM、MP4 或 GIF。",
   "a11yLabel": "融合 {{count}} 種顏色的網格漸層",
   "inputs.count.label": "色點數量",

@@ -1,5 +1,5 @@
 {
-  "name": "QR-code",
+  "name": "QR Code",
   "description": "QR-codes voor een link, contactkaart, Wi-Fi-netwerk, agenda-afspraak, locatie of platte tekst.",
   "featured.blurb": "QR-codes in elke merkkleur",
   "a11yLabel": "QR-code die linkt naar {{default url \"(no URL set)\"}}",

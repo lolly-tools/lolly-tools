@@ -1,5 +1,5 @@
 {
-  "name": "Señalización",
+  "name": "Wayfinding",
   "description": "Carteles direccionales para eventos - destinos, cada uno con una flecha. Listos para imprenta.",
   "a11yLabel": "Cartel de señalización para {{default eventName \"the event\"}}{{#if heading}} - {{heading}}{{/if}}",
   "featured.blurb": "Carteles direccionales para eventos, listos para imprimir",

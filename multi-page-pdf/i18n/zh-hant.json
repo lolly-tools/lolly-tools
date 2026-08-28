@@ -1,5 +1,5 @@
 {
-  "name": "小冊子",
+  "name": "Booklet",
   "description": "製作多頁 PDF - 含封面、內文區塊與封底。",
   "featured.blurb": "多頁 PDF - 封面、內文、封底",
   "a11yLabel": "{{default coverTitle \"Untitled\"}} - 多頁 PDF 文件",

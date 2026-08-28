@@ -1,5 +1,5 @@
 {
-  "name": "Autorství",
+  "name": "Claim",
   "description": "Zabodni si své jméno do jakéhokoli média, které jsi už vytvořil/a - obrázek, PDF, video nebo audio. Otiskni autora, autorská práva a licenci jako Content Credentials (i trvalý rastrový otisk), přičemž zachováš jakoukoli přihlašovací informaci už uvnitř souboru - vše na tvém zařízení, ještě než to kamkoli nahraješ.",
   "a11yLabel": "Vlož pověření do svého obrázku",
   "inputs.creator.label": "Umělec / autor",

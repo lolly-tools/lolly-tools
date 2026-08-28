@@ -1,5 +1,5 @@
 {
-  "name": "Mur de Logos",
+  "name": "Logo Wall",
   "description": "Disposez une pile de logos en une grille de sponsors propre et régulière - le mur « NASCAR ».",
   "a11yLabel": "Une grille de {{logos.length}} logos",
   "inputs.columns.label": "Colonnes",

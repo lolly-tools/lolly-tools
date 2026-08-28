@@ -6,7 +6,7 @@
   "status": "experimental",
   "category": "event",
   "description": "Dress a 3D event booth with sponsor artwork. Click any panel to drop an image on it, pick a booth design, and render a still or a turntable for a sponsor pitch.",
-  "a11yLabel": "3D mockup of {{default design \"an inline\"}} event booth dressed with sponsor artwork",
+  "a11yLabel": "3D mockup of {{default design \"a corner L\"}} event booth dressed with sponsor artwork",
   "tags": [
     "booth",
     "event",
@@ -41,7 +41,7 @@
       "label": "Booth design",
       "section": "Booth",
       "type": "select",
-      "default": "inline",
+      "default": "corner",
       "help": "The stand shape. Your panel artwork carries across designs - a back wall stays a back wall.",
       "options": [
         {

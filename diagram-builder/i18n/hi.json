@@ -1,5 +1,5 @@
 {
-  "name": "डायग्राम",
+  "name": "Diagrams",
   "description": "ऑर्ग चार्ट, फ़्लोचार्ट, टाइमलाइन और भी बहुत कुछ - कार्ड, टेक्स्ट, Mermaid, DOT या CSV से।",
   "featured.blurb": "कार्ड या टेक्स्ट को ऑन-ब्रांड डायग्राम में बदलें",
   "a11yLabel": "{{default title \"Untitled\"}} - {{diagramType}} डायग्राम",

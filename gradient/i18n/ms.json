@@ -1,5 +1,5 @@
 {
-  "name": "Kecerunan",
+  "name": "Gradient",
   "description": "Kecerunan gaya jaringan yang lembut daripada sampel warna jenama anda. Seret titik warna terus pada kanvas, atau hidupkan Hanyut dan eksport gelung itu sebagai WebM, MP4 atau GIF.",
   "a11yLabel": "Gradien jaringan yang mencampurkan {{count}} warna",
   "inputs.count.label": "Titik warna",

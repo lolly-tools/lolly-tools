@@ -1,5 +1,5 @@
 {
-  "name": "I-rebrand",
+  "name": "Rebrand",
   "description": "Mag-upload ng PowerPoint deck at i-snap ang kulay at font nito sa iyong brand - muling binuo sa iyong device, walang na-upload.",
   "a11yLabel": "Deck rebrander para sa {{fileName}}",
   "inputs.source.label": "PowerPoint file",

@@ -1,5 +1,5 @@
 {
-  "name": "Calendario",
+  "name": "Calendar",
   "description": "Trasforma i dettagli di un evento in un file calendario (.ics) per qualsiasi app di calendario.",
   "inputs.eventName.label": "Nome evento",
   "inputs.eventName.placeholder": "es. Revisione trimestrale",

@@ -1,5 +1,5 @@
 {
-  "name": "Muro di loghi",
+  "name": "Logo Wall",
   "description": "Disponi un insieme di loghi in una griglia sponsor pulita e uniforme - il muro “NASCAR”.",
   "a11yLabel": "Una griglia di {{logos.length}} loghi",
   "inputs.columns.label": "Colonne",

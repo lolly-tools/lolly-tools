@@ -1,5 +1,5 @@
 {
-  "name": "誘導サイン",
+  "name": "Wayfinding",
   "description": "方向案内サイン - 各行き先に矢印付き。印刷対応。",
   "featured.blurb": "印刷対応のイベント誘導サイン",
   "a11yLabel": "{{default eventName \"the event\"}}の誘導サイン{{#if heading}} - {{heading}}{{/if}}",

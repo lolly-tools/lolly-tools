@@ -1,5 +1,5 @@
 {
-  "name": "Sestava log",
+  "name": "Logo Wall",
   "description": "Uspořádej hromadu log do čisté, rovnoměrné mřížky sponzorů - „NASCAR“ stěna.",
   "a11yLabel": "Mřížka {{logos.length}} log",
   "inputs.columns.label": "Sloupce",

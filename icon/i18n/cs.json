@@ -1,5 +1,5 @@
 {
-  "name": "Ikona",
+  "name": "Icon",
   "description": "Tvorba faviconů a ikon aplikací - vícevelikostní .ico, PNG a SVG, nebo celá sada pro aplikaci v jednom ZIPu.",
   "a11yLabel": "Webová ikona s popiskem {{default text \"untitled\"}}",
   "inputs.text.label": "Popisek",

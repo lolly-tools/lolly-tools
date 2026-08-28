@@ -1,5 +1,5 @@
 {
-  "name": "Kalendář",
+  "name": "Calendar",
   "description": "Převede podrobnosti akce na soubor kalendáře (.ics) pro jakoukoli kalendářovou aplikaci.",
   "inputs.eventName.label": "Název akce",
   "inputs.eventName.placeholder": "např. Čtvrtletní hodnocení",
