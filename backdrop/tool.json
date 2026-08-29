@@ -6,6 +6,7 @@
   "version": "1.0.2",
   "engineVersion": "^1.0.0",
   "status": "official",
+  "singleInstance": true,
   "category": "everyone",
   "tags": ["backdrop", "background", "wallpaper", "hero", "animated", "generative", "brand"],
   "examples": [

@@ -5,6 +5,7 @@
   "version": "1.5.1",
   "engineVersion": "^1.0.0",
   "status": "official",
+  "singleInstance": true,
   "category": "utility",
   "tags": [
     "code",

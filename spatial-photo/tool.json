@@ -4,6 +4,7 @@
   "version": "0.1.1",
   "engineVersion": "^1.152.0",
   "status": "experimental",
+  "singleInstance": true,
   "category": "designer",
   "description": "Drop in one photo and move a camera through it: depth is read on your device, so a flat picture becomes a scene with real parallax, atmosphere and focus.",
   "a11yLabel": "Parallax {{default move \"dolly-in\"}} camera move through a photograph",
