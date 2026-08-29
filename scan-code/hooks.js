@@ -388,16 +388,26 @@ async function onInput({ model, host }) {
 // dropped). Every frame is SHOWN so the user can line the code up in the viewfinder;
 // the decode is throttled separately (it's ~O(frame) and needn't run every frame),
 // and the last result + found-quad persist between decodes.
+var _lastTickT = 0;       // last frame we did real work + re-rendered on
 var _lastDecodeT = 0;
 var _lastCorners = '';    // "x,y x,y x,y x,y" polygon points in frame coords, or ''
 async function onFrame({ frame, model, host }) {
   if (!host || !frame) return null;
+
+  // THROTTLE the whole loop to ~12fps. Encoding every camera frame to a JPEG data-URL and
+  // re-hydrating the viewfinder each tick saturated the phone's main thread: the preview
+  // flickered and taps on Home/back stopped registering, trapping the user in the tool
+  // (iOS, 2026-08). ~12fps is smooth to the eye and leaves the thread idle enough to stay
+  // responsive; the runtime already drops overlapping frames, so a sub-budget frame is a
+  // cheap early return. `frame.t` is a monotonic ms stamp - reset the gates if it restarts.
+  if (frame.t < _lastTickT) { _lastTickT = 0; _lastDecodeT = 0; }
+  if (_lastTickT && frame.t - _lastTickT < 80) return null;
+  _lastTickT = frame.t;
   var args = _args(model);
 
-  // Encode the frame ONCE for display. Decode is throttled separately (frame.t is
-  // a monotonic ms stamp; re-decode at most ~7/s) - the view keeps updating smoothly.
-  var src = await _encodeFrame(frame, host);
-  if (host.scan && (!_lastDecodeT || frame.t - _lastDecodeT >= 140 || frame.t < _lastDecodeT)) {
+  // Decode less often than we preview (~7/s): it is ~O(frame) and the last result +
+  // found-quad persist between decodes, so the panel stays put while the view updates.
+  if (host.scan && (!_lastDecodeT || frame.t - _lastDecodeT >= 140)) {
     _lastDecodeT = frame.t;
     var formats = _formatsFilter(args.formats);
     var hits = await host.scan.detect(frame, formats ? { formats: formats } : undefined);
@@ -406,6 +416,7 @@ async function onFrame({ frame, model, host }) {
       _lastCorners = hits[0].corners ? _cornerPoints(hits[0].corners) : '';
     }
   }
+  var src = await _encodeFrame(frame, host);
   var vm = _result(_scanned);      // last decode's result panel (persists between decodes)
   vm.scanFrameSrc = src;           // live viewfinder image
   vm.scanFrameW = frame.width;

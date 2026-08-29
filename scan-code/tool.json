@@ -17,6 +17,7 @@
     "height": 640,
     "formats": ["png"],
     "export": false,
+    "webPreview": true,
     "actions": [],
     "liveFacing": "environment",
     "liveCameraWhen": { "input": "mode", "value": "camera" }
