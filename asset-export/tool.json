@@ -3,17 +3,87 @@
   "name": "Asset Export",
   "description": "Render any catalog asset - or a Lolly tool link - out to any format and size.",
   "a11yLabel": "Exported asset",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "everyone",
   "listed": false,
-  "tags": ["asset", "export", "convert", "format", "logo", "image", "svg", "png", "pdf"],
+  "tags": [
+    "asset",
+    "export",
+    "convert",
+    "format",
+    "logo",
+    "image",
+    "svg",
+    "png",
+    "pdf"
+  ],
+  "examples": [
+    {
+      "label": "Whole asset, brand surface",
+      "values": {
+        "src": {
+          "source": "library",
+          "id": "lolly/demo/lolly-spin",
+          "_unresolved": true
+        },
+        "fit": "contain",
+        "width": 1000,
+        "height": 1000
+      }
+    },
+    {
+      "label": "Filled square crop",
+      "values": {
+        "src": {
+          "source": "library",
+          "id": "lolly/demo/lolly-spin",
+          "_unresolved": true
+        },
+        "fit": "cover",
+        "width": 1000,
+        "height": 1000
+      }
+    },
+    {
+      "label": "Wide banner",
+      "values": {
+        "src": {
+          "source": "library",
+          "id": "lolly/demo/lolly-spin",
+          "_unresolved": true
+        },
+        "fit": "contain",
+        "width": 1600,
+        "height": 600
+      }
+    }
+  ],
   "render": {
     "width": 1000,
     "height": 1000,
-    "formats": ["svg", "png", "jpg", "webp", "pdf", "pdf-cmyk", "cmyk-tiff", "ico", "zip", "avif", "tiff", "eps", "dxf", "emf"],
-    "actions": ["copy", "download", "save"],
+    "formats": [
+      "svg",
+      "png",
+      "jpg",
+      "webp",
+      "pdf",
+      "pdf-cmyk",
+      "cmyk-tiff",
+      "ico",
+      "zip",
+      "avif",
+      "tiff",
+      "eps",
+      "dxf",
+      "emf"
+    ],
+    "actions": [
+      "copy",
+      "download",
+      "save"
+    ],
     "transparentBg": false
   },
   "inputs": [
@@ -29,8 +99,14 @@
       "type": "select",
       "default": "contain",
       "options": [
-        { "value": "contain", "label": "Contain (whole asset, letterboxed)" },
-        { "value": "cover", "label": "Cover (fill, may crop)" }
+        {
+          "value": "contain",
+          "label": "Contain (whole asset, letterboxed)"
+        },
+        {
+          "value": "cover",
+          "label": "Cover (fill, may crop)"
+        }
       ],
       "help": "Contain shows the whole asset inside the frame; Cover fills the frame and may crop the edges."
     },
