@@ -1360,22 +1360,24 @@ function startSeconds(b) {
 // serialiseKf(parseKf(raw)) for a corpus of hostile and ordinary tracks. Change one side
 // without the other and that test fails, which is exactly what it is for.
 // 'v' is CLIP VOLUME (plans/165 WP-3) - audio automation riding the same grammar.
-var KF_CHANNEL_ORDER = ['x', 'y', 'z', 's', 'r', 'rx', 'ry', 'o', 'b', 'f', 'a', 'p', 'v'];
+// 'w'/'h' are the keyed SIZE (plans/104 section 5.2) - absent from this table until
+// 2026-09-01, which silently dropped keyed sizes on every re-serialise.
+var KF_CHANNEL_ORDER = ['x', 'y', 'z', 's', 'r', 'rx', 'ry', 'o', 'b', 'f', 'a', 'p', 'w', 'h', 'v'];
 // The same names LONGEST-FIRST, which is what makes 'rx-8' channel rx at −8 rather than
 // channel r followed by junk. No channel is named 'e', so an ease token can never be read
 // as a channel.
-var KF_CHANNELS_BY_LEN = ['rx', 'ry', 'a', 'b', 'f', 'o', 'p', 'r', 's', 'v', 'x', 'y', 'z'];
+var KF_CHANNELS_BY_LEN = ['rx', 'ry', 'a', 'b', 'f', 'h', 'o', 'p', 'r', 's', 'v', 'w', 'x', 'y', 'z'];
 // `z` spans ±12000 on the WIRE, which is NOT the z field's own −300…900: one kf grammar
 // carries both a box's lift and the CAMERA's dolly, and camZ is the only zoom control
 // there is. The field clamp still governs the z FIELD - see data-t-z below.
 var KF_CLAMPS = {
   x: [-100000, 100000], y: [-100000, 100000], z: [-12000, 12000], s: [0.01, 100],
   r: [-3600, 3600], rx: [-180, 180], ry: [-180, 180], o: [0, 1], b: [0, 300],
-  f: [-3000, 3000], a: [0, 1], p: [50, 12000], v: [0, 2],
+  f: [-3000, 3000], a: [0, 1], p: [50, 12000], w: [0, 16384], h: [0, 16384], v: [0, 2],
 };
 var KF_QUANTA = {
   x: 0.01, y: 0.01, z: 0.01, s: 0.001, r: 0.01, rx: 0.01, ry: 0.01,
-  o: 0.001, b: 0.01, f: 0.01, a: 0.001, p: 0.01, v: 0.001,
+  o: 0.001, b: 0.01, f: 0.01, a: 0.001, p: 0.01, w: 0.01, h: 0.01, v: 0.001,
 };
 // The eight named curves, by their wire token: linear, ease-in, ease-out, ease-in-out,
 // overshoot, anticipate, smooth, snappy. 'eh' (hold) is an ease too but has no points.
