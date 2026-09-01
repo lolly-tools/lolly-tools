@@ -102,6 +102,12 @@
    just "•"-prefixed lines (see hooks.js richText), so no list styling is needed. */
 .lolly-box-text strong { font-weight: bolder; }
 .lolly-box-text em { font-style: italic; }
+/* Split text animation (plans/175 WP-A): unit spans must be inline-block for
+   transforms to take; .lly-w groups one word's letter units under nowrap so an
+   inline-block letter can't take a line break mid-word. Only present when the
+   box authors a split tier - every other box's markup is untouched. */
+.lolly-box-text .lly-u { display: inline-block; }
+.lolly-box-text .lly-w { display: inline-block; white-space: nowrap; }
 
 /* Hand-authored frames (plan 93): when >=1 kind:"frame" box exists the render swaps the
    single .artboard for one .lolly-frame-page per frame - each a [data-pdf-page] the export

@@ -2,7 +2,7 @@
   "id": "design",
   "name": "Design",
   "description": "An open canvas for free arrangement - text, images, shapes and live renders from your other Lolly tools, all held to your brand.",
-  "version": "1.14.5",
+  "version": "1.17.0",
   "engineVersion": "^1.12.0",
   "status": "community",
   "category": "designer",
@@ -281,6 +281,11 @@
         "laneField": "lane",
         "zField": "z",
         "kfField": "kf",
+        "splitField": "split",
+        "staggerField": "stagger",
+        "splitOrderField": "splitOrder",
+        "holdField": "hold",
+        "holdRateField": "holdRate",
         "frameField": "frame",
         "orderField": "order",
         "clipChildrenField": "clipChildren",
@@ -1696,6 +1701,71 @@
           "label": "Skip on playback",
           "default": false,
           "help": "Strikethrough / ignore: this clip keeps its media and its place on the timeline but is skipped on playback and dropped from every export - the reversible dual of a hard delete (plans/174-transcript-driven-editing.md). Set from the transcript panel or the clip's right-click menu; showFor:[] keeps it out of the sidebar. APPENDED after name - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "split",
+          "showFor": [],
+          "type": "select",
+          "label": "Animate text by",
+          "default": "",
+          "options": [
+            { "value": "", "label": "Whole text" },
+            { "value": "word", "label": "Word" },
+            { "value": "line", "label": "Line" },
+            { "value": "letter", "label": "Letter" }
+          ],
+          "help": "Split the box's text so its Animate in/out runs per unit instead of as one block (plans/175 WP-A). Letter tier segments by grapheme cluster - emoji, combining marks and precomposed ligatures stay whole - and silently degrades to Word for joining scripts (Arabic and friends), where per-letter spans would break contextual shaping. Edited from the timeline inspector; showFor:[] keeps it out of the sidebar. APPENDED after ignored - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "stagger",
+          "showFor": [],
+          "type": "number",
+          "label": "Text stagger (ms)",
+          "default": 60,
+          "min": 0,
+          "max": 2000,
+          "step": 10,
+          "help": "Start-to-start gap between text units, ms. With Animate in set to Cut, split + stagger IS the typewriter: each unit simply appears at its offset. APPENDED after split."
+        },
+        {
+          "id": "splitOrder",
+          "showFor": [],
+          "type": "select",
+          "label": "Text order",
+          "default": "",
+          "options": [
+            { "value": "", "label": "First to last" },
+            { "value": "reverse", "label": "Last to first" },
+            { "value": "center", "label": "From the centre" },
+            { "value": "random", "label": "Random" }
+          ],
+          "help": "The order units animate in. Random is dealt from a seed hashed off the box id, so preview, export and a shared URL all shuffle identically. APPENDED after stagger."
+        },
+        {
+          "id": "hold",
+          "showFor": [],
+          "type": "select",
+          "label": "While on screen",
+          "default": "",
+          "options": [
+            { "value": "", "label": "Still" },
+            { "value": "pulse", "label": "Pulse" },
+            { "value": "bob", "label": "Bob" },
+            { "value": "sway", "label": "Sway" },
+            { "value": "flicker", "label": "Flicker" }
+          ],
+          "help": "A small looping motion while the box is on screen (plans/175 WP-B) - the Loop/Emphasis bucket beside Animate in/out. A deterministic sinusoid of the box's own clock, so preview, export and shared URLs render identically. Edited from the timeline inspector; showFor:[] keeps it out of the sidebar. APPENDED after splitOrder - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "holdRate",
+          "showFor": [],
+          "type": "number",
+          "label": "Hold speed (cycles/sec)",
+          "default": 1,
+          "min": 0.2,
+          "max": 4,
+          "step": 0.1,
+          "help": "How many cycles per second the hold motion runs at. APPENDED after hold."
         }
       ],
       "default": [

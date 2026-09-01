@@ -135,15 +135,16 @@ function inlineMd(s) {
 // as inline <strong>/<em>; the SVG/PDF vector walkers recurse into inline runs and
 // outline each with its OWN computed weight/style, so bold/italic survive vector
 // export too (not just raster). Bullets are plain "•" text, so they're trivially safe.
+function richLine(ln) {
+  var mb = ln.match(/^(\s*)[-*•]\s+(.*)$/);
+  if (mb) return mb[1] + '•  ' + inlineMd(mb[2]);
+  // Ordered list: N. text (1-999) -> N.  text, numbers kept literal (like bullets).
+  var mo = ln.match(/^(\s*)(\d{1,3})\.\s+(.*)$/);
+  if (mo) return mo[1] + mo[2] + '.  ' + inlineMd(mo[3]);
+  return inlineMd(ln);
+}
 function richText(raw) {
-  return esc(raw).split('\n').map(function (ln) {
-    var mb = ln.match(/^(\s*)[-*•]\s+(.*)$/);
-    if (mb) return mb[1] + '•  ' + inlineMd(mb[2]);
-    // Ordered list: N. text (1-999) -> N.  text, numbers kept literal (like bullets).
-    var mo = ln.match(/^(\s*)(\d{1,3})\.\s+(.*)$/);
-    if (mo) return mo[1] + mo[2] + '.  ' + inlineMd(mo[3]);
-    return inlineMd(ln);
-  }).join('\n');
+  return esc(raw).split('\n').map(richLine).join('\n');
 }
 
 function radiusFor(shape, radius) {
@@ -1143,6 +1144,169 @@ var EASINGS = {
   smooth: 1, snappy: 1,
 };
 
+// ── split text animation (plans/175 WP-A) ─────────────────────────────────────
+// The split tiers and orders, mirroring lib/transitions.ts SPLIT_TIERS/SPLIT_ORDERS
+// (the same one-vocabulary rule as TRANSITIONS/EASINGS above). Own-property tests
+// throughout - these values arrive from hand-editable URLs.
+var SPLIT_TIERS = { word: 1, line: 1, letter: 1 };
+var SPLIT_ORDERS = { reverse: 1, center: 1, random: 1 }; // '' (first-to-last) is the absence
+var MAX_SPLIT_STAGGER_MS = 2000; // lib/transitions.ts MAX_SPLIT_STAGGER_MS
+var MAX_SPLIT_UNITS = 240;       // lib/transitions.ts MAX_SPLIT_UNITS - the rest of the text becomes one final unit
+
+// Hold effects (plans/175 WP-B), mirroring lib/transitions.ts HOLD_FX + the rate
+// clamps - the same one-vocabulary rule as the tiers above.
+var HOLD_FX = { pulse: 1, bob: 1, sway: 1, flicker: 1 };
+var MIN_HOLD_RATE = 0.2;
+var MAX_HOLD_RATE = 4;
+
+// Contextually-joining scripts (Arabic and friends): per-letter spans break shaping
+// (each letter would render its isolated form), so the letter tier degrades to word.
+// Ranges: Arabic + supplements/extensions, Syriac (+supplement), Mongolian, and the
+// Arabic presentation forms.
+var JOINING_RE = /[؀-ۿ܀-ݏݐ-ݿࡀ-࡟ࢠ-ࣿ᠀-᢯ﭐ-﷿ﹰ-﻿]/;
+
+// The one timed-box predicate, shared by timeAttrsFor's branch and the splitter:
+// a box is a timeline citizen when it sits on the seq lane or authored a start.
+function timedBox(b) {
+  return b && (b.lane === 'seq' || isFiniteNum(b.start));
+}
+
+// The authored tier for a box that carries text, with the letter→word joining-script
+// degrade - NO timing gate, because two consumers ask two different questions: the
+// canvas splitter (below) animates only timed boxes, while the deck exporter
+// (plans/175 WP-E) carries the tier to PowerPoint, where a click build animates
+// untimed boxes too.
+function splitTierOf(b) {
+  var v = b == null || b.split == null ? '' : String(b.split);
+  if (!Object.prototype.hasOwnProperty.call(SPLIT_TIERS, v)) return '';
+  var txt = b.text == null ? '' : String(b.text);
+  if (!txt) return '';
+  if (v === 'letter' && JOINING_RE.test(txt)) return 'word';
+  return v;
+}
+
+// The effective split tier for the CANVAS: gated to timed non-frame boxes.
+function splitTierFor(b) {
+  if (!timedBox(b) || String(b.kind) === 'frame') return '';
+  return splitTierOf(b);
+}
+
+// Grapheme iteration: Intl.Segmenter keeps combining marks, ZWJ emoji sequences and
+// precomposed ligature codepoints whole ("one character", the plans/175 decision);
+// code-point iteration is the fallback where Segmenter is missing.
+var GRAPHEME_SEG = (typeof Intl !== 'undefined' && typeof Intl.Segmenter === 'function')
+  ? new Intl.Segmenter(undefined, { granularity: 'grapheme' }) : null;
+function graphemes(s) {
+  if (!GRAPHEME_SEG) return Array.from(s);
+  var out = [];
+  var it = GRAPHEME_SEG.segment(s)[Symbol.iterator]();
+  for (var r = it.next(); !r.done; r = it.next()) out.push(r.value.segment);
+  return out;
+}
+
+// One displayed character of an escaped text run: an entity esc() emits (or any
+// other named/numeric entity, defensively) counts as ONE unit char.
+var ENTITY_RE = /^&(?:[a-zA-Z][a-zA-Z0-9]*|#[0-9]+|#x[0-9a-fA-F]+);/;
+
+// Wrap the rendered HTML of ONE authored line in unit spans. Tag-aware: tags pass
+// through untouched and a unit span only ever wraps text (and entities), so the
+// output nests validly whatever inlineMd emitted. A word interrupted by a tag
+// boundary ("wo**rd**") becomes two units - documented edge, valid HTML always.
+// `u` is the box-wide counter object ({ n }); past MAX_SPLIT_UNITS everything joins
+// the final unit (the untrusted-input cap).
+function wrapLineUnits(html, tier, u) {
+  var out = '';
+  var i = 0;
+  // Pending word, as TOKENS: plain-text runs and whole entities kept apart, so the
+  // letter tier never runs grapheme segmentation over an entity's raw characters
+  // ('&amp;' is ONE displayed char, not five).
+  var wordToks = [];
+  var flushWord = function () {
+    if (!wordToks.length) return;
+    var whole = '';
+    for (var w = 0; w < wordToks.length; w++) whole += wordToks[w].s;
+    if (tier === 'letter' && u.n < MAX_SPLIT_UNITS) {
+      // Group the word's letters under a nowrap wrapper so inline-block letter
+      // units can't take a line break mid-word.
+      var inner = '';
+      var over = '';
+      for (var k = 0; k < wordToks.length; k++) {
+        var tok = wordToks[k];
+        var chars = tok.ent ? [tok.s] : graphemes(tok.s);
+        for (var g = 0; g < chars.length; g++) {
+          if (u.n >= MAX_SPLIT_UNITS) { over += chars[g]; continue; }
+          inner += '<span class="lly-u" aria-hidden="true">' + chars[g] + '</span>';
+          u.n++;
+        }
+      }
+      out += '<span class="lly-w">' + inner + over + '</span>';
+    } else if (u.n >= MAX_SPLIT_UNITS) {
+      out += whole;
+    } else {
+      out += '<span class="lly-u" aria-hidden="true">' + whole + '</span>';
+      u.n++;
+    }
+    wordToks = [];
+  };
+  while (i < html.length) {
+    var ch = html.charAt(i);
+    if (ch === '<') {
+      var close = html.indexOf('>', i);
+      if (close === -1) { wordToks.push({ s: html.slice(i) }); break; } // malformed - treat as text
+      flushWord();
+      out += html.slice(i, close + 1);
+      i = close + 1;
+      continue;
+    }
+    if (ch === '&') {
+      var em = ENTITY_RE.exec(html.slice(i));
+      if (em) {
+        wordToks.push({ s: em[0], ent: true });
+        i += em[0].length;
+        continue;
+      }
+    }
+    if (/\s/.test(ch)) {
+      flushWord();
+      out += ch;
+      i++;
+      continue;
+    }
+    var last = wordToks[wordToks.length - 1];
+    if (last && !last.ent) last.s += ch;
+    else wordToks.push({ s: ch });
+    i++;
+  }
+  flushWord();
+  return out;
+}
+
+// richText, split into animatable unit spans (plans/175 WP-A). Only reached when a
+// tier is active, so every other box's markup stays byte-identical to richText's.
+// The a11y shape is the field-tested SplitText pattern: the wrapper carries the
+// whole string as aria-label, every unit span is aria-hidden.
+function splitText(raw, tier) {
+  var u = { n: 0 };
+  var lines = esc(raw).split('\n').map(function (ln) {
+    var rendered = richLine(ln);
+    if (tier === 'line') {
+      if (!rendered || u.n >= MAX_SPLIT_UNITS) return rendered;
+      u.n++;
+      return '<span class="lly-u" aria-hidden="true">' + rendered + '</span>';
+    }
+    return wrapLineUnits(rendered, tier, u);
+  });
+  return '<span class="lly-split" role="text" aria-label="' + esc(raw) + '">'
+    + lines.join('\n') + '</span>';
+}
+
+// The box's rendered text: richText, or its split form when a tier is active.
+function textHtmlFor(b) {
+  var raw = (b && b.text) || '';
+  var tier = splitTierFor(b);
+  return tier ? splitText(raw, tier) : richText(raw);
+}
+
 // An authored easing, canonicalised for the attribute: a whitelisted preset name, or
 // a cubic-bezier re-emitted from its own PARSED numbers rather than from the user's
 // string - which is what keeps arbitrary text out of an attribute this hook writes
@@ -1436,6 +1600,18 @@ function timeAttrsFor(b, spans) {
       var exitEase = easeAttr(b.exitEase);
       if (exitEase) parts.push(' data-t-exit-ease="' + exitEase + '"');
     }
+    // Split text animation (plans/175 WP-A). Whitelisted tier + clamped integer +
+    // whitelisted order - never raw user text into an attribute. Absent unless a
+    // tier is active, so every box authored before the field renders byte-identically.
+    var splitTier = splitTierFor(b);
+    if (splitTier) {
+      parts.push(' data-t-split="' + splitTier + '"');
+      parts.push(' data-t-stagger="' + Math.round(clamp(num(b.stagger, 60), 0, MAX_SPLIT_STAGGER_MS)) + '"');
+      var so = b.splitOrder == null ? '' : String(b.splitOrder);
+      if (Object.prototype.hasOwnProperty.call(SPLIT_ORDERS, so)) {
+        parts.push(' data-t-split-order="' + so + '"');
+      }
+    }
     if (boolVal(b.mute, false)) parts.push(' data-t-mute="1"');
     // Clip volume (plan 165 WP-1). Same f2-then-compare as speed above, for the same
     // float-noise reason: an absent attribute means unity, so a document written before
@@ -1459,6 +1635,17 @@ function timeAttrsFor(b, spans) {
     if (z !== 0) parts.push(' data-t-z="' + z + '"');
     var kf = kfAttr(b.kf);
     if (kf) parts.push(' data-t-kf="' + kf + '"');
+    // Hold effect (plans/175 WP-B). Beside z/kf rather than inside the timed
+    // branch for the same reason those two sit here: a scenery box on a sequence
+    // stage is visible throughout and can still pulse. Whitelisted kind + clamped
+    // rate only; the rate is omitted at its default so an untouched box stays
+    // byte-identical.
+    var hold = b.hold == null ? '' : String(b.hold);
+    if (Object.prototype.hasOwnProperty.call(HOLD_FX, hold)) {
+      parts.push(' data-t-hold="' + hold + '"');
+      var holdRate = f2(clamp(num(b.holdRate, 1), MIN_HOLD_RATE, MAX_HOLD_RATE));
+      if (holdRate !== 1) parts.push(' data-t-hold-rate="' + holdRate + '"');
+    }
   }
   return parts.join('');
 }
@@ -1946,6 +2133,59 @@ function deckElementFor(cb, byId, lx, ly) {
 // frame (matches export-pptx reading page 0's size). The slide bg uses a CONCRETE hex
 // fallback (#ffffff), never the var(--lolly-frame-surface,…) CSS string the page
 // render uses - deckColor parses only hex/rgb.
+// Native PPTX animation (plans/175 WP-E): one deck element's animation fields, RAW -
+// Lolly's own vocabulary, verbatim off the box. The shell's pptx-deck.ts owns the
+// mapping onto PowerPoint's preset subset (and logs each degrade); this stays a dumb
+// carrier so the two vocabularies never drift inside tool data. Undefined when nothing
+// animates, so a still deck's JSON stays byte-identical to before this existed.
+function deckAnimFor(cb, fb) {
+  var hasEnter = isTransition(cb.enter);
+  var hasExit = isTransition(cb.exit);
+  var split = splitTierOf(cb);
+  var build = num(cb.build, 0);
+  var click = (isFinite(build) && build >= 1) ? Math.round(build) : 0;
+  var holdK = cb.hold == null ? '' : String(cb.hold);
+  var hasHold = Object.prototype.hasOwnProperty.call(HOLD_FX, holdK);
+  if (!hasEnter && !hasExit && !split && !hasHold && click < 1) return undefined;
+  // Slide-local time: a frames-as-scenes page carries its own start; a spatial deck
+  // reads box offsets against 0 (its one implicit scene).
+  var fbStartMs = isFiniteNum(fb && fb.start) ? Math.round(startSeconds(fb) * 1000) : 0;
+  var a = {};
+  if (hasEnter || split || click >= 1) {
+    // 'none' still travels when a build or a split needs a trigger to hang off -
+    // pptx-deck maps it to Appear (a click fragment / the native typewriter).
+    a.enter = hasEnter ? String(cb.enter) : 'none';
+    a.enterMs = Math.round(clamp(num(cb.enterMs, 400), 100, 3000));
+    var ee = easeAttr(cb.enterEase);
+    if (ee && Object.prototype.hasOwnProperty.call(EASINGS, ee)) a.enterEase = ee;
+    if (isFiniteNum(cb.start)) a.delayMs = Math.max(0, Math.round(startSeconds(cb) * 1000) - fbStartMs);
+  }
+  if (hasExit) {
+    a.exit = String(cb.exit);
+    a.exitMs = Math.round(clamp(num(cb.exitMs, 400), 100, 3000));
+    var xe = easeAttr(cb.exitEase);
+    if (xe && Object.prototype.hasOwnProperty.call(EASINGS, xe)) a.exitEase = xe;
+    // An exit needs a concrete moment to fire at - the timed box's own end,
+    // slide-local, minus its own length so it FINISHES there. Without one,
+    // pptx-deck skips the exit (an exit at t=0 would hide content on arrival).
+    if (isFiniteNum(cb.start) && isFiniteNum(cb.dur)) {
+      var endMs = Math.round((startSeconds(cb) + clamp(num(cb.dur, 0), 0.1, MAX_TIME_S)) * 1000) - fbStartMs;
+      a.exitDelayMs = Math.max(0, endMs - a.exitMs);
+    }
+  }
+  if (split) {
+    a.split = split;
+    a.stagger = Math.round(clamp(num(cb.stagger, 60), 0, MAX_SPLIT_STAGGER_MS));
+    var so = cb.splitOrder == null ? '' : String(cb.splitOrder);
+    if (Object.prototype.hasOwnProperty.call(SPLIT_ORDERS, so)) a.order = so;
+  }
+  // A hold effect (plans/175 WP-B) has no OOXML form - carried so pptx-deck can
+  // say so in its degrade notes rather than the difference passing silently.
+  if (hasHold) a.hold = holdK;
+  if (click >= 1) a.click = click;
+  return a;
+}
+
 function deckModelFor(boxes, byId) {
   var frameEntries = [];
   for (var f = 0; f < boxes.length; f++) {
@@ -1972,7 +2212,11 @@ function deckModelFor(boxes, byId) {
       var lx = Math.round(num(cb.x, 0)) - fx;
       var ly = Math.round(num(cb.y, 0)) - fy;
       var el = deckElementFor(cb, byId, lx, ly);
-      if (el) elements.push(el);
+      if (el) {
+        var an = deckAnimFor(cb, fbx);
+        if (an) el.anim = an;
+        elements.push(el);
+      }
     }
     return { bg: safeColor(fbx.bg, '#ffffff'), elements: elements };
   });
@@ -2021,7 +2265,7 @@ function compute(model) {
       (fx.length ? 'filter:' + fx.join(' ') + ';' : '');
   });
   var textStyle = boxes.map(function (b, i) { return textCss(b || {}) + shadows[i].text; });
-  var textHtml = boxes.map(function (b) { return isBareBox(b) ? '' : richText((b && b.text) || ''); });
+  var textHtml = boxes.map(function (b) { return isBareBox(b) ? '' : textHtmlFor(b); });
   var mediaHtml = boxes.map(function (b) { return mediaHtmlFor(b || {}); });
   var pathHtml = boxes.map(function (b) { return pathHtmlFor(b || {}); });
   // Which boxes opted into shrink-to-fit ("1" marks a fit root for the template's fit
