@@ -263,6 +263,19 @@ function isBareBox(b) {
   return isAudioBox(b) || isCameraBox(b);
 }
 
+// Perspective tilt (plan 104 P2.1), clamped to the manifest's own min/max and rounded to
+// 2dp. ONE expression, three callers (the static transform below, the data-t-rx/-ry
+// attributes the timeline reads, and the deck's "can a flat .pptx element express this"
+// predicate) so they can never disagree about the angle a box is wearing.
+var TILT_MAX = 75;
+function tiltDeg(v) { return f2(clamp(num(v, 0), -TILT_MAX, TILT_MAX)); }
+
+// The scene perspective a box tilt pivots at, in px. MIRRORS the engine's
+// DEFAULT_PERSPECTIVE (engine/src/keyframes.ts) - a tool hook cannot import the engine,
+// so this is a hand-copied constant and the two must be changed together, or a static
+// board and the same board under a camera would disagree about the vanishing point.
+var TILT_PERSPECTIVE = 1200;
+
 function boxCss(b, grad) {
   var x = Math.round(num(b.x, 0));
   var y = Math.round(num(b.y, 0));
@@ -280,6 +293,28 @@ function boxCss(b, grad) {
   var fv = boolVal(b.flipV, false);
   var tf = (rot ? 'rotate(' + (Math.round(rot * 10) / 10) + 'deg)' : '')
     + ((fh || fv) ? (rot ? ' ' : '') + 'scale(' + (fh ? -1 : 1) + ',' + (fv ? -1 : 1) + ')' : '');
+  // PERSPECTIVE TILT (plan 104 P2.1) - the box's own pitch/yaw, PREPENDED. CSS applies a
+  // transform list right to left, so everything the box does in its own plane (the rotate
+  // and the flip's negative scale) happens first and the tilt then pitches the finished
+  // card: the same slot the sequence applier gives the camera homography, and the same
+  // order the engine's fold composes in. Yaw before pitch, R = Ry(ry)*Rx(rx), the camera
+  // channels' own pan/tilt-head convention (camRotationT), so a box and a camera wearing
+  // the same angles never disagree.
+  //
+  // The perspective() FUNCTION is not optional and is not decoration: an orthographic
+  // rotateX computes to a matrix3d whose perspective row is trivial, which is NOT
+  // isNonAffineTransform, so the SVG/PDF walkers would take the bounding-box path and
+  // emit the box unsquashed - the known gap engine/src/css-box.ts documents. It is a
+  // transform function on the element itself, never an ancestor `perspective` property,
+  // so the walkers' one-matrix-per-element rule still holds.
+  var rx = tiltDeg(b.rx);
+  var ry = tiltDeg(b.ry);
+  if (rx || ry) {
+    tf = 'perspective(' + TILT_PERSPECTIVE + 'px)'
+      + (ry ? ' rotateY(' + ry + 'deg)' : '')
+      + (rx ? ' rotateX(' + rx + 'deg)' : '')
+      + (tf ? ' ' + tf : '');
+  }
   var op = clamp(num(b.opacity, 100), 0, 100) / 100;
   // A path box's `bg` is the PATH's fill (see pathHtmlFor), so the div behind it
   // stays transparent - otherwise every pen shape would sit on an opaque rectangle
@@ -1639,6 +1674,16 @@ function timeAttrsFor(b, spans) {
   if (String(b.kind) !== 'frame') {
     var z = Math.round(clamp(num(b.z, 0), -300, 900));
     if (z !== 0) parts.push(' data-t-z="' + z + '"');
+    // Perspective tilt (plan 104 P2.1) - the box's own base pitch/yaw, beside depth for
+    // the same reason depth is here: a tilt is not timing, so a scenery box carries it
+    // too, and it is excluded from a FRAME by the guard above. Clamped to the FIELD range
+    // (±75, tiltDeg) and absent at 0, so a document authored before the feature renders
+    // byte-identically. A keyed rx/ry in data-t-kf REPLACES this base for its segment,
+    // exactly as it does for z.
+    var rx = tiltDeg(b.rx);
+    if (rx !== 0) parts.push(' data-t-rx="' + rx + '"');
+    var ry = tiltDeg(b.ry);
+    if (ry !== 0) parts.push(' data-t-ry="' + ry + '"');
     var kf = kfAttr(b.kf);
     if (kf) parts.push(' data-t-kf="' + kf + '"');
     // Hold effect (plans/175 WP-B). Beside z/kf rather than inside the timed
@@ -2062,6 +2107,11 @@ function deckInexpressible(b, byId) {
   // and carries none, so a flipped box is skipped native and rasterised (mirror intact),
   // exactly like a rotated one - never emitted as an UNFLIPPED rect/text/picture.
   if (boolVal(b.flipH, false) || boolVal(b.flipV, false)) return true;
+  // A perspective tilt is a projective transform in boxCss; a deck element is axis-aligned
+  // and flat and carries no vanishing point of its own, so a tilted box is skipped native
+  // and rasterised with its tilt intact - never emitted as an UNTILTED rect/text/picture,
+  // which is the same silent wrong picture the rotation and flip guards exist to stop.
+  if (tiltDeg(b.rx) !== 0 || tiltDeg(b.ry) !== 0) return true;
   if (clamp(num(b.opacity, 100), 0, 100) !== 100) return true; // boxCss emits opacity:<1 - the flat deck element carries no alpha (rasterise follow-up)
   if (b.grad != null && String(b.grad).trim() !== '') return true;
   if (num(b.blur, 0) > 0 || num(b.bgBlur, 0) > 0) return true;
