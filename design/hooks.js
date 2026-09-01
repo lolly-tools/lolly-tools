@@ -1606,6 +1606,10 @@ function timeAttrsFor(b, spans) {
     var splitTier = splitTierFor(b);
     if (splitTier) {
       parts.push(' data-t-split="' + splitTier + '"');
+      // The author asked for LETTER but a joining script degraded it to WORD: say so,
+      // so a shell that can shape (host.text, plans/175 WP-D) still gives them
+      // per-letter animation - on correctly joined glyphs, which HTML spans cannot.
+      if (splitTier === 'word' && String(b.split) === 'letter') parts.push(' data-t-split-want="letter"');
       parts.push(' data-t-stagger="' + Math.round(clamp(num(b.stagger, 60), 0, MAX_SPLIT_STAGGER_MS)) + '"');
       var so = b.splitOrder == null ? '' : String(b.splitOrder);
       if (Object.prototype.hasOwnProperty.call(SPLIT_ORDERS, so)) {
