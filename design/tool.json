@@ -2,7 +2,7 @@
   "id": "design",
   "name": "Design",
   "description": "An open canvas for free arrangement - text, images, shapes and live renders from your other Lolly tools, all held to your brand.",
-  "version": "1.14.4",
+  "version": "1.14.5",
   "engineVersion": "^1.12.0",
   "status": "community",
   "category": "designer",
@@ -274,6 +274,7 @@
         "enterEaseField": "enterEase",
         "exitEaseField": "exitEase",
         "muteField": "mute",
+        "ignoredField": "ignored",
         "gainField": "gain",
         "labelField": "name",
         "linkField": "linkOf",
@@ -1687,6 +1688,14 @@
           "label": "Clip name",
           "default": "",
           "help": "Your own name for this clip on the timeline - shown on its bar in place of the derived text/media label. Set by double-clicking the bar or from its right-click menu; showFor:[] keeps it out of the sidebar. APPENDED after gain - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "ignored",
+          "showFor": [],
+          "type": "boolean",
+          "label": "Skip on playback",
+          "default": false,
+          "help": "Strikethrough / ignore: this clip keeps its media and its place on the timeline but is skipped on playback and dropped from every export - the reversible dual of a hard delete (plans/174-transcript-driven-editing.md). Set from the transcript panel or the clip's right-click menu; showFor:[] keeps it out of the sidebar. APPENDED after name - the compact-blocks URL wire format is append-only."
         }
       ],
       "default": [

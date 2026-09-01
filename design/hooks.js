@@ -1370,7 +1370,36 @@ function classTokens(v) {
 // passing it through, so the invariant holds unchanged.
 // Each attribute string starts with a leading space so concatenation into a tag is
 // safe with no manual separator bookkeeping.
-function timeAttrsFor(b) {
+// plans/174: an `ignored` (struck-through) clip is non-destructively SKIPPED from the
+// played and exported sequence. A SEQ clip's span is compressed out - every later seq
+// clip rides earlier by the removed duration, exactly as flattenIgnored's removeAndRipple
+// re-packs the model - while an OVERLAY is simply hidden (overlays don't ripple). The
+// RULER (timeline panel) still draws the full model, so the box stays visible/struck there.
+function ignoredSeqSpans(boxes) {
+  var out = [];
+  for (var i = 0; i < boxes.length; i++) {
+    var b = boxes[i];
+    if (b && boolVal(b.ignored, false) && b.lane === 'seq' && isFiniteNum(b.dur)) {
+      out.push({ s: startSeconds(b), d: clamp(num(b.dur, 0), 0.1, MAX_TIME_S) });
+    }
+  }
+  return out;
+}
+// The seconds an earlier-ignored seq clip removes from `startS` (all ignored seq spans
+// that start before it). Drift-free: it subtracts durations, it does not re-round starts.
+function removedBeforeS(spans, startS) {
+  var r = 0;
+  for (var i = 0; i < spans.length; i++) if (spans[i].s < startS - 1e-6) r += spans[i].d;
+  return r;
+}
+// A box's PLAYED/EXPORTED start: seq clips close the gaps left by earlier ignored clips;
+// overlays keep their authored start.
+function playedStartS(b, spans) {
+  var s = startSeconds(b);
+  return b.lane === 'seq' ? Math.max(0, s - removedBeforeS(spans, s)) : s;
+}
+
+function timeAttrsFor(b, spans) {
   var parts = [];
   // SCENERY (no lane, no start authored) carries no TIMING attributes - the contract
   // every document written before the time model still renders under. Depth and
@@ -1378,7 +1407,10 @@ function timeAttrsFor(b) {
   // and can still be lifted off the surface or animated, and an always-on camera is
   // exactly that box, so those two are emitted below for timed and untimed alike.
   if (b.lane === 'seq' || isFiniteNum(b.start)) {
-    parts.push(' data-t-start="' + Math.round(startSeconds(b) * 1000) + '"');
+    parts.push(' data-t-start="' + Math.round(playedStartS(b, spans || []) * 1000) + '"');
+    // The reversible-cut marker: the sequence readers (clock, planner, mix) skip a box
+    // carrying it, and the start above is already compressed so the survivors are gapless.
+    if (boolVal(b.ignored, false)) parts.push(' data-t-ignored="1"');
     if (isFiniteNum(b.dur)) {
       parts.push(' data-t-dur="' + Math.round(clamp(num(b.dur, 0), 0.1, MAX_TIME_S) * 1000) + '"');
     }
@@ -1438,12 +1470,17 @@ var DEFAULT_SEQ_S = 5; // no box has an authored duration, but something is time
 // own trim, already reflecting any speed change), so it is never multiplied by
 // speed here. Open-ended boxes (no dur authored) extend to fill this length.
 function seqDurationMs(boxes) {
-  var timedBoxes = boxes.filter(function (b) { return b && (b.lane === 'seq' || isFiniteNum(b.start)); });
+  // Ignored clips are compressed out, so they neither count toward the length nor leave
+  // their gap in it - the played/exported total is shorter by exactly their duration.
+  var spans = ignoredSeqSpans(boxes);
+  var timedBoxes = boxes.filter(function (b) {
+    return b && (b.lane === 'seq' || isFiniteNum(b.start)) && !boolVal(b.ignored, false);
+  });
   var withDur = timedBoxes.filter(function (b) { return isFiniteNum(b.dur); });
   if (withDur.length) {
     var max = 0;
     withDur.forEach(function (b) {
-      var end = (startSeconds(b) + clamp(num(b.dur, 0), 0.1, MAX_TIME_S)) * 1000;
+      var end = (playedStartS(b, spans) + clamp(num(b.dur, 0), 0.1, MAX_TIME_S)) * 1000;
       if (end > max) max = end;
     });
     return Math.round(max);
@@ -1998,7 +2035,8 @@ function compute(model) {
   var boxCls = boxes.map(function (b) { return classTokens(b && b.cls); });
   // Time model (phase 1 - inert data; nothing reads these attributes yet, the
   // phase-2 panel does). timeAttrs is index-aligned with boxStyle/boxFit/etc.
-  var timeAttrs = boxes.map(function (b) { return timeAttrsFor(b || {}); });
+  var seqSpans = ignoredSeqSpans(boxes);
+  var timeAttrs = boxes.map(function (b) { return timeAttrsFor(b || {}, seqSpans); });
   var seqMs = seqDurationMs(boxes);
   var seqAttrs = [seqMs > 0 ? ' data-sequence data-seq-ms="' + seqMs + '"' : ''];
   // Hand-authored frames (plan 93 F1a-part-2). undefined when no kind:'frame' box
