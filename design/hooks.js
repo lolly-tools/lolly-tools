@@ -2060,7 +2060,12 @@ function frameGroupsFor(boxes, ext) {
     var frameNotesAttr = fnotes
       ? ' data-frame-notes="' + fnotes.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '"'
       : '';
-    return { pageStyle: pageStyle, pageTimeAttrs: pageTimeAttrs, children: children, frameId: fid, frameDurAttr: frameDurAttr, frameStateAttr: frameStateAttr, frameNotesAttr: frameNotesAttr };
+    // Sub-slide stacks (plan 112 M5): stackOf names the column-head frame this one
+    // stacks UNDER for present-mode's 4-arrow nav. Id-safe characters only, so the
+    // attribute can never carry markup.
+    var fstack = (fb && fb.stackOf != null) ? String(fb.stackOf).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64) : '';
+    var frameStackAttr = fstack ? ' data-frame-stack="' + fstack + '"' : '';
+    return { pageStyle: pageStyle, pageTimeAttrs: pageTimeAttrs, children: children, frameId: fid, frameDurAttr: frameDurAttr, frameStateAttr: frameStateAttr, frameNotesAttr: frameNotesAttr, frameStackAttr: frameStackAttr };
   });
 }
 

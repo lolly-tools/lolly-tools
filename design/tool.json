@@ -2,7 +2,7 @@
   "id": "design",
   "name": "Design",
   "description": "An open canvas for free arrangement - text, images, shapes and live renders from your other Lolly tools, all held to your brand.",
-  "version": "1.22.1",
+  "version": "1.23.0",
   "engineVersion": "^1.160.0",
   "status": "community",
   "category": "designer",
@@ -1842,6 +1842,14 @@
           "label": "Audio effect",
           "default": "",
           "help": "This clip's audio effect chain in the engine's fx grammar (e.g. hp(90).eq(230-280-270).gate(55)) - the timeline inspector's Effect presets write the expanded chain here so a later preset re-tune never changes what a shared link sounds like. Unknown entries are skipped, never an error. Empty is no effect. Set from the timeline inspector; showFor:[] keeps it out of the sidebar. APPENDED after varispeed - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "stackOf",
+          "showFor": [],
+          "type": "text",
+          "label": "Stacks under",
+          "default": "",
+          "help": "For a FRAME: the id of the column-head frame this one stacks vertically under in present mode (the 4-arrow sub-slide nav). Empty is a column head. With none authored anywhere, frames sharing an x-column stack automatically - writing this field anywhere turns that inference off. Set from the frame's context menu; showFor:[] keeps it out of the sidebar. APPENDED after fx - the compact-blocks URL wire format is append-only."
         }
       ],
       "default": [

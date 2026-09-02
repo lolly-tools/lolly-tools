@@ -19,7 +19,7 @@
       and the frame-local left/top override (baked into boxStyle by the hook) are new. --}}
 <div class="lolly-frames"{{{lookup seqAttrs 0}}}>
   {{#each frameGroups}}
-  <div class="lolly-frame-page" data-pdf-page data-frame-id="{{frameId}}"{{{frameDurAttr}}}{{{frameStateAttr}}}{{{frameNotesAttr}}}{{{pageTimeAttrs}}} style="{{pageStyle}}">
+  <div class="lolly-frame-page" data-pdf-page data-frame-id="{{frameId}}"{{{frameDurAttr}}}{{{frameStateAttr}}}{{{frameNotesAttr}}}{{{frameStackAttr}}}{{{pageTimeAttrs}}} style="{{pageStyle}}">
     {{#each children}}
     <div class="lolly-box{{cls}}" data-canvas-input="boxes:{{flatIndex}}" data-box-id="{{default id flatIndex}}" data-fit="{{fit}}" style="{{boxStyle}}"{{{timeAttrs}}}{{{buildAttr}}}{{{matchAttr}}}>
       {{{pathHtml}}}
