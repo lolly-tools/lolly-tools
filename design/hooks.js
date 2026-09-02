@@ -1679,6 +1679,11 @@ function timeAttrsFor(b, spans) {
     }
     // Tape-style varispeed (pitch follows speed) - absent = preserve pitch.
     if (boolVal(b.varispeed, false)) parts.push(' data-t-varispeed="1"');
+    // The audio effect chain (plan 101 section 3.4): the grammar's own alphabet only,
+    // capped, so nothing hostile can ride into the attribute. The engine parser
+    // re-validates each token on read; this filter just keeps the markup clean.
+    var fx = String(b.fx == null ? '' : b.fx).toLowerCase().replace(/[^a-z0-9().-]/g, '').slice(0, 200);
+    if (fx) parts.push(' data-t-fx="' + fx + '"');
     if (b.lane === 'seq') parts.push(' data-t-lane="seq"');
   }
   // plan 104 section 5.3 / section 5.1 - depth as a clamped number (the ±300 house clamp on one side,

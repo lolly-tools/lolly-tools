@@ -2,7 +2,7 @@
   "id": "design",
   "name": "Design",
   "description": "An open canvas for free arrangement - text, images, shapes and live renders from your other Lolly tools, all held to your brand.",
-  "version": "1.21.0",
+  "version": "1.22.0",
   "engineVersion": "^1.160.0",
   "status": "community",
   "category": "designer",
@@ -280,6 +280,7 @@
         "duckField": "duck",
         "pitchField": "pitch",
         "varispeedField": "varispeed",
+        "fxField": "fx",
         "labelField": "name",
         "linkField": "linkOf",
         "laneField": "lane",
@@ -1833,6 +1834,14 @@
           "label": "Pitch follows speed",
           "default": "",
           "help": "Empty keeps a speed-changed clip at its recorded pitch - the editor default. True plays it tape-style: pitch rises with speed and falls with slow motion. Set from the timeline inspector's Preserve-pitch toggle; showFor:[] keeps it out of the sidebar. APPENDED after pitch."
+        },
+        {
+          "id": "fx",
+          "showFor": [],
+          "type": "text",
+          "label": "Audio effect",
+          "default": "",
+          "help": "This clip's audio effect chain in the engine's fx grammar (e.g. hp(90).eq(230-280-270).gate(55)) - the timeline inspector's Effect presets write the expanded chain here so a later preset re-tune never changes what a shared link sounds like. Unknown entries are skipped, never an error. Empty is no effect. Set from the timeline inspector; showFor:[] keeps it out of the sidebar. APPENDED after varispeed - the compact-blocks URL wire format is append-only."
         }
       ],
       "default": [
