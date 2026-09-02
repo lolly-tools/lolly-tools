@@ -1661,6 +1661,12 @@ function timeAttrsFor(b, spans) {
     if (gain !== 1) {
       parts.push(' data-t-gain="' + gain + '"');
     }
+    // Stereo pan (plan 165 WP-5), same absent-at-default discipline: 0 is centred,
+    // and a document written before the field existed sounds exactly as it did.
+    var pan = f2(clamp(num(b.pan, 0), -1, 1));
+    if (pan !== 0) {
+      parts.push(' data-t-pan="' + pan + '"');
+    }
     if (b.lane === 'seq') parts.push(' data-t-lane="seq"');
   }
   // plan 104 section 5.3 / section 5.1 - depth as a clamped number (the ±300 house clamp on one side,
