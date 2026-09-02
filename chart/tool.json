@@ -115,7 +115,7 @@
   "render": {
     "width": 1280,
     "height": 800,
-    "formats": ["png", "md", "svg", "emf", "pdf", "pdf-cmyk", "cmyk-tiff", "tiff", "pptx", "webp", "jpg", "apng", "webp-anim", "gif", "webm", "mp4", "avif", "csv", "json"],
+    "formats": ["png", "md", "svg", "penpot", "emf", "pdf", "pdf-cmyk", "cmyk-tiff", "tiff", "pptx", "webp", "jpg", "apng", "webp-anim", "gif", "webm", "mp4", "avif", "csv", "json"],
     "video": {
       "wait": 0.3,
       "duration": 6

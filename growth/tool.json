@@ -17,7 +17,7 @@
   "render": {
     "width": 1200,
     "height": 1200,
-    "formats": ["svg", "pdf", "png", "jpg", "webp", "gif", "webm", "mp4", "avif", "tiff", "emf", "eps", "dxf", "webp-anim"],
+    "formats": ["svg", "penpot", "pdf", "png", "jpg", "webp", "gif", "webm", "mp4", "avif", "tiff", "emf", "eps", "dxf", "webp-anim"],
     "actions": ["copy", "download", "save"],
     "convertPaths": false,
     "video": { "wait": 0, "duration": 6 }

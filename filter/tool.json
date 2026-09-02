@@ -33,6 +33,7 @@
     "height": 1080,
     "formats": [
       "svg",
+      "penpot",
       "pdf",
       "pdf-cmyk",
       "emf",

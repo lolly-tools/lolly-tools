@@ -32,7 +32,7 @@
   "render": {
     "width": 794,
     "height": 1123,
-    "formats": ["pdf", "pdf-cmyk", "svg", "png", "cmyk-tiff"],
+    "formats": ["pdf", "pdf-cmyk", "svg", "penpot", "png", "cmyk-tiff"],
     "actions": ["download", "save", "copy"],
     "paged": true,
     "convertPaths": false

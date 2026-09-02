@@ -139,7 +139,7 @@
   "render": {
     "width": 1600,
     "height": 900,
-    "formats": ["svg", "png", "jpg", "webp", "avif", "webm", "mp4", "gif", "pdf", "tiff", "webp-anim"],
+    "formats": ["svg", "penpot", "png", "jpg", "webp", "avif", "webm", "mp4", "gif", "pdf", "tiff", "webp-anim"],
     "actions": [
       "copy",
       "download",

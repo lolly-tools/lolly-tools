@@ -35,7 +35,7 @@
   "render": {
     "width": 1280,
     "height": 800,
-    "formats": ["png", "svg", "pdf", "jpg", "webp"],
+    "formats": ["png", "svg", "penpot", "pdf", "jpg", "webp"],
     "export": true,
     "sidebar": false,
     "actions": [

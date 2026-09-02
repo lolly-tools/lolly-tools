@@ -25,7 +25,7 @@
   "render": {
     "width": 794,
     "height": 1123,
-    "formats": ["pdf", "pptx", "svg", "md", "docx", "odt", "html"],
+    "formats": ["pdf", "pptx", "svg", "penpot", "md", "docx", "odt", "html"],
     "actions": [
       "download",
       "save"

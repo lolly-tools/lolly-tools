@@ -32,7 +32,7 @@
   "render": {
     "width": 1920,
     "height": 1080,
-    "formats": ["png", "svg", "pdf", "pdf-cmyk", "cmyk-tiff", "jpg", "webp", "mp4", "webm", "gif", "apng", "wav", "mp3", "m4a", "opus", "pptx", "avif", "tiff", "emf", "webp-anim"],
+    "formats": ["png", "svg", "penpot", "pdf", "pdf-cmyk", "cmyk-tiff", "jpg", "webp", "mp4", "webm", "gif", "apng", "wav", "mp3", "m4a", "opus", "pptx", "avif", "tiff", "emf", "webp-anim"],
     "actions": [
       "copy",
       "download",

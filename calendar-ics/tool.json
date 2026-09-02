@@ -10,7 +10,7 @@
   "render": {
     "width": 760,
     "height": 460,
-    "formats": ["ics", "png", "svg", "pdf", "jpg", "webp"],
+    "formats": ["ics", "png", "svg", "penpot", "pdf", "jpg", "webp"],
     "actions": ["download", "copy", "save"]
   },
   "hooks": {

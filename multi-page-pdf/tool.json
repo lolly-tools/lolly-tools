@@ -15,7 +15,7 @@
   "render": {
     "width": 794,
     "height": 1123,
-    "formats": ["pdf", "pptx", "svg", "md"],
+    "formats": ["pdf", "pptx", "svg", "penpot", "md"],
     "actions": ["download", "save"],
     "paged": true,
     "c2pa": true,

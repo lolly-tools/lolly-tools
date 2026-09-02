@@ -65,6 +65,7 @@
     "height": 1000,
     "formats": [
       "svg",
+      "penpot",
       "png",
       "jpg",
       "webp",

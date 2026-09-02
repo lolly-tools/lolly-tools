@@ -55,7 +55,7 @@
   "render": {
     "width": 1920,
     "height": 1080,
-    "formats": ["png", "svg", "srt", "vtt", "json", "jpg", "webp"],
+    "formats": ["png", "svg", "penpot", "srt", "vtt", "json", "jpg", "webp"],
     "actions": [
       "copy",
       "download",

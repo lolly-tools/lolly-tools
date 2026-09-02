@@ -18,7 +18,7 @@
   "render": {
     "width": 1600,
     "height": 1000,
-    "formats": ["svg", "png", "jpg", "webp", "csv", "json", "css", "scss", "gpl", "ase", "avif", "pdf"],
+    "formats": ["svg", "penpot", "png", "jpg", "webp", "csv", "json", "css", "scss", "gpl", "ase", "avif", "pdf"],
     "actions": [
       "copy",
       "download",

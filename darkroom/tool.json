@@ -28,7 +28,7 @@
   "render": {
     "width": 1080,
     "height": 1080,
-    "formats": ["png", "jpg", "webp", "svg", "webm", "mp4", "exr", "hdr", "tiff", "pdf", "avif"],
+    "formats": ["png", "jpg", "webp", "svg", "penpot", "webm", "mp4", "exr", "hdr", "tiff", "pdf", "avif"],
     "denseSections": ["Develop", "Texture"],
     "actions": ["copy", "download", "save"],
     "video": { "wait": 0, "duration": 5 },

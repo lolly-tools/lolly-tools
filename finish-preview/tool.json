@@ -21,7 +21,7 @@
   "render": {
     "width": 1000,
     "height": 1000,
-    "formats": ["svg", "pdf", "pdf-cmyk", "png", "jpg", "webp", "avif", "tiff", "cmyk-tiff", "gif", "apng", "webp-anim", "webm", "mp4"],
+    "formats": ["svg", "penpot", "pdf", "pdf-cmyk", "png", "jpg", "webp", "avif", "tiff", "cmyk-tiff", "gif", "apng", "webp-anim", "webm", "mp4"],
     "actions": ["copy", "download", "save"],
     "video": { "wait": 0, "duration": 5 },
     "transparentBg": false

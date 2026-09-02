@@ -23,7 +23,7 @@
   "render": {
     "width": 512,
     "height": 512,
-    "formats": ["ico", "png", "svg", "zip", "webp"],
+    "formats": ["ico", "png", "svg", "penpot", "zip", "webp"],
     "actions": [
       "download",
       "copy",

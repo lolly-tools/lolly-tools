@@ -57,7 +57,7 @@
   "render": {
     "width": 1024,
     "height": 1024,
-    "formats": ["png", "webp", "jpg", "avif", "svg", "pdf"],
+    "formats": ["png", "webp", "jpg", "avif", "svg", "penpot", "pdf"],
     "actions": [
       "copy",
       "download",

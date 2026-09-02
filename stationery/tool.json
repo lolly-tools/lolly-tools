@@ -17,7 +17,7 @@
   "render": {
     "width": 850,
     "height": 550,
-    "formats": ["pdf", "pdf-cmyk", "svg", "png", "jpg", "webp", "tiff", "cmyk-tiff"],
+    "formats": ["pdf", "pdf-cmyk", "svg", "penpot", "png", "jpg", "webp", "tiff", "cmyk-tiff"],
     "actions": ["copy", "download", "save"],
     "printMarks": true,
     "filenameFrom": ["piece", "lastname"],

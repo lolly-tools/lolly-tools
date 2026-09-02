@@ -12,7 +12,7 @@
   "render": {
     "width": 760,
     "height": 620,
-    "formats": ["png", "jpg", "webp", "svg", "pdf"],
+    "formats": ["png", "jpg", "webp", "svg", "penpot", "pdf"],
     "export": false,
     "actions": []
   },

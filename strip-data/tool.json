@@ -12,7 +12,7 @@
   "render": {
     "width": 760,
     "height": 620,
-    "formats": ["jpg", "png", "svg", "pdf"],
+    "formats": ["jpg", "png", "svg", "penpot", "pdf"],
     "export": false,
     "layout": "canvas",
     "actions": []

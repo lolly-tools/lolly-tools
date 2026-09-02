@@ -2395,6 +2395,25 @@ function compute(model) {
   // boxes + box fields) so the runtime routes it to extras; the template reads
   // {{{deckJson}}} into <script data-pptx-deck>, exactly like deck-studio.
   var deckJson = frameGroups ? safeJson(deckModelFor(boxes, byId)) : null;
+  // Penpot document model (plan 178 section 3.2). The RAW boxes, not the deck: a .penpot
+  // file carries paths, ellipses, rotation, gradients, blur and shadow, all of which the
+  // deck lowering drops by design, so the export bridge lowers the boxes themselves
+  // (engine boxesToPenpotDoc, the inverse of nodeToBox). Emitted with OR without frames,
+  // unlike deckJson - a frameless artboard becomes one board the size of the canvas.
+  // `penpotDocJson` collides with no input id (background/customCss/transition/boxes),
+  // so the runtime routes it to extras and the template reads {{{penpotDocJson}}}.
+  // Capped: past 4000 boxes the archive stops being something Penpot opens happily,
+  // and the writer has its own shape ceiling behind this one. A bare box (audio bed,
+  // camera marker) paints nothing and the writer skips it anyway, so it never reaches
+  // the model - a still export must not carry a camera's text even inside a <script>.
+  var penpotBoxes = [];
+  for (var pb = 0; pb < boxes.length && penpotBoxes.length < 4000; pb++) {
+    if (boxes[pb] && !isBareBox(boxes[pb])) penpotBoxes.push(boxes[pb]);
+  }
+  var penpotDocJson = safeJson({
+    background: transparent ? 'transparent' : safeColor(inp.background, '#ffffff'),
+    boxes: penpotBoxes,
+  });
   var out = {
     boxStyle: boxStyle,
     textStyle: textStyle,
@@ -2414,6 +2433,7 @@ function compute(model) {
     frameGroups: frameGroups,
     pasteboard: pasteboard,
     deckJson: deckJson,
+    penpotDocJson: penpotDocJson,
     userCss: buildUserCss(inp.customCss),
   };
   // The migration's INPUT patch (plan 96 P4). `boxes` and `connectors` are declared input

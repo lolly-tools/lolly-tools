@@ -19,7 +19,7 @@
   "render": {
     "width": 1200,
     "height": 630,
-    "formats": ["png", "jpg", "webp", "svg", "pdf", "avif", "tiff"],
+    "formats": ["png", "jpg", "webp", "svg", "penpot", "pdf", "avif", "tiff"],
     "actions": ["copy", "download", "save"],
     "filenameFrom": ["siteName", "heading"],
     "transparentBg": false

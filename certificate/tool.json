@@ -67,7 +67,7 @@
   "render": {
     "width": 1123,
     "height": 794,
-    "formats": ["pdf", "pdf-cmyk", "svg", "png", "jpg", "webp", "tiff", "cmyk-tiff"],
+    "formats": ["pdf", "pdf-cmyk", "svg", "penpot", "png", "jpg", "webp", "tiff", "cmyk-tiff"],
     "actions": ["download", "save"],
     "printMarks": true,
     "filenameFrom": ["firstname", "lastname", "awardtopic"],

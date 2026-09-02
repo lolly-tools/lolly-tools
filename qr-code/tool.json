@@ -25,7 +25,7 @@
   "render": {
     "width": 600,
     "height": 600,
-    "formats": ["svg", "png", "jpeg", "webp", "avif", "tiff", "pdf", "pdf-cmyk", "cmyk-tiff", "eps", "eps-cmyk", "dxf", "emf" ],
+    "formats": ["svg", "penpot", "png", "jpeg", "webp", "avif", "tiff", "pdf", "pdf-cmyk", "cmyk-tiff", "eps", "eps-cmyk", "dxf", "emf" ],
     "actions": ["copy", "download", "save"],
     "filenameFrom": ["url", "ssid", "eventName", "firstname"],
     "transparentBg": false

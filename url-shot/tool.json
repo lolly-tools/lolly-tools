@@ -12,7 +12,7 @@
   "render": {
     "width": 1280,
     "height": 720,
-    "formats": ["png", "jpg", "webp", "svg", "pdf", "webm", "mp4", "avif", "tiff", "gif"],
+    "formats": ["png", "jpg", "webp", "svg", "penpot", "pdf", "webm", "mp4", "avif", "tiff", "gif"],
     "actions": ["download", "save"],
     "convertPaths": false,
     "preview": {

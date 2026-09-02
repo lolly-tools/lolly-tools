@@ -20,6 +20,7 @@
     "height": 400,
     "formats": [
       "svg",
+      "penpot",
       "png",
       "webp",
       "avif",
