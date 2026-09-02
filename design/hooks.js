@@ -1672,6 +1672,13 @@ function timeAttrsFor(b, spans) {
     if (duck !== 1) {
       parts.push(' data-t-duck="' + duck + '"');
     }
+    // Pitch transpose in semitones (plan 165 WP-7b). Absent at 0 = as recorded.
+    var pitch = f2(clamp(num(b.pitch, 0), -12, 12));
+    if (pitch !== 0) {
+      parts.push(' data-t-pitch="' + pitch + '"');
+    }
+    // Tape-style varispeed (pitch follows speed) - absent = preserve pitch.
+    if (boolVal(b.varispeed, false)) parts.push(' data-t-varispeed="1"');
     if (b.lane === 'seq') parts.push(' data-t-lane="seq"');
   }
   // plan 104 section 5.3 / section 5.1 - depth as a clamped number (the ±300 house clamp on one side,

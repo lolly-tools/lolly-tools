@@ -2,7 +2,7 @@
   "id": "design",
   "name": "Design",
   "description": "An open canvas for free arrangement - text, images, shapes and live renders from your other Lolly tools, all held to your brand.",
-  "version": "1.20.0",
+  "version": "1.21.0",
   "engineVersion": "^1.160.0",
   "status": "community",
   "category": "designer",
@@ -278,6 +278,8 @@
         "gainField": "gain",
         "panField": "pan",
         "duckField": "duck",
+        "pitchField": "pitch",
+        "varispeedField": "varispeed",
         "labelField": "name",
         "linkField": "linkOf",
         "laneField": "lane",
@@ -1812,6 +1814,25 @@
           "max": 1,
           "step": 0.05,
           "help": "The level this audio box drops to while any other clip's audio plays: empty leaves it alone, 0.2 lowers it under speech, 0 silences it. Set from the timeline inspector's Under-other-audio row; showFor:[] keeps it out of the sidebar. APPENDED after pan - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "pitch",
+          "showFor": [],
+          "type": "number",
+          "label": "Pitch",
+          "default": "",
+          "min": -12,
+          "max": 12,
+          "step": 1,
+          "help": "Transpose this clip's audio in semitones (-12 to 12, formants preserved): 12 is up an octave. Works at any speed. Set from the timeline inspector's Pitch row; showFor:[] keeps it out of the sidebar. Empty is as recorded. APPENDED after duck - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "varispeed",
+          "showFor": [],
+          "type": "boolean",
+          "label": "Pitch follows speed",
+          "default": "",
+          "help": "Empty keeps a speed-changed clip at its recorded pitch - the editor default. True plays it tape-style: pitch rises with speed and falls with slow motion. Set from the timeline inspector's Preserve-pitch toggle; showFor:[] keeps it out of the sidebar. APPENDED after pitch."
         }
       ],
       "default": [
