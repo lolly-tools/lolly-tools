@@ -6,7 +6,11 @@
   width: 100%; height: 100%;
   display: flex; align-items: center; justify-content: center;
   padding: 56px;
-  font-family: 'SUSE Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+  /* The ACTIVE brand's monospace first (the shell sets --font-mono from the brand's
+     `font.mono` token); the literal stack is only the no-brand fallback. lolly-start
+     and SUSE both resolve the var to SUSE Mono, which is why the old hardwired form
+     looked right on every default profile and wrong on any brand with its own mono. */
+  font-family: var(--font-mono, 'SUSE Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', monospace);
 }
 
 /* ── Window card ── */
@@ -54,8 +58,9 @@
   /* Restate the stack ON the <pre>: the UA `pre{font-family:monospace}` rule matches
      the element directly and beats the stack inherited from .cc-root, so without this
      the code renders in a generic monospace AND the SVG export can't outline it to
-     <path> (computed family lacks 'SUSE', so resolveSuseFontUrl bails → <text>). */
-  font-family: 'SUSE Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+     <path> (the vector path resolves the COMPUTED family through the font registry,
+     which needs a real face name, not `monospace`). Brand var first, same as .cc-root. */
+  font-family: var(--font-mono, 'SUSE Mono', 'Fira Code', 'Cascadia Code', 'Consolas', 'Monaco', monospace);
   font-size: 13px; line-height: 1.7;
   white-space: pre;
   overflow: hidden;

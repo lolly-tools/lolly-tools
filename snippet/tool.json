@@ -2,7 +2,7 @@
   "id": "snippet",
   "name": "Snippet",
   "description": "Turn code snippets into clean, syntax-highlighted, shareable images.",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "engineVersion": "^1.0.0",
   "status": "official",
   "category": "everyone",
