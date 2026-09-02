@@ -2,7 +2,7 @@
   "id": "design",
   "name": "Design",
   "description": "An open canvas for free arrangement - text, images, shapes and live renders from your other Lolly tools, all held to your brand.",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "engineVersion": "^1.160.0",
   "status": "community",
   "category": "designer",
@@ -277,6 +277,7 @@
         "ignoredField": "ignored",
         "gainField": "gain",
         "panField": "pan",
+        "duckField": "duck",
         "labelField": "name",
         "linkField": "linkOf",
         "laneField": "lane",
@@ -1800,6 +1801,17 @@
           "max": 1,
           "step": 0.05,
           "help": "This clip's stereo position when the sequence is mixed: -1 is hard left, 0 keeps it centred, 1 is hard right (equal-power). Set from the timeline inspector's Pan row; showFor:[] keeps it out of the sidebar. Empty is centred. APPENDED after ry - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "duck",
+          "showFor": [],
+          "type": "number",
+          "label": "Under other audio",
+          "default": "",
+          "min": 0,
+          "max": 1,
+          "step": 0.05,
+          "help": "The level this audio box drops to while any other clip's audio plays: empty leaves it alone, 0.2 lowers it under speech, 0 silences it. Set from the timeline inspector's Under-other-audio row; showFor:[] keeps it out of the sidebar. APPENDED after pan - the compact-blocks URL wire format is append-only."
         }
       ],
       "default": [

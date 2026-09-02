@@ -1667,6 +1667,11 @@ function timeAttrsFor(b, spans) {
     if (pan !== 0) {
       parts.push(' data-t-pan="' + pan + '"');
     }
+    // Duck-to level under other audio (plan 165 WP-6). Absent at 1 = no ducking.
+    var duck = f2(clamp(num(b.duck, 1), 0, 1));
+    if (duck !== 1) {
+      parts.push(' data-t-duck="' + duck + '"');
+    }
     if (b.lane === 'seq') parts.push(' data-t-lane="seq"');
   }
   // plan 104 section 5.3 / section 5.1 - depth as a clamped number (the ±300 house clamp on one side,
