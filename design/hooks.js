@@ -1426,10 +1426,14 @@ var KF_DEFAULT_EASE = 'eio'; // absent from the wire means this curve
 var KF_BEZIER_Q = 0.001;
 var KF_BEZIER_Y_MAX = 10;
 var KF_MAX_KEYS = 256;   // parse caps - a blocks sub-field has no length limit of its own
-// DERIVED from KF_MAX_KEYS, not picked: 256 keyframes at the widest a keyframe can
-// serialise to (154 chars) plus separators is 39 679, so a full-density track always
-// fits and the two caps can never disagree. The engine pins the derivation.
-var KF_MAX_CHARS = 40960;
+// TRANSCRIBED from engine/src/keyframes.ts KF_MAX_CHARS - the ENGINE owns the
+// derivation (256 keys at full pose over every channel, measured, with headroom;
+// its comment carries the numbers). This used to be 40 960 from a hand-derived
+// widest-keyframe figure that predated the rx/ry/w/h/v channels, so the hook
+// truncated a max-density track ~6 KB before the engine would have - the two
+// sides reading different keyframes off the same string. The pin-test corpus
+// carries a track between the two old caps so a re-divergence fails loudly.
+var KF_MAX_CHARS = 49152;
 var KF_NUM = /^-?(?:\d+(?:\.\d+)?|\.\d+)$/; // no exponent, no '+', no NaN/Infinity
 var KF_T = /^t(-?(?:\d+(?:\.\d+)?|\.\d+))$/;
 var KF_EB = /^eb\(([^()]*)\)\(([^()]*)\)\(([^()]*)\)\(([^()]*)\)$/;

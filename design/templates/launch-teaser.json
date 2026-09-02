@@ -227,8 +227,6 @@
         "lane": "seq",
         "start": 0,
         "dur": 2,
-        "enter": "fade",
-        "enterMs": 400,
         "exit": "fade",
         "exitMs": 400
       },

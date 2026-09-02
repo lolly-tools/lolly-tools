@@ -37,8 +37,6 @@
         "lane": "seq",
         "start": 0,
         "dur": 2.5,
-        "enter": "fade",
-        "enterMs": 500,
         "exit": "fade",
         "exitMs": 400
       },
