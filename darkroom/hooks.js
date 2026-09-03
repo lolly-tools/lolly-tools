@@ -75,10 +75,12 @@ var _memoKey = null;
 var _memoResult = null;
 var _lastOutSrc = null;                        // previous composed bitmap (template double-buffer)
 var _imgCache = { url: null, promise: null };  // decoded user image
-// First-state subject when nothing is picked: the animated Lolly swirl (an SVG,
-// rasterised on decode like any vector). _defaultUrl caches the resolved catalog
-// URL; the procedural demo scene stays as the fallback if it can't be resolved.
-var DEFAULT_IMAGE_ID = 'lolly/demo/lolly-spin';
+// First-state subject when nothing is picked: the lorikeet portrait (a real photo
+// to grade - the starter catalog's demo raster, AI-generated and declared so), then
+// the animated Lolly swirl (an SVG, rasterised on decode like any vector) for a
+// catalog that ships without the photo. Tried in order; _defaultUrl caches the
+// first that resolves; the procedural demo scene stays as the fallback if none do.
+var DEFAULT_IMAGE_IDS = ['lolly/demo/lorikeet-lollipop', 'lolly/demo/lolly-spin'];
 var _defaultUrl = null;
 var _demoCanvas = null;                        // procedural demo scene, drawn once
 var _framedCache = { key: null, canvas: null };// cover-framed source
@@ -1836,15 +1838,19 @@ async function compute(model) {
   }
 
   // Resolve the source: a non-empty layer stack composites into the document
-  // (the Layers fold), else the user's pick, else the animated Lolly swirl
-  // (SVG → bitmap on decode), else the procedural demo scene.
+  // (the Layers fold), else the user's pick, else the first default subject the
+  // catalog can supply (the lorikeet photo, then the animated Lolly swirl - SVG →
+  // bitmap on decode), else the procedural demo scene.
   var rows = layerRows(inputs);
   var ref = inputs.image;
   var url = ref && typeof ref === 'object' ? ref.url : null;
   if (!url && !rows.length) {
     if (_defaultUrl === null) {
-      try { var def = await host.assets.get(DEFAULT_IMAGE_ID); _defaultUrl = (def && def.url) || ''; }
-      catch (e) { _defaultUrl = ''; }
+      _defaultUrl = '';
+      for (var di = 0; di < DEFAULT_IMAGE_IDS.length && !_defaultUrl; di++) {
+        try { var def = await host.assets.get(DEFAULT_IMAGE_IDS[di]); _defaultUrl = (def && def.url) || ''; }
+        catch (e) { _defaultUrl = ''; }
+      }
     }
     if (_defaultUrl) url = _defaultUrl;
   }

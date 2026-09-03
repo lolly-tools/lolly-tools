@@ -49,7 +49,7 @@
       "type": "asset",
       "assetType": "image",
       "allowUpload": true,
-      "help": "Pick a photo or SVG, or upload your own - vectors are rasterised on selection. Everything is processed on your device - the pixels never leave the browser. Leave empty to grade the animated Lolly swirl, or hit “Go live” to grade your camera."
+      "help": "Pick a photo or SVG, or upload your own - vectors are rasterised on selection. Everything is processed on your device - the pixels never leave the browser. Leave empty to grade the lorikeet portrait that ships with the catalogue, or hit “Go live” to grade your camera."
     },
     {
       "id": "imageFraming",
