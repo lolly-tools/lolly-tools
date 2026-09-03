@@ -136,6 +136,8 @@
      {{!-- The bed's in-point, read by the export bar: the picture starts `start`
            seconds into the clip, so the exported video's audio has to as well. --}}
      data-audio-start="{{default start 0}}"
+     {{!-- The bed's analysed length, read by the export bar to seed Duration. --}}
+     data-clip-ms="{{agClipMs}}"
      data-style="{{default style "bars"}}"
      data-accent="{{default accent "#5b8def"}}"
      data-ink="{{default ink "#eef1f4"}}"

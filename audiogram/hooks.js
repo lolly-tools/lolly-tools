@@ -671,6 +671,10 @@ async function build(ctx) {
     // field falls off to the card's own dark end rather than to a neutral the brand
     // never chose; the accent leads, so it stays the colour the image is about.
     agVizColors: vizPreset ? [accent, v.bg || '#101828'].concat(colors).join(' ') : '',
+    // The bed's analysed length in ms, stamped on the stage as data-clip-ms so the
+    // export bar's Duration field shows the length beforeExport will run to (empty
+    // while the placeholder wave stands in for real audio).
+    agClipMs: meta.real && meta.dur > 0.5 ? Math.round(meta.dur * 1000) : '',
     agCredit: credit,
   };
 }
@@ -1031,6 +1035,9 @@ async function onInput(ctx) {
  * track would otherwise be walked across the wrong duration and the picture would
  * drift against its own soundtrack. Setting the duration from the analysed span makes
  * the animation and the audio end together by construction, at any clip length.
+ * The same span is stamped on the stage as data-clip-ms (see agClipMs), so the export
+ * bar's Duration field SHOWS that length rather than the manifest's 8 s while the export
+ * silently runs longer - a user who wants a shorter clip types over it, and that wins.
  *
  * AUDIO (wav/mp3/m4a/opus): the file IS the sound, and the sound is the excerpt the
  * card is about - from "Start at" (stamped on the stage as data-audio-start, which is
