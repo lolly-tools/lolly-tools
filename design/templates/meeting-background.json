@@ -234,7 +234,7 @@
         "rot": 0,
         "shape": "circle",
         "bg": "var(--brand-primary, #1e293b)",
-        "opacity": 12,
+        "opacity": 18,
         "order": 0
       },
       {
@@ -248,7 +248,7 @@
         "rot": 0,
         "shape": "circle",
         "bg": "var(--brand-primary, #1e293b)",
-        "opacity": 8,
+        "opacity": 12,
         "order": 0
       },
       {

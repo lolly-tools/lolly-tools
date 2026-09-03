@@ -178,9 +178,14 @@ function weightOf(b) {
 // brand font family the user added to their kit (the font select's brandFonts
 // option list), sanitised to safe chars before it reaches style="" so a family
 // name can never inject CSS. Unknown/empty values fall back to sans.
+// 'display' is the brand's HEADINGS face (brand-vars.ts FONT_SLOTS: --font-display,
+// which itself falls back to --font-brand when a kit sets no separate headings face).
+// A kit that names one gets it on every headline; a kit that does not renders exactly
+// as 'sans' did, so the keyword is safe to make the default headline face.
 var FONTS = {
   'mono': 'var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace)',
   'sans': "var(--font-brand, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif)",
+  'display': 'var(--font-display, var(--font-brand, sans-serif))',
 };
 function fontFamily(v) {
   // An absent font is the brand face, not the literal family 'undefined' - a
@@ -204,7 +209,7 @@ function fontFamily(v) {
 // exactly as fontFamily() does before it reaches the pptx run.
 function deckFont(b) {
   var key = String(b && b.font == null ? '' : b.font);
-  if (key === '' || key === 'sans' || key === 'mono') return undefined;
+  if (key === '' || key === 'sans' || key === 'mono' || key === 'display') return undefined;
   var safe = key.replace(/[^\w \-]/g, '').trim();
   return safe || undefined;
 }
@@ -261,6 +266,28 @@ function isCameraBox(b) {
 // stays in one vocabulary and a new bare kind is added in exactly one place.
 function isBareBox(b) {
   return isAudioBox(b) || isCameraBox(b);
+}
+
+// ── the two layer flags (plan 179 M4) ────────────────────────────────────────
+//
+// `hidden` is DOCUMENT truth, not an editor convenience: a hidden layer is not drawn
+// and not exported, so it is skipped at every place this file walks the boxes - the
+// artboard loop, a frame's children, the deck model, the Penpot document and the
+// timeline attributes. A hidden FRAME takes its whole page with it. That single rule is
+// what makes the flag safe to share in a link: whoever opens it sees what the author saw.
+//
+// `locked` is the opposite - EDITOR-ONLY. It changes no pixel and no export; it is
+// stamped as data-locked="1" so the canvas overlay can refuse to hit-test the box, and
+// nothing else in the render reads it.
+//
+// boolVal, not bare truthiness: a URL carries these as the STRINGS "1"/"false", and
+// 'false' is truthy in JS - the trap every other boolean field here reads through the
+// same helper to avoid.
+function isHiddenBox(b) {
+  return !!b && boolVal(b.hidden, false);
+}
+function isLockedBox(b) {
+  return !!b && boolVal(b.locked, false);
 }
 
 // Perspective tilt (plan 104 P2.1), clamped to the manifest's own min/max and rounded to
@@ -414,7 +441,17 @@ function mediaHtmlFor(b) {
   if (isAudioBox(b)) {
     var adur = img && img.meta && Number(img.meta.durationMs);
     var adurAttr = (isFinite(adur) && adur > 0) ? ' data-audio-dur="' + Math.round(adur) + '"' : '';
-    return '<div class="lolly-box-audio" data-audio-src="' + esc(url) + '"' + adurAttr + ' aria-hidden="true"></div>';
+    // Two marks the PRESENTER needs, and nothing else reads (plans/180 M-E). A deck must
+    // never blare, so present-mode plays an audio box only when the document says it may:
+    // data-present-audio="1" is the same opt-in the video branch below emits, and
+    // data-narration="1" says this clip was made from the slide's own speaker notes, so it
+    // is heard on its slide without a second opt-in. A flag, not the group value: the
+    // narration group is model state and stays out of the markup.
+    var apaAttr = boolVal(b.presentAudio, false) ? ' data-present-audio="1"' : '';
+    var narrAttr = String(b.group == null ? '' : b.group).indexOf('narration:') === 0
+      ? ' data-narration="1"' : '';
+    return '<div class="lolly-box-audio" data-audio-src="' + esc(url) + '"' + adurAttr +
+      apaAttr + narrAttr + ' aria-hidden="true"></div>';
   }
   if (isLottie) {
     var fit = String(b.fit) === 'cover' ? 'cover' : 'contain';
@@ -433,7 +470,10 @@ function mediaHtmlFor(b) {
     var vkey = b && b.id != null ? esc(String(b.id)) : esc(url);
     // Present-mode audio opt-in (plan 112): data-present-audio="1" lets the presenter
     // unmute THIS box on its active slide. Always emitted muted for the editor/timeline.
-    var paAttr = (b && b.presentAudio) ? ' data-present-audio="1"' : '';
+    // Read through boolVal like every other boolean here: a URL carries the field as the
+    // STRING "0"/"false", and both are truthy in JS, so bare truthiness would unmute a box
+    // whose author had turned the opt-in off.
+    var paAttr = boolVal(b && b.presentAudio, false) ? ' data-present-audio="1"' : '';
     return '<video class="lolly-box-img lolly-box-video" src="' + esc(url) +
       '" data-video-key="' + vkey + '"' + paAttr + ' muted loop autoplay playsinline style="' + style + '"></video>';
   }
@@ -1158,6 +1198,12 @@ function isFiniteNum(v) {
 // parseInt on the phase-2 side would read as NaN / 1.
 var MAX_TIME_S = 3600;
 
+// The silence a narrated slide holds after its last word (plans/180 T1). The same number
+// three files have to agree on: this manifest's `narrationTailMs` default, the shell's
+// NARRATION_TAIL_MS in lib/motion-model, and present-mode's fallback when the document
+// names none. Because they agree, the attribute is emitted only when an author moves it.
+var NARRATION_TAIL_DEFAULT_MS = 600;
+
 // Is `v` one of the whitelisted transition keywords? An own-property test, not the
 // bare `TRANSITIONS[v]` truthiness check - every object literal inherits truthy
 // `constructor` / `__proto__` / `toString` / `valueOf` from Object.prototype, so a
@@ -1689,6 +1735,25 @@ function timeAttrsFor(b, spans) {
     var fx = String(b.fx == null ? '' : b.fx).toLowerCase().replace(/[^a-z0-9().-]/g, '').slice(0, 200);
     if (fx) parts.push(' data-t-fx="' + fx + '"');
     if (b.lane === 'seq') parts.push(' data-t-lane="seq"');
+  } else if (isTransition(b.enter) || isTransition(b.exit)) {
+    // PRESENTER-ONLY motion (plan 179 M4, spec 1b). An UNTIMED box can still be given an
+    // Enter/Exit - "animate when the slide arrives" - but those must not become data-t-*
+    // here: the video compositor's sequence-plan reads data-t-enter off EVERY .lolly-box,
+    // so widening the timed branch would silently change what a rendered video looks like.
+    // They travel under their own data-pr-* names instead, which only present-mode reads:
+    // it copies them onto data-t-* names on its own CLONE of the slide, where a local
+    // clock starts at the slide's arrival. Emitted only when a kind is authored, so a box
+    // with no motion renders byte-identically to before this existed.
+    if (isTransition(b.enter)) {
+      parts.push(' data-pr-enter="' + b.enter + '" data-pr-enter-ms="' + Math.round(clamp(num(b.enterMs, 400), 100, 3000)) + '"');
+      var prEnterEase = easeAttr(b.enterEase);
+      if (prEnterEase) parts.push(' data-pr-enter-ease="' + prEnterEase + '"');
+    }
+    if (isTransition(b.exit)) {
+      parts.push(' data-pr-exit="' + b.exit + '" data-pr-exit-ms="' + Math.round(clamp(num(b.exitMs, 400), 100, 3000)) + '"');
+      var prExitEase = easeAttr(b.exitEase);
+      if (prExitEase) parts.push(' data-pr-exit-ease="' + prExitEase + '"');
+    }
   }
   // plan 104 section 5.3 / section 5.1 - depth as a clamped number (the ±300 house clamp on one side,
   // 900 on the other so a deep lift stays clear of the behind-camera guard), and the
@@ -1854,6 +1919,8 @@ function lineLayerFor(boxes) {
   if (!api || typeof api.build !== 'function') return '';
   var rows = [], i, row;
   for (i = 0; i < boxes.length; i++) {
+    // A hidden connector is not drawn, on the same terms as any other hidden layer.
+    if (isHiddenBox(boxes[i])) continue;
     row = boundPathRow(boxes[i] || {});
     if (row) rows.push(row);
   }
@@ -1910,6 +1977,31 @@ function twoNodePathValue(n0, n1) {
 // and the one that keeps compute() from writing inputs on every render), else the new
 // `boxes` array with one path box appended per resolvable edge.
 
+// An artboard's IMAGE fill (plan 179 A4) - a real <img> the page renders as its FIRST
+// child, so it paints UNDER every member box (DOM order, no z-index) and the SVG/PDF
+// walkers pick it up exactly like a box's own picture. The page is the positioned
+// containing block, so 100%/100% is the page rect; `pointer-events:none` keeps it paint
+// rather than a hit target for the editor overlay, and the frame's corner radius is
+// repeated on it because a page with clipChildren:false has no overflow clip to do it.
+// Fit + position come from imgCss, the SAME expression a box uses, so an artboard and a
+// picture box crop identically.
+//
+// Still rasters and static vectors only: a Lottie, a video or an audio asset needs the
+// shell's own enhancer/compositor, which mounts on .lolly-box media alone, so those
+// degrade to NO layer rather than to a broken <img> stretched across the board.
+function frameImgFor(b, radiusCss) {
+  var img = b && b.image;
+  var url = img && img.url ? String(img.url) : '';
+  if (!url) return '';
+  var type = img && img.type ? String(img.type) : '';
+  if (type === 'lottie' || type === 'video' || type === 'audio') return '';
+  if (/\.(json|mp4|m4v|mov|webm|mp3|wav|ogg|m4a)($|\?|#)/i.test(url)) return '';
+  return '<img class="lolly-frame-img" src="' + esc(url) +
+    '" style="position:absolute;left:0;top:0;width:100%;height:100%;' + imgCss(b) +
+    (radiusCss !== '0' ? 'border-radius:' + radiusCss + ';' : '') +
+    'pointer-events:none;" alt="" aria-hidden="true" draggable="false">';
+}
+
 // ── frame grouping (plan 93 F1a-part-2) ───────────────────────────────────────
 //
 // A box with kind==='frame' is a PAGE. Every OTHER box carries a STORED `frame`
@@ -1927,6 +2019,12 @@ function twoNodePathValue(n0, n1) {
 // container, never also rendered as a child. When NO frame exists we return undefined so
 // the template's {{#if frameGroups}} is false and {{else}} renders today's single
 // .artboard byte-for-byte.
+// The per-frame slide transitions the presenter implements (manifest `slideTransition`).
+// 'flight' is the Prezi-style camera move over the spatial layout; 'custom' means the
+// frame's own timeline enter/exit are the truth. '' is absent from the pattern on
+// purpose - it is "follow the deck", which is the absence of the attribute.
+var FRAME_TRANSITION_RE = /^(slide|fade|morph|flight|none|custom)$/;
+
 function frameGroupsFor(boxes, ext) {
   var hasFrame = false;
   for (var i = 0; i < boxes.length; i++) {
@@ -1938,8 +2036,17 @@ function frameGroupsFor(boxes, ext) {
   for (var f = 0; f < boxes.length; f++) {
     var fb = boxes[f];
     if (!fb || String(fb.kind) !== 'frame') continue;
+    // A hidden FRAME takes its whole page with it: no [data-pdf-page], so no slide in a
+    // deck and no page in a paged export. Its MEMBERS go with it - pasteboardFor still
+    // counts a hidden frame's id as a real page, so a member is never re-homed onto the
+    // canvas as loose artwork just because its board was hidden.
+    if (isHiddenBox(fb)) continue;
     frameEntries.push({ box: fb, idx: f, order: num(fb.order, 0), x: num(fb.x, 0) });
   }
+  // An EMPTY array, never undefined, when every frame is hidden: frames still exist, so
+  // the document stays in frames mode (an empty canvas plus its pasteboard) instead of
+  // falling through to the single-artboard branch, which would explode every member box
+  // onto one page at its global coordinates.
   // Page order: ascending `order`, tie-break ascending x (left→right) - the exact rule
   // seedFrameOrder() uses so a headless render matches the editor's frame numbering.
   frameEntries.sort(function (a, b) { return (a.order - b.order) || (a.x - b.x); });
@@ -1990,17 +2097,44 @@ function frameGroupsFor(boxes, ext) {
         (String(fb.strokeDash) === 'dashed' ? 'dashed' : String(fb.strokeDash) === 'dotted' ? 'dotted' : 'solid') +
         ' ' + fsc + ';'
       : '';
+    // A board wears the same PAINT a box does (plan 179 A3/A4). The inspector has always
+    // offered an artboard a gradient, a picture, opacity, a blend, a corner radius and a
+    // shadow; this emitter dropped every one of them, so a slide with a gradient or a photo
+    // background rendered as flat colour and the controls lied. Each is built with the SAME
+    // expression boxCss/shadowCss use, so a board and a box wearing the same fields paint the
+    // same thing, and each is emitted ONLY when authored - a plain artboard serialises
+    // byte-for-byte as it did before (the golden frame tests pin that string).
+    //
+    // Everything stays INLINE on the page element on purpose: the SVG/PDF/raster walkers
+    // read the style attribute, so a rule in styles.css would export as nothing.
+    var fgrad = gradCssFor(fb);
+    var fop = clamp(num(fb.opacity, 100), 0, 100) / 100;
+    var fblend = Object.prototype.hasOwnProperty.call(BLENDS, String(fb.blend)) ? String(fb.blend) : '';
+    var frad = radiusFor(fb.shape, fb.radius);
+    // Box shadow only. A page has no text run of its own, and the alpha-silhouette targets
+    // ('content'/'depth') describe a shape's outline - on a full rectangle they would be the
+    // box shadow by a slower route - so a frame answers to the 'box' target and nothing else.
+    var fshadow = shadowCss(fb).box;
     var pageStyle =
       'position:absolute;left:' + fx + 'px;top:' + fy + 'px;' +
       'width:' + fw + 'px;height:' + fh + 'px;' +
       'background:' + safeColor(fb.bg, 'var(--lolly-frame-surface, #ffffff)') + ';' +
+      // AFTER the `background` shorthand, which resets background-image - boxCss's rule,
+      // and the reason a translucent gradient stop composites onto the flat fill.
+      (fgrad ? 'background-image:' + fgrad + ';' : '') +
       frameBorder +
-      (clip ? 'overflow:hidden;' : 'overflow:visible;');
+      (clip ? 'overflow:hidden;' : 'overflow:visible;') +
+      (frad !== '0' ? 'border-radius:' + frad + ';' : '') +
+      (fop !== 1 ? 'opacity:' + fop + ';' : '') +
+      (fblend ? 'mix-blend-mode:' + fblend + ';' : '') +
+      fshadow;
+    var pageImgHtml = frameImgFor(fb, frad);
     var children = [];
     for (var j = 0; j < boxes.length; j++) {
       var cb = boxes[j];
       if (!cb || String(cb.kind) === 'frame') continue;              // a frame is a page, never a child
       if (String(cb.frame == null ? '' : cb.frame) !== fid) continue; // scratch / other frame omitted
+      if (isHiddenBox(cb)) continue;                                  // hidden: not drawn, not exported
       // Frame-local position OVERRIDES the global left/top already in boxStyle[j]: a
       // later same-property declaration wins in an inline style attribute. frameBW cancels
       // the inside border's containing-block inset (see the frameBorder note above) so the
@@ -2022,6 +2156,7 @@ function frameGroupsFor(boxes, ext) {
         cls: ext.boxCls[j],
         boxStyle: ext.boxStyle[j] + 'left:' + lx + 'px;top:' + ly + 'px;',
         timeAttrs: ext.timeAttrs[j],
+        lockAttr: ext.lockAttrs[j],
         buildAttr: buildAttr,
         matchAttr: matchAttr,
         pathHtml: ext.pathHtml[j],
@@ -2065,7 +2200,26 @@ function frameGroupsFor(boxes, ext) {
     // attribute can never carry markup.
     var fstack = (fb && fb.stackOf != null) ? String(fb.stackOf).replace(/[^A-Za-z0-9_-]/g, '').slice(0, 64) : '';
     var frameStackAttr = fstack ? ' data-frame-stack="' + fstack + '"' : '';
-    return { pageStyle: pageStyle, pageTimeAttrs: pageTimeAttrs, children: children, frameId: fid, frameDurAttr: frameDurAttr, frameStateAttr: frameStateAttr, frameNotesAttr: frameNotesAttr, frameStackAttr: frameStackAttr };
+    // The board's own NAME (plan 179 A10). `name` is the blocks input's labelField, so the
+    // sidebar, the design importer and the PPTX importer all write it - and until now
+    // nothing on the canvas could read it back, which is why every board was labelled
+    // "Artboard N" by x-position. Stamped attribute-escaped, exactly like data-frame-notes,
+    // since it is arbitrary user text; absent when empty so an unnamed board's markup and
+    // the label fallback are both unchanged.
+    var fname = (fb && fb.name != null) ? String(fb.name).trim() : '';
+    var frameNameAttr = fname
+      ? ' data-frame-name="' + fname.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;') + '"'
+      : '';
+    // This board's OWN transition to the next one (plan 179 M4), overriding the
+    // document's Slide transition. A closed whitelist, exactly like the head-kind and
+    // hold-effect enums: a hand-edited URL can put any string in the field, and only a
+    // value the presenter implements ever reaches the attribute. '' (follow the deck)
+    // and junk both emit nothing, so a document authored before this field renders
+    // byte-identically. 'custom' travels too - it is the presenter's instruction to use
+    // the frame's own timeline enter/exit and derive nothing.
+    var ftr = (fb && fb.slideTransition != null) ? String(fb.slideTransition) : '';
+    var frameTransitionAttr = FRAME_TRANSITION_RE.test(ftr) ? ' data-frame-transition="' + ftr + '"' : '';
+    return { pageStyle: pageStyle, pageImgHtml: pageImgHtml, pageTimeAttrs: pageTimeAttrs, children: children, frameId: fid, frameDurAttr: frameDurAttr, frameStateAttr: frameStateAttr, frameNotesAttr: frameNotesAttr, frameStackAttr: frameStackAttr, frameNameAttr: frameNameAttr, frameTransitionAttr: frameTransitionAttr };
   });
 }
 
@@ -2090,6 +2244,7 @@ function pasteboardFor(boxes, ext) {
     var cb = boxes[j];
     if (!cb || String(cb.kind) === 'frame') continue;           // a frame is a page, never loose
     if (frameIds[String(cb.frame == null ? '' : cb.frame)]) continue; // belongs to a page → rendered inside it
+    if (isHiddenBox(cb)) continue;                               // hidden: not drawn, not exported
     loose.push({
       flatIndex: j,
       id: (cb.id != null && cb.id !== '') ? cb.id : j,
@@ -2097,6 +2252,7 @@ function pasteboardFor(boxes, ext) {
       cls: ext.boxCls[j],
       boxStyle: ext.boxStyle[j],   // GLOBAL left/top from boxCss - no frame-local override
       timeAttrs: ext.timeAttrs[j],
+      lockAttr: ext.lockAttrs[j],
       pathHtml: ext.pathHtml[j],
       mediaHtml: ext.mediaHtml[j],
       textStyle: ext.textStyle[j],
@@ -2234,7 +2390,16 @@ function deckAnimFor(cb, fb) {
   var click = (isFinite(build) && build >= 1) ? Math.round(build) : 0;
   var holdK = cb.hold == null ? '' : String(cb.hold);
   var hasHold = Object.prototype.hasOwnProperty.call(HOLD_FX, holdK);
-  if (!hasEnter && !hasExit && !split && !hasHold && click < 1) return undefined;
+  // Three things PowerPoint cannot express at all, carried so the export bridge can SAY
+  // it dropped them instead of the difference passing silently (plan 179 M4, spec 2c):
+  // a keyframe track, an explicit morph match key, and the frame's own state token.
+  // Each is a plain flag - the vocabulary itself never crosses into OOXML.
+  var hasKf = !!kfAttr(cb.kf);
+  var hasMatch = (cb.matchOf != null) && String(cb.matchOf).trim() !== '';
+  var frameState = (fb && fb.state != null)
+    ? String(fb.state).toLowerCase().replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, ' ').trim()
+    : '';
+  if (!hasEnter && !hasExit && !split && !hasHold && click < 1 && !hasKf && !hasMatch && !frameState) return undefined;
   // Slide-local time: a frames-as-scenes page carries its own start; a spatial deck
   // reads box offsets against 0 (its one implicit scene).
   var fbStartMs = isFiniteNum(fb && fb.start) ? Math.round(startSeconds(fb) * 1000) : 0;
@@ -2271,14 +2436,38 @@ function deckAnimFor(cb, fb) {
   // say so in its degrade notes rather than the difference passing silently.
   if (hasHold) a.hold = holdK;
   if (click >= 1) a.click = click;
+  // '1' rather than true for `kf`: it is a PRESENCE marker for the drop note, not the
+  // track (which no deck element could carry), and the string keeps the JSON in one
+  // shape with the other carried-for-the-note values. matchOf/state are plain booleans.
+  if (hasKf) a.kf = '1';
+  if (hasMatch) a.matchOf = true;
+  if (frameState) a.state = true;
   return a;
 }
 
-function deckModelFor(boxes, byId) {
+// The deck transition ONE slide plays into the next, resolved (plan 179 M4). The
+// inheritance is the whole rule, in one expression so the presenter, the .pptx writer and
+// the "Place in order" derivation can never disagree:
+//   an authored value wins; '' means "follow the deck"; and 'custom' ALSO means the deck
+//   here, because custom says "the frame's own timeline enter/exit are the truth" and a
+//   .pptx slide transition cannot express a per-box timeline anyway.
+// Anything unrecognised falls back to the document value, and a document with no legal
+// transition of its own resolves to '' - which the caller turns into `undefined`, so a
+// deck authored before this field serialises exactly as it did.
+function resolveFrameTransition(frameValue, docTransition) {
+  var doc = String(docTransition == null ? '' : docTransition);
+  var docOk = FRAME_TRANSITION_RE.test(doc) && doc !== 'custom' ? doc : '';
+  var own = String(frameValue == null ? '' : frameValue);
+  if (!FRAME_TRANSITION_RE.test(own) || own === 'custom') return docOk;
+  return own;
+}
+
+function deckModelFor(boxes, byId, docTransition) {
   var frameEntries = [];
   for (var f = 0; f < boxes.length; f++) {
     var fb = boxes[f];
     if (!fb || String(fb.kind) !== 'frame') continue;
+    if (isHiddenBox(fb)) continue;   // a hidden board is not a slide - frameGroupsFor's rule
     frameEntries.push({ box: fb, idx: f, order: num(fb.order, 0), x: num(fb.x, 0) });
   }
   if (!frameEntries.length) return undefined;
@@ -2297,6 +2486,7 @@ function deckModelFor(boxes, byId) {
       var cb = boxes[j];
       if (!cb || String(cb.kind) === 'frame') continue;               // a frame is a page, never a child
       if (String(cb.frame == null ? '' : cb.frame) !== fid) continue; // scratch / other frame omitted
+      if (isHiddenBox(cb)) continue;                                   // hidden: not drawn, not exported
       var lx = Math.round(num(cb.x, 0)) - fx;
       var ly = Math.round(num(cb.y, 0)) - fy;
       var el = deckElementFor(cb, byId, lx, ly);
@@ -2306,7 +2496,18 @@ function deckModelFor(boxes, byId) {
         elements.push(el);
       }
     }
-    return { bg: safeColor(fbx.bg, '#ffffff'), elements: elements };
+    // Speaker notes reach PowerPoint (plan 179 P1). The deck model had no `notes` key at
+    // all, so every note the author wrote was dropped on export and the whole notesSlide
+    // machinery in engine/src/pptx.ts was unreachable from this tool. Same sanitisation as
+    // the data-frame-notes stamp: PLAIN TEXT, no markup - a pptx notes slide is a text
+    // body, not HTML. `undefined` (never '') for a note-less slide, so the deck JSON of a
+    // deck with no notes is byte-identical to what it was.
+    var fnotes = (fbx.notes != null) ? String(fbx.notes).trim() : '';
+    // This slide's transition INTO the next one, already resolved against the document's
+    // own. `undefined` (never '') when nothing resolves, so a deck whose document
+    // transition is unset serialises byte-for-byte as it did before this key existed.
+    var ftrans = resolveFrameTransition(fbx.slideTransition, docTransition);
+    return { bg: safeColor(fbx.bg, '#ffffff'), elements: elements, notes: fnotes || undefined, transition: ftrans || undefined };
   });
   return { size: size, slides: slides };
 }
@@ -2365,19 +2566,53 @@ function compute(model) {
   // addressing a ULID. Emitted as EXTRA class tokens on .lolly-box, so it styles the
   // editor, every export and presentation alike - one document, one truth.
   var boxCls = boxes.map(function (b) { return classTokens(b && b.cls); });
+  // The two layer flags (plan 179 M4), index-aligned with the arrays above.
+  //   boxHide - '1' for a hidden row. The template's single-artboard branch iterates the
+  //     RAW boxes input (it needs @index for data-canvas-input), so the skip has to be
+  //     expressible there; every other surface below filters in this file instead.
+  //   lockAttrs - the editor-only ' data-locked="1"' stamp. It changes no pixel: the
+  //     canvas overlay reads it to refuse a hit-test, and nothing else reads it at all.
+  var boxHide = boxes.map(function (b) { return isHiddenBox(b) ? '1' : ''; });
+  var lockAttrs = boxes.map(function (b) { return isLockedBox(b) ? ' data-locked="1"' : ''; });
   // Time model (phase 1 - inert data; nothing reads these attributes yet, the
   // phase-2 panel does). timeAttrs is index-aligned with boxStyle/boxFit/etc.
   var seqSpans = ignoredSeqSpans(boxes);
-  var timeAttrs = boxes.map(function (b) { return timeAttrsFor(b || {}, seqSpans); });
-  var seqMs = seqDurationMs(boxes);
+  // A hidden row carries NO timeline attributes: it is not on the stage, so it must not
+  // gate the clock, hold a lane open or lengthen the sequence.
+  var timeAttrs = boxes.map(function (b) { return isHiddenBox(b) ? '' : timeAttrsFor(b || {}, seqSpans); });
+  var seqMs = seqDurationMs(boxes.filter(function (b) { return !isHiddenBox(b); }));
   var seqAttrs = [seqMs > 0 ? ' data-sequence data-seq-ms="' + seqMs + '"' : ''];
+  // Auto-advance is EXPLICIT (plan 179 T3). A frame's `dur` also stamps data-frame-dur, and
+  // "Place in order" writes `dur` on every frame to lay them out on the timeline - which
+  // silently turned a click-advanced deck into a 3-second kiosk. The dwell attribute keeps
+  // its meaning ("how long this slide lasts"); whether the PRESENTER acts on it is this
+  // one document-level flag, stamped on the render root so a presenter clone carries it.
+  // Off by default, so an unset document emits nothing and every existing link presents
+  // click-advanced.
+  // boolVal, not bare truthiness: a URL carries `autoAdvance=1` / `=false` as a STRING, and
+  // the string 'false' is truthy in JS - the trap every other boolean field in this file
+  // reads through the same helper to avoid.
+  var rootAttrs = boolVal(inp.autoAdvance, false) ? ' data-auto-advance="1"' : '';
+  // The other two DOCUMENT-level presenter settings (plans/180 T9 and section 4). Both are
+  // read off this same root by present-mode, so a setting that never reaches the markup is
+  // a setting the podium cannot honour - which is what "Show captions when presenting" was
+  // before it was stamped here. Neither changes the picture; they tell the presenter what
+  // the author asked for.
+  //
+  // Each is emitted only when it says something the presenter does not already assume:
+  // captions when they are turned ON, the tail when it differs from the 600 ms the manifest
+  // defaults to and present-mode falls back to. So a document that leaves them alone renders
+  // exactly the bytes it rendered before they existed.
+  if (boolVal(inp.showCaptionsWhenPresenting, false)) rootAttrs += ' data-present-captions="1"';
+  var tailMs = Math.round(clamp(num(inp.narrationTailMs, NARRATION_TAIL_DEFAULT_MS), 0, 5000));
+  if (tailMs !== NARRATION_TAIL_DEFAULT_MS) rootAttrs += ' data-narration-tail="' + tailMs + '"';
   // Hand-authored frames (plan 93 F1a-part-2). undefined when no kind:'frame' box
   // exists → {{#if frameGroups}} false → the template's {{else}} renders today's single
   // artboard byte-identically. Reuses the index-aligned per-box arrays above.
   var frameArrays = {
     boxStyle: boxStyle, textStyle: textStyle, textHtml: textHtml,
     mediaHtml: mediaHtml, pathHtml: pathHtml, boxFit: boxFit, timeAttrs: timeAttrs,
-    boxCls: boxCls,
+    boxCls: boxCls, lockAttrs: lockAttrs,
   };
   // NULL, never undefined, when there are no frames: mergePatch SKIPS undefined
   // keys (darkroom's videoLook cache leans on that), so an undefined here would
@@ -2394,7 +2629,9 @@ function compute(model) {
   // `deckJson` collides with no input id (inputs: background/transparentBg/connectors/
   // boxes + box fields) so the runtime routes it to extras; the template reads
   // {{{deckJson}}} into <script data-pptx-deck>, exactly like deck-studio.
-  var deckJson = frameGroups ? safeJson(deckModelFor(boxes, byId)) : null;
+  // `frameGroups.length` rather than bare truthiness: frames every one of which is hidden
+  // give an EMPTY page list, and a deck with no slides is no deck.
+  var deckJson = (frameGroups && frameGroups.length) ? safeJson(deckModelFor(boxes, byId, inp.transition)) : null;
   // Penpot document model (plan 178 section 3.2). The RAW boxes, not the deck: a .penpot
   // file carries paths, ellipses, rotation, gradients, blur and shadow, all of which the
   // deck lowering drops by design, so the export bridge lowers the boxes themselves
@@ -2408,7 +2645,7 @@ function compute(model) {
   // the model - a still export must not carry a camera's text even inside a <script>.
   var penpotBoxes = [];
   for (var pb = 0; pb < boxes.length && penpotBoxes.length < 4000; pb++) {
-    if (boxes[pb] && !isBareBox(boxes[pb])) penpotBoxes.push(boxes[pb]);
+    if (boxes[pb] && !isBareBox(boxes[pb]) && !isHiddenBox(boxes[pb])) penpotBoxes.push(boxes[pb]);
   }
   var penpotDocJson = safeJson({
     background: transparent ? 'transparent' : safeColor(inp.background, '#ffffff'),
@@ -2422,14 +2659,27 @@ function compute(model) {
     pathHtml: pathHtml,
     boxFit: boxFit,
     boxCls: boxCls,
+    boxHide: boxHide,
+    lockAttrs: lockAttrs,
     timeAttrs: timeAttrs,
     seqAttrs: seqAttrs,
+    // Document-level attributes for the render ROOT (.lolly-frames in frames mode, the
+    // single .artboard without frames) - today just the auto-advance flag. `rootAttrs`
+    // collides with no input id, so the runtime routes it to extras.
+    rootAttrs: rootAttrs,
     // Frames mode: the root .artboard is just the PASTEBOARD - each page paints its
     // own surface (fb.bg → --lolly-frame-surface), so a full-rect doc background here
     // would render a phantom page behind the artboards (plans/141). No-frames docs
     // keep the doc background on the root, byte-identical to before.
     bgStyle: [frameGroups ? 'transparent' : (transparent ? 'transparent' : safeColor(inp.background, '#ffffff'))],
     connectorSvg: lineLayerFor(boxes),
+    // Is this document in FRAMES mode? `frameGroups` alone can no longer answer it: with
+    // every frame hidden the page list is empty, and Handlebars reads an empty array as
+    // absent - which would drop the document into the single-artboard branch and paint
+    // every member box loose at its global coordinates. This flag is the branch, so the
+    // canvas stays empty (plus its pasteboard) instead. '' / '1' rather than a boolean so
+    // it reads the same way through the URL wire as every other emitted flag.
+    frameMode: frameGroups ? '1' : '',
     frameGroups: frameGroups,
     pasteboard: pasteboard,
     deckJson: deckJson,

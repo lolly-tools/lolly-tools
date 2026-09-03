@@ -14,7 +14,19 @@
         "h": 1080,
         "rot": 0,
         "shape": "rect",
-        "bg": "var(--brand-primary, #0b1220)",
+        "bg": "var(--brand-primary, #1e293b)",
+        "order": 0
+      },
+      {
+        "id": "accent",
+        "kind": "box",
+        "x": 160,
+        "y": 300,
+        "w": 140,
+        "h": 12,
+        "rot": 0,
+        "shape": "pill",
+        "bg": "var(--brand-secondary, #94a3b8)",
         "order": 0
       },
       {

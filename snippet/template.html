@@ -295,10 +295,38 @@
     }
     return out;
   }
+  // Any CSS colour the canvas hands over -> #rrggbb. The brand layer passes ramp
+  // values through as raw oklch() strings (brand-vars.ts: the browser resolves them
+  // in var()), so a hex-only test here quietly threw the whole brand away and the
+  // SUSE seeds above painted a magenta brand green (Andy, 2026-09-03). A 1x1 canvas
+  // fill is the one parser every engine shares for oklch/lch/lab/hsl/rgb/named
+  // colours; a sentinel fill first tells a refused value from a real black. Under
+  // jsdom (the CLI) there is no 2D context, so this returns null and the seeds stand.
+  function cssHex(v) {
+    v = (v || '').trim();
+    if (!v) return null;
+    if (/^#[0-9a-f]{6}$/i.test(v)) return v.toLowerCase();
+    try {
+      var c = document.createElement('canvas');
+      c.width = c.height = 1;
+      var ctx = c.getContext('2d');
+      if (!ctx) return null;
+      ctx.fillStyle = '#010203';
+      ctx.fillStyle = v;
+      if (ctx.fillStyle === '#010203') return null;   // not a colour the engine can read
+      ctx.fillRect(0, 0, 1, 1);
+      var d = ctx.getImageData(0, 0, 1, 1).data;
+      var out = '#';
+      for (var i = 0; i < 3; i++) { var s = d[i].toString(16); out += s.length < 2 ? '0' + s : s; }
+      return out;
+    } catch (e) { return null; }
+  }
+  function brandVar(name) {
+    try { return cssHex(getComputedStyle(root).getPropertyValue(name)); } catch (e) { return null; }
+  }
   (function brandise() {
-    var v = '';
-    try { v = getComputedStyle(root).getPropertyValue('--brand-primary').trim(); } catch (e) { return; }
-    if (!/^#[0-9a-f]{6}$/i.test(v)) return;
+    var v = brandVar('--brand-primary');
+    if (!v) return;
     // Only the HUE is taken from the brand; every role sits at a FIXED
     // lightness band so contrast holds by construction. The raw value is
     // never used as a text colour - a brand whose primary is near-black
@@ -321,6 +349,23 @@
     l.string = hslHex(h, 55, 25);
     l.comment = hslHex(h, 18, 58);
     l.fn = hslHex(h, 45, 20);
+    // The brand's own surface and ink, where the canvas exposes them and they fit the
+    // theme: a light surface is Brand Light's paper and a dark one is Brand Dark's
+    // window, an ink darker than mid is Brand Light's text and a lighter one Brand
+    // Dark's. An ink-and-paper brand (no hue at all) reads as its real greys this way
+    // instead of a derived tint; a mismatched pair (say a dark surface while the app
+    // is in light mode) is simply left to the hue derivation above.
+    var surface = brandVar('--brand-surface'), ink = brandVar('--brand-text');
+    if (surface) {
+      var sl = hexHsl(surface)[2];
+      if (sl >= 60) { l.windowBg = l.codeBg = surface; l.headerBg = hslHex(hexHsl(surface)[0], Math.min(hexHsl(surface)[1], 30), Math.max(0, sl - 4)); }
+      else if (sl <= 40) { d.windowBg = d.codeBg = surface; d.headerBg = hslHex(hexHsl(surface)[0], Math.min(hexHsl(surface)[1], 30), Math.max(0, sl - 3)); }
+    }
+    if (ink) {
+      var il = hexHsl(ink)[2];
+      if (il <= 40) l.fg = l.gutter = ink;
+      else if (il >= 60) d.fg = d.gutter = ink;
+    }
   })();
 
   var t = THEMES[theme] || THEMES['suse-dark'];

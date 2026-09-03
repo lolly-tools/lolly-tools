@@ -6,7 +6,7 @@
       the SVG/PDF/PNG/video walkers all skip <script>. --}}
 <script type="application/json" data-penpot-doc>{{{penpotDocJson}}}</script>
 {{#if userCss}}<style>{{{userCss}}}</style>
-{{/if}}{{#if frameGroups}}
+{{/if}}{{#if frameMode}}
 {{!-- Native PowerPoint deck model (plan 95 route-a): when frames exist the hook emits
       one SLIDE per frame with each child box lowered to a deck element, so a pptx export
       becomes an EDITABLE deck (real text boxes / rects / pictures) via export-pptx.ts's
@@ -24,11 +24,16 @@
       [data-pdf-page] and sizes each page independently (renderMultiPagePdf), no bridge change.
       The per-box markup is IDENTICAL to the artboard branch below - only the page wrapping
       and the frame-local left/top override (baked into boxStyle by the hook) are new. --}}
-<div class="lolly-frames"{{{lookup seqAttrs 0}}}>
+<div class="lolly-frames"{{{lookup seqAttrs 0}}}{{{rootAttrs}}}>
   {{#each frameGroups}}
-  <div class="lolly-frame-page" data-pdf-page data-frame-id="{{frameId}}"{{{frameDurAttr}}}{{{frameStateAttr}}}{{{frameNotesAttr}}}{{{frameStackAttr}}}{{{pageTimeAttrs}}} style="{{pageStyle}}">
+  {{!-- pageImgHtml is the board's own IMAGE fill (plan 179 A4) - an <img> layer, FIRST inside
+        the page so it paints under every member box, and inline-styled so the SVG/PDF walkers
+        export it like any other picture. It is the EMPTY STRING for a frame with no picture
+        (and for a Lottie/video/audio asset, which need the shell's own enhancer), and it sits
+        hard against the page tag so an image-less page is byte-identical to before. --}}
+  <div class="lolly-frame-page" data-pdf-page data-frame-id="{{frameId}}"{{{frameDurAttr}}}{{{frameStateAttr}}}{{{frameNotesAttr}}}{{{frameStackAttr}}}{{{frameNameAttr}}}{{{frameTransitionAttr}}}{{{pageTimeAttrs}}} style="{{pageStyle}}">{{{pageImgHtml}}}
     {{#each children}}
-    <div class="lolly-box{{cls}}" data-canvas-input="boxes:{{flatIndex}}" data-box-id="{{default id flatIndex}}" data-fit="{{fit}}" style="{{boxStyle}}"{{{timeAttrs}}}{{{buildAttr}}}{{{matchAttr}}}>
+    <div class="lolly-box{{cls}}" data-canvas-input="boxes:{{flatIndex}}" data-box-id="{{default id flatIndex}}" data-fit="{{fit}}" style="{{boxStyle}}"{{{timeAttrs}}}{{{lockAttr}}}{{{buildAttr}}}{{{matchAttr}}}>
       {{{pathHtml}}}
       {{{mediaHtml}}}
       <div class="lolly-box-text" style="{{textStyle}}">{{{textHtml}}}</div>
@@ -43,7 +48,7 @@
         already carries global left/top). renderMultiPagePdf/exportPaged walk [data-pdf-page]
         only, so these are visible while editing yet absent from the exported pages. --}}
   {{#each pasteboard}}
-  <div class="lolly-box{{cls}}" data-canvas-input="boxes:{{flatIndex}}" data-box-id="{{default id flatIndex}}" data-fit="{{fit}}" style="{{boxStyle}}"{{{timeAttrs}}}>
+  <div class="lolly-box{{cls}}" data-canvas-input="boxes:{{flatIndex}}" data-box-id="{{default id flatIndex}}" data-fit="{{fit}}" style="{{boxStyle}}"{{{timeAttrs}}}{{{lockAttr}}}>
     {{{pathHtml}}}
     {{{mediaHtml}}}
     <div class="lolly-box-text" style="{{textStyle}}">{{{textHtml}}}</div>
@@ -96,7 +101,7 @@
   </script>
 </div>
 {{else}}
-<div class="artboard" style="background:{{lookup bgStyle 0}}"{{{lookup seqAttrs 0}}}>
+<div class="artboard" style="background:{{lookup bgStyle 0}}"{{{lookup seqAttrs 0}}}{{{rootAttrs}}}>
   {{!-- Bound-path layer (plan 96 P5): one artboard-sized <svg> built by the engine via
         host.connectors (hooks.js lineLayerFor), holding every path box with an end attached
         to another box, BEHIND the boxes. A FREE path draws inside its own box instead
@@ -104,12 +109,20 @@
         otherwise the SVG/PDF exporter would treat the whole artboard as one SVG and drop
         the boxes. --}}
   <div class="lolly-conn-wrap">{{{connectorSvg}}}</div>
+  {{!-- A HIDDEN layer (plan 179 M4) is not drawn and not exported, so it is skipped here
+        rather than styled away: `boxHide` is '1' for a hidden row, and the whole element
+        is absent from the markup. The loop still walks the RAW boxes input, so @index -
+        which data-canvas-input carries back to the editor - keeps naming the same row.
+        Every other surface (frame pages, the pasteboard, the deck, the Penpot document)
+        filters in hooks.js instead. --}}
   {{#each boxes}}
-  <div class="lolly-box{{lookup ../boxCls @index}}" data-canvas-input="boxes:{{@index}}" data-box-id="{{default id @index}}" data-fit="{{lookup ../boxFit @index}}" style="{{lookup ../boxStyle @index}}"{{{lookup ../timeAttrs @index}}}>
+  {{#unless (lookup ../boxHide @index)}}
+  <div class="lolly-box{{lookup ../boxCls @index}}" data-canvas-input="boxes:{{@index}}" data-box-id="{{default id @index}}" data-fit="{{lookup ../boxFit @index}}" style="{{lookup ../boxStyle @index}}"{{{lookup ../timeAttrs @index}}}{{{lookup ../lockAttrs @index}}}>
     {{{lookup ../pathHtml @index}}}
     {{{lookup ../mediaHtml @index}}}
     <div class="lolly-box-text" style="{{lookup ../textStyle @index}}">{{{lookup ../textHtml @index}}}</div>
   </div>
+  {{/unless}}
   {{/each}}
 
   {{!-- ── the text-fit pass ────────────────────────────────────────────────────────

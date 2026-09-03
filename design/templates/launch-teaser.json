@@ -2,7 +2,7 @@
   "id": "launch-teaser",
   "name": "Launch teaser",
   "category": "Video",
-  "description": "A four-beat launch teaser: kicker, headline, and a closing call to action.",
+  "description": "A timed launch teaser: a kicker, a headline, and a closing call to action.",
   "presets": [
     {
       "id": "story",
@@ -19,7 +19,19 @@
             "h": 1920,
             "rot": 0,
             "shape": "rect",
-            "bg": "var(--brand-primary, #0b1220)",
+            "bg": "var(--brand-primary, #1e293b)",
+            "order": 0
+          },
+          {
+            "id": "accent",
+            "kind": "box",
+            "x": 96,
+            "y": 480,
+            "w": 120,
+            "h": 10,
+            "rot": 0,
+            "shape": "pill",
+            "bg": "var(--brand-secondary, #94a3b8)",
             "order": 0
           },
           {
@@ -32,7 +44,7 @@
             "rot": 0,
             "shape": "rect",
             "text": "Coming soon",
-            "fg": "var(--brand-accent, #0f766e)",
+            "fg": "var(--brand-on-primary, #ffffff)",
             "fontSize": 48,
             "align": "left",
             "valign": "top",
@@ -113,7 +125,19 @@
             "h": 1080,
             "rot": 0,
             "shape": "rect",
-            "bg": "var(--brand-primary, #0b1220)",
+            "bg": "var(--brand-primary, #1e293b)",
+            "order": 0
+          },
+          {
+            "id": "accent",
+            "kind": "box",
+            "x": 96,
+            "y": 180,
+            "w": 120,
+            "h": 10,
+            "rot": 0,
+            "shape": "pill",
+            "bg": "var(--brand-secondary, #94a3b8)",
             "order": 0
           },
           {
@@ -126,7 +150,7 @@
             "rot": 0,
             "shape": "rect",
             "text": "Coming soon",
-            "fg": "var(--brand-accent, #0f766e)",
+            "fg": "var(--brand-on-primary, #ffffff)",
             "fontSize": 44,
             "align": "left",
             "valign": "top",
@@ -204,7 +228,19 @@
         "h": 1080,
         "rot": 0,
         "shape": "rect",
-        "bg": "var(--brand-primary, #0b1220)",
+        "bg": "var(--brand-primary, #1e293b)",
+        "order": 0
+      },
+      {
+        "id": "accent",
+        "kind": "box",
+        "x": 160,
+        "y": 200,
+        "w": 140,
+        "h": 12,
+        "rot": 0,
+        "shape": "pill",
+        "bg": "var(--brand-secondary, #94a3b8)",
         "order": 0
       },
       {
@@ -217,7 +253,7 @@
         "rot": 0,
         "shape": "rect",
         "text": "Coming soon",
-        "fg": "var(--brand-accent, #0f766e)",
+        "fg": "var(--brand-on-primary, #ffffff)",
         "fontSize": 56,
         "align": "left",
         "valign": "top",

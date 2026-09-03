@@ -32,7 +32,7 @@
   "render": {
     "width": 1920,
     "height": 1080,
-    "formats": ["png", "svg", "penpot", "pdf", "pdf-cmyk", "cmyk-tiff", "jpg", "webp", "mp4", "webm", "gif", "apng", "wav", "mp3", "m4a", "opus", "pptx", "avif", "tiff", "emf", "webp-anim"],
+    "formats": ["png", "svg", "penpot", "pdf", "pdf-cmyk", "cmyk-tiff", "jpg", "webp", "mp4", "webm", "gif", "apng", "wav", "mp3", "m4a", "opus", "pptx", "scorm", "avif", "tiff", "emf", "webp-anim"],
     "actions": [
       "copy",
       "download",
@@ -204,9 +204,61 @@
       "options": [
         { "value": "slide", "label": "Slide" },
         { "value": "fade", "label": "Fade" },
-        { "value": "morph", "label": "Morph" }
+        { "value": "morph", "label": "Morph" },
+        { "value": "flight", "label": "Fly between artboards" }
       ],
-      "help": "How slides change in presentation mode (plan 112 M5). Morph animates matching boxes - same text, the same image, or a shared match key - from one slide to the next."
+      "help": "How slides change in presentation mode (plan 112 M5). Morph animates matching boxes - same text, the same image, or a shared match key - from one slide to the next. Fly between artboards moves the camera across the canvas, zooming out and back in, so the audience sees where each slide sits. A single artboard can override this with its own Transition to next."
+    },
+    {
+      "id": "autoAdvance",
+      "type": "boolean",
+      "label": "Auto-advance slides",
+      "default": false,
+      "help": "When presenting, move to the next slide after its length runs out. Off by default: slides advance on click."
+    },
+    {
+      "id": "narrationVoice",
+      "type": "text",
+      "label": "Narration voice",
+      "default": "",
+      "help": "Which voice reads your speaker notes when you choose Narrate (plan 180). Empty uses the built-in default. A blend such as af_heart+bf_lily:0.3 mixes two voices. The voices are English only, so notes in another language are still read with an English accent."
+    },
+    {
+      "id": "narrationSpeed",
+      "type": "number",
+      "label": "Narration speed",
+      "default": 1,
+      "min": 0.5,
+      "max": 2,
+      "step": 0.05,
+      "help": "How fast the narration voice reads, where 1 is its natural pace."
+    },
+    {
+      "id": "narrationLeadInMs",
+      "type": "number",
+      "label": "Narration lead-in (ms)",
+      "default": 400,
+      "min": 0,
+      "max": 5000,
+      "step": 50,
+      "help": "Silence before the first word of each slide, so the narration does not start while the slide is still arriving. Raised automatically when a slide's own enter motion is longer."
+    },
+    {
+      "id": "narrationTailMs",
+      "type": "number",
+      "label": "Narration tail (ms)",
+      "default": 600,
+      "min": 0,
+      "max": 5000,
+      "step": 50,
+      "help": "Silence after the last word of each slide, before it leaves. What makes the slide change read as deliberate rather than a cut-off."
+    },
+    {
+      "id": "showCaptionsWhenPresenting",
+      "type": "boolean",
+      "label": "Show captions when presenting",
+      "default": false,
+      "help": "Keep generated caption boxes on screen in presentation mode. Off by default: captions are for a video someone watches on their own, and at a podium the same words are being spoken out loud. Exports and video renders always keep them."
     },
     {
       "id": "boxes",
@@ -296,6 +348,9 @@
         "frameField": "frame",
         "orderField": "order",
         "clipChildrenField": "clipChildren",
+        "hiddenField": "hidden",
+        "lockedField": "locked",
+        "frameTransitionField": "slideTransition",
         "frameKind": "frame",
         "minSize": 8,
         "import": {
@@ -433,10 +488,8 @@
             "label": "Artboard",
             "seed": {
               "kind": "frame",
-              "bg": "#fafbfe",
-              "shape": "rect",
-              "stroke": "#dfe3ec",
-              "strokeW": 2
+              "bg": "var(--brand-surface, #ffffff)",
+              "shape": "rect"
             }
           }
         ]
@@ -797,6 +850,10 @@
             {
               "value": "sans",
               "label": "Brand sans"
+            },
+            {
+              "value": "display",
+              "label": "Display"
             },
             {
               "value": "mono",
@@ -1850,10 +1907,48 @@
           "label": "Stacks under",
           "default": "",
           "help": "For a FRAME: the id of the column-head frame this one stacks vertically under in present mode (the 4-arrow sub-slide nav). Empty is a column head. With none authored anywhere, frames sharing an x-column stack automatically - writing this field anywhere turns that inference off. Set from the frame's context menu; showFor:[] keeps it out of the sidebar. APPENDED after fx - the compact-blocks URL wire format is append-only."
+        },
+        {
+          "id": "hidden",
+          "showFor": [],
+          "type": "boolean",
+          "default": false,
+          "label": "Hidden",
+          "help": "Hidden layers are not drawn and not exported."
+        },
+        {
+          "id": "locked",
+          "showFor": [],
+          "type": "boolean",
+          "default": false,
+          "label": "Locked",
+          "help": "Locked layers cannot be selected or moved on the canvas."
+        },
+        {
+          "id": "slideTransition",
+          "showFor": [],
+          "type": "select",
+          "label": "Transition to next",
+          "default": "",
+          "options": [
+            { "value": "", "label": "Same as the deck" },
+            { "value": "slide", "label": "Slide" },
+            { "value": "fade", "label": "Fade" },
+            { "value": "morph", "label": "Morph" },
+            { "value": "flight", "label": "Fly between artboards" },
+            { "value": "none", "label": "Cut" },
+            { "value": "custom", "label": "Custom (set in the timeline)" }
+          ],
+          "help": "For a FRAME: how THIS slide changes into the next one, overriding the document's own Slide transition. Empty follows the deck. 'Custom (set in the timeline)' means the frame's own Enter/Exit rows in the timeline inspector are the truth and nothing derives them. Set from the artboard inspector; showFor:[] keeps it out of the sidebar. APPENDED after locked - the compact-blocks URL wire format is append-only."
         }
       ],
       "default": [
-        { "id": "artboard-1", "kind": "frame", "x": 0, "y": 0, "w": 1920, "h": 1080, "rot": 0, "shape": "rect", "bg": "var(--brand-surface, #ffffff)", "order": 0, "clipChildren": true }
+        { "id": "artboard-1", "kind": "frame", "x": 0, "y": 0, "w": 1920, "h": 1080, "rot": 0, "shape": "rect", "bg": "var(--brand-surface, #ffffff)", "order": 0, "name": "Cover", "clipChildren": true },
+        { "id": "panel", "kind": "box", "frame": "artboard-1", "x": 0, "y": 0, "w": 1120, "h": 1080, "rot": 0, "shape": "rect", "bg": "var(--brand-primary, #1e293b)", "order": 0 },
+        { "id": "accent", "kind": "box", "frame": "artboard-1", "x": 160, "y": 248, "w": 140, "h": 12, "rot": 0, "shape": "pill", "bg": "var(--brand-secondary, #94a3b8)", "order": 0 },
+        { "id": "headline", "kind": "text", "frame": "artboard-1", "x": 160, "y": 316, "w": 800, "h": 320, "rot": 0, "shape": "rect", "text": "Make it yours", "fg": "var(--brand-on-primary, #ffffff)", "fontSize": 120, "align": "left", "valign": "top", "weight": "700", "font": "display", "lineHeight": 1.05 },
+        { "id": "sub", "kind": "text", "frame": "artboard-1", "x": 160, "y": 700, "w": 800, "h": 200, "rot": 0, "shape": "rect", "text": "Double-click any text to edit it. Every colour and typeface here comes from your brand.", "fg": "var(--brand-on-primary, #ffffff)", "fontSize": 38, "align": "left", "valign": "top", "weight": "400", "font": "sans", "lineHeight": 1.35 },
+        { "id": "disc", "kind": "box", "frame": "artboard-1", "x": 1300, "y": 300, "w": 480, "h": 480, "rot": 0, "shape": "circle", "bg": "var(--brand-secondary, #94a3b8)", "order": 0 }
       ]
     }
   ]

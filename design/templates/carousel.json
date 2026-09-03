@@ -19,6 +19,19 @@
         "clipChildren": true
       },
       {
+        "id": "p1accent",
+        "kind": "box",
+        "frame": "page1",
+        "x": 80,
+        "y": 700,
+        "w": 140,
+        "h": 12,
+        "rot": 0,
+        "shape": "pill",
+        "bg": "var(--brand-secondary, #94a3b8)",
+        "order": 0
+      },
+      {
         "id": "p1kick",
         "kind": "text",
         "frame": "page1",
@@ -34,6 +47,7 @@
         "align": "left",
         "valign": "top",
         "weight": "600",
+        "font": "sans",
         "lineHeight": 1.2
       },
       {
@@ -52,6 +66,7 @@
         "align": "left",
         "valign": "top",
         "weight": "700",
+        "font": "sans",
         "lineHeight": 1.05
       },
       {
@@ -70,6 +85,7 @@
         "align": "left",
         "valign": "top",
         "weight": "400",
+        "font": "sans",
         "lineHeight": 1.2
       },
       {
@@ -84,6 +100,19 @@
         "bg": "var(--brand-surface, #ffffff)",
         "order": 1,
         "clipChildren": true
+      },
+      {
+        "id": "p2accent",
+        "kind": "box",
+        "frame": "page2",
+        "x": 1216,
+        "y": 80,
+        "w": 140,
+        "h": 12,
+        "rot": 0,
+        "shape": "pill",
+        "bg": "var(--brand-primary, #1e293b)",
+        "order": 0
       },
       {
         "id": "p2title",
@@ -101,6 +130,7 @@
         "align": "left",
         "valign": "top",
         "weight": "700",
+        "font": "sans",
         "lineHeight": 1.1
       },
       {
@@ -119,6 +149,7 @@
         "align": "left",
         "valign": "top",
         "weight": "400",
+        "font": "sans",
         "lineHeight": 1.4
       },
       {
@@ -133,6 +164,19 @@
         "bg": "var(--brand-primary, #1e293b)",
         "order": 2,
         "clipChildren": true
+      },
+      {
+        "id": "p3accent",
+        "kind": "box",
+        "frame": "page3",
+        "x": 2352,
+        "y": 480,
+        "w": 140,
+        "h": 12,
+        "rot": 0,
+        "shape": "pill",
+        "bg": "var(--brand-secondary, #94a3b8)",
+        "order": 0
       },
       {
         "id": "p3head",
@@ -150,6 +194,7 @@
         "align": "left",
         "valign": "top",
         "weight": "700",
+        "font": "sans",
         "lineHeight": 1.05
       },
       {
@@ -168,6 +213,7 @@
         "align": "left",
         "valign": "top",
         "weight": "400",
+        "font": "sans",
         "lineHeight": 1.3
       }
     ]

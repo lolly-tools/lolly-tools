@@ -51,6 +51,16 @@
   -webkit-user-drag: none;
 }
 
+/* An artboard's IMAGE fill (plan 179 A4). Everything it needs to EXPORT is inline on the
+   element (hooks.js frameImgFor - position, size, fit, position, radius), because the
+   SVG/PDF/raster walkers read the style attribute and never this sheet; these two lines are
+   editor ergonomics only, matching .lolly-box-img so the board's picture cannot be dragged
+   out of the page or caught by a text selection. */
+.lolly-frame-img {
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
 /* A Lottie box reuses .lolly-box-img for position/size, but it's a <div> the shell's
    lottie-mount enhancer fills with an <svg> (object-fit doesn't apply to a div, so the
    fit is honoured via the player's preserveAspectRatio from data-lottie-fit). Keep the
