@@ -3,7 +3,7 @@
   "name": "Work Avatar",
   "description": "A round profile photo with a treatment and a ring of text - the campaign badge for LinkedIn and every other place your face goes, in your brand's colours and face.",
   "a11yLabel": "Round profile photo in a ring reading {{default text \"nothing\"}}",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "engineVersion": "^1.159.0",
   "status": "community",
   "category": "everyone",
@@ -274,6 +274,14 @@
       "help": "As a share of the avatar's radius."
     },
     {
+      "id": "ringOverlay",
+      "label": "Ring over the photo",
+      "type": "boolean",
+      "default": true,
+      "section": "Ring",
+      "help": "The photo fills the whole circle and the ring sits on top of its edge. Off, the photo sits inside the ring."
+    },
+    {
       "id": "ringRotate",
       "label": "Turn",
       "type": "number",
@@ -296,7 +304,10 @@
       "max": 12,
       "step": 1,
       "section": "Ring",
-      "suffix": "%"
+      "suffix": "%",
+      "showIf": {
+        "ringOverlay": false
+      }
     },
     {
       "id": "ringColor",
@@ -334,7 +345,7 @@
       "step": 1,
       "section": "Ring",
       "suffix": "%",
-      "help": "How much of each end of an open ring fades out. A full ring has no ends."
+      "help": "How much of each end of an open ring feathers out. A full ring has no ends."
     },
     {
       "id": "text",
@@ -374,6 +385,23 @@
       "help": "As a share of the ring's width. Text that would not fit the ring is shrunk to fit."
     },
     {
+      "id": "textFont",
+      "label": "Face",
+      "type": "select",
+      "default": "brand",
+      "section": "Text",
+      "options": [
+        {
+          "value": "brand",
+          "label": "Brand face"
+        },
+        {
+          "value": "mono",
+          "label": "Brand mono"
+        }
+      ]
+    },
+    {
       "id": "textWeight",
       "label": "Weight",
       "type": "select",
@@ -401,6 +429,13 @@
           "label": "Extra bold"
         }
       ]
+    },
+    {
+      "id": "textItalic",
+      "label": "Italic",
+      "type": "boolean",
+      "default": false,
+      "section": "Text"
     },
     {
       "id": "textTracking",

@@ -51,7 +51,10 @@
 .wa-ph-bg { fill: #e9ecf0; }
 .wa-ph-fg { fill: #c3c8cf; }
 
-.wa-ring {
+/* The ring and the text are two layers over the photo in one shared viewBox. They
+   are separate <svg>s on purpose: an open ring's end fade is a gradient mask,
+   which the PDF walker rasterises, and the glyphs must not go down with it. */
+.wa-layer {
   position: absolute;
   inset: 0;
   width: 100%;
@@ -62,8 +65,11 @@
 /* Only the live-text fallback reads this (no host.text, or a glyph the face
    lacks); the outlined path is the brand face by construction. Brand fonts
    only, via the variable the shell derives from the brand's font token. */
-.wa-ring text {
+.wa-text text {
   font-family: var(--font-brand, 'SUSE', ui-sans-serif, system-ui, sans-serif);
+}
+.wa-text text.wa-mono {
+  font-family: var(--font-mono, 'SUSE Mono', ui-monospace, monospace);
 }
 
 .wa-warn {

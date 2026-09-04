@@ -12,9 +12,11 @@
  *   - The ring is a fan of annular sectors, one <path> each, coloured along the
  *     arc. SVG has no conic gradient and a CSS one would not survive export, so
  *     the gradient is sampled per sector - plain fills that every export path
- *     (SVG, PDF, the CLI's headless render) draws as vectors, no <mask>, no
- *     <linearGradient>. The end fade is fill-opacity per sector for the same
- *     reason.
+ *     (SVG, PDF, the CLI's headless render) draws as vectors. An open ring's
+ *     ends fade through a luminance <mask> holding one <linearGradient> per end:
+ *     a smooth feather, where per-sector opacity steps banded visibly. The ring
+ *     and the text are SEPARATE inline <svg> layers so the PDF walker, which
+ *     rasterises an svg carrying a mask, still draws the glyphs as vectors.
  *   - The text is shaped by host.text.toPath (HarfBuzz) with `clusters: true`, and
  *     each cluster is stood on the ring by arc length - real outlines in the brand
  *     face, kerning intact, so the export needs no font installed. The placement
@@ -104,9 +106,10 @@ function placeOnPath(clusters, sampler, s0) {
 }
 // === /lolly:shared textOnPath ===
 
-// The platform face - every shell can resolve it (web: font-registry's
+// The platform faces - every shell can resolve them (web: font-registry's
 // PLATFORM_FACES; CLI/TUI: the node shell scans shells/web/public/fonts).
 var FALLBACK_FAMILY = 'SUSE';
+var FALLBACK_MONO = 'SUSE Mono';
 
 // The ring's own coordinate system: a 1000-unit square, so the photo circle
 // (CSS percent of the same square) and the ring (an SVG viewBox) share numbers.
@@ -198,25 +201,17 @@ function mixColor(h, a, b, t) {
 
 // One annular sector from clock angle b0 to b1 (b1 < b0: counter-clockwise on
 // screen, so the outer arc takes sweep-flag 0 and the inner arc comes back with
-// sweep-flag 1). Every sector is under 180°, so large-arc is always 0.
+// sweep-flag 1). The large-arc flag follows the span, so the same path serves a
+// two-degree sliver and a mask piece covering most of the ring.
 function sectorPath(R, Ri, b0, b1) {
-  return 'M' + pt(R, b0) + 'A' + f2(R) + ' ' + f2(R) + ' 0 0 0 ' + pt(R, b1)
-    + 'L' + pt(Ri, b1) + 'A' + f2(Ri) + ' ' + f2(Ri) + ' 0 0 1 ' + pt(Ri, b0) + 'Z';
+  var la = (b0 - b1) > 180 ? 1 : 0;
+  return 'M' + pt(R, b0) + 'A' + f2(R) + ' ' + f2(R) + ' 0 ' + la + ' 0 ' + pt(R, b1)
+    + 'L' + pt(Ri, b1) + 'A' + f2(Ri) + ' ' + f2(Ri) + ' 0 ' + la + ' 1 ' + pt(Ri, b0) + 'Z';
 }
 
-// Opacity along the arc: 1 through the middle, a smoothstep down to 0 over the
-// last `fade` (fraction of the arc) at each end. A full ring has no ends.
-function fadeAlpha(t, fade, full) {
-  if (full || fade <= 0) return 1;
-  var e = Math.min(t, 1 - t) / fade;
-  if (e >= 1) return 1;
-  return e * e * (3 - 2 * e);
-}
-
-// The fan of sectors. Neighbours overlap by a fraction of a degree so no
-// rasteriser leaves a hairline seam between two anti-aliased edges; in the fade
-// zone the doubled sliver differs from its neighbours by a few thousandths of
-// alpha, which is below anything a screen shows.
+// The fan of opaque sectors that carries the colour gradient. Neighbours overlap
+// by a fraction of a degree so no rasteriser leaves a hairline seam between two
+// anti-aliased edges; on opaque fills the overlap is invisible.
 function ringSectors(h, g, p) {
   var full = g.sweep >= 360;
   var n = Math.max(24, Math.round(g.sweep / 2));
@@ -226,39 +221,87 @@ function ringSectors(h, g, p) {
     var t0 = i / n;
     var t1 = (i + 1) / n;
     var tm = (t0 + t1) / 2;
-    var al = fadeAlpha(tm, p.fade, full);
-    if (al < 0.004) continue;
     var b0 = g.start - g.sweep * t0;
     var b1 = g.start - g.sweep * t1 - ((i < n - 1 || full) ? ov : 0);
     var col = p.gradient ? mixColor(h, p.c1, p.c2, 1 - Math.abs(2 * tm - 1)) : p.c1;
-    out.push('<path d="' + sectorPath(g.R, g.Ri, b0, b1) + '" fill="' + esc(col) + '"'
-      + (al < 0.999 ? ' fill-opacity="' + f3(al) + '"' : '') + '/>');
+    out.push('<path d="' + sectorPath(g.R, g.Ri, b0, b1) + '" fill="' + esc(col) + '"/>');
   }
   return out.join('');
 }
 
+// A point on a circle about the centre, clock degrees, as numbers.
+function xy(r, a) {
+  var rad = Math.PI / 180;
+  return [CX + r * Math.sin(a * rad), CY - r * Math.cos(a * rad)];
+}
+
+// The smoothstep feather as gradient stops: opaque at offset 0 (where the fade
+// begins), clear at 1 (the ring's tip). Six stops trace the curve closely enough
+// that the renderer's linear interpolation between them shows no knee.
+var FADE_STOPS = [[0, 1], [0.2, 0.896], [0.4, 0.648], [0.6, 0.352], [0.8, 0.104], [1, 0]];
+
+function fadeGradient(id, from, to) {
+  var stops = '';
+  for (var i = 0; i < FADE_STOPS.length; i++) {
+    stops += '<stop offset="' + FADE_STOPS[i][0] + '" stop-color="#fff" stop-opacity="' + FADE_STOPS[i][1] + '"/>';
+  }
+  return '<linearGradient id="' + id + '" gradientUnits="userSpaceOnUse" x1="' + f2(from[0]) + '" y1="' + f2(from[1])
+    + '" x2="' + f2(to[0]) + '" y2="' + f2(to[1]) + '">' + stops + '</linearGradient>';
+}
+
+// The end fade of an open ring as a luminance mask: a solid white middle piece
+// and, at each end, one sector filled with a linear gradient running along the
+// ring's midline from where the fade begins to the tip. A gradient's iso-lines are
+// parallel where the ring's cuts are radial, so across the ring's width the fade
+// front leans a few degrees - the look of the reference badges, whose fades were
+// linear too - and it is one continuous ramp with no steps to band. Returns the
+// <defs> markup and the attribute to put on the ring group, or empty strings when
+// nothing fades (a full ring, or fade 0).
+function fadeMask(g, fade, seed) {
+  if (g.sweep >= 360 || fade <= 0) return { defs: '', attr: '' };
+  var f = g.sweep * fade;                 // degrees of arc that fade, each end
+  var ov = 0.3;
+  var rMid = (g.R + g.Ri) / 2;
+  var a0 = g.start;                       // the reading-start tip
+  var a1 = g.start - f;                   // where the start fade is fully opaque
+  var b1 = g.start - g.sweep + f;         // where the end fade begins
+  var b0 = g.start - g.sweep;             // the far tip
+  var id = 'wa-m-' + hashStr(seed);
+  var defs = '<defs>'
+    + fadeGradient(id + '-a', xy(rMid, a1), xy(rMid, a0))
+    + fadeGradient(id + '-b', xy(rMid, b1), xy(rMid, b0))
+    + '<mask id="' + id + '" maskUnits="userSpaceOnUse" x="0" y="0" width="1000" height="1000">'
+    + '<path d="' + sectorPath(g.R, g.Ri, a1 + ov, b1 - ov) + '" fill="#fff"/>'
+    + '<path d="' + sectorPath(g.R, g.Ri, a0, a1) + '" fill="url(#' + id + '-a)"/>'
+    + '<path d="' + sectorPath(g.R, g.Ri, b1, b0) + '" fill="url(#' + id + '-b)"/>'
+    + '</mask></defs>';
+  return { defs: defs, attr: ' mask="url(#' + id + ')"' };
+}
+
 // ── the text ──────────────────────────────────────────────────────────────────
 
-// {font.brand} → family name. Unresolvable (blank brand, host without tokens)
-// falls back to the platform face rather than failing.
-async function familyFor(h) {
+// {font.brand} / {font.mono} → family name. Unresolvable (blank brand, host
+// without tokens) falls back to the platform face rather than failing.
+async function familyFor(h, kind) {
+  var mono = kind === 'mono';
   try {
     if (h && h.tokens && h.tokens.resolve) {
-      var fam = await h.tokens.resolve('{font.brand}');
+      var fam = await h.tokens.resolve(mono ? '{font.mono}' : '{font.brand}');
       if (typeof fam === 'string' && fam && fam.indexOf('{') !== 0) return fam;
     }
   } catch (e) { /* keep the fallback */ }
-  return FALLBACK_FAMILY;
+  return mono ? FALLBACK_MONO : FALLBACK_FAMILY;
 }
 
-// Resolved font files by family|weight. A miss is not cached: the registry can
-// answer null for a face that is still loading, and a second ask is cheap.
+// Resolved font files by family|weight|italic. A miss is not cached: the
+// registry can answer null for a face that is still loading, and a second ask
+// is cheap.
 var _fontCache = {};
-async function fontFor(h, family, weight) {
-  var k = family + '|' + weight;
+async function fontFor(h, family, weight, italic) {
+  var k = family + '|' + weight + '|' + (italic ? 'i' : 'n');
   if (_fontCache[k]) return _fontCache[k];
   var f = null;
-  try { f = await h.text.fontUrl(family, { weight: weight }); } catch (e) { f = null; }
+  try { f = await h.text.fontUrl(family, { weight: weight, italic: !!italic }); } catch (e) { f = null; }
   if (f && f.url) _fontCache[k] = f;
   return f && f.url ? f : null;
 }
@@ -288,11 +331,11 @@ async function shapeRun(h, text, font, size, spacing) {
 // origin at x=0, baseline y=0), which is what placeOnPath expects. Returns
 // { clusters, width, capH }, or { live: reason } when the honest answer is a
 // live <text> run.
-async function shapeText(h, text, family, weight, size, spacing) {
+async function shapeText(h, text, family, weight, italic, size, spacing) {
   if (!h || !h.text || typeof h.text.fontUrl !== 'function' || typeof h.text.toPath !== 'function') {
     return { live: 'this host cannot outline text' };
   }
-  var font = await fontFor(h, family, weight);
+  var font = await fontFor(h, family, weight, italic);
   if (!font) return { live: 'no font file found for "' + family + '"' };
 
   var parts = text.replace(/\uFE0F/g, '').split(HEART_RE);
@@ -354,7 +397,7 @@ function glyphsSvg(placed, color) {
 
 // Honest fallback: a live <textPath> on the same baseline circle, reading the
 // same way. Needs the font at view time; waWarning says so.
-function liveTextSvg(text, rb, start, dir, sweep, s0, size, weight, spacing, color, id) {
+function liveTextSvg(text, rb, start, dir, sweep, s0, size, weight, italic, mono, spacing, color, id) {
   var flag = dir > 0 ? 1 : 0;
   var a1 = start + dir * sweep;
   var arc = 'A' + f2(rb) + ' ' + f2(rb) + ' 0 ';
@@ -366,7 +409,8 @@ function liveTextSvg(text, rb, start, dir, sweep, s0, size, weight, spacing, col
     d = 'M' + pt(rb, start) + arc + (sweep > 180 ? 1 : 0) + ' ' + flag + ' ' + pt(rb, a1);
   }
   return '<defs><path id="' + id + '" d="' + d + '"/></defs>'
-    + '<text font-size="' + f2(size) + '" font-weight="' + weight + '" letter-spacing="' + f2(spacing) + '" fill="' + esc(color) + '">'
+    + '<text' + (mono ? ' class="wa-mono"' : '') + ' font-size="' + f2(size) + '" font-weight="' + weight
+    + (italic ? '" font-style="italic' : '') + '" letter-spacing="' + f2(spacing) + '" fill="' + esc(color) + '">'
     + '<textPath href="#' + id + '" startOffset="' + f2(s0) + '">' + esc(text) + '</textPath></text>';
 }
 
@@ -438,14 +482,18 @@ async function compute(h, a) {
   var key = JSON.stringify(a);
   if (key === _memoKey) return _memoResult;
 
-  var patch = { ringSvg: '', photoStyle: '', rootStyle: '', filterCss: '', filterDefs: '', waWarning: '' };
+  var patch = { ringSvg: '', textSvg: '', photoStyle: '', rootStyle: '', filterCss: '', filterDefs: '', waWarning: '' };
   try {
     var margin = clamp(num(a.margin, 3), 0, 10) / 100;
     var R = 500 * (1 - margin);
     var style = pick(a.ringStyle, STYLES, 'arc');
     var ringOn = style !== 'none';
     var Ri = ringOn ? R * (1 - clamp(num(a.ringWidth, 20), 8, 40) / 100) : R;
-    var rPhoto = ringOn ? Ri * (1 - clamp(num(a.ringGap, 0), 0, 12) / 100) : R;
+    // Ring over the photo (the reference look): the photo fills the whole circle
+    // and the ring sits on its edge. Off, the photo sits inside the ring's inner
+    // edge, minus an optional gap.
+    var overlay = bool(a.ringOverlay, true);
+    var rPhoto = (ringOn && !overlay) ? Ri * (1 - clamp(num(a.ringGap, 0), 0, 12) / 100) : R;
     patch.photoStyle = 'left:' + pct(CX - rPhoto) + ';top:' + pct(CY - rPhoto)
       + ';width:' + pct(2 * rPhoto) + ';height:' + pct(2 * rPhoto);
 
@@ -467,12 +515,13 @@ async function compute(h, a) {
 
     var spec = RINGS[style];
     var g = { start: spec.start + clamp(num(a.ringRotate, 0), -180, 180), sweep: spec.sweep, R: R, Ri: Ri, full: spec.sweep >= 360 };
+    var fade = clamp(num(a.ringFade, 12), 0, 40) / 100;
     var body = ringSectors(h, g, {
       c1: safeColor(a.ringColor, FB_RING),
       c2: safeColor(a.ringColor2, FB_RING2),
       gradient: bool(a.ringGradient, true),
-      fade: clamp(num(a.ringFade, 12), 0, 40) / 100,
     });
+    var mask = fadeMask(g, fade, [g.start, g.sweep, f2(R), f2(Ri), f3(fade)].join('|'));
 
     var text = typeof a.text === 'string' ? a.text.trim().slice(0, 60) : '';
     if (bool(a.uppercase, true)) text = text.toUpperCase();
@@ -482,6 +531,8 @@ async function compute(h, a) {
       var anchor = pick(a.textAnchor, ANCHORS, 'start');
       var position = clamp(num(a.textPosition, 10), 0, 100) / 100;
       var weight = Number(pick(a.textWeight, WEIGHTS, '700'));
+      var fontKind = pick(a.textFont, ['brand', 'mono'], 'brand');
+      var italic = bool(a.textItalic, false);
       var color = safeColor(a.textColor, FB_TEXT);
       var thick = R - Ri;
       var size = thick * clamp(num(a.textSize, 62), 35, 90) / 100;
@@ -494,8 +545,8 @@ async function compute(h, a) {
       var rMid = (R + Ri) / 2;
       var baseline = function (capH) { return side === 'outside' ? rMid - capH / 2 : rMid + capH / 2; };
 
-      var family = await familyFor(h);
-      var shaped = await shapeText(h, text, family, weight, size, spacing);
+      var family = await familyFor(h, fontKind);
+      var shaped = await shapeText(h, text, family, weight, italic, size, spacing);
       var capH = shaped.live ? size * 0.7 : shaped.capH;
       var rb = baseline(capH);
       var L = rb * g.sweep * Math.PI / 180;
@@ -505,7 +556,7 @@ async function compute(h, a) {
         var k = room / shaped.width;
         size *= k;
         spacing *= k;
-        shaped = await shapeText(h, text, family, weight, size, spacing);
+        shaped = await shapeText(h, text, family, weight, italic, size, spacing);
         if (!shaped.live) {
           capH = shaped.capH;
           rb = baseline(capH);
@@ -516,13 +567,17 @@ async function compute(h, a) {
       var s0 = position * L - (anchor === 'middle' ? width / 2 : anchor === 'end' ? width : 0);
       s0 = clamp(s0, 0, Math.max(0, L - width));
       if (shaped.live) {
-        glyphs = liveTextSvg(text, rb, start, dir, g.sweep, s0, size, weight, spacing, color, 'wa-tp-' + hashStr(text + '|' + f2(rb) + '|' + f2(start)));
+        glyphs = liveTextSvg(text, rb, start, dir, g.sweep, s0, size, weight, italic, fontKind === 'mono', spacing, color, 'wa-tp-' + hashStr(text + '|' + f2(rb) + '|' + f2(start)));
         patch.waWarning = 'Ring text is live text (' + shaped.live + '), so exports need the font installed.';
       } else {
         glyphs = glyphsSvg(placeOnPath(shaped.clusters, arcSampler(CX, CY, rb, start, dir), s0), color);
       }
     }
-    patch.ringSvg = '<svg class="wa-ring" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false">' + body + glyphs + '</svg>';
+    patch.ringSvg = '<svg class="wa-layer wa-ring" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false">'
+      + mask.defs + '<g' + mask.attr + '>' + body + '</g></svg>';
+    if (glyphs) {
+      patch.textSvg = '<svg class="wa-layer wa-text" viewBox="0 0 1000 1000" aria-hidden="true" focusable="false">' + glyphs + '</svg>';
+    }
   } catch (err) {
     patch.waWarning = 'Could not build the ring: ' + ((err && err.message) || 'unknown error');
   }
