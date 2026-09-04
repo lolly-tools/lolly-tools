@@ -223,10 +223,22 @@ function ringSectors(h, g, p) {
     var tm = (t0 + t1) / 2;
     var b0 = g.start - g.sweep * t0;
     var b1 = g.start - g.sweep * t1 - ((i < n - 1 || full) ? ov : 0);
-    var col = p.gradient ? mixColor(h, p.c1, p.c2, 1 - Math.abs(2 * tm - 1)) : p.c1;
+    var col = p.gradient ? mixColor(h, p.c1, p.c2, middleWeight(tm, p.spread)) : p.c1;
     out.push('<path d="' + sectorPath(g.R, g.Ri, b0, b1) + '" fill="' + esc(col) + '"/>');
   }
   return out.join('');
+}
+
+// How much of the middle colour a point at fraction t along the arc gets: a
+// plateau of full middle colour `spread` wide, centred, with a smoothstep blend to
+// the ends colour across what is left at each end. spread 0 is a plain tent that
+// only touches the middle colour at the exact centre; spread 1 is the middle
+// colour throughout.
+function middleWeight(t, spread) {
+  var half = Math.max(0.001, (1 - clamp(spread, 0, 0.98)) / 2);   // the blend zone, each end
+  var e = Math.min(t, 1 - t) / half;
+  if (e >= 1) return 1;
+  return e * e * (3 - 2 * e);
 }
 
 // A point on a circle about the centre, clock degrees, as numbers.
@@ -520,6 +532,7 @@ async function compute(h, a) {
       c1: safeColor(a.ringColor, FB_RING),
       c2: safeColor(a.ringColor2, FB_RING2),
       gradient: bool(a.ringGradient, true),
+      spread: clamp(num(a.ringSpread, 55), 0, 90) / 100,
     });
     var mask = fadeMask(g, fade, [g.start, g.sweep, f2(R), f2(Ri), f3(fade)].join('|'));
 

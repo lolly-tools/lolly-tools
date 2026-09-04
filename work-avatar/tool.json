@@ -3,7 +3,7 @@
   "name": "Work Avatar",
   "description": "A round profile photo with a treatment and a ring of text - the campaign badge for LinkedIn and every other place your face goes, in your brand's colours and face.",
   "a11yLabel": "Round profile photo in a ring reading {{default text \"nothing\"}}",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "engineVersion": "^1.159.0",
   "status": "community",
   "category": "everyone",
@@ -333,6 +333,22 @@
       "showIf": {
         "ringGradient": true
       }
+    },
+    {
+      "id": "ringSpread",
+      "label": "Middle colour spread",
+      "type": "number",
+      "display": "slider",
+      "default": 55,
+      "min": 0,
+      "max": 90,
+      "step": 1,
+      "section": "Ring",
+      "suffix": "%",
+      "showIf": {
+        "ringGradient": true
+      },
+      "help": "How much of the ring is fully the middle colour. The rest blends out to the ring colour at each end."
     },
     {
       "id": "ringFade",
