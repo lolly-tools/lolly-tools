@@ -46,6 +46,7 @@ own). Each tool is a directory of *data, not code*:
 | `diagram-builder` | Org charts, flowcharts, timelines and more - from cards, text, Mermaid, DOT or CSV |
 | `logo-wall` | Arrange a pile of logos into an even sponsor grid, optically balanced, each logo raster or traced to vector |
 | `wayfinding-signage` | Directional event signage at real trim sizes - heading, arrow rows and an optional event logo |
+| `work-avatar` | A round profile photo with a treatment and a ring of text along the arc - the LinkedIn campaign badge, in the active brand's colours and face |
 | `calendar-ics` | A dated card or printable month grid that also exports a real `.ics` file |
 
 Tool `id`s are permanent contracts - never renamed or reused.
