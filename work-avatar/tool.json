@@ -3,7 +3,7 @@
   "name": "Work Avatar",
   "description": "A round profile photo with a treatment and a ring of text - the campaign badge for LinkedIn and every other place your face goes, in your brand's colours and face.",
   "a11yLabel": "Round profile photo in a ring reading {{default text \"nothing\"}}",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "engineVersion": "^1.159.0",
   "status": "community",
   "category": "everyone",
@@ -152,6 +152,58 @@
       ]
     },
     {
+      "id": "photoSize",
+      "label": "Photo size",
+      "type": "number",
+      "display": "slider",
+      "default": 100,
+      "min": 40,
+      "max": 100,
+      "step": 1,
+      "section": "Photo",
+      "suffix": "%",
+      "help": "Scales the photo disc down inside the ring - a gap between photo and ring, or a smaller cut-out on its backdrop."
+    },
+    {
+      "id": "photoBackdrop",
+      "label": "Behind the photo",
+      "type": "select",
+      "default": "solid",
+      "section": "Photo",
+      "help": "The disc a cut-out headshot sits on once its background is removed. None keeps the transparency through to a transparent export.",
+      "options": [
+        {
+          "value": "solid",
+          "label": "Solid colour"
+        },
+        {
+          "value": "glow",
+          "label": "Soft glow"
+        },
+        {
+          "value": "none",
+          "label": "Nothing"
+        }
+      ]
+    },
+    {
+      "id": "photoBg",
+      "label": "Backdrop colour",
+      "type": "color",
+      "default": "{color.semantic.surface}",
+      "section": "Photo"
+    },
+    {
+      "id": "photoBg2",
+      "label": "Glow colour",
+      "type": "color",
+      "default": "{color.semantic.secondary}",
+      "section": "Photo",
+      "showIf": {
+        "photoBackdrop": "glow"
+      }
+    },
+    {
       "id": "treatment",
       "label": "Treatment",
       "type": "select",
@@ -279,7 +331,7 @@
       "type": "boolean",
       "default": true,
       "section": "Ring",
-      "help": "The photo fills the whole circle and the ring sits on top of its edge. Off, the photo sits inside the ring."
+      "help": "The photo can fill the whole circle with the ring on top of its edge, or sit inside the ring's inner edge."
     },
     {
       "id": "ringRotate",
@@ -293,21 +345,6 @@
       "section": "Ring",
       "suffix": "°",
       "help": "Turns the whole ring, opening and text together."
-    },
-    {
-      "id": "ringGap",
-      "label": "Gap to photo",
-      "type": "number",
-      "display": "slider",
-      "default": 0,
-      "min": 0,
-      "max": 12,
-      "step": 1,
-      "section": "Ring",
-      "suffix": "%",
-      "showIf": {
-        "ringOverlay": false
-      }
     },
     {
       "id": "ringColor",

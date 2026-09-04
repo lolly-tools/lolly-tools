@@ -138,6 +138,7 @@ var FB_RING = '#243447';
 var FB_RING2 = '#4f6d8f';
 var FB_TEXT = '#ffffff';
 var FB_BG = '#ffffff';
+var FB_PHOTO_BG = '#e9ecf0';
 
 // Material's heart, in its 24-unit box. Drawn in place of ♥ ❤ ♡ ❣ ❥ (a trailing
 // U+FE0F emoji selector is stripped first) at 82% of the cap height.
@@ -501,13 +502,26 @@ async function compute(h, a) {
     var style = pick(a.ringStyle, STYLES, 'arc');
     var ringOn = style !== 'none';
     var Ri = ringOn ? R * (1 - clamp(num(a.ringWidth, 20), 8, 40) / 100) : R;
-    // Ring over the photo (the reference look): the photo fills the whole circle
-    // and the ring sits on its edge. Off, the photo sits inside the ring's inner
-    // edge, minus an optional gap.
+    // Ring over the photo (the reference look): the photo's full size is the whole
+    // circle and the ring sits on its edge. Off, full size is the ring's inner
+    // edge. Photo size scales the disc down from there in either placement - a
+    // gap to the ring, or simply a smaller headshot on its backdrop.
     var overlay = bool(a.ringOverlay, true);
-    var rPhoto = (ringOn && !overlay) ? Ri * (1 - clamp(num(a.ringGap, 0), 0, 12) / 100) : R;
+    var rFull = (ringOn && !overlay) ? Ri : R;
+    var rPhoto = rFull * clamp(num(a.photoSize, 100), 40, 100) / 100;
+    // What shows behind the photo inside the circle: the disc a cut-out headshot
+    // (background removed) sits on. A solid colour, a soft radial glow from a
+    // second colour at the head, or nothing - which keeps the cut-out's alpha all
+    // the way to a transparent export. CSS paint only, so the export walkers
+    // reconstruct it as they do every other backdrop.
+    var pb = pick(a.photoBackdrop, ['solid', 'glow', 'none'], 'solid');
+    var pbc = safeColor(a.photoBg, FB_PHOTO_BG);
+    var pbc2 = safeColor(a.photoBg2, FB_RING2);
+    var photoBg = pb === 'none' ? 'transparent'
+      : pb === 'glow' ? 'radial-gradient(circle at 50% 38%, ' + pbc2 + ', ' + pbc + ' 72%)'
+      : pbc;
     patch.photoStyle = 'left:' + pct(CX - rPhoto) + ';top:' + pct(CY - rPhoto)
-      + ';width:' + pct(2 * rPhoto) + ';height:' + pct(2 * rPhoto);
+      + ';width:' + pct(2 * rPhoto) + ';height:' + pct(2 * rPhoto) + ';background:' + photoBg;
 
     // `transparentBg` is the shell's own toggle, synthesised from render.transparentBg;
     // off, the square is painted so a LinkedIn upload never flattens to black.

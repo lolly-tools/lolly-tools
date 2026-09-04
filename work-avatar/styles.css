@@ -48,7 +48,8 @@
   width: 100%;
   height: 100%;
 }
-.wa-ph-bg { fill: #e9ecf0; }
+/* The stand-in sits on the chosen backdrop, so its own ground is clear. */
+.wa-ph-bg { fill: none; }
 .wa-ph-fg { fill: #c3c8cf; }
 
 /* The ring and the text are two layers over the photo in one shared viewBox. They
