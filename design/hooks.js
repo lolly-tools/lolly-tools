@@ -2606,6 +2606,14 @@ function compute(model) {
   if (boolVal(inp.showCaptionsWhenPresenting, false)) rootAttrs += ' data-present-captions="1"';
   var tailMs = Math.round(clamp(num(inp.narrationTailMs, NARRATION_TAIL_DEFAULT_MS), 0, 5000));
   if (tailMs !== NARRATION_TAIL_DEFAULT_MS) rootAttrs += ' data-narration-tail="' + tailMs + '"';
+  // The deck's Slide transition (plans/184 R2), for the video compositor. The presenter
+  // reads it off the model, but an export reads only the markup, and a sequenced deck's
+  // mp4 cut where the podium faded. Emitted only when it differs from the manifest default
+  // ('slide', the presenter's own fallback), so a document that left it alone renders the
+  // bytes it rendered before. Whitelisted like data-frame-transition; 'custom' is a
+  // frame's word, not the deck's.
+  var deckTr = String(inp.transition == null ? '' : inp.transition);
+  if (FRAME_TRANSITION_RE.test(deckTr) && deckTr !== 'custom' && deckTr !== 'slide') rootAttrs += ' data-deck-transition="' + deckTr + '"';
   // Hand-authored frames (plan 93 F1a-part-2). undefined when no kind:'frame' box
   // exists → {{#if frameGroups}} false → the template's {{else}} renders today's single
   // artboard byte-identically. Reuses the index-aligned per-box arrays above.
