@@ -1,0 +1,12 @@
+<main class="utility">
+ {{#unless hasFile}}<section class="empty" data-file-pick><div class="mark">≋</div><h1>Clean a recording</h1><p>Reduce voice noise, trim silent edges and finish to a useful loudness.</p><button type="button" data-file-pick>Choose audio or video…</button><small>On-device processing. Your recording is never uploaded.</small></section>{{/unless}}
+ {{#if hasFile}}<section class="card"><header><strong>{{fileName}}</strong><span>{{fileSize}}</span><button type="button" class="quiet" data-file-pick>Replace</button></header>
+  {{#if error}}<div class="notice bad"><strong>Cannot continue</strong><span>{{error}}</span></div>{{/if}}
+  {{#if available}}<div class="wave" role="img" aria-label="Source waveform">{{#each wave}}<i style="height:{{h}}px"></i>{{/each}}</div>
+   {{#if sourceUrl}}<!-- biome-ignore lint/a11y/useMediaCaption: the uploaded recording has no separate caption track --><audio class="player" controls preload="metadata" src="{{sourceUrl}}"></audio>{{/if}}
+   {{#if pending}}<div class="notice"><strong>Ready to clean</strong><span>The finished measurements will be calculated during download.</span></div>{{/if}}
+   {{#if done}}<div class="metrics"><div><small>Before</small><strong>{{before}}</strong></div><b>→</b><div><small>After</small><strong>{{after}}</strong></div><div><small>True peak</small><strong>{{peak}}</strong></div><div><small>Trimmed</small><strong>{{trimmed}}</strong></div></div><div class="notice"><strong>{{outputText}}</strong><span>{{operations}}</span></div>{{/if}}
+   <button type="button" class="download" data-export-file data-busy-label="Cleaning…">Download cleaned file</button><p class="muted">No watermark or credential is added. Video inputs keep their picture and receive the cleaned audio track.</p>
+  {{/if}}
+ </section>{{/if}}
+</main>

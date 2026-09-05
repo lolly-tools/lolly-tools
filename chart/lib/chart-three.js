@@ -25,7 +25,7 @@
   function mount(opts) {
     var root = opts.root, state = opts.state || {}, THREE = opts.THREE;
     var cfg = state.cfg || {}, data = state.data || {}, spec = state.spec || {};
-    var isCinematic = ['flythrough3d','ribbon3d','constellation3d'].indexOf(cfg.chartType) >= 0;
+    var isCinematic = ['flythrough3d','ribbon3d','constellation3d','skyline3d'].indexOf(cfg.chartType) >= 0;
     var canvas = root.querySelector('[data-chart3d-canvas]');
     var overlay = root.querySelector('[data-chart3d-overlay]');
     var overlayRoot = overlay && overlay.querySelector('[data-chart3d-overlay-root]');
@@ -90,7 +90,7 @@
     var grid = new THREE.GridHelper(gridSize, Math.max(8, Math.min(40, Math.round(gridSize))), edge, edge);
     var gridMaterials = Array.isArray(grid.material) ? grid.material : [grid.material];
     gridMaterials.forEach(function (m) { m.transparent = true; m.opacity = cfg.chartStyle === 'poster' ? .08 : .22; disposables.push(m); });
-    grid.position.y = -.012; world.add(grid); disposables.push(grid.geometry);
+    grid.position.y = -.012; grid.visible = cfg.showGrid !== false; world.add(grid); disposables.push(grid.geometry);
     if (cfg.sceneShadows) {
       var groundGeo = new THREE.PlaneGeometry(10, 10), groundMat = new THREE.ShadowMaterial({ opacity: .18 });
       var ground = new THREE.Mesh(groundGeo, groundMat); ground.rotation.x = -Math.PI/2; ground.position.y = -.02; ground.receiveShadow = true;
@@ -130,7 +130,7 @@
       if (cats.length < 2 || !series.length) return 8;
       var values = [];
       series.forEach(function (s) { (s.values || []).forEach(function (v) { if (finite(v) != null) values.push(+v); }); });
-      var ex = extent(values), nx = cats.length, nz = series.length;
+      var ex = extent(values), maxAbs = values.reduce(function (m, v) { return Math.max(m, Math.abs(v)); }, 1), nx = cats.length, nz = series.length;
       var pitch = 1.18, spanZ = Math.max(7, (nx - 1) * pitch), lane = Math.min(1.55, 5.2 / Math.max(1, nz));
 
       function valueAt(s, i) {
@@ -144,7 +144,10 @@
         return ex[0];
       }
       function pointFor(si, i) {
-        var y = .28 + clamp(normal(valueAt(series[si], i), ex), 0, 1) * 3.9;
+        var value = valueAt(series[si], i);
+        // Skyline towers retain an honest zero baseline; path/ribbon forms use
+        // the shared series extent so relative changes remain readable.
+        var y = cfg.chartType === 'skyline3d' ? value / maxAbs * 3.9 : .28 + clamp(normal(value, ex), 0, 1) * 3.9;
         return new THREE.Vector3((si - (nz - 1) / 2) * lane, y, spanZ / 2 - i * pitch);
       }
       function ribbonGeometry(curve, width) {
@@ -168,11 +171,16 @@
           mat = material(col, si === follow ? .9 : .58); mat.side = THREE.DoubleSide;
           addMesh(ribbonGeometry(curve, si === follow ? .25 : .18), mat, 'ribbon:' + si);
         } else {
-          var radius = cfg.chartType === 'constellation3d' ? .028 : (si === follow ? .075 : .04);
+          var radius = cfg.chartType === 'constellation3d' ? .028 : cfg.chartType === 'skyline3d' ? .022 : (si === follow ? .075 : .04);
           addMesh(new THREE.TubeGeometry(curve, Math.max(24, nx * 12), radius, 8, false), material(col, si === follow ? .96 : .58), 'flight-line:' + si);
         }
         points.forEach(function (point, i) {
-          var radius = cfg.chartType === 'constellation3d' ? .13 : (si === follow ? .09 : .06);
+          if (cfg.chartType === 'skyline3d') {
+            var towerHeight = Math.max(.03, Math.abs(point.y)), towerWidth = si === follow ? .32 : .24;
+            var tower = addMesh(new THREE.BoxGeometry(towerWidth, towerHeight, towerWidth), material(col, si === follow ? .88 : .58), 'flight-tower:' + si + ':' + i);
+            tower.position.set(point.x, point.y < 0 ? -towerHeight / 2 : towerHeight / 2, point.z);
+          }
+          var radius = cfg.chartType === 'constellation3d' ? .13 : cfg.chartType === 'skyline3d' ? .065 : (si === follow ? .09 : .06);
           var node = addMesh(new THREE.SphereGeometry(radius, 14, 10), material(col, si === follow ? 1 : .72), 'flight-point:' + si + ':' + i);
           node.position.copy(point);
           if (cfg.chartType === 'constellation3d') {
@@ -302,6 +310,16 @@
         overlayRoot.appendChild(svg('text',{x:pad,y:H-pad,fill:ink,'fill-opacity':.62,'font-size':clamp(cfg.labelSize,12,22)},'x · '+(axis[0]||'x')));
         overlayRoot.appendChild(svg('text',{x:W/2,y:H-pad,fill:ink,'fill-opacity':.62,'font-size':clamp(cfg.labelSize,12,22),'text-anchor':'middle'},'y · '+(axis[1]||'y')));
         overlayRoot.appendChild(svg('text',{x:W-pad,y:H-pad,fill:ink,'fill-opacity':.62,'font-size':clamp(cfg.labelSize,12,22),'text-anchor':'end'},'z · '+(axis[2]||'z')));
+      }
+      if (data.recommendation && W>=520 && H>=220) {
+        var rec=data.recommendation, cardW=Math.min(500,Math.max(300,W*.42),W-pad*2), cardX=W-pad-cardW, cardY=H-pad-120;
+        var recG=svg('g',{'data-export-hide':'',role:'note','aria-label':'Chart recommendation: '+rec.label+'. '+rec.reason});
+        recG.appendChild(svg('rect',{x:cardX,y:cardY,width:cardW,height:96,rx:12,fill:surface,'fill-opacity':.9,stroke:edge,'stroke-opacity':.5}));
+        recG.appendChild(svg('text',{x:cardX+16,y:cardY+26,fill:ink,'font-size':14,'font-weight':750},'Recommended · '+rec.label+' · '+rec.confidence+' confidence'));
+        var reason=String(rec.reason||''); if(reason.length>96) reason=reason.slice(0,93).replace(/\s+\S*$/,'')+'…';
+        recG.appendChild(svg('text',{x:cardX+16,y:cardY+53,fill:ink,'fill-opacity':.64,'font-size':13},reason));
+        recG.appendChild(svg('text',{x:cardX+16,y:cardY+77,fill:ink,'fill-opacity':.46,'font-size':12},data.profileSummary||''));
+        overlayRoot.appendChild(recG);
       }
       var brand=(spec.theme&& (spec.theme.sourceLabel||spec.theme.sourceId));
       if (brand) overlayRoot.appendChild(svg('text',{x:W-pad,y:H-14,fill:ink,'fill-opacity':.42,'font-size':13,'text-anchor':'end'},'Theme · '+brand));

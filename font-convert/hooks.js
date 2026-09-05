@@ -30,6 +30,12 @@ function fmtBytes(n) {
 const KIND_LABEL = { ttf: 'TrueType', otf: 'OpenType (CFF)', woff: 'WOFF', woff2: 'WOFF2' };
 const TARGET_LABEL = { ttf: 'TrueType (.ttf)', otf: 'OpenType (.otf)', woff: 'Web font (.woff)' };
 
+function supportsTarget(bytes, target) {
+  const kind = fontKind(bytes);
+  const outline = kind === 'woff' && bytes.length >= 44 ? fontKind(bytes.subarray(4, 8)) : kind;
+  return (outline === 'ttf' || outline === 'otf') && (target === 'woff' || target === outline);
+}
+
 function patch({ model }) {
   const inputs = Object.fromEntries(model.map((i) => [i.id, i.value]));
   const f = inputs.source;
@@ -39,11 +45,13 @@ function patch({ model }) {
   const kind = fontKind(f.bytes);
   const kindLabel = KIND_LABEL[kind] || 'Unknown';
   const targetLabel = TARGET_LABEL[target] || target;
-  const convertible = !!kind && kind !== 'woff2';
+  const convertible = supportsTarget(f.bytes, target);
   const note = !kind
     ? "This doesn't look like a font file (no sfnt or WOFF signature)."
     : kind === 'woff2'
       ? 'WOFF2 is read-detected but not convertible yet (it needs a Brotli encoder). Use a TTF, OTF or WOFF source.'
+      : !convertible
+        ? 'TTF and OTF use different glyph outlines. Choose WOFF or the original outline format; this tool does not redraw glyphs.'
       : kind === target
         ? `Already ${kindLabel}. Downloading re-wraps it unchanged.`
         : `${kindLabel} to ${targetLabel}. The glyph outlines pass through untouched; only the container changes.`;
@@ -71,6 +79,7 @@ async function exportFile({ model }) {
   if (kind === 'woff2') throw new Error('WOFF2 input is not convertible yet (no Brotli decoder). Try a TTF, OTF or WOFF.');
 
   const target = inputs.target || 'woff';
+  if (!supportsTarget(f.bytes, target)) throw new Error('That outline conversion is not supported. Choose WOFF or the original outline format.');
   const base = (f.name || 'font').replace(/\.(ttf|otf|woff2?|sfnt|ttc)$/i, '') || 'font';
   const mime = target === 'woff' ? 'font/woff' : target === 'otf' ? 'font/otf' : 'font/ttf';
   // Source bytes, named for the target. export.file() performs the container swap via

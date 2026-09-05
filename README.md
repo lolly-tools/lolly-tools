@@ -48,6 +48,7 @@ own). Each tool is a directory of *data, not code*:
 | `wayfinding-signage` | Directional event signage at real trim sizes - heading, arrow rows and an optional event logo |
 | `work-avatar` | A round profile photo with a treatment and a ring of text along the arc - the LinkedIn campaign badge, in the active brand's colours and face |
 | `calendar-ics` | A dated card or printable month grid that also exports a real `.ics` file |
+| `agenda` | A conference programme from one table - time down the page and tracks across it, as a timetable, a printed list or a now-and-next screen, plus a real `.ics` of every session |
 
 Tool `id`s are permanent contracts - never renamed or reused.
 

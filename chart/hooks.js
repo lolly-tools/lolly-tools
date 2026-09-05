@@ -130,6 +130,153 @@ function columnIsNumeric(grid, col, commaDecimal) {
   return seen > 0 && num / seen >= 0.6;
 }
 
+function dateLike(raw, header) {
+  const s = String(raw == null ? '' : raw).trim(); if (!s) return false;
+  const h = String(header || '').toLowerCase();
+  if (/^(19|20)\d{2}$/.test(s)) return /(year|date|time|period|fiscal|fy)/.test(h);
+  if (/^(q[1-4]|h[12]|w\d{1,2})$/i.test(s)) return /(quarter|period|week|date|time)/.test(h);
+  if (!(/\d[-/.]\d/.test(s) || /[a-z]{3,}/i.test(s) || /t\d{1,2}:\d{2}/i.test(s))) return false;
+  return Number.isFinite(Date.parse(s));
+}
+
+function profileTable(text, opts) {
+  const raw = String(text || '').trim();
+  if (!raw) return { shape: 'empty', rows: 0, columns: 0, missing: 0, fields: [] };
+  const delim = opts.delimiter === 'auto' ? detectDelim(raw) : (DELIM_MAP[opts.delimiter] || ',');
+  const semicolon = delim === ';';
+  let grid = splitTable(raw, delim); if (opts.transpose) grid = transposeGrid(grid);
+  if (!grid.length) return { shape: 'empty', rows: 0, columns: 0, missing: 0, fields: [] };
+  const width = Math.min(MAX_COLS, grid.reduce((m, r) => Math.max(m, r.length), 0));
+  grid = grid.map((r) => { const c = r.slice(0, width); while (c.length < width) c.push(''); return c; });
+  let header, body;
+  if (opts.hasHeader && grid.length > 1) { header = grid[0].map((h, i) => String(h).trim() || `Column ${i + 1}`); body = grid.slice(1); }
+  else { header = grid[0].map((_, i) => i === 0 ? 'Category' : `Series ${i}`); body = grid; }
+  body = body.slice(0, MAX_ROWS);
+  const fields = [], totalRows = body.length;
+  for (let c = 0; c < width; c++) {
+    const cells = body.map((r) => r[c]), commaDecimal = semicolon || columnCommaDecimal(cells);
+    const present = cells.filter((cell) => !isBlankToken(cell));
+    const numeric = present.filter((cell) => Number.isFinite(parseNum(cell, commaDecimal)));
+    const dates = present.filter((cell) => dateLike(cell, header[c]));
+    const booleans = present.filter((cell) => /^(true|false|yes|no)$/i.test(String(cell).trim()));
+    const unique = new Set(present.map((cell) => String(cell).trim())).size;
+    const h = String(header[c] || '').toLowerCase();
+    const ratio = present.length ? numeric.length / present.length : 0;
+    const dateRatio = present.length ? dates.length / present.length : 0;
+    let type = dateRatio >= .6 ? (dates.some((cell) => /[t ]\d{1,2}:\d{2}/i.test(String(cell))) ? 'datetime' : 'date')
+      : ratio >= .6 ? 'number' : booleans.length === present.length && present.length ? 'boolean' : 'string';
+    const percent = present.filter((cell) => /%/.test(String(cell))).length;
+    const currency = present.filter((cell) => /[€$£¥]/.test(String(cell))).length;
+    const integers = numeric.filter((cell) => Number.isInteger(parseNum(cell, commaDecimal))).length;
+    let format = type === 'date' ? 'date' : type === 'datetime' ? 'datetime' : type === 'boolean' ? 'boolean'
+      : type !== 'number' ? 'plain' : percent > present.length / 2 ? 'percent' : currency > present.length / 2 ? 'currency'
+        : integers === numeric.length ? 'integer' : 'decimal';
+    let role = type === 'number' ? 'measure' : type === 'date' || type === 'datetime' ? 'time' : 'dimension';
+    if (/(error|stderr|std dev|standard deviation|uncertainty|margin|lower|upper|low|high|minimum|maximum)/.test(h)) role = 'uncertainty';
+    else if (/(^|[ _-])(id|uuid|guid|code|sku|key|index)([ _-]|$)/.test(h) && unique >= Math.max(2, present.length * .8)) role = 'identifier';
+    else if (/(date|time|year|quarter|month|week|period|timestamp)/.test(h) && (dateRatio >= .35 || unique > 1)) role = 'time';
+    else if (/(series|segment|group|cohort|variant|region|team)/.test(h) && type === 'string') role = 'series';
+    fields.push({ name: header[c], type, role, format, missing: totalRows - present.length, unique });
+  }
+  const measures = fields.filter((f) => f.role === 'measure' || f.role === 'uncertainty');
+  const dimensions = fields.filter((f) => f.role === 'dimension' || f.role === 'series' || f.role === 'time');
+  const firstValues = body.map((r) => String(r[0] == null ? '' : r[0]).trim()).filter(Boolean);
+  const repeatedFirst = new Set(firstValues).size < firstValues.length;
+  const textFields = fields.filter((f) => f.type === 'string');
+  let shape = !totalRows ? 'empty' : width === 1 ? 'single'
+    : repeatedFirst && textFields.length >= 2 && measures.length >= 1 ? 'long'
+      : measures.length >= 4 && dimensions.length >= 1 ? 'matrix' : 'wide';
+  return { shape, rows: totalRows, columns: width,
+    missing: fields.reduce((n, f) => n + f.missing, 0), fields };
+}
+
+function dataProfileSummary(profile) {
+  const measures = profile.fields.filter((f) => f.role === 'measure').length;
+  const times = profile.fields.filter((f) => f.role === 'time').length;
+  const parts = [`${profile.rows} row${profile.rows === 1 ? '' : 's'}`, `${profile.columns} column${profile.columns === 1 ? '' : 's'}`];
+  if (times) parts.push(`${times} time field${times === 1 ? '' : 's'}`);
+  if (measures) parts.push(`${measures} measure${measures === 1 ? '' : 's'}`);
+  if (profile.missing) parts.push(`${profile.missing} missing`);
+  return parts.join(' · ');
+}
+
+function recommendChart(profile, requestedIntent) {
+  const fields = profile.fields || [];
+  const measures = fields.filter((f) => f.role === 'measure');
+  const uncertainty = fields.filter((f) => f.role === 'uncertainty');
+  const errorMagnitude = uncertainty.filter((f) => /(error|stderr|std dev|standard deviation|uncertainty|margin)/i.test(f.name));
+  const lowerBounds = uncertainty.filter((f) => /(^|[ _-])(low|lower|min|minimum)([ _-]|$)/i.test(f.name));
+  const upperBounds = uncertainty.filter((f) => /(^|[ _-])(high|upper|max|maximum)([ _-]|$)/i.test(f.name));
+  const times = fields.filter((f) => f.role === 'time');
+  const dimensions = fields.filter((f) => f.role === 'dimension' || f.role === 'series');
+  const x = (times[0] || dimensions[0] || measures[0]);
+  const valueFields = measures.concat(uncertainty);
+  const mapping = {
+    x: x ? [x.name] : [], y: measures.slice(x && x.role === 'measure' ? 1 : 0).map((f) => f.name),
+    z: measures[2] ? [measures[2].name] : [], size: measures[3] ? [measures[3].name] : [],
+    colour: fields.filter((f) => f.role === 'series').slice(0, 1).map((f) => f.name),
+    facet: fields.filter((f) => f.role === 'series').slice(0, 1).map((f) => f.name),
+    label: dimensions[0] ? [dimensions[0].name] : [],
+    error: errorMagnitude.slice(0, 1).map((f) => f.name), frame: times.slice(1, 2).map((f) => f.name),
+    camera: valueFields.slice(0, 1).map((f) => f.name),
+  };
+  if (!mapping.y.length && measures.length) mapping.y = measures.map((f) => f.name);
+  const temporal = times.length > 0;
+  const partWhole = fields.some((f) => f.format === 'percent' || /(share|percent|percentage|portion|mix)/i.test(f.name));
+  let intent = requestedIntent === 'manual' ? 'auto' : requestedIntent;
+  if (intent === 'auto') {
+    if (temporal && measures.length) intent = 'trend';
+    else if (partWhole && measures.length && profile.rows <= 12) intent = 'composition';
+    else if (!dimensions.length && !times.length && measures.length >= 2) intent = 'relationship';
+    else if (!dimensions.length && measures.length === 1 && profile.rows >= 8) intent = 'distribution';
+    else intent = 'compare';
+  }
+  let renderMode = 'vector', chartType = 'bar', label = 'Bar chart', reason = '', confidence = measures.length ? 'high' : 'low';
+  if (intent === 'trend') {
+    renderMode = measures.length > 4 ? 'statistical' : 'vector'; chartType = measures.length > 4 ? 'small-multiples' : 'line'; label = measures.length > 4 ? 'Small multiple trends' : 'Line chart';
+    reason = temporal ? `“${times[0].name}” reads as time, so position preserves its order and ${measures.length || 'the'} measure${measures.length === 1 ? '' : 's'} can be followed across it.` : 'The first dimension supplies an ordered path for showing change.';
+    confidence = temporal ? 'high' : 'medium';
+  } else if (intent === 'composition') {
+    renderMode = 'vector'; chartType = profile.rows <= 8 && measures.length <= 1 ? 'donut' : 'bar'; label = chartType === 'donut' ? 'Donut chart' : '100% stacked bars';
+    reason = chartType === 'donut' ? `${profile.rows} parts fit a compact whole; the values should be non-negative and share one denominator.` : 'There are too many parts for a reliable angle comparison, so a common 100% baseline is clearer.';
+    confidence = partWhole ? 'high' : 'medium';
+  } else if (intent === 'distribution') {
+    renderMode = 'statistical'; chartType = measures.length > 1 ? 'distribution-facets' : 'rug-histogram'; label = measures.length > 1 ? 'Distribution facets' : 'Histogram + observations';
+    reason = `${profile.rows} observations can be binned while the rug retains the underlying values${measures.length > 1 ? '; facets keep measures separate' : ''}.`;
+  } else if (intent === 'relationship') {
+    renderMode = 'statistical'; chartType = 'regression'; label = 'Scatter + regression';
+    reason = measures.length >= 2 ? `“${measures[0].name}” and “${measures[1].name}” are quantitative, so position can show their association without binning.` : 'A relationship needs at least two quantitative fields; add or map another measure.';
+    confidence = measures.length >= 2 && profile.rows >= 3 ? 'high' : 'low';
+    if (measures.length >= 2) { mapping.x = [measures[0].name]; mapping.y = [measures[1].name]; }
+  } else if (intent === 'uncertainty') {
+    if (lowerBounds.length && upperBounds.length) {
+      renderMode = 'statistical'; chartType = 'range-band'; label = 'Range / uncertainty band';
+      mapping.y = [lowerBounds[0].name].concat(measures.slice(0, 1).map((f) => f.name), [upperBounds[0].name]);
+      mapping.error = [];
+      reason = `“${lowerBounds[0].name}” and “${upperBounds[0].name}” read as bounds; the band preserves them${measures[0] ? ` around “${measures[0].name}”` : ''}.`;
+      confidence = 'high';
+    } else if (errorMagnitude.length && measures.length) {
+      renderMode = 'vector'; chartType = temporal ? 'line' : 'bar'; label = temporal ? 'Line with uncertainty whiskers' : 'Bars with uncertainty whiskers';
+      mapping.y = [measures[0].name]; mapping.error = [errorMagnitude[0].name];
+      reason = `“${errorMagnitude[0].name}” reads as an error magnitude, so it becomes whiskers around “${measures[0].name}” rather than another series.`;
+      confidence = 'high';
+    } else {
+      renderMode = 'statistical'; chartType = measures.length >= 2 ? 'range-band' : 'control-band'; label = chartType === 'range-band' ? 'Range / uncertainty band' : 'Control band';
+      mapping.y = measures.slice(0, Math.max(1, Math.min(3, measures.length))).map((f) => f.name);
+      reason = measures.length >= 2 ? 'Two or more measures can define a low/high range; confirm their order in Y / measures.' : 'One measure can be compared with its process mean and variation.';
+      confidence = 'medium';
+    }
+  } else if (intent === 'story') {
+    renderMode = 'cinematic'; chartType = 'flythrough3d'; label = 'Cinematic data flight';
+    reason = `${x ? `“${x.name}”` : 'Row order'} supplies the route and “${(measures[0] || {}).name || 'the first measure'}” drives camera altitude; other measures remain comparison lanes.`;
+    confidence = profile.rows >= 3 && measures.length ? 'high' : 'low';
+  } else {
+    renderMode = measures.length > 1 && profile.rows > 16 ? 'statistical' : 'vector'; chartType = renderMode === 'statistical' ? 'dot-strip' : 'bar'; label = renderMode === 'statistical' ? 'Editorial dot comparison' : 'Bar chart';
+    reason = dimensions.length || times.length ? `“${(dimensions[0] || times[0]).name}” supplies comparable categories and a common value axis makes differences easy to judge.` : 'Rows can be compared on one common quantitative baseline.';
+  }
+  return { intent, renderMode, chartType, label, reason, confidence, mappings: mapping };
+}
+
 function transposeGrid(grid) {
   const cols = grid.reduce((m, r) => Math.max(m, r.length), 0);
   const out = [];
@@ -176,6 +323,8 @@ function buildModel(text, opts) {
   const labelIdx = orDefault(resolveColRef(opts.labelCol, header), 0);
   const pivotIdx = resolveColRef(opts.pivotCol, header);
   const errIdx   = resolveColRef(opts.errorCol, header);   // ± error per value (not plotted as a series)
+  const zIdx     = resolveColRef(opts.zCol, header);       // explicit depth channel
+  const sizeIdx  = resolveColRef(opts.sizeCol, header);    // explicit size channel
   const chosen   = resolveColList(opts.seriesCols, header);
 
   // Category / label column (col 0 by default; a numeric label like a Year still
@@ -188,8 +337,18 @@ function buildModel(text, opts) {
   // Series = the user's chosen columns (numeric only), else every numeric column
   // other than the label. numericCols keeps ALL numeric columns (scatter x/y/size).
   const colSeries = (cols) => cols.map((c) => ({ name: header[c], values: body.map((r) => nOrNull(parseNum(r[c], commaDecCol[c]))) }));
-  const series = colSeries((chosen.length ? chosen : range(width)).filter((c) => c !== labelIdx && c !== pivotIdx && c !== errIdx && numericFlag[c]));
-  const numericCols = colSeries(range(width).filter((c) => numericFlag[c]));
+  const mappedElsewhere = new Set([zIdx, sizeIdx].filter((c) => c >= 0));
+  const series = colSeries((chosen.length ? chosen : range(width)).filter((c) =>
+    c !== labelIdx && c !== pivotIdx && c !== errIdx && numericFlag[c] && (chosen.length || !mappedElsewhere.has(c))));
+  // Scatter-like renderers consume numericCols positionally. Put explicit
+  // x/y/z/size mappings first, then retain every remaining numeric field so a
+  // mode switch never throws source data away.
+  const numericOrder = uniqueInOrder([
+    ...(numericFlag[labelIdx] ? [labelIdx] : []), ...chosen.filter((c) => numericFlag[c]),
+    ...(numericFlag[zIdx] ? [zIdx] : []), ...(numericFlag[sizeIdx] ? [sizeIdx] : []),
+    ...range(width).filter((c) => numericFlag[c]),
+  ]);
+  const numericCols = colSeries(numericOrder);
   // ± error column → magnitudes aligned to rows (whiskers in the template). Only the
   // standard wide path carries it; pivot/single-col reshapes return before this.
   const errorValues = errIdx >= 0 && errIdx !== labelIdx
@@ -207,7 +366,7 @@ function buildModel(text, opts) {
                    firstIndex(width, (c) => c !== labelIdx && c !== keyCol && numericFlag[c]);
     if (keyCol != null && keyCol >= 0 && valCol != null && valCol >= 0) {
       const p = pivotRows(body, labelIdx, keyCol, valCol, commaDecCol);
-      if (p) return { categories: p.categories, series: p.series, numericCols,
+      if (p) return { categories: p.categories, categoryField: header[labelIdx], series: p.series, numericCols,
         note: appendNote(note, `Pivoted long-format data by “${header[keyCol]}” into ${p.series.length} series.`) };
     }
   }
@@ -217,7 +376,7 @@ function buildModel(text, opts) {
   if (!series.length && numericFlag[labelIdx]) {
     const only = { name: header[labelIdx] === 'Category' ? 'Value' : header[labelIdx],
       values: body.map((r) => nOrNull(parseNum(r[labelIdx], commaDecCol[labelIdx]))) };
-    return { categories: body.map((_, i) => String(i + 1)), series: [only], numericCols,
+    return { categories: body.map((_, i) => String(i + 1)), categoryField: 'Row', series: [only], numericCols,
       note: appendNote(note, 'Charted a single value column with row numbers as labels.') };
   }
 
@@ -231,7 +390,7 @@ function buildModel(text, opts) {
   } else if (!opts.hasHeader && firstRowLooksLikeHeader(body, numericFlag)) {
     note = appendNote(note, 'First row looks like column names - turn on “First row is a header”.');
   }
-  return { categories, series, numericCols, errorValues, note };
+  return { categories, categoryField: header[labelIdx], series, numericCols, errorValues, note };
 }
 
 function range(n) { const a = []; for (let i = 0; i < n; i++) a.push(i); return a; }
@@ -389,6 +548,11 @@ function buildConfig(inp, dirty) {
     barGap:         clamp(num(inp.barGap, 0.08), 0, 0.8),
     paletteSlots,
     binCount:       clamp(Math.round(num(inp.binCount, 0)), 0, 60),
+    paretoCumulative: inp.paretoCumulative !== false && inp.paretoCumulative !== 'false',
+    paretoThreshold: clamp(num(inp.paretoThreshold, 80), 0, 100),
+    bulletTarget: Math.max(0, num(inp.bulletTarget, 100)),
+    bulletBands: inp.bulletBands !== false && inp.bulletBands !== 'false',
+    rangeMidpoint: inp.rangeMidpoint !== false && inp.rangeMidpoint !== 'false',
     sort:           String(inp.sort || 'none'),
     labelLayout:    String(inp.labelLayout || 'auto'),
     labelReserve:   clamp(num(inp.labelReserve, 0), 0, 60),
@@ -707,7 +871,7 @@ function seedPalette(seedHex) {
 // ── renderer-neutral chart document + resolved brand theme ─────────────────
 
 const SCENE_TYPES = ['bar3d', 'scatter3d', 'surface3d'];
-const CINEMATIC_TYPES = ['flythrough3d', 'ribbon3d', 'constellation3d'];
+const CINEMATIC_TYPES = ['flythrough3d', 'ribbon3d', 'constellation3d', 'skyline3d'];
 const REAL_3D_TYPES = SCENE_TYPES.concat(CINEMATIC_TYPES);
 const PLOT_TYPES = [
   'dot-strip', 'interval', 'range-band', 'difference-area', 'indexed-change',
@@ -717,7 +881,7 @@ const PLOT_TYPES = [
 ];
 const SCENE_TO_VECTOR = {
   bar3d: 'bar', scatter3d: 'scatter', surface3d: 'heatmap',
-  flythrough3d: 'line', ribbon3d: 'area', constellation3d: 'scatter',
+  flythrough3d: 'line', ribbon3d: 'area', constellation3d: 'scatter', skyline3d: 'bar',
 };
 
 // Renderer mode is an authoring choice, not a second copy of the document. Keep
@@ -754,6 +918,58 @@ function effectiveChartInputs(inp) {
     ? String(inp.plotType) : 'dot-strip';
   return { mode, vectorType, sceneType, cinematicType, plotType,
     effectiveType: mode === 'cinematic' ? cinematicType : mode === 'scene' ? sceneType : mode === 'statistical' ? plotType : vectorType };
+}
+
+function chartParseOptions(inp) {
+  return {
+    delimiter: String(inp.delimiter || 'auto'),
+    hasHeader: inp.hasHeader !== false && inp.hasHeader !== 'false',
+    transpose: inp.transpose === true || inp.transpose === 'true',
+    labelCol: String(inp.labelColumn || ''),
+    seriesCols: String(inp.seriesColumns || ''),
+    pivotCol: String(inp.pivotColumn || ''),
+    errorCol: String(inp.errorColumn || ''),
+    zCol: String(inp.zColumn || ''),
+    sizeCol: String(inp.sizeColumn || ''),
+  };
+}
+
+// A goal is a reversible starting-point generator, not a lock. Selecting a new
+// goal may move to its recommended renderer; after that, an explicit renderer
+// or type selection wins. Mapping fields only follow while untouched so expert
+// work is never replaced by a later inference.
+function recommendationInputPatch(model, priorPatch, changedId) {
+  const inp = Object.assign(Object.fromEntries(model.map((i) => [i.id, i.value])), priorPatch || {});
+  const intent = String(inp.chartIntent || 'manual');
+  if (intent === 'manual') return {};
+  const dirty = Object.fromEntries(model.map((i) => [i.id, !!i.isDirty]));
+  const profile = profileTable(inp.data, chartParseOptions(inp));
+  const recommendation = recommendChart(profile, intent);
+  const patch = {};
+  const goalChanged = changedId === 'chartIntent';
+  const sourceChanged = !changedId || goalChanged || ['data', 'delimiter', 'hasHeader', 'transpose'].indexOf(changedId) >= 0;
+  if (sourceChanged && (goalChanged || !dirty.renderMode)) patch.renderMode = recommendation.renderMode;
+  const target = recommendation.renderMode === 'statistical' ? 'plotType'
+    : recommendation.renderMode === 'scene' ? 'sceneType'
+      : recommendation.renderMode === 'cinematic' ? 'cinematicType' : 'chartType';
+  if (sourceChanged && (goalChanged || !dirty[target])) patch[target] = recommendation.chartType;
+  if (recommendation.intent === 'composition' && recommendation.chartType === 'bar' && !dirty.stackMode) patch.stackMode = 'stacked100';
+
+  const mappings = recommendation.mappings || {};
+  const inferred = {
+    labelColumn: (mappings.x || [])[0] || '',
+    seriesColumns: (mappings.y || []).join(','),
+    pivotColumn: (mappings.colour || [])[0] || '',
+    zColumn: (mappings.z || [])[0] || '',
+    sizeColumn: (mappings.size || [])[0] || '',
+    errorColumn: (mappings.error || [])[0] || '',
+    frameColumn: (mappings.frame || [])[0] || '',
+    flightSeries: (mappings.camera || [])[0] || '',
+  };
+  if (sourceChanged) for (const [id, value] of Object.entries(inferred)) {
+    if (value && !dirty[id] && id !== changedId) patch[id] = value;
+  }
+  return patch;
 }
 
 function chartThemeFromBrand(cfg) {
@@ -824,9 +1040,29 @@ function chartMark(type) {
     'bar-horizontal': 'bar', scatter: 'point', pie: 'arc', donut: 'arc',
     'radial-bar': 'radial-bar', wordcloud: 'wordcloud', bar3d: 'bar3d',
     scatter3d: 'scatter3d', surface3d: 'surface3d',
-    flythrough3d: 'line3d', ribbon3d: 'ribbon3d', constellation3d: 'line3d',
+    flythrough3d: 'line3d', ribbon3d: 'ribbon3d', constellation3d: 'line3d', skyline3d: 'bar3d',
   };
   return map[type] || type;
+}
+
+function annotateChartFields(fields, rows, data) {
+  const profileFields = data.profile && data.profile.fields || [];
+  const byName = (name) => profileFields.find((item) => String(item.name).toLowerCase() === String(name || '').toLowerCase());
+  return fields.map((field) => {
+    const sourceName = field.id === 'category' ? data.categoryField
+      : field.id === 'frame' ? data.frameField : field.label;
+    const source = byName(sourceName) || byName(field.label);
+    let role = source && source.role;
+    if (!role) role = field.id === 'category' ? 'dimension'
+      : field.id === 'series' ? 'series'
+        : field.id === 'frame' ? 'time'
+          : field.id === 'order' ? 'identifier'
+            : /^(low|high|lower|upper|error)$/i.test(field.id) ? 'uncertainty'
+              : field.type === 'number' ? 'measure' : 'unknown';
+    const format = source && source.format || (field.id === 'order' ? 'integer' : field.type === 'number' ? 'decimal' : 'plain');
+    const nullable = !!(source && source.missing > 0) || rows.some((row) => row[field.id] == null);
+    return Object.assign({}, field, { role, format, nullable });
+  });
 }
 
 function statisticalSpecParts(data, cfg) {
@@ -1056,6 +1292,64 @@ function statisticalSpecParts(data, cfg) {
     ] };
 }
 
+// These compound charts use the same prepared rows for SVG, accessible tables
+// and portable chart documents. Missing cells never turn into zero measures.
+function comparisonData(data, cfg) {
+  const ss = data.series || [], cats = data.categories || [];
+  const value = (s, i) => ss[s] && ss[s].values[i] != null && Number.isFinite(+ss[s].values[i]) ? +ss[s].values[i] : null;
+  let rows = cats.map((category, i) => {
+    const first = value(0, i), second = value(1, i);
+    if (cfg.chartType === 'range-bar') return { category, low: first == null || second == null ? null : Math.min(first, second), high: first == null || second == null ? null : Math.max(first, second), ...(cfg.rangeMidpoint ? { midpoint: first == null || second == null ? null : (first + second) / 2 } : {}) };
+    if (cfg.chartType === 'bullet') return { category, value: first, target: ss.length < 2 ? cfg.bulletTarget : second, maximum: value(2, i) };
+    return { category, value: first };
+  });
+  const missing = rows.filter((r) => cfg.chartType === 'range-bar' ? r.low == null : r.value == null).length;
+  rows = rows.filter((r) => cfg.chartType === 'range-bar' ? r.low != null : r.value != null);
+  let error = '';
+  if (cfg.chartType === 'range-bar' && ss.length < 2) error = 'Range bars need two numeric columns: Low and High.';
+  if (cfg.chartType !== 'range-bar' && rows.some((r) => r.value < 0 || (cfg.chartType === 'bullet' && (r.target < 0 || r.maximum < 0)))) error = 'This chart needs non-negative values. Use bars or range bars for signed values.';
+  if (!rows.length && !error) error = 'No complete numeric rows to chart. Check the selected value columns.';
+  if (cfg.chartType === 'pareto') {
+    rows.sort((a, b) => b.value - a.value);
+    const total = rows.reduce((n, r) => n + r.value, 0);
+    if (!(total > 0) && !error) error = 'Pareto needs a positive total to calculate cumulative percentages.';
+    let sum = 0;
+    rows.forEach((r) => { sum += r.value; r.cumulative = total > 0 ? sum / total * 100 : null; });
+  }
+  return { rows, error, missing };
+}
+
+function comparisonSpecParts(data, cfg) {
+  const rows = data.comparison.rows, source = data.series || [];
+  const field = (id, label) => ({ id, label, type: 'number' });
+  const cat = { field: 'category', type: 'string' };
+  const enc = (id, scale) => ({ field: id, type: 'number', ...(scale ? { scale } : {}) });
+  const series = [], fields = [{ id: 'category', label: data.categoryField || 'Category', type: 'string' }];
+  const horizontal = cfg.chartType !== 'pareto';
+  if (cfg.chartType === 'range-bar') {
+    fields.push(field('low', source[0] && source[0].name || 'Low'), field('high', source[1] && source[1].name || 'High'));
+    series.push({ id: 'range', name: 'Low–high range', dataset: 'data', mark: 'bar', channels: { y: cat, low: enc('low', 'x'), high: enc('high', 'x') } });
+    if (cfg.rangeMidpoint) {
+      fields.push(field('midpoint', 'Arithmetic midpoint'));
+      series.push({ id: 'midpoint', name: 'Arithmetic midpoint', dataset: 'data', mark: 'rule', channels: { x: enc('midpoint', 'x'), y: cat } });
+    }
+  } else {
+    fields.push(field('value', source[0] && source[0].name || 'Actual'));
+    series.push({ id: 'actual', name: fields[1].label, dataset: 'data', mark: 'bar', channels: horizontal ? { x: enc('value', 'x'), y: cat } : { x: cat, y: enc('value', 'y') } });
+    if (cfg.chartType === 'bullet') {
+      fields.push(field('target', source[1] && source[1].name || 'Target'), field('maximum', source[2] && source[2].name || 'Maximum'));
+      series.push({ id: 'target', name: fields[2].label, dataset: 'data', mark: 'rule', channels: { x: enc('target', 'x'), y: cat } });
+    } else {
+      fields.push(field('cumulative', 'Cumulative share (%)'));
+      if (cfg.paretoCumulative) series.push({ id: 'cumulative', name: 'Cumulative share (%)', dataset: 'data', mark: 'line', channels: { x: cat, y: enc('cumulative', 'cumulative') } });
+    }
+  }
+  const scales = [{ id: 'x', type: horizontal ? 'linear' : 'band', zero: horizontal }, { id: 'y', type: horizontal ? 'band' : 'linear', zero: !horizontal }];
+  const axes = [{ id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || (horizontal ? 'Value' : 'Category'), grid: horizontal && cfg.showGrid }, { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || (horizontal ? 'Category' : fields[1].label), grid: !horizontal && cfg.showGrid }];
+  if (cfg.chartType === 'pareto' && cfg.paretoCumulative) { scales.push({ id: 'cumulative', type: 'linear', domain: [0, 100] }); axes.push({ id: 'cumulative', scale: 'cumulative', side: 'right', title: 'Cumulative share (%)', grid: false }); }
+  return { rows, fields, series, scales, axes };
+}
+
 function makeChartSpec(data, cfg) {
   const is3d = REAL_3D_TYPES.indexOf(cfg.chartType) >= 0;
   const isCinematic = CINEMATIC_TYPES.indexOf(cfg.chartType) >= 0;
@@ -1065,7 +1359,10 @@ function makeChartSpec(data, cfg) {
   let fields = [], rows = [], series = [];
 
   let plotParts = null;
-  if (isPlot) {
+  if (data.comparison) {
+    plotParts = comparisonSpecParts(data, cfg);
+    fields = plotParts.fields; rows = plotParts.rows; series = plotParts.series;
+  } else if (isPlot) {
     plotParts = statisticalSpecParts(data, cfg);
     fields = plotParts.fields; rows = plotParts.rows; series = plotParts.series;
     if (data.frames && data.frames.length >= 2) {
@@ -1167,8 +1464,10 @@ function makeChartSpec(data, cfg) {
     }));
   }
 
+  fields = annotateChartFields(fields, rows, data);
+
   const title = (cfg.heading || (cfg.chartType.replace(/3d/g, ' 3-D').replace(/-/g, ' ') + ' chart')).trim();
-  const seriesNames = (cfg.chartType === 'scatter3d' ? nums.slice(0, 4) : sourceSeries).map((s) => s.name);
+  const seriesNames = (data.comparison ? series : cfg.chartType === 'scatter3d' ? nums.slice(0, 4) : sourceSeries).map((s) => s.name);
   const count = rows.length;
   const sourceLabel = cfg.brandTheme.sourceLabel || cfg.brandTheme.sourceId || 'the active brand';
   const description = (cfg.subheading ? cfg.subheading + '. ' : '') + title + ' uses ' + count + ' data row' + (count === 1 ? '' : 's') +
@@ -1222,7 +1521,7 @@ function makeChartSpec(data, cfg) {
       // Statistical recipes pair colour with position, facet, endpoint or
       // symbol; the colour-only warning would be false there even for a vivid
       // brand. Classic multi-series SVG keeps its established pattern policy.
-      colourOnly: isPlot ? false : !(cfg.brandTheme.marks.patterns), patterns: !!cfg.brandTheme.marks.patterns,
+      colourOnly: isPlot || data.comparison ? false : !(cfg.brandTheme.marks.patterns), patterns: !!cfg.brandTheme.marks.patterns,
       ...(motion.enabled ? { motionDescription: isCinematic
         ? 'The camera follows the ordered data path; values drive altitude and series occupy depth.'
         : motion.preset === 'orbit' ? 'The camera orbits the chart.' : 'The chart reveals and changes over time.' } : {}),
@@ -1282,6 +1581,10 @@ function threeFallbackSvg(data, cfg) {
       for (let x = 0; x < nx; x++) {
         const value = +(ss[z] && ss[z].values[x]); if (!Number.isFinite(value)) continue;
         const p = project(x, value, z);
+        if (cfg.chartType === 'skyline3d') {
+          const foot = project(x, 0, z);
+          out.push('<line x1="' + foot[0].toFixed(2) + '" y1="' + foot[1].toFixed(2) + '" x2="' + p[0].toFixed(2) + '" y2="' + p[1].toFixed(2) + '" stroke="' + palette[z % palette.length] + '" stroke-width="12" stroke-linecap="square" opacity="' + (z === 0 ? '.82' : '.52') + '"/>');
+        }
         out.push('<circle cx="' + p[0].toFixed(2) + '" cy="' + p[1].toFixed(2) + '" r="' + (cfg.chartType === 'constellation3d' ? 8 : 4) + '" fill="' + palette[z % palette.length] + '" stroke="' + cfg.brandTheme.colours.surface + '" stroke-width="2"/>');
       }
     }
@@ -1401,7 +1704,7 @@ function buildFrames(text, opts) {
     return seriesCols.map((c) => ({ name: header[c],
       values: catOrder.map((cat) => { const r = byCat[cat]; return r ? nOrNull(parseNum(r[c], commaDecCol[c])) : null; }) }));
   });
-  return { labels: frameOrder, categories: catOrder, frames };
+  return { labels: frameOrder, categories: catOrder, categoryField: header[labelIdx], frameField: header[frameIdx], frames };
 }
 
 const ANIMATABLE = ['bar', 'bar-horizontal', 'line', 'area', 'pie', 'donut', 'scatter'].concat(PLOT_TYPES);
@@ -1427,15 +1730,9 @@ function compute(model, inputPatch) {
     cfg.seedPalette = seedPalette(isHex(inp.paletteSeed) ? inp.paletteSeed.trim() : ((BRAND && BRAND.primary) || null));
   }
   cfg.brandTheme = chartThemeFromBrand(cfg);
-  const parseOpts = {
-    delimiter: String(inp.delimiter || 'auto'),
-    hasHeader: inp.hasHeader !== false && inp.hasHeader !== 'false',
-    transpose: inp.transpose === true || inp.transpose === 'true',
-    labelCol:  String(inp.labelColumn || ''),
-    seriesCols: String(inp.seriesColumns || ''),
-    pivotCol:  String(inp.pivotColumn || ''),
-    errorCol:  String(inp.errorColumn || ''),
-  };
+  const parseOpts = chartParseOptions(inp);
+  const dataProfile = profileTable(inp.data, parseOpts);
+  const recommendation = recommendChart(dataProfile, String(inp.chartIntent || 'manual'));
   // Keyframe animation: only for the tweenable chart types + a frame column set.
   const frameData = (cfg.frameColumn && ANIMATABLE.indexOf(cfg.chartType) >= 0)
     ? buildFrames(inp.data, Object.assign({ frameCol: cfg.frameColumn }, parseOpts)) : null;
@@ -1461,12 +1758,22 @@ function compute(model, inputPatch) {
       });
     }
     // scatter reads numericCols (x/y cols); bar/line/pie read series - populate the one each needs from frame 0.
-    data = { categories: frameData.categories, series: frameData.frames[0],
+    data = { categories: frameData.categories, categoryField: frameData.categoryField, frameField: frameData.frameField, series: frameData.frames[0],
       numericCols: cfg.chartType === 'scatter' || PLOT_TYPES.indexOf(cfg.chartType) >= 0 ? frameData.frames[0] : [], errorValues: null,
       frames: frameData.frames, frameLabels: frameData.labels,
       note: `Animating ${frameData.frames.length} frames by “${cfg.frameColumn}”.` };
   } else {
     data = buildModel(inp.data, parseOpts);
+  }
+  data.profile = dataProfile;
+  data.profileSummary = dataProfileSummary(dataProfile);
+  data.recommendation = String(inp.chartIntent || 'manual') === 'manual' ? null : recommendation;
+  if (['pareto', 'bullet', 'range-bar'].indexOf(cfg.chartType) >= 0) {
+    data.comparison = comparisonData(data, cfg);
+    if (data.comparison.error) data.note = appendNote(data.note, data.comparison.error);
+    if (data.comparison.missing) data.note = appendNote(data.note, data.comparison.missing + ' incomplete row(s) omitted.');
+    const expected = cfg.chartType === 'pareto' ? 1 : cfg.chartType === 'bullet' ? 3 : 2;
+    if (data.series.length > expected) data.note = appendNote(data.note, 'This chart uses the first ' + expected + ' numeric column(s). Change Series columns to choose different measures.');
   }
   if (cfg.chartType === 'scatter3d' && (!data.numericCols || data.numericCols.length < 3)) {
     data.note = appendNote(data.note, '3-D scatter needs at least three numeric columns for x, y and z.');
@@ -1502,6 +1809,12 @@ function compute(model, inputPatch) {
   const spec = makeChartSpec(data, cfg);
   const useThree = REAL_3D_TYPES.indexOf(cfg.chartType) >= 0;
   const usePlot = PLOT_TYPES.indexOf(cfg.chartType) >= 0;
+  const findings = [];
+  if (data.recommendation) findings.push({
+    id: 'chart.recommendation', severity: 'info',
+    message: `Recommended ${recommendation.label}: ${recommendation.reason}`,
+  });
+  if (data.note) findings.push({ id: 'chart.data.note', severity: 'info', message: data.note });
   const report = {
     version: 1,
     rendererFamily: spec.presentation.rendererFamily,
@@ -1516,7 +1829,9 @@ function compute(model, inputPatch) {
       id: spec.theme.id, source: spec.theme.source, sourceId: spec.theme.sourceId,
       sourceLabel: spec.theme.sourceLabel, sourceChecksum: spec.theme.sourceChecksum, locked: spec.theme.locked,
     },
-    findings: data.note ? [{ id: 'chart.data.note', severity: 'info', message: data.note }] : [],
+    dataProfile,
+    recommendation,
+    findings,
   };
   return {
     _state:  safeJson({ data, cfg, spec, report }),
@@ -1533,6 +1848,10 @@ function compute(model, inputPatch) {
     _effectiveChartType: mode.effectiveType,
     _chartStyle: spec.presentation.style,
     _brandName: spec.theme.sourceLabel || spec.theme.sourceId || 'Active brand',
+    _dataProfileSummary: dataProfileSummary(dataProfile),
+    _recommendationLabel: data.recommendation ? recommendation.label : '',
+    _recommendationReason: data.recommendation ? recommendation.reason : '',
+    _recommendationConfidence: data.recommendation ? recommendation.confidence : '',
     mdSource: d3Md(inp),
   };
 }
@@ -1572,12 +1891,16 @@ function brandDegraded(b) { return !b || (!b.primary && !b.spectrum && !b.ramps)
 async function onInit({ model }) {
   BRAND = await resolveBrandColors();
   const modePatch = legacyModePatch(model);
-  return Object.assign(compute(model, modePatch), modePatch);
+  const guidedPatch = recommendationInputPatch(model, modePatch, null);
+  const inputPatch = Object.assign({}, modePatch, guidedPatch);
+  return Object.assign(compute(model, inputPatch), inputPatch);
 }
-async function onInput({ model }) {
+async function onInput({ model, id }) {
   if (brandDegraded(BRAND)) { try { const b = await resolveBrandColors(); if (!brandDegraded(b)) BRAND = b; } catch (e) { /* keep prior */ } }
   const modePatch = legacyModePatch(model);
-  return Object.assign(compute(model, modePatch), modePatch);
+  const guidedPatch = recommendationInputPatch(model, modePatch, id);
+  const inputPatch = Object.assign({}, modePatch, guidedPatch);
+  return Object.assign(compute(model, inputPatch), inputPatch);
 }
 
 function exportNode(ctx) {

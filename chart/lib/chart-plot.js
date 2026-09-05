@@ -299,6 +299,23 @@
       });
       svg.appendChild(g);
     }
+    if (state.data && state.data.recommendation && W >= 520 && H >= 220) {
+      var rec = state.data.recommendation, cardW = Math.min(500, Math.max(300, W * 0.42), W - 88);
+      var cardX = W - 44 - cardW, cardY = cfg.subheading ? 104 : cfg.heading ? 72 : 24;
+      var recG = svgEl('g', { 'data-export-hide': '', role: 'note',
+        'aria-label': 'Chart recommendation: ' + rec.label + '. ' + rec.reason });
+      recG.appendChild(svgEl('rect', { x: cardX, y: cardY, width: cardW, height: 96, rx: 12,
+        fill: theme.colours.surface, 'fill-opacity': 0.94, stroke: theme.colours.edge, 'stroke-opacity': 0.55 }));
+      recG.appendChild(svgEl('text', { x: cardX + 16, y: cardY + 26, fill: theme.colours.ink,
+        'font-size': 14, 'font-weight': 750 }, 'Recommended · ' + rec.label + ' · ' + rec.confidence + ' confidence'));
+      var reason = String(rec.reason || '');
+      if (reason.length > 96) reason = reason.slice(0, 93).replace(/\s+\S*$/, '') + '…';
+      recG.appendChild(svgEl('text', { x: cardX + 16, y: cardY + 53, fill: theme.colours.muted,
+        'font-size': 13 }, reason));
+      recG.appendChild(svgEl('text', { x: cardX + 16, y: cardY + 77, fill: theme.colours.muted,
+        'fill-opacity': 0.74, 'font-size': 12 }, state.data.profileSummary || ''));
+      svg.appendChild(recG);
+    }
     if (cfg.frameLabelShow !== false && frameLabel != null && frameLabel !== '') {
       var position = String(cfg.frameLabelPos || 'tr');
       var left = position === 'tl' || position === 'bl';
@@ -408,9 +425,11 @@
         fontFamily: theme.font.brand || "var(--font-brand, 'SUSE', system-ui, sans-serif)",
         fontSize: Math.max(11, cfg.labelSize * 0.72) + 'px',
       };
+      var topMargin = cfg.heading ? (cfg.subheading ? 112 : 82) : 42;
+      if (data.recommendation && cfg.width >= 520 && cfg.height >= 320) topMargin += 112;
       var options = Object.assign({
         width: cfg.width, height: cfg.height, figure: false,
-        marginTop: cfg.heading ? (cfg.subheading ? 112 : 82) : 42,
+        marginTop: topMargin,
         marginRight: 44, marginBottom: cfg.showLegend ? 72 : 50, marginLeft: 82,
         style: style, ariaLabel: state.spec.accessibility.title,
         ariaDescription: state.spec.accessibility.description,

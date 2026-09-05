@@ -257,7 +257,7 @@
   /* Chart types that support click-to-recolour (a single label → one brand-swatch
      override). Shared by render()'s tagMark gate AND setupRecolor's click gate so
      the two never drift. Single-series categorical charts, like pie/donut. */
-  var RECOLOR_CHARTS = ['bar','bar-horizontal','pie','donut','radial-bar','treemap','pack','funnel','waffle','lollipop','polar','waterfall'];
+  var RECOLOR_CHARTS = ['bar','bar-horizontal','pie','donut','radial-bar','treemap','pack','funnel','waffle','lollipop','polar','waterfall','pareto','bullet','range-bar'];
 
   /* ── colour helpers (WCAG legibility guard, ported from chart-creator) ─────── */
   function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
@@ -279,9 +279,9 @@
   function toRgb(hex){var c=String(hex).replace('#','');return [parseInt(c.slice(0,2),16),parseInt(c.slice(2,4),16),parseInt(c.slice(4,6),16)];}
   function toHex(a){return '#'+a.map(function(v){return clamp(Math.round(v),0,255).toString(16).padStart(2,'0');}).join('');}
   /* Nudge a fill away from the surface until it clears a legibility floor. */
-  function legible(hex, bg) {
+  function legible(hex, bg, floor) {
     if (!isHex(hex) || !isHex(bg)) return hex;
-    var FLOOR = 1.9;
+    var FLOOR = floor || 1.9;
     if (contrast(hex, bg) >= FLOOR) return hex;
     var target = lum(bg) > 0.4 ? [0,0,0] : [255,255,255];
     var rgb = toRgb(hex);
@@ -300,9 +300,10 @@
     svg.attr('viewBox', '0 0 '+W+' '+H).attr('width', W).attr('height', H);
     d3.select(bgEl).attr('width', W).attr('height', H);
     var g = d3.select(plotEl); g.selectAll('*').remove();
-    g.append('text').attr('x', W/2).attr('y', H/2).attr('text-anchor','middle')
-      .attr('font-size', 26).attr('font-weight', 500)
-      .attr('fill', state.cfg.textColor).attr('opacity', 0.6).text(text || 'No data');
+    var size = clamp(W / 30, 14, 26);
+    var lines = wrapToWidth(text || 'No data', Math.max(80, W - 64), size, 500, 6);
+    var colour = isHex(state.cfg.textColor) ? state.cfg.textColor : autoInk(state.cfg.transparent ? '#ffffff' : state.cfg.background);
+    drawTextLines(g, lines, W / 2, H / 2, 'middle', size, 500, colour, 1, 'center');
   }
 
   /* ── keyframe animation ──────────────────────────────────────────────────────
@@ -474,6 +475,7 @@
     var cats = (data.categories || []).slice();
     var series = (data.series || []).map(function (s) { return { name: s.name, values: (s.values||[]).slice() }; });
     var numericCols = (data.numericCols || []);
+    if (data.comparison && data.comparison.error) { message(data.comparison.error); return; }
 
     /* Charts whose legend keys are the series (they also need cats + series). */
     var needSeries = ['bar','bar-horizontal','line','area','radar','lollipop','dumbbell','slope','bump','stream','marimekko'].indexOf(cfg.chartType) >= 0;
@@ -569,7 +571,14 @@
           return legible(ramp(t), guardBg);
         };
       }
-      return function (i) { return (slots[i] && isHex(slots[i])) ? legible(slots[i], guardBg) : baseFn(i); };
+      return function (i) {
+        var col = (slots[i] && isHex(slots[i])) ? legible(slots[i], guardBg) : baseFn(i);
+        if (data.comparison) {
+          var parsed = d3.color(col);
+          return legible(parsed ? parsed.formatHex() : col, guardBg, 3);
+        }
+        return col;
+      };
     }
     function seqColorFn(min, max) {
       var ramp = makeRamp(rampAnchorsFor(pal));
@@ -585,7 +594,7 @@
 
     /* A value's colour, honouring a click-to-recolour override on its label. */
     function overrideColor(label, base) {
-      return (label != null && overrides[label]) ? legible(overrides[label], guardBg) : base;
+      return (label != null && overrides[label]) ? legible(overrides[label], guardBg, data.comparison ? 3 : undefined) : base;
     }
     /* Texture url for a mark's differentiation index (null when patterns are off);
        the <defs> is created lazily inside the plot on first use. */
@@ -671,6 +680,13 @@
         legendItems = cats.map(function (c, i) { return { label: c, color: overrideColor(c, ccf(i)), tex: i }; });
       }
     }
+    if (data.comparison && cfg.showLegend) {
+      var comparisonColors = catColorFn(2);
+      legendItems = cfg.chartType === 'pareto'
+        ? [{ label: series[0].name, color: comparisonColors(0), tex: 0 }].concat(cfg.paretoCumulative ? [{ label: 'Cumulative share (%) · right axis', color: comparisonColors(1), tex: 1 }] : [])
+        : cfg.chartType === 'bullet' ? [{ label: series[0].name, color: comparisonColors(0), tex: 0 }, { label: (series[1] && series[1].name || 'Target') + ' · vertical tick', color: ink, tex: 0 }]
+        : [{ label: series[0].name + ' – ' + series[1].name, color: comparisonColors(0), tex: 0 }].concat(cfg.rangeMidpoint ? [{ label: 'Midpoint · tick', color: ink, tex: 0 }] : []);
+    }
 
     /* ── plot rect after title + legend ──────────────────────────────────────── */
     var box = { x: PAD, y: titleTop ? PAD + titleH : PAD, w: W - 2*PAD, h: H - 2*PAD - titleH };
@@ -688,6 +704,11 @@
         legendReserve = rows * (lm.sz + 12) + 16;
         if (legSide === 't') box.y += legendReserve; box.h -= legendReserve;
       }
+    }
+    var recommendationY = null;
+    if (data.recommendation && W >= 520 && H >= 320) {
+      recommendationY = box.y;
+      box.y += 108; box.h -= 108;
     }
 
     var api = { d3: d3, root: root, cfg: cfg, data: data, cats: cats, series: series, numericCols: numericCols,
@@ -718,6 +739,9 @@
       case 'beeswarm':       drawDistribution(api, 'beeswarm'); break;
       case 'lollipop':       drawLollipop(api); break;
       case 'dumbbell':       drawDumbbell(api); break;
+      case 'pareto':         drawComparison(api, 'pareto'); break;
+      case 'bullet':         drawComparison(api, 'bullet'); break;
+      case 'range-bar':      drawComparison(api, 'range-bar'); break;
       case 'slope':          drawSlope(api); break;
       case 'bump':           drawBump(api); break;
       case 'stream':         drawStream(api); break;
@@ -737,6 +761,25 @@
 
     /* Legend drawn last so it sits above the plot. */
     if (legendItems && legendItems.length) drawLegend(api, legendItems, legPos, legendReserve, PAD, titleH);
+
+    /* Explain an inferred starting point in the live editor. It is authoring
+       guidance, not chart content, so export walkers remove the whole card. */
+    if (data.recommendation && recommendationY != null) {
+      var rec = data.recommendation, cardW = Math.min(500, Math.max(300, W * .42), W - PAD * 2);
+      var cardX = W - PAD - cardW, cardY = recommendationY;
+      var recG = root.append('g').attr('data-export-hide', '').attr('role', 'note')
+        .attr('aria-label', 'Chart recommendation: ' + rec.label + '. ' + rec.reason);
+      recG.append('rect').attr('x', cardX).attr('y', cardY).attr('width', cardW).attr('height', 96)
+        .attr('rx', 12).attr('fill', guardBg).attr('fill-opacity', .94).attr('stroke', ink).attr('stroke-opacity', .24);
+      recG.append('text').attr('x', cardX + 16).attr('y', cardY + 26).attr('fill', ink)
+        .attr('font-size', 14).attr('font-weight', 750).text('Recommended · ' + rec.label + ' · ' + rec.confidence + ' confidence');
+      var recReason = String(rec.reason || '');
+      if (recReason.length > 96) recReason = recReason.slice(0, 93).replace(/\s+\S*$/, '') + '…';
+      recG.append('text').attr('x', cardX + 16).attr('y', cardY + 53).attr('fill', ink)
+        .attr('fill-opacity', .66).attr('font-size', 13).text(recReason);
+      recG.append('text').attr('x', cardX + 16).attr('y', cardY + 77).attr('fill', ink)
+        .attr('fill-opacity', .48).attr('font-size', 12).text(data.profileSummary || '');
+    }
 
     /* A quiet diagnostic caption when the parser reshaped/adjusted the data
        (pivoted long data, single column, truncation, header hint) - so the user
@@ -854,7 +897,7 @@
   }
 
   /* ── category-label layout planning (bar / lollipop / dumbbell) ───────────── */
-  var CAT_LABEL_CHARTS = { bar: 1, 'bar-horizontal': 1, lollipop: 1, dumbbell: 1 };
+  var CAT_LABEL_CHARTS = { bar: 1, 'bar-horizontal': 1, lollipop: 1, dumbbell: 1, pareto: 1, bullet: 1, 'range-bar': 1 };
   var AUTO_CAP_FRAC = 0.42;   // auto-fit label area never exceeds this share of the box
   function catSz(cfg) { return clamp(cfg.labelSize, 11, 24); }
   /* Resolve 'auto' into a concrete layout for the orientation + label lengths. */
@@ -1257,13 +1300,14 @@
     var cfg = api.cfg, ink = api.ink, sz = catSz(cfg), weight = cfg.labelWeight;
     if (!cfg.showAxes) return;
     var cats = band.domain();
+    function label(c) { return api.categoryLabel ? api.categoryLabel(c) : c; }
     var g = api.root.append('g').attr('class', 'cat-axis');
     var layout = resolveLayout(api, horizontal);
     if (horizontal) {
       var maxW = Math.max(20, plot.x - api.box.x - 8);
       cats.forEach(function (c) {
         var yc = band(c) + band.bandwidth() / 2;
-        drawTextLines(g, wrapToWidth(c, maxW, sz, weight, cfg.labelLines), plot.x - 8, yc, 'end', sz, weight, ink, 0.8, 'center');
+        drawTextLines(g, wrapToWidth(label(c), maxW, sz, weight, cfg.labelLines), plot.x - 8, yc, 'end', sz, weight, ink, 0.8, 'center');
       });
       return;
     }
@@ -1274,7 +1318,7 @@
         var ax = band(c) + band.bandwidth() / 2;
         g.append('text').attr('transform', 'rotate(-45 ' + ax + ' ' + ay + ')').attr('x', ax).attr('y', ay)
           .attr('text-anchor', 'end').attr('font-size', sz).attr('font-weight', weight).attr('fill', ink).attr('opacity', 0.8)
-          .text(ellipsizeToWidth(c, maxLen, sz, weight));
+          .text(ellipsizeToWidth(label(c), maxLen, sz, weight));
       });
       return;
     }
@@ -1282,7 +1326,7 @@
       var step = band.step();
       cats.forEach(function (c) {
         var xc = band(c) + band.bandwidth() / 2;
-        drawTextLines(g, wrapToWidth(c, Math.max(20, step - 2), sz, weight, cfg.labelLines), xc, plot.y + plot.h + 6, 'middle', sz, weight, ink, 0.8, 'top');
+        drawTextLines(g, wrapToWidth(label(c), Math.max(20, step - 2), sz, weight, cfg.labelLines), xc, plot.y + plot.h + 6, 'middle', sz, weight, ink, 0.8, 'top');
       });
       return;
     }
@@ -1294,7 +1338,7 @@
       var x = band(c) + band.bandwidth() / 2;
       g.append('text').attr('x', x).attr('y', plot.y + plot.h + sz + 6).attr('text-anchor', 'middle')
         .attr('font-size', sz).attr('font-weight', weight).attr('fill', ink).attr('opacity', 0.8)
-        .text(ellipsizeToWidth(c, stepW * (every > 1 ? every : 1) - 4, sz, weight));
+        .text(ellipsizeToWidth(label(c), stepW * (every > 1 ? every : 1) - 4, sz, weight));
     });
   }
   function drawAxisTitles(api, plot, horizontal) {
@@ -2074,6 +2118,70 @@
       });
     });
     drawAxisTitles(api, plot, true);
+  }
+
+  /* Compound comparison charts. Index bands keep repeated labels distinct;
+     every renderer consumes the hook's prepared rows, including missing cells. */
+  function drawComparison(api, kind) {
+    var d3 = api.d3, cfg = api.cfg, rows = api.data.comparison.rows;
+    var horizontal = kind !== 'pareto', colours = api.catColorFn(2);
+    api.cats = rows.map(function (r) { return r.category; });
+    api.categoryLabel = function (i) { return rows[i].category; };
+    var plot = insetForAxes(api, horizontal);
+    if (kind === 'pareto' && cfg.paretoCumulative) plot.w = Math.max(20, plot.w - 70);
+    // Value labels live inside the output frame even for the largest measure.
+    if (cfg.showValues && !horizontal) { plot.y += 28; plot.h = Math.max(20, plot.h - 28); }
+    var band = d3.scaleBand().domain(rows.map(function (_, i) { return i; }))
+      .range(horizontal ? [plot.y, plot.y + plot.h] : [plot.x, plot.x + plot.w]).padding(cfg.barPadding);
+    var max = d3.max(rows, function (r) { return kind === 'range-bar' ? r.high : Math.max(r.value, r.target || 0, r.maximum || 0); }) || 1;
+    var min = kind === 'range-bar' ? Math.min(0, d3.min(rows, function (r) { return r.low; })) : 0;
+    var scale = d3.scaleLinear().domain([min, Math.max(max, cfg.yMax || 0)]).nice()
+      .range(horizontal ? [plot.x, plot.x + plot.w] : [plot.y + plot.h, plot.y]);
+    drawValueAxis(api, plot, scale, horizontal ? 'x' : 'y');
+    drawCategoryAxis(api, plot, band, horizontal);
+    var g = api.root.append('g').attr('data-comparison', kind);
+    rows.forEach(function (r, i) {
+      var col = api.override(r.category, colours(0)), lane = band(i), bw = band.bandwidth();
+      var mark, label;
+      if (kind === 'pareto') {
+        mark = g.append('rect').attr('x', lane).attr('y', scale(r.value)).attr('width', bw).attr('height', Math.max(0, scale(0) - scale(r.value))).attr('fill', col);
+        if (cfg.showValues) valueLabel(api, lane + bw / 2, scale(r.value) - 9, api.fmt(r.value), 'middle', api.ink, 1);
+        label = r.category + ': ' + api.fmt(r.value) + ' · cumulative ' + r.cumulative.toFixed(1) + '%';
+      } else if (kind === 'bullet') {
+        var cy = lane + bw / 2, barH = Math.max(1, bw * .34), target = r.target;
+        if (cfg.bulletBands && target != null) {
+          [1, .8, .6].forEach(function (factor, n) {
+            g.append('rect').attr('x', scale(0)).attr('y', lane + bw * .12).attr('width', Math.max(0, scale(target * factor) - scale(0))).attr('height', bw * .76).attr('fill', api.ink).attr('opacity', .055 + n * .045);
+          });
+        }
+        mark = g.append('rect').attr('x', scale(0)).attr('y', cy - barH / 2).attr('width', Math.max(0, scale(r.value) - scale(0))).attr('height', barH).attr('fill', col);
+        if (target != null) g.append('line').attr('data-target', target).attr('x1', scale(target)).attr('x2', scale(target)).attr('y1', cy - bw * .4).attr('y2', cy + bw * .4).attr('stroke', api.ink).attr('stroke-width', cfg.lineWidth);
+        label = r.category + ': ' + api.fmt(r.value) + (target == null ? ' · no target' : ' / ' + api.fmt(target) + ' target');
+        if (cfg.showValues) valueLabel(api, plot.x + plot.w, lane + Math.max(10, bw * .1), api.fmt(r.value) + (target == null ? '' : ' / ' + api.fmt(target)), 'end', api.ink, 1);
+      } else {
+        var h = Math.max(1, bw * .45), mid = (r.low + r.high) / 2, y = lane + bw / 2;
+        mark = g.append('rect').attr('x', scale(r.low)).attr('y', y - h / 2).attr('width', Math.max(1, scale(r.high) - scale(r.low))).attr('height', h).attr('fill', col);
+        if (cfg.rangeMidpoint) g.append('line').attr('data-midpoint', mid).attr('x1', scale(mid)).attr('x2', scale(mid)).attr('y1', y - h / 2 - 4).attr('y2', y + h / 2 + 4).attr('stroke', api.ink).attr('stroke-width', cfg.lineWidth);
+        label = r.category + ': ' + api.fmt(r.low) + ' – ' + api.fmt(r.high);
+        if (cfg.showValues) valueLabel(api, Math.min(plot.x + plot.w, Math.max(plot.x + 30, scale(mid))), lane + Math.max(10, bw * .15), api.fmt(r.low) + ' – ' + api.fmt(r.high), 'middle', api.ink, 1);
+      }
+      mark.attr('data-value', kind === 'range-bar' ? r.high - r.low : r.value).attr('rx', Math.min(cfg.cornerRadius, band.bandwidth() * .15));
+      mark.append('title').text(label);
+      api.tagMark(mark, r.category);
+    });
+    if (kind === 'pareto' && cfg.paretoCumulative) {
+      var percent = d3.scaleLinear().domain([0, 100]).range([plot.y + plot.h, plot.y]);
+      var line = d3.line().x(function (_, i) { return band(i) + band.bandwidth() / 2; }).y(function (r) { return percent(r.cumulative); });
+      g.append('path').attr('data-cumulative', 'true').attr('d', line(rows)).attr('fill', 'none').attr('stroke', colours(1)).attr('stroke-width', cfg.lineWidth);
+      rows.forEach(function (r, i) { g.append('circle').attr('cx', band(i) + band.bandwidth() / 2).attr('cy', percent(r.cumulative)).attr('r', Math.max(2, cfg.pointSize / 2)).attr('fill', colours(1)).append('title').text(r.cumulative.toFixed(1) + '%'); });
+      if (cfg.showAxes) [0, 20, 40, 60, 80, 100].forEach(function (p) { g.append('text').attr('x', plot.x + plot.w + 12).attr('y', percent(p) + 5).attr('fill', api.ink).attr('font-size', clamp(cfg.labelSize, 11, 22)).text(p + '%'); });
+      if (cfg.paretoThreshold > 0) {
+        var py = percent(cfg.paretoThreshold);
+        g.append('line').attr('data-threshold', cfg.paretoThreshold).attr('x1', plot.x).attr('x2', plot.x + plot.w).attr('y1', py).attr('y2', py).attr('stroke', api.ink).attr('opacity', .55).attr('stroke-dasharray', '6 5');
+        g.append('text').attr('x', plot.x + 5).attr('y', py - 6).attr('fill', api.ink).attr('font-size', 13).text(cfg.paretoThreshold + '% reference');
+      }
+    }
+    drawAxisTitles(api, plot, horizontal);
   }
 
   /* ── slope chart (straight segments, end-labelled) ──────────────────────── */

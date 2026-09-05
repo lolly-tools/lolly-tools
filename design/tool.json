@@ -2,7 +2,7 @@
   "id": "design",
   "name": "Design",
   "description": "An open canvas for free arrangement - text, images, shapes and live renders from your other Lolly tools, all held to your brand.",
-  "version": "1.24.0",
+  "version": "1.25.0",
   "engineVersion": "^1.160.0",
   "status": "community",
   "category": "designer",
@@ -213,6 +213,15 @@
       "max": 2400,
       "step": 1,
       "help": "Raster resolution used when this document is exported in a physical unit."
+    },
+    {
+      "id": "guides",
+      "urlKey": "gd",
+      "showFor": [],
+      "type": "longtext",
+      "label": "Authoring guides",
+      "default": "",
+      "help": "Editor-only ruler guides stored with the document. They help alignment and never appear in exports."
     },
     {
       "id": "customCss",
