@@ -1,7 +1,7 @@
 {
   "name": "चार्ट",
-  "description": "D3 के साथ शक्तिशाली डेटा-आधारित चार्ट्स - एक टेबल पेस्ट करें और यह खुद चार्ट बन जाता है। बार्स, लाइनें, एरिया, स्कैटर, पाई, रडार, ट्रीमैप, हीटमैप, 3-D बार्स व पाई और वर्ड क्लाउड। पैलेट आपके ब्रांड के रंगों से बनते हैं, पैटर्न फिल और क्लिक-टू-रीकलर के साथ - ऑन-ब्रांड और वेक्टर-क्लीन।",
-  "featured.blurb": "टेबल पेस्ट करें — D3 उसका चार्ट बना देता है, ऑन-ब्रांड और वेक्टर-क्लीन",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}} चार्ट{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "चार्ट का प्रकार",
   "inputs.chartType.options.bar": "बार - वर्टिकल",

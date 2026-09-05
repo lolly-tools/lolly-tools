@@ -1,12 +1,12 @@
 {
   "id": "chart",
   "name": "Chart",
-  "description": "Powerful data-driven charts with D3 — paste a table and it charts itself. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies and word clouds. Palettes derive from your brand's colours, with pattern fills and click-to-recolour — on-brand and vector-clean.",
-  "version": "1.18.1",
-  "engineVersion": "^1.0.0",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, data-driven cinematic flights, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "version": "1.23.0",
+  "engineVersion": "^1.180.0",
   "status": "official",
   "category": "designer",
-  "a11yLabel": "{{chartType}} chart{{#if heading}} — {{heading}}{{/if}}",
+  "a11yLabel": "{{_effectiveChartType}} chart{{#if heading}} — {{heading}}{{/if}}",
   "tags": [
     "chart",
     "d3",
@@ -27,6 +27,13 @@
     "wordcloud",
     "word cloud",
     "3d",
+    "cinematic",
+    "flythrough",
+    "statistical",
+    "editorial",
+    "regression",
+    "density",
+    "facets",
     "survey",
     "svg",
     "vector",
@@ -34,7 +41,7 @@
   ],
   "featured": {
     "order": 3,
-    "blurb": "Paste a table — D3 charts it, on-brand and vector-clean"
+    "blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand"
   },
   "examples": [
     {
@@ -93,38 +100,61 @@
       }
     },
     {
-      "label": "3-D bars",
+      "label": "Real 3-D bars",
       "values": {
+        "renderMode": "scene",
         "chartType": "bar",
-        "barStyle": "iso3d",
-        "data": "Team,Responses\nDesign,42\nEngineering,58\nSales,33\nSupport,27",
-        "palette": "cool",
-        "showValues": true
+        "sceneType": "bar3d",
+        "chartStyle": "studio-3d",
+        "heading": "Responses by team and wave",
+        "data": "Team,First wave,Second wave,Final wave\nDesign,42,51,63\nEngineering,58,66,74\nSales,33,47,59\nSupport,27,39,52",
+        "motionPreset": "reveal-orbit",
+        "cameraProjection": "orthographic"
       }
     },
     {
-      "label": "Wrapped horizontal bars",
+      "label": "Brand terrain",
       "values": {
-        "chartType": "bar-horizontal",
-        "data": "Question,Responses\n\"How likely are you to recommend us to a friend or colleague?\",71\n\"The onboarding experience felt smooth and well paced\",54\n\"Support resolved my issue on the first contact\",38\n\"Pricing is clear and easy to understand\",22",
-        "sort": "desc",
-        "palette": "suse"
+        "renderMode": "scene",
+        "chartType": "heatmap",
+        "sceneType": "surface3d",
+        "chartStyle": "glass-3d",
+        "heading": "Demand surface",
+        "data": "Hour,Monday,Tuesday,Wednesday,Thursday,Friday\n08:00,12,18,14,17,22\n10:00,23,31,28,35,42\n12:00,46,55,61,58,68\n14:00,38,49,53,57,63\n16:00,29,41,47,51,58\n18:00,18,27,33,39,46",
+        "motionPreset": "orbit"
       }
     }
   ],
   "render": {
     "width": 1280,
     "height": 800,
-    "formats": ["png", "md", "svg", "penpot", "emf", "pdf", "pdf-cmyk", "cmyk-tiff", "tiff", "pptx", "webp", "jpg", "apng", "webp-anim", "gif", "webm", "mp4", "avif", "csv", "json"],
+    "formats": [
+      "png",
+      "md",
+      "svg",
+      "penpot",
+      "emf",
+      "pdf",
+      "pdf-cmyk",
+      "cmyk-tiff",
+      "tiff",
+      "pptx",
+      "webp",
+      "jpg",
+      "apng",
+      "webp-anim",
+      "gif",
+      "webm",
+      "mp4",
+      "avif",
+      "csv",
+      "json"
+    ],
     "video": {
       "wait": 0.3,
       "duration": 6
     },
-    "actions": [
-      "copy",
-      "download",
-      "save"
-    ],
+    "actions": ["copy", "download", "save"],
     "transparentBg": true
   },
   "hooks": {
@@ -133,13 +163,44 @@
     "beforeExport": true,
     "afterExport": true
   },
+  "isolate": true,
   "inputs": [
+    {
+      "id": "renderMode",
+      "urlKey": "rm",
+      "label": "Mode",
+      "type": "select",
+      "display": "segmented",
+      "default": "vector",
+      "options": [
+        {
+          "value": "vector",
+          "label": "2-D vector"
+        },
+        {
+          "value": "statistical",
+          "label": "Statistical"
+        },
+        {
+          "value": "scene",
+          "label": "3-D scene"
+        },
+        {
+          "value": "cinematic",
+          "label": "Cinematic"
+        }
+      ],
+      "help": "Switch renderer without replacing your work. The table, titles, brand palette, labels, formatting and shared layout settings follow between classic D3/SVG, Observable Plot's statistical SVG grammar, comparable Three.js scenes and data-driven cinematic flights. Renderer-specific controls stay parked and return when you switch back."
+    },
     {
       "id": "chartType",
       "urlKey": "ct",
-      "label": "Chart type",
+      "label": "2-D chart type",
       "type": "select",
       "default": "bar",
+      "showIf": {
+        "renderMode": "vector"
+      },
       "options": [
         {
           "value": "bar",
@@ -272,6 +333,250 @@
       ]
     },
     {
+      "id": "plotType",
+      "urlKey": "pf",
+      "label": "Statistical form",
+      "type": "select",
+      "default": "dot-strip",
+      "showIf": {
+        "renderMode": "statistical"
+      },
+      "options": [
+        {
+          "value": "dot-strip",
+          "label": "Editorial dot plot"
+        },
+        {
+          "value": "interval",
+          "label": "Interval / range"
+        },
+        {
+          "value": "range-band",
+          "label": "Range / uncertainty band"
+        },
+        {
+          "value": "difference-area",
+          "label": "Difference between series"
+        },
+        {
+          "value": "indexed-change",
+          "label": "Indexed change — base 100"
+        },
+        {
+          "value": "box-observations",
+          "label": "Box + observations"
+        },
+        {
+          "value": "rug-histogram",
+          "label": "Histogram + rug"
+        },
+        {
+          "value": "small-multiples",
+          "label": "Small multiple trends"
+        },
+        {
+          "value": "distribution-facets",
+          "label": "Distribution facets"
+        },
+        {
+          "value": "density-ridges",
+          "label": "Density small multiples"
+        },
+        {
+          "value": "ecdf",
+          "label": "Cumulative distribution"
+        },
+        {
+          "value": "control-band",
+          "label": "Control band"
+        },
+        {
+          "value": "hexbin",
+          "label": "Hexbin density"
+        },
+        {
+          "value": "density-contour",
+          "label": "Density contours"
+        },
+        {
+          "value": "regression",
+          "label": "Scatter + regression"
+        },
+        {
+          "value": "candlestick",
+          "label": "Candlestick / OHLC"
+        }
+      ],
+      "help": "Curated layered and transformed SVG forms for comparison, change, distributions, uncertainty, relationships, monitoring and finance. Density, hexbin and regression use the first two numeric columns. Range band uses Low, Expected, High; candlestick uses Open, High, Low, Close."
+    },
+    {
+      "id": "sceneType",
+      "urlKey": "sct",
+      "label": "3-D chart type",
+      "type": "select",
+      "default": "bar3d",
+      "showIf": {
+        "renderMode": "scene"
+      },
+      "options": [
+        {
+          "value": "bar3d",
+          "label": "Bars — categories × series"
+        },
+        {
+          "value": "scatter3d",
+          "label": "Scatter — x / y / z"
+        },
+        {
+          "value": "surface3d",
+          "label": "Surface — value grid"
+        }
+      ],
+      "help": "Choose how the same table is interpreted in the real 3-D scene. Bars use a label column plus numeric series; Scatter uses at least three numeric columns; Surface uses the table as a value grid."
+    },
+    {
+      "id": "cinematicType",
+      "urlKey": "cft",
+      "label": "Cinematic form",
+      "type": "select",
+      "default": "flythrough3d",
+      "showIf": {
+        "renderMode": "cinematic"
+      },
+      "options": [
+        {
+          "value": "flythrough3d",
+          "label": "Data flight — follow values"
+        },
+        {
+          "value": "ribbon3d",
+          "label": "Ribbon canyon — compare series"
+        },
+        {
+          "value": "constellation3d",
+          "label": "Constellation — tour observations"
+        }
+      ],
+      "help": "Turn the same table into a paced story. Category order becomes the route, numeric values set altitude, and series occupy real depth. Data flight follows the chosen series; Ribbon canyon keeps all series legible; Constellation tours connected observations."
+    },
+    {
+      "id": "plotBins",
+      "urlKey": "pbn",
+      "label": "Bins / contour levels",
+      "section": "Statistical",
+      "type": "number",
+      "display": "slider",
+      "default": 20,
+      "min": 6,
+      "max": 60,
+      "step": 1,
+      "showIf": {
+        "renderMode": "statistical",
+        "plotType": ["rug-histogram", "distribution-facets", "density-contour"]
+      },
+      "help": "Resolution for distribution bins and density contour levels. More reveals fine structure but can overstate noise in a small sample."
+    },
+    {
+      "id": "plotBinWidth",
+      "urlKey": "pbw",
+      "label": "Hexagon size",
+      "section": "Statistical",
+      "type": "number",
+      "display": "slider",
+      "default": 24,
+      "min": 6,
+      "max": 64,
+      "step": 1,
+      "showIf": {
+        "renderMode": "statistical",
+        "plotType": "hexbin"
+      },
+      "help": "Hexbin width in output pixels. Larger cells summarise more observations and reduce visual noise."
+    },
+    {
+      "id": "plotBandwidth",
+      "urlKey": "pbnd",
+      "label": "Density smoothing",
+      "section": "Statistical",
+      "type": "number",
+      "display": "slider",
+      "default": 20,
+      "min": 4,
+      "max": 80,
+      "step": 1,
+      "showIf": {
+        "renderMode": "statistical",
+        "plotType": ["density-contour", "density-ridges"]
+      },
+      "help": "Kernel bandwidth in output pixels. Low values retain local detail; high values reveal only the broad distribution."
+    },
+    {
+      "id": "plotShowRaw",
+      "urlKey": "praw",
+      "label": "Show observations",
+      "section": "Statistical",
+      "type": "boolean",
+      "default": true,
+      "showIf": {
+        "renderMode": "statistical",
+        "plotType": ["box-observations", "rug-histogram", "density-contour", "regression"]
+      },
+      "help": "Keep the source observations visible beneath the fitted density or regression layer."
+    },
+    {
+      "id": "plotConfidenceBand",
+      "urlKey": "pci",
+      "label": "95% confidence band",
+      "section": "Statistical",
+      "type": "boolean",
+      "default": true,
+      "showIf": {
+        "renderMode": "statistical",
+        "plotType": "regression"
+      },
+      "help": "Show the fitted regression's 95% confidence interval. This describes uncertainty in the fitted mean, not prediction bounds for an individual observation."
+    },
+    {
+      "id": "plotFacetDirection",
+      "urlKey": "pfd",
+      "label": "Facet direction",
+      "section": "Statistical",
+      "type": "select",
+      "default": "rows",
+      "options": [
+        {
+          "value": "rows",
+          "label": "Rows — shared width"
+        },
+        {
+          "value": "columns",
+          "label": "Columns — side by side"
+        }
+      ],
+      "showIf": {
+        "renderMode": "statistical",
+        "plotType": ["small-multiples", "rug-histogram", "distribution-facets", "density-ridges"]
+      },
+      "help": "Lay small multiples in rows for easier scale comparison or columns for a compact presentation."
+    },
+    {
+      "id": "plotMotionPreset",
+      "urlKey": "psm",
+      "label": "Statistical motion",
+      "section": "Animation",
+      "type": "select",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "Still" },
+        { "value": "reveal", "label": "Reveal across the plot" },
+        { "value": "stagger", "label": "Build mark by mark" }
+      ],
+      "showIf": {
+        "renderMode": "statistical"
+      },
+      "help": "A deterministic entrance treatment driven by Lolly's exact frame clock. If Animate by column is set, data-frame interpolation takes priority. Preview and GIF/APNG/WebP/MP4/WebM export use the same phases; static vector export uses the complete poster."
+    },
+    {
       "id": "data",
       "urlKey": "d",
       "label": "Paste your table",
@@ -281,6 +586,44 @@
       "placeholder": "Quarter,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18",
       "help": "Copy cells straight from Excel, Google Sheets or Numbers and paste here — they come across as a clean table (no fiddling with commas). Or type/paste CSV or TSV. First row = column headers; the first text column becomes the labels and every numeric column a series. The chart rebuilds automatically.",
       "default": "Quarter,Coffee,Tea,Juice\nQ1,42,28,12\nQ2,49,35,18\nQ3,55,41,24\nQ4,63,52,33"
+    },
+    {
+      "id": "chartStyle",
+      "urlKey": "sty",
+      "label": "Style",
+      "type": "select",
+      "default": "brand-default",
+      "options": [
+        {
+          "value": "brand-default",
+          "label": "Brand — default"
+        },
+        {
+          "value": "editorial",
+          "label": "Editorial — quiet and direct"
+        },
+        {
+          "value": "technical",
+          "label": "Technical — precise and dense"
+        },
+        {
+          "value": "poster",
+          "label": "Poster — bold and minimal"
+        },
+        {
+          "value": "iso-vector",
+          "label": "Isometric — vector depth"
+        },
+        {
+          "value": "studio-3d",
+          "label": "Studio 3-D — brand materials"
+        },
+        {
+          "value": "glass-3d",
+          "label": "Glass 3-D — translucent"
+        }
+      ],
+      "help": "A curated presentation layer above the chart type. Styles inherit the active brand's typography, ordered colours, ramps, patterns and motion character. Controls you change explicitly always win. Studio and Glass affect the real 3-D chart types; Isometric keeps projected depth as editable vectors."
     },
     {
       "id": "palette",
@@ -338,9 +681,7 @@
       "default": "{color.semantic.primary}",
       "help": "The colour the palette extrapolates from — a spread of distinct hues for categorical charts, and light-to-dark ramps for sequential ones. Change it to re-key every colour off one hue.",
       "showIf": {
-        "palette": [
-          "seed"
-        ]
+        "palette": ["seed"]
       }
     },
     {
@@ -366,15 +707,7 @@
       ],
       "help": "How the sequential and diverging ramps blend between colours. Smooth is perceptually even; Vivid travels round the hue circle so the midtones keep their chroma; sRGB is the plain blend a CSS gradient uses.",
       "showIf": {
-        "palette": [
-          "pine",
-          "waterhole",
-          "warm",
-          "cool",
-          "diverging",
-          "mono",
-          "seed"
-        ]
+        "palette": ["pine", "waterhole", "warm", "cool", "diverging", "mono", "seed"]
       }
     },
     {
@@ -386,18 +719,8 @@
       "default": "{color.semantic.secondary}",
       "help": "Vivid travels from the palette’s base colour to this one, round the hue circle. In From-a-base-colour mode the Base colour is the start and this is the end.",
       "showIf": {
-        "paletteBlend": [
-          "vivid"
-        ],
-        "palette": [
-          "pine",
-          "waterhole",
-          "warm",
-          "cool",
-          "diverging",
-          "mono",
-          "seed"
-        ]
+        "paletteBlend": ["vivid"],
+        "palette": ["pine", "waterhole", "warm", "cool", "diverging", "mono", "seed"]
       }
     },
     {
@@ -419,18 +742,8 @@
       ],
       "help": "Which way round the colour wheel Vivid travels between the two colours — the short arc or the long one.",
       "showIf": {
-        "paletteBlend": [
-          "vivid"
-        ],
-        "palette": [
-          "pine",
-          "waterhole",
-          "warm",
-          "cool",
-          "diverging",
-          "mono",
-          "seed"
-        ]
+        "paletteBlend": ["vivid"],
+        "palette": ["pine", "waterhole", "warm", "cool", "diverging", "mono", "seed"]
       }
     },
     {
@@ -451,10 +764,7 @@
         }
       ],
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal"
-        ]
+        "chartType": ["bar", "bar-horizontal"]
       }
     },
     {
@@ -475,10 +785,7 @@
         }
       ],
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal"
-        ]
+        "chartType": ["bar", "bar-horizontal"]
       }
     },
     {
@@ -499,10 +806,7 @@
         }
       ],
       "showIf": {
-        "chartType": [
-          "pie",
-          "donut"
-        ]
+        "chartType": ["pie", "donut"]
       }
     },
     {
@@ -516,14 +820,197 @@
       "min": 0,
       "max": 160,
       "step": 1,
-      "help": "How far the 3-D bars or pie are extruded. 0 scales the depth to the chart.",
+      "help": "How far vector bars or pie slices are projected in the Isometric style. Real 3-D scenes use their own camera and material controls.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "pie",
-          "donut"
-        ]
+        "chartType": ["bar", "bar-horizontal", "pie", "donut"]
+      }
+    },
+    {
+      "id": "cameraProjection",
+      "urlKey": "cpr",
+      "label": "Camera",
+      "section": "3-D scene",
+      "type": "select",
+      "default": "perspective",
+      "options": [
+        {
+          "value": "perspective",
+          "label": "Perspective — spatial"
+        },
+        {
+          "value": "orthographic",
+          "label": "Orthographic — comparable"
+        }
+      ],
+      "help": "Orthographic keeps equally sized values equally sized at every depth; perspective gives a more cinematic scene.",
+      "showIf": {
+        "renderMode": "scene"
+      }
+    },
+    {
+      "id": "cameraAzimuth",
+      "urlKey": "caz",
+      "label": "Camera angle",
+      "section": "3-D scene",
+      "type": "number",
+      "display": "slider",
+      "default": 38,
+      "min": -180,
+      "max": 180,
+      "step": 1,
+      "showIf": {
+        "renderMode": "scene"
+      }
+    },
+    {
+      "id": "cameraElevation",
+      "urlKey": "cel",
+      "label": "Camera elevation",
+      "section": "3-D scene",
+      "type": "number",
+      "display": "slider",
+      "default": 24,
+      "min": 5,
+      "max": 80,
+      "step": 1,
+      "showIf": {
+        "renderMode": "scene"
+      }
+    },
+    {
+      "id": "flightSeries",
+      "urlKey": "cfs",
+      "label": "Camera follows",
+      "section": "Cinematic flight",
+      "type": "text",
+      "default": "",
+      "placeholder": "First series, or a name / number",
+      "help": "The series whose values drive the camera altitude. Leave blank for the first numeric series, enter its header, or use a 1-based series number.",
+      "showIf": {
+        "renderMode": "cinematic"
+      }
+    },
+    {
+      "id": "flightHeight",
+      "urlKey": "cfh",
+      "label": "Camera clearance",
+      "section": "Cinematic flight",
+      "type": "number",
+      "display": "slider",
+      "default": 0.85,
+      "min": 0.2,
+      "max": 3,
+      "step": 0.05,
+      "help": "Distance above the selected value path. Lower feels faster and more dramatic; higher preserves more context.",
+      "showIf": {
+        "renderMode": "cinematic"
+      }
+    },
+    {
+      "id": "flightLookAhead",
+      "urlKey": "cfla",
+      "label": "Look ahead",
+      "section": "Cinematic flight",
+      "type": "number",
+      "display": "slider",
+      "default": 1.5,
+      "min": 0.4,
+      "max": 5,
+      "step": 0.1,
+      "help": "How many category steps ahead the camera aims. Short values track peaks closely; longer values make the movement calmer.",
+      "showIf": {
+        "renderMode": "cinematic"
+      }
+    },
+    {
+      "id": "flightBank",
+      "urlKey": "cfb",
+      "label": "Bank with change",
+      "section": "Cinematic flight",
+      "type": "number",
+      "display": "slider",
+      "default": 10,
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "help": "Maximum camera roll in degrees. The local rise and fall in the chosen series controls the direction and amount.",
+      "showIf": {
+        "renderMode": "cinematic"
+      }
+    },
+    {
+      "id": "flightFov",
+      "urlKey": "cff",
+      "label": "Field of view",
+      "section": "Cinematic flight",
+      "type": "number",
+      "display": "slider",
+      "default": 54,
+      "min": 28,
+      "max": 82,
+      "step": 1,
+      "help": "Lens angle in degrees. A wider view feels faster; a narrower view compresses the scene and reads more analytically.",
+      "showIf": {
+        "renderMode": "cinematic"
+      }
+    },
+    {
+      "id": "sceneMaterial",
+      "urlKey": "mat",
+      "label": "Material",
+      "section": "3-D scene",
+      "type": "select",
+      "default": "matte",
+      "options": [
+        { "value": "accurate", "label": "Accurate colour — unlit" },
+        { "value": "matte", "label": "Matte" },
+        { "value": "gloss", "label": "Gloss" },
+        { "value": "glass", "label": "Glass" }
+      ],
+      "help": "Accurate colour keeps the scene closest to the brand swatches. Lit materials add depth; legends retain the exact semantic colours.",
+      "showIf": {
+        "renderMode": ["scene", "cinematic"]
+      }
+    },
+    {
+      "id": "sceneRoughness",
+      "urlKey": "rou",
+      "label": "Roughness",
+      "section": "3-D scene",
+      "type": "number",
+      "display": "slider",
+      "default": 0.58,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "showIf": {
+        "renderMode": ["scene", "cinematic"]
+      }
+    },
+    {
+      "id": "sceneMetalness",
+      "urlKey": "met",
+      "label": "Metalness",
+      "section": "3-D scene",
+      "type": "number",
+      "display": "slider",
+      "default": 0.04,
+      "min": 0,
+      "max": 1,
+      "step": 0.01,
+      "showIf": {
+        "renderMode": ["scene", "cinematic"]
+      }
+    },
+    {
+      "id": "sceneShadows",
+      "urlKey": "s3s",
+      "label": "Scene shadows",
+      "section": "3-D scene",
+      "type": "boolean",
+      "default": true,
+      "showIf": {
+        "renderMode": ["scene", "cinematic"]
       }
     },
     {
@@ -557,14 +1044,7 @@
       ],
       "help": "Lift marks off the background with a soft drop shadow — depth and better contrast between values — or a colour-matched glow for an on-screen dashboard look. SVG and PNG stay crisp; EMF/EPS keep a vector shadow; PDF rasterises the chart while a shadow is on.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "pie",
-          "donut",
-          "line",
-          "area"
-        ]
+        "chartType": ["bar", "bar-horizontal", "pie", "donut", "line", "area"]
       }
     },
     {
@@ -590,12 +1070,7 @@
       ],
       "help": "Add stripes, hatching and dots on top of colour so series stay distinct even with few brand hues — and in greyscale print or for colour-blind readers. Auto turns patterns on when the brand has a limited palette.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "pie",
-          "donut"
-        ]
+        "chartType": ["bar", "bar-horizontal", "pie", "donut"]
       }
     },
     {
@@ -774,17 +1249,27 @@
       "type": "text",
       "default": "",
       "placeholder": "e.g. Quarter, Year, Wave",
-      "help": "Name (or 1-based number) of a frame / time column — its distinct values (e.g. Q1, Q2, Q3) become animation keyframes. The chart morphs between them and loops. Export as looping APNG, MP4/WebM, or animated SVG. Works with bar, horizontal bar, line and area.",
+      "help": "Name (or 1-based number) of a frame / time column — its distinct values (e.g. Q1, Q2, Q3) become animation keyframes. Classic and Statistical charts interpolate the same typed data; 3-D scenes use their Motion control. Export to GIF/APNG/animated WebP or MP4/WebM for exact-clock motion; static SVG/PDF uses the complete poster.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "pie",
-          "donut",
-          "scatter"
-        ]
+        "renderMode": ["vector", "statistical"]
+      }
+    },
+    {
+      "id": "motionPreset",
+      "urlKey": "mp",
+      "label": "Motion",
+      "section": "Animation",
+      "type": "select",
+      "default": "none",
+      "options": [
+        { "value": "none", "label": "Still" },
+        { "value": "reveal", "label": "Reveal data" },
+        { "value": "orbit", "label": "Orbit camera" },
+        { "value": "reveal-orbit", "label": "Reveal + orbit" }
+      ],
+      "help": "Deterministic scene motion: preview, scrubbing and exported video all render from the same exact clock.",
+      "showIf": {
+        "renderMode": "scene"
       }
     },
     {
@@ -797,18 +1282,7 @@
       "min": 0.3,
       "max": 8,
       "step": 0.1,
-      "help": "How long each keyframe holds before morphing to the next. One full loop = frames × this. Set the export duration to a multiple for a seamless loop.",
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "pie",
-          "donut",
-          "scatter"
-        ]
-      }
+      "help": "How long each data frame or 3-D motion phase lasts. One full data loop = frames × this. Set the export duration to a multiple for a seamless loop."
     },
     {
       "id": "frameLabelShow",
@@ -819,15 +1293,7 @@
       "default": true,
       "help": "Show the current keyframe's name (e.g. the quarter) as a caption while the animation plays.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "pie",
-          "donut",
-          "scatter"
-        ]
+        "renderMode": ["vector", "statistical"]
       }
     },
     {
@@ -843,15 +1309,7 @@
       "step": 1,
       "help": "Font size (px) of the keyframe caption.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "pie",
-          "donut",
-          "scatter"
-        ]
+        "renderMode": ["vector", "statistical"]
       }
     },
     {
@@ -884,15 +1342,7 @@
         }
       ],
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "pie",
-          "donut",
-          "scatter"
-        ]
+        "renderMode": ["vector", "statistical"]
       }
     },
     {
@@ -904,15 +1354,7 @@
       "default": "",
       "help": "Blank = auto-contrast with the background.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "pie",
-          "donut",
-          "scatter"
-        ]
+        "renderMode": ["vector", "statistical"]
       }
     },
     {
@@ -941,15 +1383,7 @@
         }
       ],
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "pie",
-          "donut",
-          "scatter"
-        ]
+        "chartType": ["bar", "bar-horizontal", "line", "area", "pie", "donut", "scatter"]
       }
     },
     {
@@ -973,18 +1407,7 @@
           "label": "Steps (snap between frames)"
         }
       ],
-      "help": "How values move between keyframes: Smooth holds each frame then eases across; Linear morphs at a constant rate; Steps snaps instantly (no in-between).",
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "pie",
-          "donut",
-          "scatter"
-        ]
-      }
+      "help": "How values or scene motion progress: Smooth eases, Linear moves at a constant rate, and Steps snaps between data frames."
     },
     {
       "id": "animDirection",
@@ -1003,18 +1426,7 @@
           "label": "Bounce (play back in reverse)"
         }
       ],
-      "help": "Loop restarts from the first frame each cycle; Bounce plays forward then back for a seamless ping-pong.",
-      "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "pie",
-          "donut",
-          "scatter"
-        ]
-      }
+      "help": "Loop restarts from the first frame each cycle; Bounce plays forward then back for a seamless ping-pong."
     },
     {
       "id": "stackMode",
@@ -1038,11 +1450,7 @@
         }
       ],
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "area"
-        ]
+        "chartType": ["bar", "bar-horizontal", "area"]
       }
     },
     {
@@ -1095,10 +1503,7 @@
         }
       ],
       "showIf": {
-        "chartType": [
-          "line",
-          "area"
-        ]
+        "chartType": ["line", "area"]
       }
     },
     {
@@ -1109,10 +1514,7 @@
       "type": "boolean",
       "default": false,
       "showIf": {
-        "chartType": [
-          "line",
-          "area"
-        ]
+        "chartType": ["line", "area"]
       }
     },
     {
@@ -1127,15 +1529,7 @@
       "max": 48,
       "step": 1,
       "showIf": {
-        "chartType": [
-          "scatter",
-          "line",
-          "area",
-          "slope",
-          "bump",
-          "dumbbell",
-          "lollipop"
-        ]
+        "chartType": ["scatter", "line", "area", "slope", "bump", "dumbbell", "lollipop"]
       }
     },
     {
@@ -1196,14 +1590,7 @@
       "max": 100,
       "step": 1,
       "showIf": {
-        "chartType": [
-          "area",
-          "radar",
-          "scatter",
-          "stream",
-          "parallel",
-          "chord"
-        ]
+        "chartType": ["area", "radar", "scatter", "stream", "parallel", "chord"]
       }
     },
     {
@@ -1218,11 +1605,7 @@
       "max": 0.9,
       "step": 0.01,
       "showIf": {
-        "chartType": [
-          "donut",
-          "radial-bar",
-          "gauge"
-        ]
+        "chartType": ["donut", "radial-bar", "gauge"]
       }
     },
     {
@@ -1237,11 +1620,7 @@
       "max": 24,
       "step": 1,
       "showIf": {
-        "chartType": [
-          "pie",
-          "donut",
-          "radial-bar"
-        ]
+        "chartType": ["pie", "donut", "radial-bar"]
       }
     },
     {
@@ -1287,14 +1666,7 @@
       "step": 0.01,
       "help": "Gap between categories (each group of bars).",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "radial-bar",
-          "histogram",
-          "waterfall",
-          "lollipop"
-        ]
+        "chartType": ["bar", "bar-horizontal", "radial-bar", "histogram", "waterfall", "lollipop"]
       }
     },
     {
@@ -1310,10 +1682,7 @@
       "step": 0.01,
       "help": "Gap between the bars of different series WITHIN a group (grouped bars only).",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal"
-        ]
+        "chartType": ["bar", "bar-horizontal"]
       }
     },
     {
@@ -1397,12 +1766,7 @@
       ],
       "help": "How long category labels are fitted. Auto wraps them into the label column on horizontal bars, and angles or wraps them on vertical bars when they'd collide — instead of truncating them.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "lollipop",
-          "dumbbell"
-        ]
+        "chartType": ["bar", "bar-horizontal", "lollipop", "dumbbell"]
       }
     },
     {
@@ -1418,12 +1782,7 @@
       "step": 1,
       "help": "How much of the picture to hand to the category labels — the width of the label column on horizontal bars, or the height of the label strip on vertical bars. 0 fits automatically; raise it to give long labels more room (the bars take the rest).",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "lollipop",
-          "dumbbell"
-        ]
+        "chartType": ["bar", "bar-horizontal", "lollipop", "dumbbell"]
       }
     },
     {
@@ -1439,12 +1798,7 @@
       "step": 1,
       "help": "How many lines a wrapped category label may use before it's trimmed with an ellipsis.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "lollipop",
-          "dumbbell"
-        ]
+        "chartType": ["bar", "bar-horizontal", "lollipop", "dumbbell"]
       }
     },
     {
@@ -1460,10 +1814,7 @@
       "step": 1,
       "help": "Cap the thickness of each bar. 0 lets bars fill their slot; a value makes them thinner and centres them, freeing space for labels.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal"
-        ]
+        "chartType": ["bar", "bar-horizontal"]
       }
     },
     {
@@ -1742,10 +2093,7 @@
       ],
       "help": "When the label column holds dates (2024-01-15, Jan 2024, Q1 2024, a plain year…), plot them on a real time axis — proportional spacing that respects the actual gaps, with nice date ticks. Auto detects; off keeps evenly-spaced categories.",
       "showIf": {
-        "chartType": [
-          "line",
-          "area"
-        ]
+        "chartType": ["line", "area"]
       }
     },
     {
@@ -1810,11 +2158,7 @@
       ],
       "help": "Overlay a fitted trend line. Linear/quadratic/exponential/log/power are least-squares regressions (R² shown at the line's end); moving average smooths the series. Drawn dashed over each series (line/area) or the point cloud (scatter).",
       "showIf": {
-        "chartType": [
-          "line",
-          "area",
-          "scatter"
-        ]
+        "chartType": ["line", "area", "scatter"]
       }
     },
     {
@@ -1827,13 +2171,7 @@
       "placeholder": "e.g. Error, StdDev, or 4",
       "help": "Name (or 1-based number) of a column holding the ± error for each value — draws whiskers with end caps around every point/bar. The column is used for the error, not plotted as its own series. Leave blank for none.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area",
-          "scatter"
-        ]
+        "chartType": ["bar", "bar-horizontal", "line", "area", "scatter"]
       }
     },
     {
@@ -1896,12 +2234,7 @@
       "placeholder": "click a data label to annotate",
       "help": "Click a data label (or category label) on a bar or line chart to attach a directional arrow + a short note — for statistical significance, an event, a small-sample flag, or any callout. Set a text or fill colour and the other contrasts automatically. Advanced: a JSON map of label → {icon, text, colours}.",
       "showIf": {
-        "chartType": [
-          "bar",
-          "bar-horizontal",
-          "line",
-          "area"
-        ]
+        "chartType": ["bar", "bar-horizontal", "line", "area"]
       }
     },
     {

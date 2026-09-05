@@ -1,7 +1,7 @@
 {
   "name": "Chart",
-  "description": "D3 ile güçlü veri odaklı grafikler - bir tablo yapıştırın, kendini çizsin. Çubuklar, çizgiler, alanlar, dağılım, pasta, radar, ısı haritası, 3D çubuklar ve pastalar ile kelime bulutları. Paletler markanızın renklerinden türetilir, desenli dolgular ve tıkla-yeniden-renklendir ile - markanıza uygun ve vektör temiz.",
-  "featured.blurb": "Bir tablo yapıştır — D3 onu grafiğe dönüştürsün, markana uygun ve vektör netliğinde",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, data-driven cinematic flights, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}} grafiği{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Grafik türü",
   "inputs.chartType.options.bar": "Çubuk - dikey",

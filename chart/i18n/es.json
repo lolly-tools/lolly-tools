@@ -1,7 +1,7 @@
 {
   "name": "Gráfico",
-  "description": "Gráficos potentes basados en datos con D3 — pega una tabla y se grafica sola. Barras, líneas, áreas, dispersión, circular, radar, treemap, mapa de calor, barras y circulares en 3D y nubes de palabras. Las paletas derivan de los colores de tu marca, con rellenos de patrón y clic para recolorear - fieles a la marca y nítidos en vectorial.",
-  "featured.blurb": "Pega una tabla y D3 la grafica, con estilo de marca y en vector nítido",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "gráfico {{chartType}}{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Tipo de gráfico",
   "inputs.chartType.options.bar": "Barras - vertical",

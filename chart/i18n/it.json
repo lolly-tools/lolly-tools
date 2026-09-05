@@ -1,7 +1,7 @@
 {
   "name": "Grafico",
-  "description": "Grafici potenti basati sui dati con D3 - incolla una tabella e si crea da sola. Barre, linee, aree, dispersione, torta, radar, treemap, heatmap, barre e torte 3D e nuvole di parole. Le palette derivano dai colori del tuo brand, con riempimenti a pattern e ricolorazione con un clic - fedeli al brand e nitidi in vettoriale.",
-  "featured.blurb": "Incolla una tabella — D3 crea il grafico, coerente col brand e vettoriale",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "grafico {{chartType}}{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Tipo di grafico",
   "inputs.chartType.options.bar": "Barre - verticale",

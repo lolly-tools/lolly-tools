@@ -1,8 +1,8 @@
 {
   "name": "Діаграма",
-  "description": "Потужні дата-орієнтовані діаграми на D3 - вставте таблицю, і вона побудує себе сама. Стовпчики, лінії, області, точкові, кругові, радарні, деревовидні карти, теплові карти, 3-D стовпчики й кругові діаграми та хмари слів. Палітри походять із кольорів вашого бренду, з візерунковими заливками й перефарбуванням одним кліком - на бренді й векторно чисто.",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, data-driven cinematic flights, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
   "a11yLabel": "{{chartType}} діаграма{{#if heading}} - {{heading}}{{/if}}",
-  "featured.blurb": "Вставте таблицю — D3 побудує діаграму, фірмово і чисто векторно",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "inputs.chartType.label": "Тип діаграми",
   "inputs.chartType.options.bar": "Стовпчикова - вертикальна",
   "inputs.chartType.options.bar-horizontal": "Стовпчикова - горизонтальна",

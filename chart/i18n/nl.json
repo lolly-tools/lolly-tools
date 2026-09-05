@@ -1,7 +1,7 @@
 {
   "name": "Grafiek",
-  "description": "Krachtige datagestuurde grafieken met D3 — plak een tabel en hij tekent zichzelf. Staven, lijnen, vlakken, spreiding, taart, radar, boomkaart, heatmap, 3D-staven en -taarten en woordwolken. Paletten komen voort uit je merkkleuren, met patroonvullingen en klikken om te herkleuren - on-brand en vector-scherp.",
-  "featured.blurb": "Plak een tabel — D3 maakt de grafiek, in je huisstijl en messcherp als vector",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}}-grafiek{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Grafiektype",
   "inputs.chartType.options.bar": "Staaf - verticaal",

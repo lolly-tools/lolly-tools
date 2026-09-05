@@ -1,7 +1,7 @@
 {
   "name": "چارٹ",
-  "description": "D3 کے ساتھ طاقتور ڈیٹا سے چلنے والے چارٹس — ایک ٹیبل پیسٹ کریں اور یہ خود چارٹ بن جاتا ہے۔ بارز، لائنز، ایریاز، اسکیٹر، پائی، ریڈار، ٹری میپ، ہیٹ میپ، 3-D بارز اور پائیز اور ورڈ کلاؤڈز۔ پیلٹس آپ کے برانڈ کے رنگوں سے اخذ ہوتے ہیں، پیٹرن فلز اور کلک ٹو ری کلر کے ساتھ — آن برانڈ اور ویکٹر کلین۔",
-  "featured.blurb": "ایک ٹیبل پیسٹ کریں — D3 اسے چارٹ کرتا ہے، برانڈ کے مطابق اور ویکٹر لحاظ سے صاف",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}} چارٹ{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "چارٹ کی قسم",
   "inputs.chartType.options.bar": "بار - عمودی",

@@ -1,7 +1,7 @@
 {
   "name": "Grafik",
-  "description": "Grafik berbasis data yang tangguh dengan D3 - tempel tabel dan grafik terbentuk sendiri. Bar, garis, area, sebar, pai, radar, treemap, heatmap, bar & pai 3D dan word cloud. Palet diturunkan dari warna brand Anda, dengan isian pola dan klik-untuk-ubah-warna - sesuai brand dan bersih secara vektor.",
-  "featured.blurb": "Tempel tabel — D3 membuat grafiknya, sesuai brand dan bersih secara vektor",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "Grafik {{chartType}}{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Jenis grafik",
   "inputs.chartType.options.bar": "Batang - vertikal",

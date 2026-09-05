@@ -1,7 +1,7 @@
 {
   "name": "Biểu đồ",
-  "description": "Biểu đồ mạnh mẽ dựa trên dữ liệu với D3 - dán một bảng và nó tự vẽ biểu đồ. Cột, đường, vùng, phân tán, tròn, radar, treemap, heatmap, cột & tròn 3D và đám mây từ. Bảng màu lấy từ màu thương hiệu của bạn, với hình mẫu tô và bấm để đổi màu - đúng thương hiệu và sắc nét dạng vector.",
-  "featured.blurb": "Dán một bảng vào — D3 tự vẽ biểu đồ, đúng chuẩn thương hiệu và sạch đẹp dạng vector",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}} biểu đồ{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Loại biểu đồ",
   "inputs.chartType.options.bar": "Cột - dọc",

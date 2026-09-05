@@ -1,8 +1,8 @@
 {
   "name": "Wykres",
-  "description": "Zaawansowane wykresy oparte na danych z D3 - wklej tabelę, a wykres powstanie sam. Słupki, linie, obszary, punkty, koło, radar, mapa drzewa, mapa cieplna, słupki i koła 3D oraz chmury słów. Palety pochodzą z kolorów Twojej marki, z wypełnieniami wzorami i przekolorowaniem jednym kliknięciem - zgodnie z marką i czysto wektorowo.",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, data-driven cinematic flights, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
   "a11yLabel": "Wykres {{chartType}}{{#if heading}} - {{heading}}{{/if}}",
-  "featured.blurb": "Wklej tabelę — D3 utworzy wykres, w barwach marki i w czystej wektorowej jakości",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "inputs.chartType.label": "Typ wykresu",
   "inputs.chartType.options.bar": "Słupkowy - pionowy",
   "inputs.chartType.options.bar-horizontal": "Słupkowy - poziomy",

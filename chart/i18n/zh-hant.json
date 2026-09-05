@@ -1,7 +1,7 @@
 {
   "name": "圖表",
-  "description": "以 D3 打造強大的資料驅動圖表 - 貼上表格即自動成圖。長條圖、折線圖、面積圖、散佈圖、圓餅圖、雷達圖、樹狀圖、熱力圖、3D 長條圖與圓餅圖以及文字雲。配色取自您的品牌色，支援圖樣填色與點選變色 - 符合品牌調性且向量清晰。",
-  "featured.blurb": "貼上表格，D3 自動產生符合品牌規範的向量圖表",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}} 圖表{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "圖表類型",
   "inputs.chartType.options.bar": "長條圖 - 垂直",

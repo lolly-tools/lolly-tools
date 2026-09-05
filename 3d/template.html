@@ -7,7 +7,7 @@
   /* Idempotent per-paint IIFE - the template re-runs on EVERY paint (see the
      'Template script IIFE required' invariant). An epoch guard drops stale async
      callbacks from a prior paint; the previous renderer is disposed so we never
-     leak WebGL contexts (browsers cap ~16). Mirrors tools/chart/template.html. */
+     leak GPU devices or WebGL contexts (browsers cap ~16). Mirrors tools/chart/template.html. */
   window.__lolly3dEpoch = (window.__lolly3dEpoch || 0) + 1;
   var EP = window.__lolly3dEpoch;
   function alive() { return window.__lolly3dEpoch === EP; }
@@ -54,9 +54,11 @@
 
   loadThree().then(function (THREE) {
     if (!alive()) return;
-    if (!THREE || !THREE.WebGLRenderer) { message('3D library failed to load.'); fireReady(); return; }
-    try { start(THREE); }
-    catch (err) { console.error('[3d] init error:', err); message(String(err && err.message || err)); fireReady(); }
+    if (!THREE || !THREE.WebGPURenderer) { message('3D library failed to load.'); fireReady(); return; }
+    start(THREE).catch(function (err) {
+      if (!alive()) return;
+      console.error('[3d] init error:', err); message(String(err && err.message || err)); fireReady();
+    });
   }).catch(function (e) { console.error('[3d]', e); message('3D library failed to load.'); fireReady(); });
 
   // ---- easing + progress helpers -------------------------------------------
@@ -66,13 +68,60 @@
   function lerp(a, b, t) { return a + (b - a) * t; }
   function d2r(d) { return d * Math.PI / 180; }
 
+  // ---- GPU backend ----------------------------------------------------------
+  // One renderer, two backends: WebGPU where the browser hands out an adapter,
+  // else the same renderer's WebGL 2 backend. The probe is a rung on the
+  // capability ladder - a browser that ships WebGPU later upgrades this tool with
+  // no change here, and nothing downstream can tell which backend painted.
+  function probeWebGPU() {
+    try {
+      if (!navigator.gpu || typeof navigator.gpu.requestAdapter !== 'function') return Promise.resolve(false);
+      return navigator.gpu.requestAdapter().then(function (a) { return !!a; }, function () { return false; });
+    } catch (e) { return Promise.resolve(false); }
+  }
+  function createRenderer(THREE, target, forceWebGL) {
+    var r = new THREE.WebGPURenderer({ canvas: target, antialias: true, alpha: true, forceWebGL: forceWebGL });
+    return r.init().then(function () { return r; });
+  }
+
   function start(THREE) {
     var W = cfg.width, H = cfg.height;
 
-    // Renderer - preserveDrawingBuffer:true is LOAD-BEARING: the export path reads
-    // the canvas via toDataURL() after the frame composites, so without it every
-    // raster/video export comes out blank. alpha:true supports transparentBg.
-    var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true, preserveDrawingBuffer: true });
+    // The visible <canvas> is a plain 2D surface. The GPU renders into a detached
+    // scratch canvas and every frame is drawn onto this one (present() below), so
+    // each export reader - dom-to-image, the SVG walker, the frame-clock fast path,
+    // captureStream - reads a 2D canvas that always holds the last frame. That is
+    // what makes WebGPU exportable: a WebGPU canvas is cleared once its frame is
+    // presented and has no preserveDrawingBuffer, so reading it later gives blank
+    // pixels. A drawImage in the same task as the render reads the frame before
+    // that happens, and the WebGL 2 backend needs no preserveDrawingBuffer either.
+    canvas.width = W; canvas.height = H;
+    var ctx2d = canvas.getContext('2d');
+    if (!ctx2d) throw new Error('2D canvas unavailable');
+    var gpuCanvas = document.createElement('canvas');
+    gpuCanvas.width = W; gpuCanvas.height = H;
+
+    return probeWebGPU().then(function (hasWebGPU) {
+      if (!alive()) return null;
+      return createRenderer(THREE, gpuCanvas, !hasWebGPU).catch(function (err) {
+        if (!hasWebGPU) throw err;
+        // An adapter that exists but gives no device (lost, blocklisted, out of
+        // memory): fall back rather than fail. A fresh scratch canvas, since the
+        // failed attempt may have claimed the first one's context.
+        console.warn('[3d] WebGPU init failed, using WebGL 2:', err && err.message || err);
+        gpuCanvas = document.createElement('canvas'); gpuCanvas.width = W; gpuCanvas.height = H;
+        return createRenderer(THREE, gpuCanvas, true);
+      });
+    }).then(function (renderer) {
+      if (!renderer) return;
+      if (!alive()) { try { renderer.dispose(); } catch (e) {} return; }
+      scene3d(THREE, renderer, gpuCanvas, ctx2d, W, H);
+    });
+  }
+
+  function scene3d(THREE, renderer, gpuCanvas, ctx2d, W, H) {
+    // Inspectable and testable: which backend painted this paint.
+    canvas.setAttribute('data-backend', renderer.backend && renderer.backend.isWebGPUBackend ? 'webgpu' : 'webgl2');
     renderer.setPixelRatio(1);            // backing store == export resolution, deterministic
     renderer.setSize(W, H, false);
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
@@ -167,9 +216,17 @@
         if (clip) mixer.clipAction(clip).play();
       }
 
-      renderFrame(0);        // one SYNC frame now - headless/hidden-tab rAF may never fire
-      fireReady();
-      if (!disposed) loop();
+      // Build the pipelines first (WebGPU compiles one per material, and a sync
+      // compile inside the first frame stalls the page), then one SYNC frame -
+      // headless/hidden-tab rAF may never fire - and the ready signal.
+      renderer.compileAsync(scene, camera).catch(function (e) {
+        console.warn('[3d] pipeline compile:', e && e.message || e);
+      }).then(function () {
+        if (!alive() || disposed) return;
+        renderFrame(0);
+        fireReady();
+        if (!disposed) loop();
+      });
     }, undefined, function (err) {
       console.error('[3d] model load failed:', err);
       message('Could not load the model.'); fireReady();
@@ -204,6 +261,10 @@
       return { azi: azi, elev: elev, zoom: Math.max(0.1, zoom), pan: pan, fov: fov };
     }
 
+    // Blit the finished GPU frame onto the visible 2D canvas - same task as the
+    // render, before the GPU canvas presents and clears.
+    function present() { ctx2d.clearRect(0, 0, W, H); ctx2d.drawImage(gpuCanvas, 0, 0); }
+
     function renderFrame(t) {
       var q = poseAt(t);
       var target = new THREE.Vector3(q.pan * frame.size * 0.5, frame.center.y, 0);
@@ -217,6 +278,7 @@
       camera.lookAt(target);
       if (camera.fov !== q.fov) { camera.fov = q.fov; camera.updateProjectionMatrix(); }
       renderer.render(scene, camera);
+      present();
     }
 
     var resumeAfterDrive = false;
@@ -362,8 +424,9 @@
         if (raf) cancelAnimationFrame(raf);
         try { if (mixer) mixer.stopAllAction(); } catch (e) {}
         try { pmrem.dispose(); } catch (e) {}
+        // dispose() destroys the GPUDevice it requested (WebGPU) or loses the WebGL
+        // context, so repeated paints never accumulate devices or contexts.
         try { renderer.dispose(); } catch (e) {}
-        try { renderer.forceContextLoss(); } catch (e) {}
       }
     };
   }

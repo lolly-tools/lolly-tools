@@ -1,7 +1,7 @@
 {
   "name": "المخطط",
-  "description": "رسوم بيانية قوية مدفوعة بالبيانات مع D3 - الصق جدولاً وسيرسم نفسه. أعمدة، خطوط، مساحات، تشتت، دائرية، رادار، خريطة شجرية، خريطة حرارية، أعمدة ودوائر ثلاثية الأبعاد وسحب كلمات. تُستمد لوحات الألوان من ألوان علامتك التجارية، مع تعبئات نقشية وإعادة تلوين بنقرة - متوافقة مع العلامة التجارية ونظيفة كمتجهات.",
-  "featured.blurb": "الصق جدولا — يرسمه D3 بهوية علامتك وبنقاء متجهي",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "مخطط {{chartType}}{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "نوع المخطط",
   "inputs.chartType.options.bar": "أعمدة - رأسية",

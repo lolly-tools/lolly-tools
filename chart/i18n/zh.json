@@ -1,8 +1,8 @@
 {
   "name": "图表",
-  "description": "由 D3 驱动的强大数据图表 - 粘贴一张表格即可自动成图。柱状图、折线图、面积图、散点图、饼图、雷达图、树状图、热力图、3D 柱状图与饼图,以及词云。配色源自你的品牌色,支持图案填充与点击换色 - 贴合品牌且矢量清晰。",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
   "a11yLabel": "{{chartType}} 图表{{#if heading}} - {{heading}}{{/if}}",
-  "featured.blurb": "粘贴表格，D3 自动生成符合品牌规范的矢量图表",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "inputs.chartType.label": "图表类型",
   "inputs.chartType.options.bar": "柱状图（竖向）",
   "inputs.chartType.options.bar-horizontal": "条形图（横向）",

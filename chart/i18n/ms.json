@@ -1,7 +1,7 @@
 {
   "name": "Carta",
-  "description": "Carta berkuasa dipacu data dengan D3 — tampal jadual dan ia mencarta sendiri. Bar, garis, kawasan, serakan, pai, radar, treemap, peta haba, bar & pai 3-D dan awan kata. Palet berasal daripada warna jenama anda, dengan isian corak dan klik-untuk-warna semula - sesuai jenama dan bersih vektor.",
-  "featured.blurb": "Tampal jadual — D3 terus menjadikannya carta, berjenama dan kemas dalam bentuk vektor",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "Carta {{chartType}}{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Jenis carta",
   "inputs.chartType.options.bar": "Bar - menegak",

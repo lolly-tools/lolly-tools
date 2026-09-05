@@ -1,7 +1,7 @@
 {
   "name": "チャート",
-  "description": "D3による強力なデータドリブンチャート - 表を貼り付けるだけで自動生成。棒、線、面、散布図、円、レーダー、ツリーマップ、ヒートマップ、3D棒・円グラフ、ワードクラウドに対応。パレットはブランドカラーから派生し、パターン塗りとクリックでの色変更も可能 - オンブランドかつベクターできれいに仕上がります。",
-  "featured.blurb": "表を貼り付けるだけで、D3がブランドに合わせたベクター品質のチャートを作成します。",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}} チャート{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "チャートの種類",
   "inputs.chartType.options.bar": "棒グラフ - 縦",

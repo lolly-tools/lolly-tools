@@ -1,7 +1,7 @@
 {
   "name": "Diagram",
-  "description": "Kraftfulla datadrivna diagram med D3 - klistra in en tabell så diagrammar den sig själv. Staplar, linjer, ytor, spridning, cirkel, radar, träddiagram, värmekarta, 3D-staplar & -cirklar och ordmoln. Paletter härleds från ditt varumärkes färger, med mönsterfyllningar och klick-för-att-omfärga - varumärkesanpassat och vektorrent.",
-  "featured.blurb": "Klistra in en tabell – D3 diagramför den, varumärkesanpassat och vektorrent",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}}-diagram{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Diagramtyp",
   "inputs.chartType.options.bar": "Stapel - vertikal",

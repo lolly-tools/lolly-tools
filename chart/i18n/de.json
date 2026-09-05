@@ -1,7 +1,7 @@
 {
   "name": "Diagramm",
-  "description": "Leistungsstarke datengetriebene Diagramme mit D3 - eine Tabelle einfügen, und sie zeichnet sich selbst. Balken, Linien, Flächen, Streudiagramme, Kreise, Radar, Treemap, Heatmap, 3D-Balken & -Kreise und Wortwolken. Paletten leiten sich aus Ihren Markenfarben ab, mit Musterfüllungen und Umfärben per Klick - markenkonform und vektorsauber.",
-  "featured.blurb": "Tabelle einfügen — D3 erstellt das Diagramm, markenkonform und vektorsauber",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}} Diagramm{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Diagrammtyp",
   "inputs.chartType.options.bar": "Balken - vertikal",

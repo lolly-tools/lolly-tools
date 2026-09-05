@@ -1,15 +1,12 @@
 /**
- * D3 Chart Studio - hooks.
+ * Chart Studio - renderer-neutral hooks.
  *
- * The chart itself is drawn by D3 in the template <script> (it needs the DOM and
- * d3, which the sandboxed hook context has neither of). The hook's ONLY job is
- * pure, DOM-free data work: parse the user's pasted table into a normalised chart
- * model, fold every input into one config object, and hand both to the template
- * as a single JSON `_state` extra. Because it is a `_`-prefixed extra (not a
- * declared input id) the engine's annotateTemplate leaves it untouched, so it is
- * safe to read inside <script>. Same split as street-map / meeting-planner.
+ * The hook stays DOM-free: it parses pasted data, compiles every input into a
+ * portable ChartSpecV1 document, and hands renderer state to the template as a
+ * `_state` extra. D3 renders the SVG path, Three renders real-z scenes, and the
+ * same spec drives deterministic vector fallbacks and accessibility metadata.
  *
- * One model shape feeds all 13 chart types:
+ * One model shape feeds every chart type:
  *   categories   - labels down column 0 (the x-axis / slice / row labels)
  *   series       - every OTHER numeric column, aligned to categories
  *   numericCols  - every numeric column in order (scatter x/y/size)
@@ -318,7 +315,51 @@ function normLegendPos(v) {
   return LEGEND_POS.has(v) ? v : 'bc';
 }
 
-function buildConfig(inp) {
+const STYLE_PRESETS = {
+  'brand-default': {},
+  editorial: {
+    showGrid: false, showAxes: true, shadow: 'none', cornerRadius: 0,
+    lineWidth: 2, titleSize: 40, titleWeight: 650, labelSize: 20,
+    legendPosition: 'bc', legendGap: 30,
+  },
+  technical: {
+    showGrid: true, showAxes: true, shadow: 'none', cornerRadius: 0,
+    lineWidth: 2, titleSize: 30, titleWeight: 650, labelSize: 17,
+    tickCount: 7, legendMono: true, differentiate: 'both',
+  },
+  poster: {
+    showGrid: false, showAxes: false, showValues: true, shadow: 'soft',
+    cornerRadius: 12, lineWidth: 6, pointSize: 16, titleSize: 50,
+    titleWeight: 800, labelSize: 27, legendGap: 34, barPadding: 0.28,
+  },
+  'iso-vector': {
+    shadow: 'none', depth3d: 44, cornerRadius: 2,
+  },
+  'studio-3d': {
+    sceneMaterial: 'matte', sceneRoughness: 0.58, sceneMetalness: 0.04,
+    sceneShadows: true,
+  },
+  'glass-3d': {
+    sceneMaterial: 'glass', sceneRoughness: 0.12, sceneMetalness: 0.06,
+    sceneShadows: true,
+  },
+};
+
+// A style supplies defaults, never a destructive macro. Any control the user
+// actually changed (`isDirty`) wins; switching style can therefore never erase
+// deliberate axis, label, palette or motion choices. Brand governance still
+// resolves above both through the theme compiler below.
+function applyStyleDefaults(cfg, dirty) {
+  const preset = STYLE_PRESETS[cfg.chartStyle] || STYLE_PRESETS['brand-default'];
+  for (const [key, value] of Object.entries(preset)) if (!dirty[key]) cfg[key] = value;
+  if (cfg.chartStyle === 'iso-vector') {
+    if (!dirty.barStyle && (cfg.chartType === 'bar' || cfg.chartType === 'bar-horizontal')) cfg.barStyle = 'iso3d';
+    if (!dirty.pieStyle && (cfg.chartType === 'pie' || cfg.chartType === 'donut')) cfg.pieStyle = 'iso3d';
+  }
+  return cfg;
+}
+
+function buildConfig(inp, dirty) {
   const W = clamp(Math.round(num(inp.width, 1280)), 100, 8000);
   const H = clamp(Math.round(num(inp.height, 800)), 100, 8000);
   const transparent = inp.transparentBg === true || inp.transparentBg === 'true';
@@ -331,8 +372,9 @@ function buildConfig(inp) {
   const paletteSlots = ['palette1', 'palette2', 'palette3', 'palette4', 'palette5', 'palette6']
     .map((k) => (isHex(inp[k]) ? inp[k].trim().toLowerCase() : null));
 
-  return {
+  const cfg = {
     chartType:      String(inp.chartType || 'bar'),
+    chartStyle:     String(inp.chartStyle || 'brand-default'),
     stackMode:      String(inp.stackMode || 'grouped'),
     curve:          String(inp.curve || 'monotone'),
     showPoints:     inp.showPoints === true || inp.showPoints === 'true',
@@ -367,6 +409,26 @@ function buildConfig(inp) {
     frameLabelPos:  String(inp.frameLabelPos || 'tr'),      // tl / tr / bl / br
     animEase:       String(inp.animEase || 'smooth'),      // smooth / linear / steps
     animDirection:  String(inp.animDirection || 'loop'),   // loop / bounce (ping-pong)
+    motionPreset:   String(inp.motionPreset || 'none'),    // real 3-D reveal/orbit clock
+    cameraProjection: String(inp.cameraProjection || 'perspective'),
+    cameraAzimuth:  clamp(num(inp.cameraAzimuth, 38), -180, 180),
+    cameraElevation: clamp(num(inp.cameraElevation, 24), 5, 80),
+    flightSeries:   String(inp.flightSeries || ''),
+    flightHeight:   clamp(num(inp.flightHeight, 0.85), 0.2, 3),
+    flightLookAhead: clamp(num(inp.flightLookAhead, 1.5), 0.4, 5),
+    flightBank:     clamp(num(inp.flightBank, 10), 0, 30),
+    flightFov:      clamp(num(inp.flightFov, 54), 28, 82),
+    sceneMaterial:  String(inp.sceneMaterial || 'matte'),
+    sceneRoughness: clamp(num(inp.sceneRoughness, 0.58), 0, 1),
+    sceneMetalness: clamp(num(inp.sceneMetalness, 0.04), 0, 1),
+    sceneShadows:   inp.sceneShadows !== false && inp.sceneShadows !== 'false',
+    plotBins:       clamp(Math.round(num(inp.plotBins, 20)), 6, 60),
+    plotBinWidth:   clamp(num(inp.plotBinWidth, 24), 6, 64),
+    plotBandwidth:  clamp(num(inp.plotBandwidth, 20), 4, 80),
+    plotShowRaw:    inp.plotShowRaw !== false && inp.plotShowRaw !== 'false',
+    plotConfidenceBand: inp.plotConfidenceBand !== false && inp.plotConfidenceBand !== 'false',
+    plotFacetDirection: String(inp.plotFacetDirection || 'rows'),
+    plotMotionPreset: String(inp.plotMotionPreset || 'none'),
     timeAxis:       String(inp.timeAxis || 'auto'),        // auto / on / off - parse the label column as dates
     yScaleType:     String(inp.yScaleType || 'linear'),
     yZero:          inp.yZero !== false && inp.yZero !== 'false',
@@ -421,6 +483,7 @@ function buildConfig(inp) {
     width:          W,
     height:         H,
   };
+  return applyStyleDefaults(cfg, dirty || {});
 }
 
 // ── assemble ─────────────────────────────────────────────────────────────────
@@ -463,10 +526,11 @@ async function resolveBrandColors() {
     // resolvable colour to hex (blank/mono brands write oklch() semantic values).
     const toHex = (x) => x ? (normHex(x) || (c.mix ? normHex(c.mix(x, x, 0)) : null)) : null;
     const chroma = (col) => { try { const o = c.oklch && c.oklch(col); return o ? o.c : 0; } catch (e) { return 0; } };
-    async function sem(name) {
-      try { const v = await host.tokens.resolve('{color.semantic.' + name + '}'); return (typeof v === 'string' && v) ? v : null; }
+    async function token(path) {
+      try { const v = await host.tokens.resolve('{' + path + '}'); return (typeof v === 'string' && v) ? v : null; }
       catch (e) { return null; }
     }
+    async function sem(name) { return token('color.semantic.' + name); }
 
     // ── categorical spectrum (as before; .value is already resolved hex) ────
     const spectrum = [], seen = new Set();
@@ -480,7 +544,15 @@ async function resolveBrandColors() {
     const primary = await sem('primary');
     const surface = (await sem('surface')) || '#ffffff';
     const text    = (await sem('text')) || '#111111';
+    const muted   = (await sem('muted')) || text;
+    const edge    = (await sem('edge')) || muted;
+    const onPrimary = (await sem('on-primary')) || surface;
     let secondary = await sem('secondary');
+    const fontBrand = await token('font.brand');
+    const fontDisplay = (await token('font.display')) || fontBrand;
+    const fontMono = await token('font.mono');
+    let active = null;
+    try { if (host.tokens.active) active = await host.tokens.active(); } catch (e) { active = null; }
     if (spectrum.length >= 4 && c.distinct && c.deltaE && spectrum.length < 10) {
       const anchor = toHex(primary);
       for (const g of c.distinct(20, anchor ? { anchorHex: anchor } : {})) {
@@ -577,6 +649,14 @@ async function resolveBrandColors() {
       monochrome: spectrum.length < 4,
       primary: primaryHex, secondary: secondaryHex,
       surface: surfaceHex, text: textHex,
+      muted: toHex(muted) || textHex,
+      edge: toHex(edge) || toHex(muted) || textHex,
+      onPrimary: toHex(onPrimary) || surfaceHex,
+      font: { brand: fontBrand || null, display: fontDisplay || null, mono: fontMono || null },
+      source: active ? {
+        id: String(active.id || ''), label: String(active.label || active.id || ''),
+        locked: !!active.locked, headId: active.headId ? String(active.headId) : null,
+      } : null,
     };
   } catch (e) {
     return null; // tokens/host unavailable (older shell) - shipped palette
@@ -624,6 +704,665 @@ function seedPalette(seedHex) {
   }
 }
 
+// ── renderer-neutral chart document + resolved brand theme ─────────────────
+
+const SCENE_TYPES = ['bar3d', 'scatter3d', 'surface3d'];
+const CINEMATIC_TYPES = ['flythrough3d', 'ribbon3d', 'constellation3d'];
+const REAL_3D_TYPES = SCENE_TYPES.concat(CINEMATIC_TYPES);
+const PLOT_TYPES = [
+  'dot-strip', 'interval', 'range-band', 'difference-area', 'indexed-change',
+  'box-observations', 'rug-histogram', 'distribution-facets', 'density-ridges', 'ecdf',
+  'small-multiples', 'control-band', 'hexbin', 'density-contour', 'regression',
+  'candlestick',
+];
+const SCENE_TO_VECTOR = {
+  bar3d: 'bar', scatter3d: 'scatter', surface3d: 'heatmap',
+  flythrough3d: 'line', ribbon3d: 'area', constellation3d: 'scatter',
+};
+
+// Renderer mode is an authoring choice, not a second copy of the document. Keep
+// one parked type choice for each renderer family: switching mode therefore
+// leaves the pasted table and every shared input untouched, while switching back
+// restores the exact 2-D/3-D family the user had chosen there. `chartType` used
+// to carry the real-3D values directly (<= 1.19); legacyModePatch migrates those
+// saved URLs/sessions into the split controls without losing their meaning.
+function legacyModePatch(model) {
+  const inp = Object.fromEntries(model.map((i) => [i.id, i.value]));
+  const oldType = String(inp.chartType || 'bar');
+  if (REAL_3D_TYPES.indexOf(oldType) < 0) return {};
+  if (CINEMATIC_TYPES.indexOf(oldType) >= 0) return {
+    renderMode: 'cinematic', cinematicType: oldType,
+    chartType: SCENE_TO_VECTOR[oldType] || 'line',
+  };
+  return {
+    renderMode: 'scene',
+    sceneType: oldType,
+    chartType: SCENE_TO_VECTOR[oldType] || 'bar',
+  };
+}
+
+function effectiveChartInputs(inp) {
+  const mode = inp.renderMode === 'cinematic' ? 'cinematic'
+    : inp.renderMode === 'scene' ? 'scene' : inp.renderMode === 'statistical' ? 'statistical' : 'vector';
+  const vectorType = REAL_3D_TYPES.indexOf(String(inp.chartType || 'bar')) >= 0
+    ? (SCENE_TO_VECTOR[inp.chartType] || 'bar') : String(inp.chartType || 'bar');
+  const sceneType = SCENE_TYPES.indexOf(String(inp.sceneType || 'bar3d')) >= 0
+    ? String(inp.sceneType) : 'bar3d';
+  const cinematicType = CINEMATIC_TYPES.indexOf(String(inp.cinematicType || 'flythrough3d')) >= 0
+    ? String(inp.cinematicType) : 'flythrough3d';
+  const plotType = PLOT_TYPES.indexOf(String(inp.plotType || 'dot-strip')) >= 0
+    ? String(inp.plotType) : 'dot-strip';
+  return { mode, vectorType, sceneType, cinematicType, plotType,
+    effectiveType: mode === 'cinematic' ? cinematicType : mode === 'scene' ? sceneType : mode === 'statistical' ? plotType : vectorType };
+}
+
+function chartThemeFromBrand(cfg) {
+  const fallback = ['#008657','#2453ff','#fe7c3f','#5d4f99','#00bda7','#bd3314','#3c8eef','#192072'];
+  const seeded = cfg.seedPalette && cfg.seedPalette.categorical;
+  const authored = (BRAND && BRAND.ordered) || (BRAND && BRAND.spectrum) || null;
+  const categorical = (seeded || authored || fallback).slice(0, 16);
+  const ramps = (cfg.seedPalette && cfg.seedPalette.ramps) || (BRAND && BRAND.ramps) || null;
+  const sequential = (ramps && (ramps[cfg.palette] || ramps.suse || ramps.pine)) || categorical.slice(0, 7);
+  const diverging = (ramps && ramps.diverging) || categorical.slice(0, 7);
+  const source = BRAND && BRAND.source;
+  const sparse = !(BRAND && BRAND.ramps && BRAND.spectrum && BRAND.spectrum.length >= 4);
+  return {
+    id: ((source && source.id) || 'lolly') + ':' + cfg.chartStyle,
+    source: source ? (sparse ? 'brand-derived' : 'brand-profile') : 'lolly-fallback',
+    sourceId: (source && source.id) || undefined,
+    sourceLabel: (source && source.label) || undefined,
+    locked: !!(source && source.locked),
+    font: {
+      brand: (BRAND && BRAND.font && BRAND.font.brand) || undefined,
+      display: (BRAND && BRAND.font && BRAND.font.display) || undefined,
+      mono: (BRAND && BRAND.font && BRAND.font.mono) || undefined,
+    },
+    colours: {
+      surface: cfg.background,
+      ink: isHex(cfg.textColor) ? cfg.textColor : ((BRAND && BRAND.text) || '#111111'),
+      muted: (BRAND && BRAND.muted) || ((BRAND && BRAND.text) || '#555555'),
+      edge: (BRAND && BRAND.edge) || ((BRAND && BRAND.muted) || '#d4d4d4'),
+      primary: (BRAND && BRAND.primary) || categorical[0],
+      secondary: (BRAND && BRAND.secondary) || categorical[1] || categorical[0],
+      categorical: categorical,
+      sequential: sequential,
+      diverging: diverging,
+    },
+    marks: {
+      lineWidth: cfg.lineWidth,
+      cornerRadius: cfg.cornerRadius,
+      pointShape: cfg.chartStyle === 'technical' ? 'square' : 'circle',
+      patterns: cfg.differentiate === 'both' || (cfg.differentiate === 'auto' && !!(BRAND && BRAND.monochrome)),
+    },
+    scene: {
+      material: cfg.sceneMaterial,
+      roughness: cfg.sceneRoughness,
+      metalness: cfg.sceneMetalness,
+      shadows: cfg.sceneShadows,
+    },
+    motion: {
+      easing: cfg.animEase === 'linear' ? 'linear' : 'smooth',
+      durationMs: Math.round(cfg.animSpeed * 1000),
+      staggerMs: cfg.chartStyle === 'poster' ? 70 : 45,
+    },
+    provenance: {
+      palette: authored ? 'active-brand:authored-order' : 'derived:active-brand-primary',
+      sequential: ramps ? 'active-brand:oklab-ramp' : 'lolly:fallback-ramp',
+      font: (BRAND && BRAND.font && BRAND.font.brand) ? 'active-brand:font.brand' : 'css:--font-brand',
+      style: 'chart-style:' + cfg.chartStyle,
+    },
+  };
+}
+
+function fieldId(label, index) {
+  const s = String(label || '').toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
+  return (s && /^[a-z]/.test(s) ? s : 'field_' + (index + 1)).slice(0, 80) + '_' + (index + 1);
+}
+
+function chartMark(type) {
+  const map = {
+    'bar-horizontal': 'bar', scatter: 'point', pie: 'arc', donut: 'arc',
+    'radial-bar': 'radial-bar', wordcloud: 'wordcloud', bar3d: 'bar3d',
+    scatter3d: 'scatter3d', surface3d: 'surface3d',
+    flythrough3d: 'line3d', ribbon3d: 'ribbon3d', constellation3d: 'line3d',
+  };
+  return map[type] || type;
+}
+
+function statisticalSpecParts(data, cfg) {
+  const cats = data.categories || [], sourceSeries = data.series || [], nums = data.numericCols || [];
+  const seriesValue = (si, ri) => {
+    const value = sourceSeries[si] && sourceSeries[si].values && sourceSeries[si].values[ri];
+    return value == null || !Number.isFinite(+value) ? null : +value;
+  };
+  const tidyFields = [
+    { id: 'category', label: 'Category', type: 'string' },
+    { id: 'series', label: 'Series', type: 'string' },
+    { id: 'value', label: 'Value', type: 'number' },
+  ];
+  const tidyRows = [];
+  for (let si = 0; si < sourceSeries.length; si++) for (let ri = 0; ri < cats.length; ri++) {
+    const value = sourceSeries[si] && sourceSeries[si].values[ri];
+    if (value != null && Number.isFinite(+value)) tidyRows.push({
+      category: String(cats[ri]), series: String(sourceSeries[si].name || ('Series ' + (si + 1))), value: +value,
+    });
+  }
+  const title = cfg.heading || cfg.chartType.replace(/-/g, ' ');
+  const facetSeries = { facetY: { field: 'series', type: 'string', title: 'Series' } };
+
+  if (cfg.chartType === 'dot-strip' || cfg.chartType === 'box-observations' ||
+      cfg.chartType === 'rug-histogram' || cfg.chartType === 'small-multiples' ||
+      cfg.chartType === 'distribution-facets') {
+    const mark = cfg.chartType === 'dot-strip' ? 'point'
+      : cfg.chartType === 'box-observations' ? 'box'
+        : cfg.chartType === 'small-multiples' ? 'line' : 'histogram';
+    const isCategoryX = cfg.chartType === 'small-multiples';
+    const isCategoryY = cfg.chartType === 'dot-strip';
+    const isBox = cfg.chartType === 'box-observations';
+    const isDistribution = cfg.chartType === 'rug-histogram' || cfg.chartType === 'distribution-facets';
+    return {
+      fields: tidyFields, rows: tidyRows,
+      series: [{ id: 'series_1', name: title, dataset: 'data', mark: mark, channels: {
+        x: { field: isCategoryX ? 'category' : 'value', type: isCategoryX ? 'string' : 'number' },
+        y: { field: isCategoryY ? 'category' : isBox ? 'series' : 'value', type: isCategoryY || isBox ? 'string' : 'number' },
+        colour: { field: 'series', type: 'string' },
+        ...(cfg.chartType === 'dot-strip' || cfg.chartType === 'box-observations' ? {} : facetSeries),
+      } }],
+      scales: [
+        { id: 'x', type: isCategoryX ? 'band' : cfg.yScaleType, nice: true },
+        { id: 'y', type: isCategoryY || cfg.chartType === 'box-observations' ? 'band' : 'linear', zero: isDistribution, nice: true },
+      ],
+      axes: [
+        { id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || (isCategoryX ? 'Category' : 'Value'), grid: cfg.showGrid },
+        { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || (isCategoryY ? 'Category' : isBox ? 'Series' : isDistribution ? 'Count' : 'Value'), grid: cfg.showGrid },
+      ],
+    };
+  }
+
+  if (cfg.chartType === 'interval') {
+    const fields = [
+      { id: 'category', label: 'Category', type: 'string' },
+      { id: 'low', label: (sourceSeries[0] && sourceSeries[0].name) || 'Low', type: 'number' },
+      { id: 'high', label: (sourceSeries[1] && sourceSeries[1].name) || 'High', type: 'number' },
+    ];
+    const rows = cats.map((category, i) => ({ category: String(category),
+      low: seriesValue(0, i), high: seriesValue(1, i),
+    }));
+    return { fields, rows, series: [{ id: 'series_1', name: title, dataset: 'data', mark: 'rule', channels: {
+      y: { field: 'category', type: 'string' }, low: { field: 'low', type: 'number' }, high: { field: 'high', type: 'number' },
+    } }], scales: [{ id: 'x', type: cfg.yScaleType, nice: true }, { id: 'y', type: 'band' }], axes: [
+      { id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || 'Range', grid: cfg.showGrid },
+      { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || 'Category', grid: false },
+    ] };
+  }
+
+  if (cfg.chartType === 'range-band' || cfg.chartType === 'difference-area' || cfg.chartType === 'control-band') {
+    let fields, rows, series;
+    if (cfg.chartType === 'range-band') {
+      fields = [
+        { id: 'category', label: 'Category', type: 'string' },
+        { id: 'low', label: (sourceSeries[0] && sourceSeries[0].name) || 'Low', type: 'number' },
+        { id: 'expected', label: (sourceSeries[1] && sourceSeries[1].name) || 'Expected', type: 'number' },
+        { id: 'high', label: (sourceSeries[2] && sourceSeries[2].name) || 'High', type: 'number' },
+      ];
+      rows = cats.map((category, i) => {
+        const low = seriesValue(0, i);
+        const high = sourceSeries.length >= 3 ? seriesValue(2, i) : seriesValue(1, i);
+        const expected = sourceSeries.length >= 3
+          ? seriesValue(1, i)
+          : low == null || high == null ? null : (low + high) / 2;
+        return { category: String(category), low, expected, high };
+      });
+      series = [
+        { id: 'range', name: title + ' range', dataset: 'data', mark: 'area', channels: {
+          x: { field: 'category', type: 'string' }, low: { field: 'low', type: 'number' }, high: { field: 'high', type: 'number' },
+        } },
+        { id: 'expected', name: 'Expected', dataset: 'data', mark: 'line', channels: {
+          x: { field: 'category', type: 'string' }, y: { field: 'expected', type: 'number' },
+        } },
+      ];
+    } else if (cfg.chartType === 'difference-area') {
+      fields = [
+        { id: 'category', label: 'Category', type: 'string' },
+        { id: 'first', label: (sourceSeries[0] && sourceSeries[0].name) || 'First', type: 'number' },
+        { id: 'second', label: (sourceSeries[1] && sourceSeries[1].name) || 'Second', type: 'number' },
+        { id: 'difference', label: 'Difference', type: 'number' },
+      ];
+      rows = cats.map((category, i) => { const first = seriesValue(0, i), second = seriesValue(1, i); return {
+        category: String(category), first, second,
+        difference: first == null || second == null ? null : second - first,
+      }; });
+      series = [
+        { id: 'difference', name: title + ' difference', dataset: 'data', mark: 'area', channels: {
+          x: { field: 'category', type: 'string' }, low: { field: 'first', type: 'number' }, high: { field: 'second', type: 'number' },
+        } },
+        { id: 'first', name: fields[1].label, dataset: 'data', mark: 'line', channels: { x: { field: 'category', type: 'string' }, y: { field: 'first', type: 'number' } } },
+        { id: 'second', name: fields[2].label, dataset: 'data', mark: 'line', channels: { x: { field: 'category', type: 'string' }, y: { field: 'second', type: 'number' } } },
+      ];
+    } else {
+      const values = (sourceSeries[0] && sourceSeries[0].values || []).filter((value) => value != null && Number.isFinite(+value)).map(Number);
+      const mean = values.length ? values.reduce((sum, value) => sum + value, 0) / values.length : 0;
+      const deviation = values.length > 1 ? Math.sqrt(values.reduce((sum, value) => sum + Math.pow(value - mean, 2), 0) / (values.length - 1)) : 0;
+      fields = [
+        { id: 'category', label: 'Category', type: 'string' },
+        { id: 'value', label: (sourceSeries[0] && sourceSeries[0].name) || 'Value', type: 'number' },
+        { id: 'mean', label: 'Mean', type: 'number' },
+        { id: 'lower', label: 'Lower control limit', type: 'number' },
+        { id: 'upper', label: 'Upper control limit', type: 'number' },
+      ];
+      rows = cats.map((category, i) => ({ category: String(category), value: seriesValue(0, i), mean,
+        lower: mean - deviation * 2, upper: mean + deviation * 2,
+      }));
+      series = [
+        { id: 'control_range', name: 'Two standard deviations', dataset: 'data', mark: 'area', channels: {
+          x: { field: 'category', type: 'string' }, low: { field: 'lower', type: 'number' }, high: { field: 'upper', type: 'number' },
+        } },
+        { id: 'observed', name: fields[1].label, dataset: 'data', mark: 'line', channels: { x: { field: 'category', type: 'string' }, y: { field: 'value', type: 'number' } } },
+        { id: 'mean', name: 'Mean', dataset: 'data', mark: 'rule', channels: { y: { field: 'mean', type: 'number' } } },
+      ];
+    }
+    return { fields, rows, series, scales: [{ id: 'x', type: 'band' }, { id: 'y', type: cfg.yScaleType, nice: true }], axes: [
+      { id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || 'Category', grid: false },
+      { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || 'Value', grid: cfg.showGrid },
+    ] };
+  }
+
+  if (cfg.chartType === 'indexed-change') {
+    const rows = [];
+    for (let si = 0; si < sourceSeries.length; si++) {
+      const base = (sourceSeries[si].values || []).map(Number).find((value) => Number.isFinite(value) && value !== 0);
+      for (let ri = 0; ri < cats.length; ri++) {
+        const value = seriesValue(si, ri);
+        rows.push({ category: String(cats[ri]), series: String(sourceSeries[si].name || ('Series ' + (si + 1))),
+          index: value == null || !Number.isFinite(base) ? null : value / base * 100,
+        });
+      }
+    }
+    const fields = [
+      { id: 'category', label: 'Category', type: 'string' },
+      { id: 'series', label: 'Series', type: 'string' },
+      { id: 'index', label: 'Index (first observation = 100)', type: 'number' },
+    ];
+    return { fields, rows, series: [{ id: 'series_1', name: title, dataset: 'data', mark: 'line', channels: {
+      x: { field: 'category', type: 'string' }, y: { field: 'index', type: 'number' }, colour: { field: 'series', type: 'string' },
+    } }], scales: [{ id: 'x', type: 'band' }, { id: 'y', type: 'linear', nice: true }], axes: [
+      { id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || 'Category', grid: false },
+      { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || 'Index (100 = first)', grid: cfg.showGrid },
+    ] };
+  }
+
+  if (cfg.chartType === 'density-ridges' || cfg.chartType === 'ecdf') {
+    const rows = [];
+    for (let si = 0; si < sourceSeries.length; si++) {
+      const values = (sourceSeries[si].values || []).filter((value) => value != null && Number.isFinite(+value)).map(Number).sort((a, b) => a - b);
+      if (!values.length) continue;
+      if (cfg.chartType === 'ecdf') {
+        values.forEach((value, i) => rows.push({ series: String(sourceSeries[si].name), value, probability: (i + 1) / values.length }));
+      } else {
+        const lo = values[0], hi = values[values.length - 1], span = Math.max(1e-9, hi - lo);
+        const bandwidth = Math.max(span / 80, span * cfg.plotBandwidth / Math.max(160, cfg.width));
+        for (let i = 0; i < 64; i++) {
+          const value = lo - span * 0.08 + span * 1.16 * i / 63;
+          const density = values.reduce((sum, sample) => { const z = (value - sample) / bandwidth; return sum + Math.exp(-0.5 * z * z); }, 0) / (values.length * bandwidth * Math.sqrt(2 * Math.PI));
+          rows.push({ series: String(sourceSeries[si].name), value, density });
+        }
+      }
+    }
+    const isEcdf = cfg.chartType === 'ecdf';
+    const y = isEcdf ? 'probability' : 'density';
+    const fields = [
+      { id: 'series', label: 'Series', type: 'string' },
+      { id: 'value', label: 'Value', type: 'number' },
+      { id: y, label: isEcdf ? 'Cumulative probability' : 'Estimated density', type: 'number' },
+    ];
+    return { fields, rows, series: [{ id: 'series_1', name: title, dataset: 'data', mark: isEcdf ? 'line' : 'area', channels: {
+      x: { field: 'value', type: 'number' }, y: { field: y, type: 'number' }, colour: { field: 'series', type: 'string' },
+      ...(isEcdf ? {} : facetSeries),
+    } }], scales: [{ id: 'x', type: cfg.yScaleType, nice: true }, { id: 'y', type: 'linear', zero: true, nice: true }], axes: [
+      { id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || 'Value', grid: cfg.showGrid },
+      { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || (isEcdf ? 'Cumulative share' : 'Density'), grid: cfg.showGrid },
+    ] };
+  }
+
+  if (cfg.chartType === 'candlestick') {
+    const names = ['Open', 'High', 'Low', 'Close'];
+    const fields = [{ id: 'category', label: 'Category', type: 'string' }]
+      .concat(names.map((name, i) => ({ id: name.toLowerCase(), label: (sourceSeries[i] && sourceSeries[i].name) || name, type: 'number' })));
+    const rows = cats.map((category, i) => ({ category: String(category),
+      open: seriesValue(0, i), high: seriesValue(1, i),
+      low: seriesValue(2, i), close: seriesValue(3, i),
+    }));
+    return { fields, rows, series: [{ id: 'series_1', name: title, dataset: 'data', mark: 'candlestick', channels: {
+      x: { field: 'category', type: 'string' }, open: { field: 'open', type: 'number' }, high: { field: 'high', type: 'number' },
+      low: { field: 'low', type: 'number' }, close: { field: 'close', type: 'number' },
+    } }], scales: [{ id: 'x', type: 'band' }, { id: 'y', type: cfg.yScaleType, nice: true }], axes: [
+      { id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || 'Period', grid: false },
+      { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || 'Value', grid: cfg.showGrid },
+    ] };
+  }
+
+  const cols = nums.slice(0, 3), ids = cols.map((c, i) => fieldId(c.name, i));
+  const fields = cols.map((c, i) => ({ id: ids[i], label: c.name, type: 'number' }));
+  const count = cols.reduce((n, c) => Math.max(n, (c.values || []).length), 0);
+  const rows = Array.from({ length: count }, (_, ri) => Object.fromEntries(cols.map((c, ci) => [ids[ci], c.values[ri] == null ? null : c.values[ri]])));
+  const mark = cfg.chartType === 'hexbin' ? 'hexbin' : cfg.chartType === 'density-contour' ? 'density' : 'regression';
+  const channels = ids.length >= 2 ? { x: { field: ids[0], type: 'number', title: cols[0].name }, y: { field: ids[1], type: 'number', title: cols[1].name },
+    ...(ids[2] ? { size: { field: ids[2], type: 'number', title: cols[2].name } } : {}) } : {};
+  return { fields: fields.length ? fields : [{ id: 'value', label: 'Value', type: 'number' }], rows,
+    series: [{ id: 'series_1', name: title, dataset: 'data', mark, channels }],
+    scales: [{ id: 'x', type: cfg.yScaleType, nice: true }, { id: 'y', type: cfg.yScaleType, nice: true }], axes: [
+      { id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || (cols[0] && cols[0].name) || 'x', grid: cfg.showGrid },
+      { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || (cols[1] && cols[1].name) || 'y', grid: cfg.showGrid },
+    ] };
+}
+
+function makeChartSpec(data, cfg) {
+  const is3d = REAL_3D_TYPES.indexOf(cfg.chartType) >= 0;
+  const isCinematic = CINEMATIC_TYPES.indexOf(cfg.chartType) >= 0;
+  const isPlot = PLOT_TYPES.indexOf(cfg.chartType) >= 0;
+  const mark = chartMark(cfg.chartType);
+  const cats = data.categories || [], sourceSeries = data.series || [], nums = data.numericCols || [];
+  let fields = [], rows = [], series = [];
+
+  let plotParts = null;
+  if (isPlot) {
+    plotParts = statisticalSpecParts(data, cfg);
+    fields = plotParts.fields; rows = plotParts.rows; series = plotParts.series;
+    if (data.frames && data.frames.length >= 2) {
+      const frameField = { id: 'frame', label: cfg.frameColumn || 'Frame', type: 'string' };
+      fields = fields.concat(frameField);
+      rows = [];
+      data.frames.forEach((frame, fi) => {
+        const part = statisticalSpecParts({ categories: data.categories, series: frame, numericCols: frame }, cfg);
+        const label = (data.frameLabels && data.frameLabels[fi]) || String(fi + 1);
+        part.rows.forEach((row) => rows.push(Object.assign({}, row, { frame: label })));
+      });
+      series = series.map((item) => ({
+        ...item,
+        channels: { ...item.channels, frame: { field: 'frame', type: 'string', title: cfg.frameColumn || 'Frame' } },
+      }));
+    }
+  } else if (isCinematic) {
+    fields = [
+      { id: 'order', label: 'Route order', type: 'number' },
+      { id: 'category', label: 'Category', type: 'string' },
+      { id: 'series', label: 'Series', type: 'string' },
+      { id: 'value', label: 'Value', type: 'number' },
+    ];
+    for (let ci = 0; ci < cats.length; ci++) for (const s of sourceSeries) rows.push({
+      order: ci, category: String(cats[ci]), series: String(s.name),
+      value: s.values[ci] == null || !Number.isFinite(+s.values[ci]) ? null : +s.values[ci],
+    });
+    series = [{
+      id: 'flight_path', name: cfg.heading || 'Data flight', dataset: 'data', mark: chartMark(cfg.chartType),
+      channels: {
+        x: { field: 'order', type: 'number', title: cfg.xTitle || 'Route order' },
+        y: { field: 'value', type: 'number', title: cfg.yTitle || 'Value' },
+        z: { field: 'series', type: 'string', title: 'Series' },
+        colour: { field: 'series', type: 'string' },
+        label: { field: 'category', type: 'string' },
+      },
+    }];
+  } else if (cfg.chartType === 'scatter3d') {
+    const cols = nums.slice(0, 4), ids = cols.map((c, i) => fieldId(c.name, i));
+    fields = cols.map((c, i) => ({ id: ids[i], label: c.name, type: 'number' }));
+    const count = cols.reduce((n, c) => Math.max(n, (c.values || []).length), 0);
+    rows = Array.from({ length: count }, (_, ri) => Object.fromEntries(cols.map((c, ci) => [ids[ci], c.values[ri] == null ? null : c.values[ri]])));
+    if (cols.length >= 3) series = [{
+      id: 'series_1', name: cfg.heading || '3-D points', dataset: 'data', mark: 'scatter3d',
+      channels: {
+        x: { field: ids[0], type: 'number', title: cols[0].name },
+        y: { field: ids[1], type: 'number', title: cols[1].name },
+        z: { field: ids[2], type: 'number', title: cols[2].name },
+        ...(ids[3] ? { size: { field: ids[3], type: 'number', title: cols[3].name } } : {}),
+      },
+    }];
+  } else if (cfg.chartType === 'bar3d' || cfg.chartType === 'surface3d') {
+    fields = [
+      { id: 'category', label: 'Category', type: 'string' },
+      { id: 'series', label: 'Series', type: 'string' },
+      { id: 'value', label: 'Value', type: 'number' },
+    ];
+    for (let ci = 0; ci < cats.length; ci++) for (const s of sourceSeries) rows.push({
+      category: cats[ci], series: s.name, value: s.values[ci] == null ? null : s.values[ci],
+    });
+    series = [{
+      id: 'series_1', name: cfg.heading || (cfg.chartType === 'surface3d' ? 'Surface' : '3-D bars'),
+      dataset: 'data', mark: mark,
+      channels: {
+        x: { field: 'category', type: 'string', title: 'Category' },
+        y: { field: 'value', type: 'number', title: cfg.yTitle || 'Value' },
+        z: { field: 'series', type: 'string', title: 'Series' },
+        colour: { field: 'series', type: 'string' },
+      },
+      stack: cfg.stackMode === 'stacked100' ? 'normalised' : cfg.stackMode === 'stacked' ? 'stacked' : 'none',
+    }];
+  } else {
+    const ids = sourceSeries.map((s, i) => fieldId(s.name, i));
+    fields = [{ id: 'category', label: 'Category', type: 'string' }]
+      .concat(sourceSeries.map((s, i) => ({ id: ids[i], label: s.name, type: 'number' })));
+    if (data.frames && data.frames.length) {
+      fields.push({ id: 'frame', label: cfg.frameColumn || 'Frame', type: 'string' });
+      data.frames.forEach((frame, fi) => cats.forEach((category, ri) => {
+        const row = { category: category, frame: (data.frameLabels && data.frameLabels[fi]) || String(fi + 1) };
+        frame.forEach((s, si) => { row[ids[si]] = s.values[ri] == null ? null : s.values[ri]; });
+        rows.push(row);
+      }));
+    } else {
+      rows = cats.map((category, ri) => {
+        const row = { category: category };
+        sourceSeries.forEach((s, si) => { row[ids[si]] = s.values[ri] == null ? null : s.values[ri]; });
+        return row;
+      });
+    }
+    series = sourceSeries.map((s, i) => ({
+      id: 'series_' + (i + 1), name: s.name, dataset: 'data', mark: mark,
+      channels: {
+        x: { field: 'category', type: 'string', title: cfg.xTitle || 'Category' },
+        y: { field: ids[i], type: 'number', title: s.name },
+        colour: { field: ids[i], type: 'number' },
+        ...(data.frames ? { frame: { field: 'frame', type: 'string', title: cfg.frameColumn || 'Frame' } } : {}),
+      },
+      stack: cfg.stackMode === 'stacked100' ? 'normalised' : cfg.stackMode === 'stacked' ? 'stacked' : 'none',
+    }));
+  }
+
+  const title = (cfg.heading || (cfg.chartType.replace(/3d/g, ' 3-D').replace(/-/g, ' ') + ' chart')).trim();
+  const seriesNames = (cfg.chartType === 'scatter3d' ? nums.slice(0, 4) : sourceSeries).map((s) => s.name);
+  const count = rows.length;
+  const sourceLabel = cfg.brandTheme.sourceLabel || cfg.brandTheme.sourceId || 'the active brand';
+  const description = (cfg.subheading ? cfg.subheading + '. ' : '') + title + ' uses ' + count + ' data row' + (count === 1 ? '' : 's') +
+    (seriesNames.length ? ' across ' + seriesNames.length + ' series' : '') + ', styled from ' + sourceLabel + '.';
+  const motion = isCinematic
+    ? { enabled: true, preset: 'data-flight', duration: cfg.animSpeed, loop: cfg.animDirection === 'bounce' ? 'bounce' : 'loop', easing: cfg.animEase, poster: 0.16 }
+    : is3d
+    ? { enabled: cfg.motionPreset !== 'none', preset: cfg.motionPreset, duration: cfg.animSpeed, loop: 'loop', easing: cfg.animEase, poster: 0.22 }
+    : cfg.frameColumn && data.frames && data.frames.length >= 2
+      ? { enabled: true, preset: 'by-frame-field', duration: cfg.animSpeed, loop: cfg.animDirection === 'bounce' ? 'bounce' : 'loop', easing: cfg.animEase, poster: 0, frameField: 'frame' }
+      : isPlot && cfg.plotMotionPreset !== 'none'
+        ? { enabled: true, preset: cfg.plotMotionPreset, duration: cfg.animSpeed, loop: 'loop', easing: cfg.animEase, poster: 1 }
+      : { enabled: false, preset: 'none', duration: cfg.animSpeed, loop: 'once', easing: cfg.animEase, poster: 0 };
+  return {
+    version: 1,
+    datasets: [{ id: 'data', fields: fields, rows: rows, ...(data.note ? { note: data.note } : {}) }],
+    series: series,
+    scales: isCinematic ? [
+      { id: 'x', type: 'linear', zero: true, nice: false },
+      { id: 'y', type: cfg.yScaleType, zero: cfg.yZero, nice: true },
+      { id: 'z', type: 'band' },
+    ] : plotParts ? plotParts.scales : [
+      { id: 'x', type: 'band' },
+      { id: 'y', type: cfg.yScaleType, zero: cfg.yZero, nice: true },
+      ...(is3d ? [{ id: 'z', type: 'band' }] : []),
+    ],
+    axes: isCinematic ? [
+      { id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || 'Route', grid: false },
+      { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || 'Value', grid: cfg.showGrid, ticks: cfg.tickCount },
+      { id: 'z', scale: 'z', side: 'z', title: 'Series', grid: false },
+    ] : plotParts ? plotParts.axes : [
+      { id: 'x', scale: 'x', side: 'bottom', title: cfg.xTitle || undefined, grid: false },
+      { id: 'y', scale: 'y', side: 'left', title: cfg.yTitle || undefined, grid: cfg.showGrid, ticks: cfg.tickCount },
+      ...(is3d ? [{ id: 'z', scale: 'z', side: 'z', title: 'Series', grid: false }] : []),
+    ],
+    legends: cfg.showLegend ? [{ id: 'legend', series: series.map((s) => s.id), position: cfg.legendPosition }] : [],
+    formatting: { value: { type: cfg.numberFormat === 'percent' ? 'percent' : cfg.numberFormat === 'currency' ? 'currency' : 'number' } },
+    theme: cfg.brandTheme,
+    motion: motion,
+    presentation: {
+      style: cfg.chartStyle,
+      dimension: is3d || cfg.chartStyle === 'iso-vector' ? 3 : 2,
+      rendererFamily: is3d ? 'scene-3d' : isPlot ? 'scientific' : 'svg',
+      exportFidelity: is3d ? 'hybrid' : 'vector',
+      width: cfg.width, height: cfg.height, transparent: cfg.transparent,
+      ...(is3d ? { camera: { projection: isCinematic ? 'perspective' : cfg.cameraProjection, azimuth: cfg.cameraAzimuth, elevation: cfg.cameraElevation } } : {}),
+    },
+    accessibility: {
+      title: title, description: description, readingOrder: seriesNames,
+      table: { columns: fields.map((f) => f.label), rows: rows.map((r) => fields.map((f) => r[f.id] == null ? null : r[f.id])) },
+      // Statistical recipes pair colour with position, facet, endpoint or
+      // symbol; the colour-only warning would be false there even for a vivid
+      // brand. Classic multi-series SVG keeps its established pattern policy.
+      colourOnly: isPlot ? false : !(cfg.brandTheme.marks.patterns), patterns: !!cfg.brandTheme.marks.patterns,
+      ...(motion.enabled ? { motionDescription: isCinematic
+        ? 'The camera follows the ordered data path; values drive altitude and series occupy depth.'
+        : motion.preset === 'orbit' ? 'The camera orbits the chart.' : 'The chart reveals and changes over time.' } : {}),
+    },
+  };
+}
+
+function xml(s) {
+  return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+}
+
+// Screen-reader data view generated from the SAME typed table as the visual.
+// Keep the DOM bounded; the full dataset remains in ChartSpecV1 and data exports.
+function chartA11yHtml(spec) {
+  const table = spec.accessibility.table, limit = 200, rows = table.rows.slice(0, limit);
+  const th = table.columns.map((c) => '<th scope="col">' + xml(c) + '</th>').join('');
+  const body = rows.map((r) => '<tr>' + r.map((v) => '<td>' + xml(v == null ? '' : v) + '</td>').join('') + '</tr>').join('');
+  const more = table.rows.length > limit ? '<p>' + xml((table.rows.length - limit) + ' additional rows are available in the data export.') + '</p>' : '';
+  return '<div data-chart-a11y style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0">' +
+    '<h2>' + xml(spec.accessibility.title) + '</h2><p>' + xml(spec.accessibility.description) + '</p>' +
+    '<table><caption>Chart data</caption><thead><tr>' + th + '</tr></thead><tbody>' + body + '</tbody></table>' + more + '</div>';
+}
+
+function shade(hex, factor) {
+  const h = normHex(hex) || '#777777';
+  const c = h.slice(1, 7).match(/../g).map((x) => parseInt(x, 16));
+  return '#' + c.map((v) => clamp(Math.round(factor < 1 ? v * factor : v + (255 - v) * (factor - 1)), 0, 255).toString(16).padStart(2, '0')).join('');
+}
+
+// A deterministic, real-vector projected fallback for CLI, blocked WebGL and
+// context loss. Browser GPU output replaces it only after the first frame is
+// ready, so an advanced chart never degrades to a blank rectangle.
+function threeFallbackSvg(data, cfg) {
+  const W = cfg.width, H = cfg.height, cats = data.categories || [], ss = data.series || [];
+  const palette = cfg.brandTheme.colours.categorical;
+  const ink = cfg.brandTheme.colours.ink, edge = cfg.brandTheme.colours.edge;
+  const top = cfg.heading ? 116 : 70, baseY = H - 105, originX = W * 0.5;
+  const vals = [];
+  ss.forEach((s) => (s.values || []).forEach((v) => { if (Number.isFinite(+v)) vals.push(+v); }));
+  const max = vals.reduce((m, v) => Math.max(m, Math.abs(v)), 1);
+  const nx = Math.max(1, cats.length), nz = Math.max(1, ss.length);
+  const sx = Math.min(74, (W * 0.62) / Math.max(2, nx + nz));
+  const sz = sx * 0.54, sy = (H - top - 150) / max;
+  const project = (x, y, z) => [originX + (x - (nx - 1) / 2) * sx - (z - (nz - 1) / 2) * sx * 0.72, baseY - y * sy + (x + z - (nx + nz - 2) / 2) * sz * 0.5];
+  const out = ['<g class="chart3d-vector-fallback">'];
+  const axisA = project(-0.7, 0, -0.7), axisB = project(nx - 0.3, 0, -0.7), axisC = project(-0.7, 0, nz - 0.3);
+  out.push('<path d="M' + axisA[0] + ' ' + axisA[1] + 'L' + axisB[0] + ' ' + axisB[1] + 'M' + axisA[0] + ' ' + axisA[1] + 'L' + axisC[0] + ' ' + axisC[1] + '" fill="none" stroke="' + edge + '" stroke-width="2"/>');
+
+  if (CINEMATIC_TYPES.indexOf(cfg.chartType) >= 0) {
+    for (let z = 0; z < nz; z++) {
+      const points = [];
+      for (let x = 0; x < nx; x++) {
+        const value = +(ss[z] && ss[z].values[x]); if (!Number.isFinite(value)) continue;
+        const p = project(x, value, z); points.push(p[0].toFixed(2) + ',' + p[1].toFixed(2));
+      }
+      if (points.length > 1) out.push('<polyline points="' + points.join(' ') + '" fill="none" stroke="' + palette[z % palette.length] + '" stroke-width="' + (cfg.chartType === 'ribbon3d' ? 14 : 5) + '" stroke-linecap="round" stroke-linejoin="round" opacity="' + (z === 0 ? '.94' : '.64') + '"/>');
+      for (let x = 0; x < nx; x++) {
+        const value = +(ss[z] && ss[z].values[x]); if (!Number.isFinite(value)) continue;
+        const p = project(x, value, z);
+        out.push('<circle cx="' + p[0].toFixed(2) + '" cy="' + p[1].toFixed(2) + '" r="' + (cfg.chartType === 'constellation3d' ? 8 : 4) + '" fill="' + palette[z % palette.length] + '" stroke="' + cfg.brandTheme.colours.surface + '" stroke-width="2"/>');
+      }
+    }
+  } else if (cfg.chartType === 'scatter3d') {
+    const cols = data.numericCols || [], n = Math.min(1500, (cols[0] && cols[0].values.length) || 0);
+    const ext = (a) => { const f = (a || []).filter((v) => Number.isFinite(+v)).map(Number); return [Math.min(...f, 0), Math.max(...f, 1)]; };
+    const ex = ext(cols[0] && cols[0].values), ey = ext(cols[1] && cols[1].values), ez = ext(cols[2] && cols[2].values);
+    const norm = (v, e) => e[1] === e[0] ? 0.5 : (+v - e[0]) / (e[1] - e[0]);
+    const dots = [];
+    for (let i = 0; i < n; i++) {
+      const xv = cols[0] && cols[0].values[i], yv = cols[1] && cols[1].values[i], zv = cols[2] && cols[2].values[i];
+      if (![xv,yv,zv].every((v) => Number.isFinite(+v))) continue;
+      const p = project(norm(xv, ex) * Math.max(1, nx - 1), norm(yv, ey) * max, norm(zv, ez) * Math.max(1, nz - 1));
+      dots.push({ z: norm(zv, ez), svg: '<circle cx="' + p[0].toFixed(2) + '" cy="' + p[1].toFixed(2) + '" r="' + (5 + 5 * norm(zv, ez)).toFixed(2) + '" fill="' + palette[i % palette.length] + '" fill-opacity=".82" stroke="' + cfg.brandTheme.colours.surface + '" stroke-width="1"/>' });
+    }
+    dots.sort((a,b) => a.z - b.z).forEach((d) => out.push(d.svg));
+  } else if (cfg.chartType === 'surface3d') {
+    const cells = [];
+    for (let z = 0; z < Math.max(0, nz - 1); z++) for (let x = 0; x < Math.max(0, nx - 1); x++) {
+      const y00 = +ss[z].values[x], y10 = +ss[z].values[x + 1], y11 = +ss[z + 1].values[x + 1], y01 = +ss[z + 1].values[x];
+      if (![y00,y10,y11,y01].every(Number.isFinite)) continue;
+      const ps = [project(x,y00,z), project(x+1,y10,z), project(x+1,y11,z+1), project(x,y01,z+1)];
+      const avg = (y00+y10+y11+y01)/4, ci = clamp(Math.floor((avg / max) * (palette.length - 1)), 0, palette.length - 1);
+      cells.push({ depth: x + z, svg: '<polygon points="' + ps.map((p) => p[0].toFixed(2)+','+p[1].toFixed(2)).join(' ') + '" fill="' + palette[ci] + '" fill-opacity=".88" stroke="' + edge + '" stroke-opacity=".45"/>' });
+    }
+    cells.sort((a,b) => a.depth - b.depth).forEach((c) => out.push(c.svg));
+  } else {
+    const bars = [];
+    for (let z = 0; z < nz; z++) for (let x = 0; x < nx; x++) {
+      const value = +(ss[z] && ss[z].values[x]); if (!Number.isFinite(value)) continue;
+      const y0 = Math.min(0, value), y1 = Math.max(0, value), col = palette[z % palette.length];
+      const a = project(x-.28,y0,z-.28), b = project(x+.28,y0,z-.28), c = project(x+.28,y1,z-.28), d = project(x-.28,y1,z-.28);
+      const e = project(x+.28,y0,z+.28), f = project(x+.28,y1,z+.28), g = project(x-.28,y1,z+.28);
+      bars.push({ depth: x + z, svg:
+        '<polygon points="'+b[0]+','+b[1]+' '+e[0]+','+e[1]+' '+f[0]+','+f[1]+' '+c[0]+','+c[1]+'" fill="'+shade(col,.7)+'"/>'+
+        '<polygon points="'+d[0]+','+d[1]+' '+c[0]+','+c[1]+' '+f[0]+','+f[1]+' '+g[0]+','+g[1]+'" fill="'+shade(col,1.18)+'"/>'+
+        '<polygon points="'+a[0]+','+a[1]+' '+b[0]+','+b[1]+' '+c[0]+','+c[1]+' '+d[0]+','+d[1]+'" fill="'+col+'"/>' });
+    }
+    bars.sort((a,b) => a.depth - b.depth).forEach((b) => out.push(b.svg));
+  }
+  if (cfg.heading) out.push('<text x="54" y="58" fill="' + ink + '" font-size="' + cfg.titleSize + '" font-weight="' + cfg.titleWeight + '">' + xml(cfg.heading) + '</text>');
+  if (cfg.subheading) out.push('<text x="54" y="91" fill="' + ink + '" fill-opacity=".65" font-size="20">' + xml(cfg.subheading) + '</text>');
+  out.push('<text x="54" y="' + (H - 24) + '" fill="' + ink + '" fill-opacity=".52" font-size="15">' + (CINEMATIC_TYPES.indexOf(cfg.chartType) >= 0 ? 'Cinematic vector poster' : 'Vector 3-D view') + '</text>');
+  return out.join('') + '</g>';
+}
+
+// A dependency-free vector poster while Observable Plot loads (and a useful
+// fallback if it cannot). It deliberately shows the underlying observations,
+// not a screenshot, so SVG/PDF never become accidentally raster-only.
+function plotFallbackSvg(data, cfg) {
+  const W = cfg.width, H = cfg.height, theme = cfg.brandTheme;
+  const ink = theme.colours.ink, muted = theme.colours.muted, edge = theme.colours.edge;
+  const palette = theme.colours.categorical, left = 92, right = W - 52;
+  const top = cfg.heading ? (cfg.subheading ? 126 : 96) : 58, bottom = H - 74;
+  const out = ['<g class="chart-plot-vector-fallback">'];
+  out.push('<rect x="' + left + '" y="' + top + '" width="' + Math.max(1, right - left) + '" height="' + Math.max(1, bottom - top) + '" fill="none" stroke="' + edge + '"/>');
+  const cols = data.numericCols || [];
+  if (cols.length >= 2) {
+    const extent = (values) => { let lo = Infinity, hi = -Infinity; (values || []).forEach((v) => { if (v != null && Number.isFinite(+v)) { lo = Math.min(lo, +v); hi = Math.max(hi, +v); } }); return Number.isFinite(lo) ? [lo, hi === lo ? lo + 1 : hi] : [0, 1]; };
+    const ex = extent(cols[0].values), ey = extent(cols[1].values), n = Math.min(1200, Math.max(cols[0].values.length, cols[1].values.length));
+    for (let i = 0; i < n; i++) {
+      const xv = cols[0].values[i], yv = cols[1].values[i]; if (xv == null || yv == null || !Number.isFinite(+xv) || !Number.isFinite(+yv)) continue;
+      const x = left + ((+xv - ex[0]) / (ex[1] - ex[0])) * (right - left);
+      const y = bottom - ((+yv - ey[0]) / (ey[1] - ey[0])) * (bottom - top);
+      out.push('<circle cx="' + x.toFixed(2) + '" cy="' + y.toFixed(2) + '" r="4" fill="' + palette[i % palette.length] + '" fill-opacity=".6"/>');
+    }
+  } else {
+    const cats = data.categories || [], s = data.series && data.series[0], values = (s && s.values) || [];
+    let max = 1; values.forEach((v) => { if (v != null && Number.isFinite(+v)) max = Math.max(max, Math.abs(+v)); });
+    for (let i = 0; i < Math.min(80, cats.length); i++) {
+      const value = values[i]; if (value == null || !Number.isFinite(+value)) continue;
+      const y = top + ((i + 0.5) / Math.max(1, cats.length)) * (bottom - top), x = left + (+value / max) * (right - left);
+      out.push('<line x1="' + left + '" y1="' + y + '" x2="' + x + '" y2="' + y + '" stroke="' + edge + '" stroke-width="2"/><circle cx="' + x + '" cy="' + y + '" r="6" fill="' + palette[i % palette.length] + '"/>');
+    }
+  }
+  if (cfg.heading) out.push('<text x="44" y="48" fill="' + ink + '" font-size="' + cfg.titleSize + '" font-weight="' + cfg.titleWeight + '">' + xml(cfg.heading) + '</text>');
+  if (cfg.subheading) out.push('<text x="44" y="80" fill="' + muted + '" font-size="' + Math.max(14, cfg.labelSize) + '">' + xml(cfg.subheading) + '</text>');
+  out.push('<text x="44" y="' + (H - 24) + '" fill="' + muted + '" font-size="14">Semantic vector fallback · ' + xml(cfg.chartType.replace(/-/g, ' ')) + '</text>');
+  return out.join('') + '</g>';
+}
+
 // Split the pasted table into animation keyframes by a frame/time column. Each
 // distinct frame value (first-seen order) yields one keyframe of series aligned to
 // the UNION of category labels across all frames - so a bar/line morphs between
@@ -665,11 +1404,17 @@ function buildFrames(text, opts) {
   return { labels: frameOrder, categories: catOrder, frames };
 }
 
-const ANIMATABLE = ['bar', 'bar-horizontal', 'line', 'area', 'pie', 'donut', 'scatter'];
+const ANIMATABLE = ['bar', 'bar-horizontal', 'line', 'area', 'pie', 'donut', 'scatter'].concat(PLOT_TYPES);
 
-function compute(model) {
-  const inp = Object.fromEntries(model.map((i) => [i.id, i.value]));
-  const cfg = buildConfig(inp);
+function compute(model, inputPatch) {
+  const inp = Object.assign(Object.fromEntries(model.map((i) => [i.id, i.value])), inputPatch || {});
+  const dirty = Object.fromEntries(model.map((i) => [i.id, !!i.isDirty]));
+  const mode = effectiveChartInputs(inp);
+  // The semantic compiler and both renderers continue to consume the historic
+  // `chartType` key. Feed them the active family's parked choice; the manifest
+  // keeps the two choices separate solely so switching mode is non-destructive.
+  const cfg = buildConfig(Object.assign({}, inp, { chartType: mode.effectiveType }),
+    Object.assign({}, dirty, { chartType: mode.mode === 'scene' ? dirty.sceneType : dirty.chartType }));
   cfg.brandPalette  = BRAND && BRAND.spectrum;     // categorical spectrum (existing name)
   cfg.brandOrdered  = (BRAND && BRAND.ordered) || null;   // brand swatches in authored order → the 'ordered' palette (default)
   cfg.brandRamps    = BRAND && BRAND.ramps;        // sequential/diverging/mono ramps
@@ -681,6 +1426,7 @@ function compute(model) {
   if (cfg.palette === 'seed') {
     cfg.seedPalette = seedPalette(isHex(inp.paletteSeed) ? inp.paletteSeed.trim() : ((BRAND && BRAND.primary) || null));
   }
+  cfg.brandTheme = chartThemeFromBrand(cfg);
   const parseOpts = {
     delimiter: String(inp.delimiter || 'auto'),
     hasHeader: inp.hasHeader !== false && inp.hasHeader !== 'false',
@@ -699,7 +1445,7 @@ function compute(model) {
     // marks animate within them (else they rescale every frame → jerky).
     const cats = frameData.categories, frs = frameData.frames;
     const ext = (pick) => { let mn = Infinity, mx = -Infinity; frs.forEach((fr) => pick(fr, (v) => { const n = Number(v); if (Number.isFinite(n)) { if (n < mn) mn = n; if (n > mx) mx = n; } })); return [Number.isFinite(mn) ? mn : 0, Number.isFinite(mx) ? mx : 1]; };
-    if (cfg.chartType === 'scatter') {
+    if (cfg.chartType === 'scatter' || ['hexbin', 'density-contour', 'regression'].indexOf(cfg.chartType) >= 0) {
       // scatter: series[0]=X, series[1]=Y - fix BOTH axes independently.
       cfg.animExtentX = ext((fr, add) => (fr[0] ? fr[0].values : []).forEach(add));
       cfg.animExtent  = ext((fr, add) => (fr[1] ? fr[1].values : []).forEach(add));
@@ -716,15 +1462,77 @@ function compute(model) {
     }
     // scatter reads numericCols (x/y cols); bar/line/pie read series - populate the one each needs from frame 0.
     data = { categories: frameData.categories, series: frameData.frames[0],
-      numericCols: cfg.chartType === 'scatter' ? frameData.frames[0] : [], errorValues: null,
+      numericCols: cfg.chartType === 'scatter' || PLOT_TYPES.indexOf(cfg.chartType) >= 0 ? frameData.frames[0] : [], errorValues: null,
       frames: frameData.frames, frameLabels: frameData.labels,
       note: `Animating ${frameData.frames.length} frames by “${cfg.frameColumn}”.` };
   } else {
     data = buildModel(inp.data, parseOpts);
   }
+  if (cfg.chartType === 'scatter3d' && (!data.numericCols || data.numericCols.length < 3)) {
+    data.note = appendNote(data.note, '3-D scatter needs at least three numeric columns for x, y and z.');
+  }
+  if (cfg.chartType === 'surface3d' && (!data.series || data.series.length < 2 || !data.categories || data.categories.length < 2)) {
+    data.note = appendNote(data.note, 'A surface needs at least two categories and two numeric series.');
+  }
+  if (CINEMATIC_TYPES.indexOf(cfg.chartType) >= 0) {
+    if (!data.series || !data.series.length || !data.categories || data.categories.length < 2) {
+      data.note = appendNote(data.note, 'A cinematic flight needs at least two ordered categories and one numeric series.');
+    }
+    if (cfg.flightSeries && data.series && data.series.length) {
+      const ref = cfg.flightSeries.trim().toLowerCase();
+      const index = /^\d+$/.test(ref) ? Number(ref) - 1 : data.series.findIndex((series) => String(series.name).trim().toLowerCase() === ref);
+      if (index < 0 || index >= data.series.length) data.note = appendNote(data.note, `Camera series “${cfg.flightSeries}” was not found; following “${data.series[0].name}”.`);
+    }
+  }
+  if (['hexbin', 'density-contour', 'regression'].indexOf(cfg.chartType) >= 0 && (!data.numericCols || data.numericCols.length < 2)) {
+    data.note = appendNote(data.note, 'This statistical view needs at least two numeric columns for x and y.');
+  }
+  if (cfg.chartType === 'interval' && (!data.series || data.series.length < 2)) {
+    data.note = appendNote(data.note, 'An interval view needs two numeric series for its endpoints.');
+  }
+  if (['range-band', 'difference-area'].indexOf(cfg.chartType) >= 0 && (!data.series || data.series.length < 2)) {
+    data.note = appendNote(data.note, 'This comparison needs at least two numeric series. Range band can use a third series as its expected line.');
+  }
+  if (cfg.chartType === 'candlestick' && (!data.series || data.series.length < 4)) {
+    data.note = appendNote(data.note, 'Candlesticks need four numeric series ordered Open, High, Low, Close.');
+  }
+  if (cfg.frameColumn && (!data.frames || data.frames.length < 2)) {
+    data.note = appendNote(data.note, 'Animate by column did not resolve at least two usable frames; check the column name and table shape.');
+  }
+  const spec = makeChartSpec(data, cfg);
+  const useThree = REAL_3D_TYPES.indexOf(cfg.chartType) >= 0;
+  const usePlot = PLOT_TYPES.indexOf(cfg.chartType) >= 0;
+  const report = {
+    version: 1,
+    rendererFamily: spec.presentation.rendererFamily,
+    rendererId: useThree ? (CINEMATIC_TYPES.indexOf(cfg.chartType) >= 0 ? 'three-data-flight' : 'three-webgl') : usePlot ? 'observable-plot-svg' : 'd3-svg-compat',
+    style: spec.presentation.style,
+    dimension: spec.presentation.dimension,
+    exportFidelity: spec.presentation.exportFidelity,
+    datasets: spec.datasets.length,
+    rows: spec.datasets.reduce((n, d) => n + d.rows.length, 0),
+    series: spec.series.length,
+    theme: {
+      id: spec.theme.id, source: spec.theme.source, sourceId: spec.theme.sourceId,
+      sourceLabel: spec.theme.sourceLabel, sourceChecksum: spec.theme.sourceChecksum, locked: spec.theme.locked,
+    },
+    findings: data.note ? [{ id: 'chart.data.note', severity: 'info', message: data.note }] : [],
+  };
   return {
-    _state:  safeJson({ data, cfg }),
+    _state:  safeJson({ data, cfg, spec, report }),
     _bgFill: cfg.transparent ? 'none' : cfg.background,
+    _useThree: useThree,
+    _usePlot: usePlot,
+    _threeFallback: useThree ? threeFallbackSvg(data, cfg) : '',
+    _plotFallback: usePlot ? plotFallbackSvg(data, cfg) : '',
+    _chartTitle: spec.accessibility.title,
+    _chartDescription: spec.accessibility.description,
+    _a11yTable: chartA11yHtml(spec),
+    _rendererFamily: spec.presentation.rendererFamily,
+    _renderMode: mode.mode,
+    _effectiveChartType: mode.effectiveType,
+    _chartStyle: spec.presentation.style,
+    _brandName: spec.theme.sourceLabel || spec.theme.sourceId || 'Active brand',
     mdSource: d3Md(inp),
   };
 }
@@ -763,27 +1571,76 @@ function brandDegraded(b) { return !b || (!b.primary && !b.spectrum && !b.ramps)
 
 async function onInit({ model }) {
   BRAND = await resolveBrandColors();
-  return compute(model);
+  const modePatch = legacyModePatch(model);
+  return Object.assign(compute(model, modePatch), modePatch);
 }
 async function onInput({ model }) {
   if (brandDegraded(BRAND)) { try { const b = await resolveBrandColors(); if (!brandDegraded(b)) BRAND = b; } catch (e) { /* keep prior */ } }
-  return compute(model);
+  const modePatch = legacyModePatch(model);
+  return Object.assign(compute(model, modePatch), modePatch);
 }
 
-// Animated-SVG export: for an ANIMATED chart, swap a self-contained SMIL flipbook into
-// #d3-plot before an SVG export (the template owns the build; renderSvg clones the <svg>
-// verbatim so the <animate> survive), then restore the live render after. Presence-keyed
-// on window functions the template exposes, so a static chart / CLI (no window) is a
-// no-op and every other format is untouched.
+function exportNode(ctx) {
+  const node = ctx && ctx.node;
+  return node && typeof node.querySelector === 'function' ? node : null;
+}
+
+// Animated SVG swaps in a self-contained SMIL flipbook. Real 3-D deliberately
+// swaps the presentation canvas for its projected SVG sibling on vector/PDF
+// export: one chart document, a format-appropriate renderer, never a blank GPU
+// rectangle or an accidental base64 screenshot in an otherwise-vector file.
 function beforeExport(ctx) {
   try {
-    const w = (typeof window !== 'undefined') ? window : null;
-    if (w && (ctx.format === 'svg' || ctx.format === 'svgz') && typeof w.__d3BuildSmil === 'function') w.__d3BuildSmil();
+    const node = exportNode(ctx); if (!node) return;
+    const vector = ctx.format === 'svg' || ctx.format === 'svgz' || ctx.format === 'pdf';
+    const svg = node.matches && node.matches('#d3-svg') ? node : node.querySelector('#d3-svg');
+    if (vector && svg && typeof svg.__lollyBuildSmil === 'function') svg.__lollyBuildSmil();
+
+    const wrap = node.matches && node.matches('[data-chart3d-wrap]') ? node : node.querySelector('[data-chart3d-wrap]');
+    if (vector && wrap) {
+      const fallback = wrap.querySelector('[data-chart3d-fallback]');
+      const canvas = wrap.querySelector('[data-chart3d-canvas]');
+      const overlay = wrap.querySelector('[data-chart3d-overlay]');
+      wrap.__lollyVectorExport = {
+        fallback: fallback && fallback.style.display,
+        canvas: canvas && canvas.style.opacity,
+        overlay: overlay && overlay.style.opacity,
+      };
+      if (fallback) fallback.style.display = 'block';
+      if (canvas) canvas.style.opacity = '0';
+      if (overlay) overlay.style.opacity = '0';
+      wrap.setAttribute('data-export-renderer', 'svg-projection');
+    }
+
+    const plotWrap = node.matches && node.matches('[data-chart-plot-wrap]') ? node
+      : (node.closest && node.closest('[data-chart-plot-wrap]')) || node.querySelector('[data-chart-plot-wrap]');
+    if (vector && plotWrap && typeof plotWrap.__lollyPlotPoster === 'function') {
+      plotWrap.__lollyPlotPoster();
+      plotWrap.setAttribute('data-export-renderer', 'observable-plot-poster');
+    }
   } catch (e) { /* fall through to the normal static SVG */ }
 }
-function afterExport() {
+function afterExport(ctx) {
   try {
-    const w = (typeof window !== 'undefined') ? window : null;
-    if (w && typeof w.__d3RestoreLive === 'function') w.__d3RestoreLive();
+    const node = exportNode(ctx); if (!node) return;
+    const svg = node.matches && node.matches('#d3-svg') ? node : node.querySelector('#d3-svg');
+    if (svg && typeof svg.__lollyRestoreLive === 'function') svg.__lollyRestoreLive();
+
+    const wrap = node.matches && node.matches('[data-chart3d-wrap]') ? node : node.querySelector('[data-chart3d-wrap]');
+    const prior = wrap && wrap.__lollyVectorExport;
+    if (wrap && prior) {
+      const fallback = wrap.querySelector('[data-chart3d-fallback]');
+      const canvas = wrap.querySelector('[data-chart3d-canvas]');
+      const overlay = wrap.querySelector('[data-chart3d-overlay]');
+      if (fallback) fallback.style.display = prior.fallback || 'none';
+      if (canvas) canvas.style.opacity = prior.canvas || '1';
+      if (overlay) overlay.style.opacity = prior.overlay || '1';
+      wrap.removeAttribute('data-export-renderer');
+      delete wrap.__lollyVectorExport;
+    }
+    const plotWrap = node.matches && node.matches('[data-chart-plot-wrap]') ? node
+      : (node.closest && node.closest('[data-chart-plot-wrap]')) || node.querySelector('[data-chart-plot-wrap]');
+    if (plotWrap && typeof plotWrap.__lollyPlotRestore === 'function') plotWrap.__lollyPlotRestore();
+    if (plotWrap) plotWrap.removeAttribute('data-export-renderer');
   } catch (e) { /* no-op */ }
 }

@@ -1,7 +1,164 @@
+{{#if _useThree}}
+<div class="chart3d-wrap" data-chart3d-wrap data-renderer="{{_rendererFamily}}" data-style="{{_chartStyle}}"
+     role="img" aria-label="{{_chartDescription}}"
+     style="position:relative;width:100%;max-width:{{width}}px;aspect-ratio:{{width}}/{{height}};overflow:hidden;background:{{_bgFill}};font-family:var(--font-brand,'SUSE',system-ui,-apple-system,sans-serif);">
+  <!-- First paint, CLI and vector-export path. It stays in the DOM after WebGL
+       succeeds so SVG/PDF can deliberately choose real geometry over pixels. -->
+  <svg data-chart3d-fallback xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{width}} {{height}}"
+       width="{{width}}" height="{{height}}" style="position:absolute;inset:0;width:100%;height:100%;display:block;">
+    <title>{{_chartTitle}}</title>
+    <desc>{{_chartDescription}}</desc>
+    <rect width="{{width}}" height="{{height}}" fill="{{_bgFill}}"/>
+    {{{_threeFallback}}}
+  </svg>
+  <!-- Three renders to a detached GPU canvas, then copies into this 2-D
+       presentation canvas. That makes the ordinary Lolly image/video capture
+       path deterministic and avoids preserveDrawingBuffer. -->
+  <canvas data-chart3d-canvas data-capture-stream width="{{width}}" height="{{height}}"
+          style="position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;"></canvas>
+  <svg data-chart3d-overlay xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{width}} {{height}}"
+       width="{{width}}" height="{{height}}" aria-hidden="true"
+       style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;opacity:0;overflow:visible;">
+    <style>[data-chart3d-overlay] text{font-family:var(--font-brand,'SUSE',system-ui,-apple-system,sans-serif)}</style>
+    <g data-chart3d-overlay-root></g>
+  </svg>
+</div>
+{{{_a11yTable}}}
+<canvas data-chart3d-clock width="1" height="1" style="display:none" aria-hidden="true"></canvas>
+<script type="application/json" data-chart3d-state>{{{_state}}}</script>
+<script>
+(function () {
+  var cs = document.currentScript;
+  var ROOT = (cs && cs.parentNode) || document;
+  ROOT.__chart3dEpoch = (ROOT.__chart3dEpoch || 0) + 1;
+  var epoch = ROOT.__chart3dEpoch;
+  var wrap = ROOT.querySelector('[data-chart3d-wrap]');
+  var stateEl = ROOT.querySelector('[data-chart3d-state]');
+  var clock = ROOT.querySelector('[data-chart3d-clock]');
+  if (!wrap || !stateEl) return;
+
+  var state;
+  try { state = JSON.parse(stateEl.textContent || '{}'); } catch (e) { return; }
+
+  window.__toolHasReadySignal = true;
+  var readyFired = false;
+  function fireReady() {
+    if (readyFired) return;
+    readyFired = true;
+    try { document.dispatchEvent(new CustomEvent('tool:ready')); } catch (e) {}
+  }
+
+  if (ROOT.__lollyChart3d && typeof ROOT.__lollyChart3d.dispose === 'function') {
+    try { ROOT.__lollyChart3d.dispose(); } catch (e) {}
+    ROOT.__lollyChart3d = null;
+  }
+
+  function loadOnce(name, src, present) {
+    if (present()) return Promise.resolve();
+    window[name] = window[name] || new Promise(function (resolve, reject) {
+      var s = document.createElement('script');
+      s.src = src;
+      s.onload = resolve;
+      s.onerror = function () { s.remove(); window[name] = null; reject(new Error(src + ' failed to load')); };
+      document.head.appendChild(s);
+    });
+    return window[name];
+  }
+
+  Promise.all([
+    loadOnce('__lollyChartThreeLoading', '/tools/chart/lib/three-chart.min.js', function () { return !!window.LollyChartThree; }),
+    loadOnce('__lollyChartAdapterLoading', '/tools/chart/lib/chart-three.js', function () { return !!window.LollyChart3D; })
+  ]).then(function () {
+    if (ROOT.__chart3dEpoch !== epoch) return;
+    if (!window.LollyChartThree || !window.LollyChart3D) throw new Error('3-D chart renderer is unavailable');
+    var mounted = window.LollyChart3D.mount({ root: wrap, state: state, THREE: window.LollyChartThree });
+    ROOT.__lollyChart3d = mounted;
+    if (clock && mounted && typeof mounted.renderAt === 'function') clock.__lollyFrameRender = mounted.renderAt;
+    fireReady();
+  }).catch(function (err) {
+    wrap.setAttribute('data-backend', 'vector-fallback');
+    console.error('[chart 3d]', err);
+    fireReady();
+  });
+})();
+</script>
+{{else}}
+{{#if _usePlot}}
+<div data-chart-plot-wrap data-renderer="{{_rendererFamily}}" data-style="{{_chartStyle}}"
+     style="position:relative;width:100%;max-width:{{width}}px;aspect-ratio:{{width}}/{{height}};overflow:hidden;background:{{_bgFill}};font-family:var(--font-brand,'SUSE',system-ui,-apple-system,sans-serif);">
+  <svg data-chart-plot-fallback xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {{width}} {{height}}"
+       width="{{width}}" height="{{height}}" role="img" aria-label="{{_chartDescription}}"
+       style="position:absolute;inset:0;width:100%;height:100%;display:block;">
+    <title>{{_chartTitle}}</title>
+    <desc>{{_chartDescription}}</desc>
+    <rect width="{{width}}" height="{{height}}" fill="{{_bgFill}}"/>
+    {{{_plotFallback}}}
+  </svg>
+  <div data-chart-plot-root style="position:absolute;inset:0;width:100%;height:100%;display:none;"></div>
+  <canvas data-chart-plot-clock width="1" height="1" style="display:none" aria-hidden="true"></canvas>
+</div>
+{{{_a11yTable}}}
+<script type="application/json" data-chart-plot-state>{{{_state}}}</script>
+<script>
+(function () {
+  var cs = document.currentScript;
+  var ROOT = (cs && cs.parentNode) || document;
+  ROOT.__chartPlotEpoch = (ROOT.__chartPlotEpoch || 0) + 1;
+  var epoch = ROOT.__chartPlotEpoch;
+  var wrap = ROOT.querySelector('[data-chart-plot-wrap]');
+  var stateEl = ROOT.querySelector('[data-chart-plot-state]');
+  var clock = ROOT.querySelector('[data-chart-plot-clock]');
+  if (!wrap || !stateEl) return;
+  var state;
+  try { state = JSON.parse(stateEl.textContent || '{}'); } catch (e) { return; }
+
+  window.__toolHasReadySignal = true;
+  var ready = false;
+  function fireReady() {
+    if (ready) return; ready = true;
+    try { document.dispatchEvent(new CustomEvent('tool:ready')); } catch (e) {}
+  }
+  function loadOnce(name, src, present) {
+    if (present()) return Promise.resolve();
+    window[name] = window[name] || new Promise(function (resolve, reject) {
+      var s = document.createElement('script'); s.src = src; s.onload = resolve;
+      s.onerror = function () { s.remove(); window[name] = null; reject(new Error(src + ' failed to load')); };
+      document.head.appendChild(s);
+    });
+    return window[name];
+  }
+  if (ROOT.__lollyChartPlot && typeof ROOT.__lollyChartPlot.dispose === 'function') {
+    try { ROOT.__lollyChartPlot.dispose(); } catch (e) {}
+    ROOT.__lollyChartPlot = null;
+  }
+  // Observable Plot's official browser build deliberately shares Chart's pinned
+  // D3 runtime. Load sequentially so the UMD factory always sees window.d3.
+  loadOnce('__d3Loading', '/tools/chart/lib/d3.min.js', function () { return !!window.d3; })
+    .then(function () { return loadOnce('__lollyObservablePlotLoading', '/tools/chart/lib/observable-plot.min.js', function () { return !!window.Plot; }); })
+    .then(function () { return loadOnce('__lollyChartPlotAdapterLoading', '/tools/chart/lib/chart-plot.js', function () { return !!window.LollyChartPlot; }); })
+    .then(function () {
+      if (ROOT.__chartPlotEpoch !== epoch) return;
+      if (!window.Plot || !window.LollyChartPlot) throw new Error('Statistical chart renderer is unavailable');
+      ROOT.__lollyChartPlot = window.LollyChartPlot.mount({ root: wrap, state: state, Plot: window.Plot, clock: clock });
+      if (ROOT.__lollyChartPlot) {
+        wrap.__lollyPlotPoster = ROOT.__lollyChartPlot.poster;
+        wrap.__lollyPlotRestore = ROOT.__lollyChartPlot.restore;
+      }
+      fireReady();
+    }).catch(function (err) {
+      wrap.setAttribute('data-backend', 'semantic-fallback');
+      console.error('[chart statistical]', err);
+      fireReady();
+    });
+})();
+</script>
+{{else}}
 <svg id="d3-svg" xmlns="http://www.w3.org/2000/svg"
      viewBox="0 0 {{width}} {{height}}" width="{{width}}" height="{{height}}"
      style="width:100%;height:auto;display:block;"
-     data-lolly-anno="{{chartType}} {{delimiter}} {{stackMode}} {{curve}} {{sizeBy}} {{sort}} {{yScaleType}} {{numberFormat}} {{palette}} {{colorBy}} {{textColor}} {{strokeColor}} {{legendPosition}}">
+     data-lolly-anno="{{renderMode}} {{chartType}} {{sceneType}} {{delimiter}} {{stackMode}} {{curve}} {{sizeBy}} {{sort}} {{yScaleType}} {{numberFormat}} {{palette}} {{colorBy}} {{textColor}} {{strokeColor}} {{legendPosition}}">
+  <title>{{_chartTitle}}</title>
+  <desc>{{_chartDescription}}</desc>
   <defs>
     <style>
       /* Brand font via the injected var (community pattern - no @font-face here;
@@ -19,6 +176,7 @@
   <rect id="d3-bg" width="{{width}}" height="{{height}}" fill="{{_bgFill}}" pointer-events="all"/>
   <g id="d3-plot" data-canvas-input="data"></g>
 </svg>
+{{{_a11yTable}}}
 <!-- Export frame-clock carrier. The animated chart is rAF-driven SVG (no <canvas>), but
      the video/apng/webp-anim pipeline seeks motion through a deterministic clock it finds
      on a descendant <canvas> OR the export node itself (see createFrameSource →
@@ -166,7 +324,7 @@
     if (!frames || frames.length < 2) {
       if (window.__lollyAnim) window.__lollyAnim.active = false;   // hide the transport
       [clockEl, svgEl].forEach(function (el) { if (el) delete el.__lollyFrameRender; });  // a static chart must not be export-driven
-      window.__d3BuildSmil = null; window.__d3RestoreLive = null; window.__d3SmilActive = false;   // clear a stale SMIL builder so a static SVG export stays static
+      svgEl.__lollyBuildSmil = null; svgEl.__lollyRestoreLive = null; svgEl.__lollySmilActive = false;   // clear a stale SMIL builder so a static SVG export stays static
       return;
     }
     var nF = frames.length, stepMs = clamp(cfg.animSpeed || 1.5, 0.3, 8) * 1000, holdFrac = 0.35, loopMs = nF * stepMs;
@@ -225,12 +383,12 @@
        renderer, so labels, hide-empties and every chart type come along for free, and a
        self-contained looping vector SVG plays natively. Driven by the beforeExport hook
        (format=svg); the rAF loop parks on __d3SmilActive so it can't clobber the build. */
-    window.__d3SmilActive = false;
+    svgEl.__lollySmilActive = false;
     var SVGNS = 'http://www.w3.org/2000/svg', loopSec = loopMs / 1000;
-    window.__d3BuildSmil = function () {
+    svgEl.__lollyBuildSmil = function () {
       if (!frames || frames.length < 2) return false;
       var plot = plotEl; if (!plot) return false;
-      window.__d3SmilActive = true;
+      svgEl.__lollySmilActive = true;
       var N = Math.max(nF * 2, Math.min(60, Math.round(loopSec * 12)));   // ~12 fps, capped
       var groups = [], k;
       for (k = 0; k < N; k++) {
@@ -253,7 +411,7 @@
       });
       return true;
     };
-    window.__d3RestoreLive = function () { window.__d3SmilActive = false; try { draw((A && A.curT) || 0); } catch (e) { /* ignore */ } };
+    svgEl.__lollyRestoreLive = function () { svgEl.__lollySmilActive = false; try { draw((A && A.curT) || 0); } catch (e) { /* ignore */ } };
     /* Publish/refresh the transport contract, carrying playing state + position over
        a re-paint so a pause or scrub survives an input tweak. */
     var prev = window.__lollyAnim || {};
@@ -262,7 +420,7 @@
     var clock = (prev.curT || 0) * loopMs, prevTs = null, lastDraw = -1e9, lastT = -1;
     function tick(ts) {
       if (!alive()) return;                                   // a newer paint owns the canvas now
-      if (frameDriven() || window.__d3SmilActive) { ROOT.__d3Raf = requestAnimationFrame(tick); return; }   // export owns the frame - don't clobber it
+      if (frameDriven() || svgEl.__lollySmilActive) { ROOT.__d3Raf = requestAnimationFrame(tick); return; }   // export owns the frame - don't clobber it
       if (prevTs == null) prevTs = ts;
       var dt = ts - prevTs; prevTs = ts;
       var t;
@@ -2474,3 +2632,5 @@
   }
 })();
 </script>
+{{/if}}
+{{/if}}

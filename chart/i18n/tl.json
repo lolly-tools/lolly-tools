@@ -1,7 +1,7 @@
 {
   "name": "Chart",
-  "description": "Makapangyarihang data-driven na mga chart gamit ang D3 - i-paste ang isang table at kusa na itong magiging chart. Bars, lines, areas, scatter, pie, radar, treemap, heatmap, 3-D bars & pies at word clouds. Nagmumula ang mga palette sa kulay ng iyong brand, may pattern fills at click-to-recolour - on-brand at malinis na vector.",
-  "featured.blurb": "I-paste ang table — ico-chart ito ng D3, on-brand at malinis na vector",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "{{chartType}} chart{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Uri ng chart",
   "inputs.chartType.options.bar": "Bar - patayo",

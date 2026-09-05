@@ -1,7 +1,7 @@
 {
   "name": "Диаграма",
-  "description": "Мощни диаграми, управлявани от данни, с D3 - постави таблица и тя се изобразява сама. Барове, линии, области, точкови диаграми, кръгови, радарни, дървовидни карти, топлинни карти, 3D барове и кръгови диаграми и облаци от думи. Палитрите произлизат от цветовете на твоя бранд, с шарки за запълване и оцветяване с клик - на бранда и векторно чисто.",
-  "featured.blurb": "Постави таблица — D3 я превръща в диаграма, брандирано и векторно чисто",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, data-driven cinematic flights, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "Диаграма {{chartType}}{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Тип диаграма",
   "inputs.chartType.options.bar": "Стълбове - вертикални",

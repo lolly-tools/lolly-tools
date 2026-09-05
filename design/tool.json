@@ -189,6 +189,32 @@
       "default": "{color.semantic.surface}"
     },
     {
+      "id": "documentUnit",
+      "showFor": [],
+      "type": "select",
+      "label": "Document unit",
+      "default": "px",
+      "options": [
+        { "value": "px", "label": "Pixels" },
+        { "value": "mm", "label": "Millimetres" },
+        { "value": "cm", "label": "Centimetres" },
+        { "value": "in", "label": "Inches" },
+        { "value": "pt", "label": "Points" }
+      ],
+      "help": "The unit used for the document size and export dimensions. Geometry stays in CSS pixels internally so existing documents remain exact."
+    },
+    {
+      "id": "documentDpi",
+      "showFor": [],
+      "type": "number",
+      "label": "Document DPI",
+      "default": 300,
+      "min": 36,
+      "max": 2400,
+      "step": 1,
+      "help": "Raster resolution used when this document is exported in a physical unit."
+    },
+    {
       "id": "customCss",
       "type": "longtext",
       "label": "Custom CSS",

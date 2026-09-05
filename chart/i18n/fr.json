@@ -1,7 +1,7 @@
 {
   "name": "Graphique",
-  "description": "Des graphiques puissants pilotés par les données avec D3 - collez un tableau et il se met en graphique tout seul. Barres, lignes, aires, nuage de points, camembert, radar, treemap, carte de chaleur, barres et camemberts 3D et nuages de mots. Les palettes dérivent des couleurs de votre marque, avec remplissages à motifs et reco­loration en un clic - à l'image de la marque et net en vectoriel.",
-  "featured.blurb": "Colle un tableau — D3 le transforme en graphique, à l'image de ta marque et en vectoriel net",
+  "description": "Charts from first paste to advanced visualisation — 32 classic vector families, sixteen statistical and editorial articulations, real-z 3-D scenes, deterministic motion, accessible descriptions and styles compiled from the active brand profile.",
+  "featured.blurb": "Paste a table — Chart makes it clear, accessible and unmistakably on-brand",
   "a11yLabel": "Graphique {{chartType}}{{#if heading}} - {{heading}}{{/if}}",
   "inputs.chartType.label": "Type de graphique",
   "inputs.chartType.options.bar": "Barres - verticales",
