@@ -7,6 +7,7 @@
     "boxes": [
       {
         "id": "page1",
+        "name": "Cover",
         "kind": "frame",
         "x": 0,
         "y": 0,
@@ -90,6 +91,7 @@
       },
       {
         "id": "page2",
+        "name": "Point",
         "kind": "frame",
         "x": 1136,
         "y": 0,
@@ -154,6 +156,7 @@
       },
       {
         "id": "page3",
+        "name": "Call to action",
         "kind": "frame",
         "x": 2272,
         "y": 0,

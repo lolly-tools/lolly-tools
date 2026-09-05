@@ -7,6 +7,7 @@
     "boxes": [
       {
         "id": "slide1",
+        "name": "Title",
         "kind": "frame",
         "x": 0,
         "y": 0,
@@ -71,6 +72,7 @@
       },
       {
         "id": "slide2",
+        "name": "Content",
         "kind": "frame",
         "x": 2000,
         "y": 0,
@@ -135,6 +137,7 @@
       },
       {
         "id": "slide3",
+        "name": "Closing",
         "kind": "frame",
         "x": 4000,
         "y": 0,

@@ -6,8 +6,23 @@
   "values": {
     "boxes": [
       {
+        "id": "scene1",
+        "name": "Scene 1",
+        "kind": "frame",
+        "x": 0,
+        "y": 0,
+        "w": 1920,
+        "h": 1080,
+        "rot": 0,
+        "shape": "rect",
+        "bg": "var(--brand-primary, #1e293b)",
+        "order": 0,
+        "clipChildren": true
+      },
+      {
         "id": "bg",
         "kind": "box",
+        "frame": "scene1",
         "x": 0,
         "y": 0,
         "w": 1920,
@@ -20,6 +35,7 @@
       {
         "id": "accent",
         "kind": "box",
+        "frame": "scene1",
         "x": 160,
         "y": 300,
         "w": 140,
@@ -32,6 +48,7 @@
       {
         "id": "hook",
         "kind": "text",
+        "frame": "scene1",
         "x": 160,
         "y": 360,
         "w": 1600,
@@ -55,6 +72,7 @@
       {
         "id": "cta",
         "kind": "text",
+        "frame": "scene1",
         "x": 160,
         "y": 680,
         "w": 1600,
@@ -78,6 +96,7 @@
       {
         "id": "bed",
         "kind": "audio",
+        "frame": "scene1",
         "x": 0,
         "y": 940,
         "w": 320,
